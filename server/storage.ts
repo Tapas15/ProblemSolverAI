@@ -6,6 +6,7 @@ import type {
 } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
+import { PostgresStorage } from "./db-storage";
 
 const MemoryStore = createMemoryStore(session);
 
