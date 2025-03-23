@@ -50,7 +50,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const updatedUser = await storage.updateUser(req.user.id, validatedData);
       
       if (!updatedUser) {
-        return res.status(404).send("User not found");
+        return res.status(404).json({ message: "User not found" });
       }
       
       // Remove password from response

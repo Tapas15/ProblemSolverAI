@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import MainLayout from '@/components/layout/main-layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,17 +9,132 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { Shield, Lock, Key, AlertTriangle, Settings, Bell, Fingerprint } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useMutation } from '@tanstack/react-query';
+import { updatePassword, updatePrivacySettings, updateNotificationSettings } from '@/lib/api';
 
 const SettingsPage: React.FC = () => {
   const { user, updateAiSettingsMutation } = useAuth();
   const { toast } = useToast();
+  
+  // AI Settings state
   const [apiKey, setApiKey] = useState<string>(user?.apiKey || '');
   const [aiProvider, setAiProvider] = useState<string>(user?.aiProvider || 'openai');
+  
+  // Password change state
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  
+  // Privacy settings state
+  const [privacySettings, setPrivacySettings] = useState({
+    allowAnalytics: true,
+    publicProfile: false,
+    allowPersonalization: true,
+  });
+  
+  // Notification settings state
+  const [notificationSettings, setNotificationSettings] = useState({
+    learningReminders: true,
+    frameworkUpdates: true,
+    quizResults: true,
+    productUpdates: false,
+    emailFrequency: 'weekly' as 'immediately' | 'daily' | 'weekly' | 'none',
+  });
+  
+  // Extract preferences from user data on component mount
+  useEffect(() => {
+    if (user?.userPreferences) {
+      try {
+        const preferences = JSON.parse(user.userPreferences);
+        
+        // Initialize privacy settings from user preferences
+        if (preferences.privacy) {
+          setPrivacySettings({
+            allowAnalytics: preferences.privacy.allowAnalytics ?? true,
+            publicProfile: preferences.privacy.publicProfile ?? false,
+            allowPersonalization: preferences.privacy.allowPersonalization ?? true,
+          });
+        }
+        
+        // Initialize notification settings from user preferences
+        if (preferences.notifications) {
+          setNotificationSettings({
+            learningReminders: preferences.notifications.learningReminders ?? true,
+            frameworkUpdates: preferences.notifications.frameworkUpdates ?? true,
+            quizResults: preferences.notifications.quizResults ?? true,
+            productUpdates: preferences.notifications.productUpdates ?? false,
+            emailFrequency: preferences.notifications.emailFrequency ?? 'weekly',
+          });
+        }
+      } catch (e) {
+        console.error('Failed to parse user preferences:', e);
+      }
+    }
+  }, [user]);
+  
+  // Mutations for different settings
+  const passwordMutation = useMutation({
+    mutationFn: (data: { currentPassword: string; newPassword: string }) => 
+      updatePassword(data),
+    onSuccess: () => {
+      toast({
+        title: "Password updated",
+        description: "Your password has been changed successfully.",
+      });
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Password update failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+  
+  const privacyMutation = useMutation({
+    mutationFn: (data: typeof privacySettings) => 
+      updatePrivacySettings(data),
+    onSuccess: () => {
+      toast({
+        title: "Privacy settings updated",
+        description: "Your privacy settings have been saved successfully.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Update failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+  
+  const notificationMutation = useMutation({
+    mutationFn: (data: typeof notificationSettings) => 
+      updateNotificationSettings(data),
+    onSuccess: () => {
+      toast({
+        title: "Notification settings updated",
+        description: "Your notification preferences have been saved successfully.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Update failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
   
   if (!user) {
     return null;
   }
 
+  // Form handlers
   const handleAiSettingsSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -34,6 +149,43 @@ const SettingsPage: React.FC = () => {
         }
       }
     );
+  };
+  
+  const handlePasswordSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (newPassword !== confirmPassword) {
+      toast({
+        title: "Passwords don't match",
+        description: "New password and confirmation do not match.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (newPassword.length < 6) {
+      toast({
+        title: "Password too short",
+        description: "Password must be at least 6 characters long.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    passwordMutation.mutate({
+      currentPassword,
+      newPassword,
+    });
+  };
+  
+  const handlePrivacySubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    privacyMutation.mutate(privacySettings);
+  };
+  
+  const handleNotificationSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    notificationMutation.mutate(notificationSettings);
   };
 
   return (
