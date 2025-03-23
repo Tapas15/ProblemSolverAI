@@ -119,7 +119,8 @@ export async function submitQuizAttempt(
     score,
     maxScore,
     passed: score >= (maxScore * 0.7), // 70% passing threshold by default
-    timeTaken
+    timeTaken,
+    completedAt: new Date()  // Add the completedAt field which is required
   });
   return res.json();
 }

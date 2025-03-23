@@ -153,6 +153,7 @@ export const insertQuizAttemptSchema = createInsertSchema(quizAttempts).pick({
   answers: true,
   timeTaken: true,
   passed: true,
+  completedAt: true,
 });
 
 // Type exports
