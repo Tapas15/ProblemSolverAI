@@ -3,7 +3,13 @@ import { useParams, Link } from 'wouter';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/use-auth';
 import { Framework, Module } from '@shared/schema';
-import { getFramework, getModules, updateModuleCompletion } from '@/lib/api';
+import { 
+  getFramework, 
+  getModules, 
+  updateModuleCompletionWithTracking, 
+  trackModuleCompletion,
+  trackFrameworkCompletion
+} from '@/lib/api';
 import { Check, ChevronDown, ChevronUp, Clock, GraduationCap, X, ClipboardCheck } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -44,12 +50,40 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
   };
   
   const completeModuleMutation = useMutation({
-    mutationFn: ({ moduleId, completed }: { moduleId: number; completed: boolean }) => 
-      updateModuleCompletion(moduleId, completed),
-    onSuccess: () => {
+    mutationFn: ({ moduleId, completed, moduleName }: { moduleId: number; completed: boolean; moduleName?: string }) => 
+      // Use enhanced tracking version for module completion
+      updateModuleCompletionWithTracking(moduleId, completed),
+    onSuccess: (updatedModule) => {
       queryClient.invalidateQueries({ queryKey: ['/api/user/progress'] });
       if (framework) {
         queryClient.invalidateQueries({ queryKey: [`/api/frameworks/${framework.id}/modules`] });
+        
+        // Track module completion with xAPI if the module was completed
+        if (updatedModule.completed) {
+          // Track additional xAPI event
+          trackModuleCompletion(
+            updatedModule.id,
+            updatedModule.name,
+            updatedModule.frameworkId
+          ).catch(error => {
+            console.error("Error tracking module completion:", error);
+          });
+          
+          // Check if all modules are completed to track framework completion
+          const allModules = modules || [];
+          const completedModulesCount = allModules.filter(m => m.completed || m.id === updatedModule.id).length;
+          
+          if (completedModulesCount === allModules.length) {
+            trackFrameworkCompletion(
+              framework.id,
+              framework.name,
+              completedModulesCount,
+              allModules.length
+            ).catch(error => {
+              console.error("Error tracking framework completion:", error);
+            });
+          }
+        }
       }
     },
     onError: (error: Error) => {
@@ -61,8 +95,8 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
     }
   });
   
-  const handleModuleStatusChange = (moduleId: number, completed: boolean) => {
-    completeModuleMutation.mutate({ moduleId, completed });
+  const handleModuleStatusChange = (moduleId: number, completed: boolean, moduleName?: string) => {
+    completeModuleMutation.mutate({ moduleId, completed, moduleName });
   };
   
   const handleAiQuestion = async () => {
@@ -230,7 +264,7 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
                               className={module.completed ? "text-green-600 border-green-600" : ""}
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handleModuleStatusChange(module.id, !module.completed);
+                                handleModuleStatusChange(module.id, !module.completed, module.name);
                               }}
                             >
                               {module.completed ? "Mark as Incomplete" : "Mark as Complete"}
