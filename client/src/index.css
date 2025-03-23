@@ -1,0 +1,189 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 33% 98%; /* #F5F7FA */
+    --foreground: 222 14% 23%; /* #2D3748 */
+    
+    --card: 0 0% 100%;
+    --card-foreground: 222 14% 23%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 14% 23%;
+    
+    --primary: 222 47% 15%; /* #0A2540 */
+    --primary-foreground: 0 0% 100%;
+    
+    --secondary: 197 100% 44%; /* #00A3E0 */
+    --secondary-foreground: 0 0% 100%;
+    
+    --accent: 40 100% 55%; /* #FFB81C */
+    --accent-foreground: 222 47% 15%;
+    
+    --muted: 210 20% 92%;
+    --muted-foreground: 215 14% 40%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: 215 16% 88%;
+    --input: 215 16% 88%;
+    --ring: 197 100% 44%; /* #00A3E0 */
+    
+    --radius: 0.5rem;
+    
+    /* Chart colors */
+    --chart-1: 197 100% 44%;
+    --chart-2: 40 100% 55%;
+    --chart-3: 222 47% 15%;
+    --chart-4: 152 69% 31%;
+    --chart-5: 345 83% 41%;
+    
+    /* Sidebar colors */
+    --sidebar-background: 222 47% 15%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 197 100% 44%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 40 100% 55%;
+    --sidebar-accent-foreground: 222 47% 15%;
+    --sidebar-border: 222 30% 25%;
+    --sidebar-ring: 197 100% 44%;
+  }
+ 
+  .dark {
+    --background: 222 47% 7%;
+    --foreground: 0 0% 100%;
+    
+    --card: 222 47% 10%;
+    --card-foreground: 0 0% 100%;
+    
+    --popover: 222 47% 10%;
+    --popover-foreground: 0 0% 100%;
+    
+    --primary: 197 100% 44%;
+    --primary-foreground: 0 0% 100%;
+    
+    --secondary: 222 47% 15%;
+    --secondary-foreground: 0 0% 100%;
+    
+    --accent: 40 100% 55%;
+    --accent-foreground: 0 0% 0%;
+    
+    --muted: 222 47% 15%;
+    --muted-foreground: 210 20% 80%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: 222 30% 25%;
+    --input: 222 30% 25%;
+    --ring: 197 100% 44%;
+    
+    /* Chart colors */
+    --chart-1: 197 100% 44%;
+    --chart-2: 40 100% 55%;
+    --chart-3: 210 20% 80%;
+    --chart-4: 152 69% 45%;
+    --chart-5: 345 83% 65%;
+    
+    /* Sidebar colors - keep same as light to maintain consistency */
+    --sidebar-background: 222 47% 15%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 197 100% 44%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 40 100% 55%;
+    --sidebar-accent-foreground: 222 47% 15%;
+    --sidebar-border: 222 30% 25%;
+    --sidebar-ring: 197 100% 44%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-header;
+  }
+  
+  code, pre {
+    @apply font-code;
+  }
+}
+
+/* Custom font family classes */
+.font-header {
+  font-family: 'IBM Plex Sans', 'Merriweather', serif;
+}
+
+.font-body {
+  font-family: 'Open Sans', sans-serif;
+}
+
+.font-code {
+  font-family: 'Roboto Mono', monospace;
+}
+
+/* Framework card hover effect */
+.framework-card {
+  transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.framework-card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
+}
+
+/* Progress bar animation */
+@keyframes progress {
+  from {
+    width: 0;
+  }
+}
+
+.animate-progress {
+  animation: progress 1s ease-out;
+}
+
+/* Button hover transitions */
+.btn-primary {
+  @apply bg-secondary text-white transition-colors duration-200;
+}
+
+.btn-primary:hover {
+  @apply bg-secondary/90;
+}
+
+.btn-secondary {
+  @apply border border-secondary text-secondary bg-transparent transition-colors duration-200;
+}
+
+.btn-secondary:hover {
+  @apply bg-secondary/10;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground));
+}
