@@ -176,12 +176,6 @@ export async function trackQuizAttempt(
   return learningTracking.trackQuizAttempt(quizId, quizTitle, frameworkId, score, maxScore, passed, timeTaken);
 }
 
-// Certificate functions
-export async function downloadCertificate(frameworkId: number): Promise<void> {
-  // Use window.open to directly download the PDF
-  window.open(`/api/frameworks/${frameworkId}/certificate`, '_blank');
-}
-
 // SCORM package management functions
 export async function getScormPackages(): Promise<ScormPackage[]> {
   const res = await apiRequest("GET", "/api/scorm/packages");

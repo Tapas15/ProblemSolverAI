@@ -8,10 +8,9 @@ import {
   getModules, 
   updateModuleCompletionWithTracking, 
   trackModuleCompletion,
-  trackFrameworkCompletion,
-  downloadCertificate
+  trackFrameworkCompletion
 } from '@/lib/api';
-import { Check, ChevronDown, ChevronUp, Clock, GraduationCap, X, ClipboardCheck, FileCode, Award } from 'lucide-react';
+import { Check, ChevronDown, ChevronUp, Clock, GraduationCap, X, ClipboardCheck, FileCode } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -179,33 +178,12 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
                     </div>
                     
                     {framework && (
-                      <div className="flex flex-col space-y-2 ml-4">
-                        <Link to={`/quizzes/${framework.id}`}>
-                          <Button variant="outline" className="w-full">
-                            <ClipboardCheck className="h-4 w-4 mr-2" />
-                            Take Quizzes
-                          </Button>
-                        </Link>
-                        
-                        {framework.status === 'completed' && (
-                          <Button 
-                            variant="outline" 
-                            className="w-full text-green-600 border-green-600"
-                            onClick={() => {
-                              if (framework.id) {
-                                downloadCertificate(framework.id);
-                                toast({
-                                  title: "Certificate Download Started",
-                                  description: "Your certificate is being generated and will download automatically."
-                                });
-                              }
-                            }}
-                          >
-                            <Award className="h-4 w-4 mr-2" />
-                            Download Certificate
-                          </Button>
-                        )}
-                      </div>
+                      <Link to={`/quizzes/${framework.id}`}>
+                        <Button variant="outline" className="ml-4">
+                          <ClipboardCheck className="h-4 w-4 mr-2" />
+                          Take Quizzes
+                        </Button>
+                      </Link>
                     )}
                   </div>
                 </>

@@ -11,7 +11,6 @@ import {
 import OpenAI from "openai";
 import { xapiService } from "./services/xapi-service";
 import { scormService } from "./services/scorm-service";
-import { certificateService } from "./services/certificate-service";
 import path from "path";
 import fs from "fs";
 import multer from "multer";
@@ -1237,61 +1236,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error('Error deleting SCORM package:', error);
       res.status(500).json({ message: `Failed to delete SCORM package: ${error.message}` });
-    }
-  });
-
-  // Certificate generation route
-  app.get("/api/frameworks/:id/certificate", async (req, res, next) => {
-    if (!req.isAuthenticated()) return res.sendStatus(401);
-    
-    try {
-      const frameworkId = parseInt(req.params.id);
-      
-      if (isNaN(frameworkId)) {
-        return res.status(400).json({ message: "Invalid framework ID" });
-      }
-      
-      const userId = req.user!.id;
-      
-      // Get the user
-      const user = await storage.getUser(userId);
-      
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      
-      // Get the framework
-      const framework = await storage.getFramework(frameworkId);
-      
-      if (!framework) {
-        return res.status(404).json({ message: "Framework not found" });
-      }
-      
-      // Get the user's progress for this framework
-      const userProgress = await storage.getUserProgressByFramework(userId, frameworkId);
-      
-      if (!userProgress || userProgress.status !== "completed") {
-        return res.status(400).json({ 
-          message: "You haven't completed all modules for this framework yet" 
-        });
-      }
-      
-      // Generate the certificate
-      const certificateBuffer = await certificateService.generateCertificate(
-        user, 
-        framework,
-        new Date()
-      );
-      
-      // Send the PDF as a response
-      res.setHeader("Content-Type", "application/pdf");
-      res.setHeader(
-        "Content-Disposition", 
-        `attachment; filename="${framework.name.replace(/\s+/g, '-')}-Certificate.pdf"`
-      );
-      res.send(certificateBuffer);
-    } catch (error) {
-      next(error);
     }
   });
 
