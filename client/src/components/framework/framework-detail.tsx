@@ -186,14 +186,31 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
                             <Badge className="bg-gray-100 text-gray-800">Theory</Badge>
                           </div>
                           
-                          <div className="flex justify-between items-center">
-                            <Button
-                              variant="ghost"
-                              className="text-sm font-medium text-secondary hover:underline"
-                            >
-                              View Module Content
-                            </Button>
-                            
+                          {module.content && (
+                            <div className="mt-4 mb-5">
+                              <div className="module-content" dangerouslySetInnerHTML={{ __html: module.content }} />
+                            </div>
+                          )}
+                          
+                          {module.examples && (
+                            <div className="mt-4 mb-5">
+                              <h5 className="text-md font-semibold text-primary mb-2">Examples</h5>
+                              <div className="bg-gray-50 p-3 rounded-md text-sm whitespace-pre-line">
+                                {module.examples}
+                              </div>
+                            </div>
+                          )}
+                          
+                          {module.keyTakeaways && (
+                            <div className="mt-4 mb-5">
+                              <h5 className="text-md font-semibold text-primary mb-2">Key Takeaways</h5>
+                              <div className="bg-gray-50 p-3 rounded-md text-sm whitespace-pre-line">
+                                {module.keyTakeaways}
+                              </div>
+                            </div>
+                          )}
+                          
+                          <div className="flex justify-end items-center mt-4">
                             <Button
                               variant="outline"
                               size="sm"
