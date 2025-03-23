@@ -280,6 +280,167 @@ const SettingsPage: React.FC = () => {
                 </div>
               </CardContent>
             </Card>
+            
+            {/* Privacy Settings */}
+            <Card className="border-0 shadow-md bg-white" id="privacy">
+              <CardHeader>
+                <div className="flex items-center">
+                  <Fingerprint className="h-5 w-5 text-primary mr-2" />
+                  <CardTitle>Privacy Settings</CardTitle>
+                </div>
+                <CardDescription>
+                  Control how your data is used and shared
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-medium">Data Privacy Preferences</h3>
+                    
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-medium">Learning Analytics</h4>
+                          <p className="text-sm text-gray-500">Allow us to collect data about your learning patterns to improve content</p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input type="checkbox" value="" className="sr-only peer" defaultChecked />
+                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-secondary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+                        </label>
+                      </div>
+                      
+                      <Separator />
+                      
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-medium">Public Profile</h4>
+                          <p className="text-sm text-gray-500">Make your profile visible to other users</p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input type="checkbox" value="" className="sr-only peer" />
+                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-secondary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+                        </label>
+                      </div>
+                      
+                      <Separator />
+                      
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-medium">Personalized Content</h4>
+                          <p className="text-sm text-gray-500">Allow us to personalize your learning experience</p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input type="checkbox" value="" className="sr-only peer" defaultChecked />
+                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-secondary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+                        </label>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-gray-50 rounded-lg p-4 mt-4">
+                      <h4 className="font-medium mb-2">Data Retention Policy</h4>
+                      <p className="text-sm text-gray-600">Your data is stored securely and retained according to our privacy policy. You can request deletion of your data at any time from the Advanced Settings section.</p>
+                    </div>
+                    
+                    <div className="flex justify-end mt-4">
+                      <Button>Save Privacy Settings</Button>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Notification Settings */}
+            <Card className="border-0 shadow-md bg-white" id="notifications">
+              <CardHeader>
+                <div className="flex items-center">
+                  <Bell className="h-5 w-5 text-primary mr-2" />
+                  <CardTitle>Notification Settings</CardTitle>
+                </div>
+                <CardDescription>
+                  Control which notifications you receive and how
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-medium">Email Notifications</h3>
+                    
+                    <div className="grid gap-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-medium">Learning Reminders</h4>
+                          <p className="text-sm text-gray-500">Receive reminders to continue your learning</p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input type="checkbox" value="" className="sr-only peer" defaultChecked />
+                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-secondary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+                        </label>
+                      </div>
+                      
+                      <Separator />
+                      
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-medium">Framework Updates</h4>
+                          <p className="text-sm text-gray-500">Notifications when new content is added</p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input type="checkbox" value="" className="sr-only peer" defaultChecked />
+                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-secondary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+                        </label>
+                      </div>
+                      
+                      <Separator />
+                      
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-medium">Quiz Results</h4>
+                          <p className="text-sm text-gray-500">Notifications about quiz scores and feedback</p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input type="checkbox" value="" className="sr-only peer" />
+                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-secondary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+                        </label>
+                      </div>
+                      
+                      <Separator />
+                      
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-medium">Product Updates</h4>
+                          <p className="text-sm text-gray-500">Stay informed about new features and improvements</p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input type="checkbox" value="" className="sr-only peer" defaultChecked />
+                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-secondary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+                        </label>
+                      </div>
+                    </div>
+                    
+                    <h3 className="text-lg font-medium mt-8">Notification Frequency</h3>
+                    
+                    <div className="space-y-3 mt-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="frequency">Email Frequency</Label>
+                        <select 
+                          id="frequency" 
+                          className="w-full h-10 px-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary"
+                        >
+                          <option value="immediately">Immediately</option>
+                          <option value="daily">Daily Digest</option>
+                          <option value="weekly">Weekly Digest</option>
+                          <option value="none">Don't send</option>
+                        </select>
+                      </div>
+                    </div>
+                    
+                    <div className="flex justify-end mt-4">
+                      <Button>Save Notification Settings</Button>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
