@@ -77,19 +77,79 @@ const FrameworkGrid: React.FC = () => {
     );
   }
   
+  const groupedFrameworks = frameworks?.reduce((acc, framework) => {
+    const { status } = getFrameworkProgress(framework.id);
+    if (!acc[status]) {
+      acc[status] = [];
+    }
+    acc[status].push(framework);
+    return acc;
+  }, {} as Record<string, Framework[]>) || {};
+
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {frameworks?.map((framework) => {
-          const { status, completedModules } = getFrameworkProgress(framework.id);
-          
-          // Add click event to handle opening framework detail
-          const handleCardClick = () => handleFrameworkClick(framework.id);
-          
-          return (
-            <div key={framework.id} onClick={handleCardClick} className="cursor-pointer">
-              <FrameworkCard 
-                framework={framework} 
+      {groupedFrameworks['completed']?.length > 0 && (
+        <>
+          <h2 className="text-xl font-semibold mb-4 text-primary">Completed Frameworks</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {groupedFrameworks['completed'].map((framework) => {
+              const { status, completedModules } = getFrameworkProgress(framework.id);
+              return (
+                <div key={framework.id} onClick={() => handleFrameworkClick(framework.id)} className="cursor-pointer">
+                  <FrameworkCard 
+                    framework={framework}
+                    modules={[]}
+                    progressStatus={status}
+                    completedModules={completedModules}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
+
+      {groupedFrameworks['in_progress']?.length > 0 && (
+        <>
+          <h2 className="text-xl font-semibold mb-4 text-primary">In Progress</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {groupedFrameworks['in_progress'].map((framework) => {
+              const { status, completedModules } = getFrameworkProgress(framework.id);
+              return (
+                <div key={framework.id} onClick={() => handleFrameworkClick(framework.id)} className="cursor-pointer">
+                  <FrameworkCard 
+                    framework={framework}
+                    modules={[]}
+                    progressStatus={status}
+                    completedModules={completedModules}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
+
+      {groupedFrameworks['not_started']?.length > 0 && (
+        <>
+          <h2 className="text-xl font-semibold mb-4 text-primary">Available Frameworks</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {groupedFrameworks['not_started'].map((framework) => {
+              const { status, completedModules } = getFrameworkProgress(framework.id);
+              return (
+                <div key={framework.id} onClick={() => handleFrameworkClick(framework.id)} className="cursor-pointer">
+                  <FrameworkCard 
+                    framework={framework}
+                    modules={[]}
+                    progressStatus={status}
+                    completedModules={completedModules}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )} 
                 modules={[]} // Empty array because we're not individually loading modules for cards
                 progressStatus={status}
                 completedModules={completedModules}
