@@ -243,7 +243,7 @@ const SettingsPage: React.FC = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <form className="space-y-6">
+                <form className="space-y-6" onSubmit={handlePasswordSubmit}>
                   <div className="space-y-4">
                     <h3 className="text-lg font-medium">Change Password</h3>
                     
@@ -255,8 +255,11 @@ const SettingsPage: React.FC = () => {
                           <Input 
                             id="currentPassword" 
                             type="password" 
+                            value={currentPassword}
+                            onChange={(e) => setCurrentPassword(e.target.value)}
                             placeholder="Enter your current password" 
                             className="pl-10 border-gray-200"
+                            required
                           />
                         </div>
                       </div>
@@ -268,12 +271,16 @@ const SettingsPage: React.FC = () => {
                           <Input 
                             id="newPassword" 
                             type="password" 
+                            value={newPassword}
+                            onChange={(e) => setNewPassword(e.target.value)}
                             placeholder="Enter new password" 
                             className="pl-10 border-gray-200"
+                            required
+                            minLength={6}
                           />
                         </div>
                         <p className="text-xs text-gray-500">
-                          Password must be at least 8 characters and include uppercase, lowercase, number and special character
+                          Password must be at least 6 characters long
                         </p>
                       </div>
                       
@@ -284,16 +291,35 @@ const SettingsPage: React.FC = () => {
                           <Input 
                             id="confirmPassword" 
                             type="password" 
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
                             placeholder="Confirm new password" 
                             className="pl-10 border-gray-200"
+                            required
                           />
                         </div>
                       </div>
                     </div>
                     
                     <div className="flex justify-end">
-                      <Button variant="outline" className="mr-2">Cancel</Button>
-                      <Button>Update Password</Button>
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        className="mr-2"
+                        onClick={() => {
+                          setCurrentPassword('');
+                          setNewPassword('');
+                          setConfirmPassword('');
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                      <Button 
+                        type="submit"
+                        disabled={passwordMutation.isPending}
+                      >
+                        {passwordMutation.isPending ? 'Updating...' : 'Update Password'}
+                      </Button>
                     </div>
                   </div>
                 </form>
@@ -445,7 +471,7 @@ const SettingsPage: React.FC = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-6">
+                <form className="space-y-6" onSubmit={handlePrivacySubmit}>
                   <div className="space-y-4">
                     <h3 className="text-lg font-medium">Data Privacy Preferences</h3>
                     
@@ -456,7 +482,15 @@ const SettingsPage: React.FC = () => {
                           <p className="text-sm text-gray-500">Allow us to collect data about your learning patterns to improve content</p>
                         </div>
                         <label className="relative inline-flex items-center cursor-pointer">
-                          <input type="checkbox" value="" className="sr-only peer" defaultChecked />
+                          <input 
+                            type="checkbox" 
+                            className="sr-only peer" 
+                            checked={privacySettings.allowAnalytics}
+                            onChange={(e) => setPrivacySettings({
+                              ...privacySettings,
+                              allowAnalytics: e.target.checked
+                            })}
+                          />
                           <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-secondary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
                         </label>
                       </div>
@@ -469,7 +503,15 @@ const SettingsPage: React.FC = () => {
                           <p className="text-sm text-gray-500">Make your profile visible to other users</p>
                         </div>
                         <label className="relative inline-flex items-center cursor-pointer">
-                          <input type="checkbox" value="" className="sr-only peer" />
+                          <input 
+                            type="checkbox" 
+                            className="sr-only peer" 
+                            checked={privacySettings.publicProfile}
+                            onChange={(e) => setPrivacySettings({
+                              ...privacySettings,
+                              publicProfile: e.target.checked
+                            })}
+                          />
                           <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-secondary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
                         </label>
                       </div>
@@ -482,7 +524,15 @@ const SettingsPage: React.FC = () => {
                           <p className="text-sm text-gray-500">Allow us to personalize your learning experience</p>
                         </div>
                         <label className="relative inline-flex items-center cursor-pointer">
-                          <input type="checkbox" value="" className="sr-only peer" defaultChecked />
+                          <input 
+                            type="checkbox" 
+                            className="sr-only peer" 
+                            checked={privacySettings.allowPersonalization}
+                            onChange={(e) => setPrivacySettings({
+                              ...privacySettings,
+                              allowPersonalization: e.target.checked
+                            })}
+                          />
                           <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-secondary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
                         </label>
                       </div>
@@ -494,10 +544,15 @@ const SettingsPage: React.FC = () => {
                     </div>
                     
                     <div className="flex justify-end mt-4">
-                      <Button>Save Privacy Settings</Button>
+                      <Button 
+                        type="submit"
+                        disabled={privacyMutation.isPending}
+                      >
+                        {privacyMutation.isPending ? 'Saving...' : 'Save Privacy Settings'}
+                      </Button>
                     </div>
                   </div>
-                </div>
+                </form>
               </CardContent>
             </Card>
             
@@ -513,7 +568,7 @@ const SettingsPage: React.FC = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-6">
+                <form className="space-y-6" onSubmit={handleNotificationSubmit}>
                   <div className="space-y-4">
                     <h3 className="text-lg font-medium">Email Notifications</h3>
                     
@@ -524,7 +579,15 @@ const SettingsPage: React.FC = () => {
                           <p className="text-sm text-gray-500">Receive reminders to continue your learning</p>
                         </div>
                         <label className="relative inline-flex items-center cursor-pointer">
-                          <input type="checkbox" value="" className="sr-only peer" defaultChecked />
+                          <input 
+                            type="checkbox" 
+                            className="sr-only peer" 
+                            checked={notificationSettings.learningReminders}
+                            onChange={(e) => setNotificationSettings({
+                              ...notificationSettings,
+                              learningReminders: e.target.checked
+                            })}
+                          />
                           <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-secondary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
                         </label>
                       </div>
@@ -537,7 +600,15 @@ const SettingsPage: React.FC = () => {
                           <p className="text-sm text-gray-500">Notifications when new content is added</p>
                         </div>
                         <label className="relative inline-flex items-center cursor-pointer">
-                          <input type="checkbox" value="" className="sr-only peer" defaultChecked />
+                          <input 
+                            type="checkbox" 
+                            className="sr-only peer" 
+                            checked={notificationSettings.frameworkUpdates}
+                            onChange={(e) => setNotificationSettings({
+                              ...notificationSettings,
+                              frameworkUpdates: e.target.checked
+                            })}
+                          />
                           <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-secondary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
                         </label>
                       </div>
@@ -550,7 +621,15 @@ const SettingsPage: React.FC = () => {
                           <p className="text-sm text-gray-500">Notifications about quiz scores and feedback</p>
                         </div>
                         <label className="relative inline-flex items-center cursor-pointer">
-                          <input type="checkbox" value="" className="sr-only peer" />
+                          <input 
+                            type="checkbox" 
+                            className="sr-only peer" 
+                            checked={notificationSettings.quizResults}
+                            onChange={(e) => setNotificationSettings({
+                              ...notificationSettings,
+                              quizResults: e.target.checked
+                            })}
+                          />
                           <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-secondary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
                         </label>
                       </div>
@@ -563,7 +642,15 @@ const SettingsPage: React.FC = () => {
                           <p className="text-sm text-gray-500">Stay informed about new features and improvements</p>
                         </div>
                         <label className="relative inline-flex items-center cursor-pointer">
-                          <input type="checkbox" value="" className="sr-only peer" defaultChecked />
+                          <input 
+                            type="checkbox" 
+                            className="sr-only peer" 
+                            checked={notificationSettings.productUpdates}
+                            onChange={(e) => setNotificationSettings({
+                              ...notificationSettings,
+                              productUpdates: e.target.checked
+                            })}
+                          />
                           <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-secondary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
                         </label>
                       </div>
@@ -577,6 +664,11 @@ const SettingsPage: React.FC = () => {
                         <select 
                           id="frequency" 
                           className="w-full h-10 px-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary"
+                          value={notificationSettings.emailFrequency}
+                          onChange={(e) => setNotificationSettings({
+                            ...notificationSettings,
+                            emailFrequency: e.target.value as 'immediately' | 'daily' | 'weekly' | 'none'
+                          })}
                         >
                           <option value="immediately">Immediately</option>
                           <option value="daily">Daily Digest</option>
@@ -587,10 +679,15 @@ const SettingsPage: React.FC = () => {
                     </div>
                     
                     <div className="flex justify-end mt-4">
-                      <Button>Save Notification Settings</Button>
+                      <Button 
+                        type="submit"
+                        disabled={notificationMutation.isPending}
+                      >
+                        {notificationMutation.isPending ? 'Saving...' : 'Save Notification Settings'}
+                      </Button>
                     </div>
                   </div>
-                </div>
+                </form>
               </CardContent>
             </Card>
           </div>
