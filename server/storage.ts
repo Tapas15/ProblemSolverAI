@@ -41,6 +41,7 @@ export interface IStorage {
   // AI Conversation methods
   getAiConversations(userId: number): Promise<AiConversation[]>;
   createAiConversation(conversation: InsertAiConversation): Promise<AiConversation>;
+  deleteAiConversation(id: number): Promise<void>;
   
   // Session store
   sessionStore: any;
@@ -271,6 +272,10 @@ export class MemStorage implements IStorage {
     };
     this.aiConversations.set(id, newConversation);
     return newConversation;
+  }
+  
+  async deleteAiConversation(id: number): Promise<void> {
+    this.aiConversations.delete(id);
   }
   
   // Seed initial framework and module data

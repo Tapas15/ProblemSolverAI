@@ -312,6 +312,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       next(error);
     }
   });
+  
+  // Clear all AI conversations for the current user
+  app.delete("/api/ai/conversations", async (req, res, next) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    
+    try {
+      const userId = req.user!.id;
+      
+      // Get all of the user's conversations
+      const conversations = await storage.getAiConversations(userId);
+      
+      // In a real database implementation, we would do this with a single query
+      // For memory storage, we need to delete them one by one
+      for (const conversation of conversations) {
+        await storage.deleteAiConversation(conversation.id);
+      }
+      
+      res.status(204).send();
+    } catch (error) {
+      next(error);
+    }
+  });
 
   const httpServer = createServer(app);
   return httpServer;

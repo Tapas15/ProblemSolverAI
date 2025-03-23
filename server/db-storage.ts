@@ -194,6 +194,13 @@ export class PostgresStorage implements IStorage {
     return results[0];
   }
   
+  async deleteAiConversation(id: number): Promise<void> {
+    await db
+      .delete(aiConversations)
+      .where(eq(aiConversations.id, id))
+      .execute();
+  }
+  
   // Seed data for frameworks and modules
   private async seedFrameworks() {
     try {
