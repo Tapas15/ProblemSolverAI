@@ -56,6 +56,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Update module content
+  app.patch("/api/modules/:id", async (req, res, next) => {
+    try {
+      const moduleId = parseInt(req.params.id);
+      
+      if (isNaN(moduleId)) {
+        return res.status(400).json({ message: "Invalid module ID" });
+      }
+      
+      const moduleData = req.body;
+      
+      if (!moduleData) {
+        return res.status(400).json({ message: "No data provided" });
+      }
+      
+      const module = await storage.getModule(moduleId);
+      
+      if (!module) {
+        return res.status(404).json({ message: "Module not found" });
+      }
+      
+      const updatedModule = await storage.updateModule(moduleId, moduleData);
+      res.json(updatedModule);
+    } catch (error) {
+      next(error);
+    }
+  });
+  
   // User progress routes
   app.get("/api/user/progress", async (req, res, next) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
