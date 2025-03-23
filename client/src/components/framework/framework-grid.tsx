@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { getFrameworks, getModules, getUserProgress } from '@/lib/api';
+import { getFrameworks, getModules, getUserProgress, getFramework } from '@/lib/api';
 import FrameworkCard from './framework-card';
 import FrameworkDetail from './framework-detail';
 import { Framework, Module, UserProgress } from '@shared/schema';
@@ -149,15 +149,7 @@ const FrameworkGrid: React.FC = () => {
             })}
           </div>
         </>
-      )} 
-                modules={[]} // Empty array because we're not individually loading modules for cards
-                progressStatus={status}
-                completedModules={completedModules}
-              />
-            </div>
-          );
-        })}
-      </div>
+      )}
       
       <FrameworkDetail 
         isOpen={!!selectedFrameworkId} 
