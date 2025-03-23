@@ -107,6 +107,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Get single module
+  app.get("/api/modules/:id", async (req, res, next) => {
+    try {
+      const id = parseInt(req.params.id);
+      
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid module ID" });
+      }
+      
+      // Check cache first
+      const cacheKey = CACHE_KEYS.MODULE(id);
+      const cachedData = getCachedData(cacheKey);
+      if (cachedData) {
+        return res.json(cachedData);
+      }
+      
+      const module = await storage.getModule(id);
+      
+      if (!module) {
+        return res.status(404).json({ message: "Module not found" });
+      }
+      
+      // Cache the module data
+      cacheData(cacheKey, module);
+      res.json(module);
+    } catch (error) {
+      next(error);
+    }
+  });
+  
   // Create module
   app.post("/api/modules", async (req, res, next) => {
     try {
@@ -159,6 +189,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const updatedModule = await storage.updateModule(moduleId, moduleData);
+      
+      // Invalidate caches for this module and related framework modules
+      invalidateCache(CACHE_KEYS.MODULE(moduleId));
+      invalidateCachesByPattern(`modules:framework:${module.frameworkId}`);
+      
       res.json(updatedModule);
     } catch (error) {
       next(error);
