@@ -108,6 +108,53 @@ export const insertAiConversationSchema = createInsertSchema(aiConversations).pi
   answer: true,
 });
 
+// Quiz schema
+export const quizzes = pgTable("quizzes", {
+  id: serial("id").primaryKey(),
+  frameworkId: integer("framework_id").notNull(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  level: text("level").notNull(), // beginner, intermediate, advanced
+  questions: text("questions").notNull(), // JSON string of quiz questions
+  timeLimit: integer("time_limit"), // in minutes, optional
+  passingScore: integer("passing_score"), // percentage required to pass
+  isActive: boolean("is_active").default(true),
+});
+
+export const insertQuizSchema = createInsertSchema(quizzes).pick({
+  frameworkId: true,
+  title: true,
+  description: true,
+  level: true,
+  questions: true,
+  timeLimit: true,
+  passingScore: true,
+  isActive: true,
+});
+
+// Quiz Attempts schema
+export const quizAttempts = pgTable("quiz_attempts", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  quizId: integer("quiz_id").notNull(),
+  score: integer("score").notNull(),
+  maxScore: integer("max_score").notNull(),
+  answers: text("answers").notNull(), // JSON string of user answers
+  timeTaken: integer("time_taken"), // in seconds
+  completedAt: timestamp("completed_at").defaultNow(),
+  passed: boolean("passed").notNull(),
+});
+
+export const insertQuizAttemptSchema = createInsertSchema(quizAttempts).pick({
+  userId: true,
+  quizId: true,
+  score: true,
+  maxScore: true,
+  answers: true,
+  timeTaken: true,
+  passed: true,
+});
+
 // Type exports
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -123,3 +170,9 @@ export type UserProgress = typeof userProgress.$inferSelect;
 
 export type InsertAiConversation = z.infer<typeof insertAiConversationSchema>;
 export type AiConversation = typeof aiConversations.$inferSelect;
+
+export type InsertQuiz = z.infer<typeof insertQuizSchema>;
+export type Quiz = typeof quizzes.$inferSelect;
+
+export type InsertQuizAttempt = z.infer<typeof insertQuizAttemptSchema>;
+export type QuizAttempt = typeof quizAttempts.$inferSelect;

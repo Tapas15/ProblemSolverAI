@@ -43,6 +43,19 @@ export interface IStorage {
   createAiConversation(conversation: InsertAiConversation): Promise<AiConversation>;
   deleteAiConversation(id: number): Promise<void>;
   
+  // Quiz methods
+  getQuiz(id: number): Promise<Quiz | undefined>;
+  getQuizzesByFramework(frameworkId: number, level?: string): Promise<Quiz[]>;
+  createQuiz(quiz: InsertQuiz): Promise<Quiz>;
+  updateQuiz(id: number, quizData: Partial<Quiz>): Promise<Quiz | undefined>;
+  deleteQuiz(id: number): Promise<void>;
+  
+  // Quiz Attempt methods
+  getQuizAttempt(id: number): Promise<QuizAttempt | undefined>;
+  getUserQuizAttempts(userId: number): Promise<QuizAttempt[]>;
+  getQuizAttemptsByQuiz(quizId: number): Promise<QuizAttempt[]>;
+  createQuizAttempt(attempt: InsertQuizAttempt): Promise<QuizAttempt>;
+  
   // Session store
   sessionStore: any;
 }
@@ -54,6 +67,8 @@ export class MemStorage implements IStorage {
   private modules: Map<number, Module>;
   private userProgress: Map<number, UserProgress>;
   private aiConversations: Map<number, AiConversation>;
+  private quizzes: Map<number, Quiz>;
+  private quizAttempts: Map<number, QuizAttempt>;
   sessionStore: any;
   
   private userIdCounter: number;
@@ -61,6 +76,8 @@ export class MemStorage implements IStorage {
   private moduleIdCounter: number;
   private progressIdCounter: number;
   private conversationIdCounter: number;
+  private quizIdCounter: number;
+  private quizAttemptIdCounter: number;
   
   constructor() {
     this.users = new Map();
@@ -68,12 +85,16 @@ export class MemStorage implements IStorage {
     this.modules = new Map();
     this.userProgress = new Map();
     this.aiConversations = new Map();
+    this.quizzes = new Map();
+    this.quizAttempts = new Map();
     
     this.userIdCounter = 1;
     this.frameworkIdCounter = 1;
     this.moduleIdCounter = 1;
     this.progressIdCounter = 1;
     this.conversationIdCounter = 1;
+    this.quizIdCounter = 1;
+    this.quizAttemptIdCounter = 1;
     
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000,
@@ -277,6 +298,82 @@ export class MemStorage implements IStorage {
   
   async deleteAiConversation(id: number): Promise<void> {
     this.aiConversations.delete(id);
+  }
+  
+  // Quiz methods
+  async getQuiz(id: number): Promise<Quiz | undefined> {
+    return this.quizzes.get(id);
+  }
+  
+  async getQuizzesByFramework(frameworkId: number, level?: string): Promise<Quiz[]> {
+    const result: Quiz[] = [];
+    for (const quiz of this.quizzes.values()) {
+      if (quiz.frameworkId === frameworkId && (level === undefined || quiz.level === level)) {
+        result.push(quiz);
+      }
+    }
+    return result;
+  }
+  
+  async createQuiz(quiz: InsertQuiz): Promise<Quiz> {
+    const id = this.quizIdCounter++;
+    const newQuiz: Quiz = {
+      ...quiz,
+      id,
+      isActive: quiz.isActive !== undefined ? quiz.isActive : true,
+    };
+    this.quizzes.set(id, newQuiz);
+    return newQuiz;
+  }
+  
+  async updateQuiz(id: number, quizData: Partial<Quiz>): Promise<Quiz | undefined> {
+    const existingQuiz = this.quizzes.get(id);
+    if (!existingQuiz) return undefined;
+    
+    const updatedQuiz = { ...existingQuiz, ...quizData };
+    this.quizzes.set(id, updatedQuiz);
+    return updatedQuiz;
+  }
+  
+  async deleteQuiz(id: number): Promise<void> {
+    this.quizzes.delete(id);
+  }
+  
+  // Quiz Attempt methods
+  async getQuizAttempt(id: number): Promise<QuizAttempt | undefined> {
+    return this.quizAttempts.get(id);
+  }
+  
+  async getUserQuizAttempts(userId: number): Promise<QuizAttempt[]> {
+    const result: QuizAttempt[] = [];
+    for (const attempt of this.quizAttempts.values()) {
+      if (attempt.userId === userId) {
+        result.push(attempt);
+      }
+    }
+    return result;
+  }
+  
+  async getQuizAttemptsByQuiz(quizId: number): Promise<QuizAttempt[]> {
+    const result: QuizAttempt[] = [];
+    for (const attempt of this.quizAttempts.values()) {
+      if (attempt.quizId === quizId) {
+        result.push(attempt);
+      }
+    }
+    return result;
+  }
+  
+  async createQuizAttempt(attempt: InsertQuizAttempt): Promise<QuizAttempt> {
+    const id = this.quizAttemptIdCounter++;
+    const now = new Date();
+    const newAttempt: QuizAttempt = {
+      ...attempt,
+      id,
+      completedAt: now,
+    };
+    this.quizAttempts.set(id, newAttempt);
+    return newAttempt;
   }
   
   // Seed initial framework and module data
