@@ -10,13 +10,15 @@ import {
   trackModuleCompletion,
   trackFrameworkCompletion
 } from '@/lib/api';
-import { Check, ChevronDown, ChevronUp, Clock, GraduationCap, X, ClipboardCheck } from 'lucide-react';
+import { Check, ChevronDown, ChevronUp, Clock, GraduationCap, X, ClipboardCheck, FileCode } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { askAi } from '@/lib/api';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
+import ScormViewer from '@/components/scorm/scorm-viewer';
+import ScormUploader from '@/components/scorm/scorm-uploader';
 
 interface FrameworkDetailProps {
   isOpen: boolean;
@@ -233,7 +235,17 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
                             <Badge className="bg-gray-100 text-gray-800">Theory</Badge>
                           </div>
                           
-                          {module.content && (
+                          {module.scormPath && (
+                            <div className="mt-4 mb-5">
+                              <div className="flex items-center gap-2 mb-2">
+                                <FileCode className="h-4 w-4 text-primary" />
+                                <h5 className="text-md font-semibold text-primary">Interactive SCORM Content</h5>
+                              </div>
+                              <ScormViewer moduleName={module.name} scormPath={module.scormPath} />
+                            </div>
+                          )}
+                          
+                          {module.content && !module.scormPath && (
                             <div className="mt-4 mb-5">
                               <div className="module-content" dangerouslySetInnerHTML={{ __html: module.content }} />
                             </div>
@@ -254,6 +266,28 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
                               <div className="bg-gray-50 p-3 rounded-md text-sm whitespace-pre-line">
                                 {module.keyTakeaways}
                               </div>
+                            </div>
+                          )}
+                          
+                          {/* SCORM Package Upload (admin only) */}
+                          {user && user.username === 'admin' && (
+                            <div className="mt-6 mb-4 border-t border-gray-200 pt-4">
+                              <h5 className="text-md font-semibold text-primary mb-3">Admin: SCORM Package Management</h5>
+                              <ScormUploader 
+                                moduleId={module.id} 
+                                moduleName={module.name} 
+                                onUploadSuccess={(updatedModule) => {
+                                  // Update the modules list to reflect the new SCORM path
+                                  if (framework) {
+                                    queryClient.invalidateQueries({ queryKey: [`/api/frameworks/${framework.id}/modules`] });
+                                  }
+                                  
+                                  toast({
+                                    title: "SCORM Package Uploaded",
+                                    description: "SCORM package has been successfully uploaded and linked to this module.",
+                                  });
+                                }}
+                              />
                             </div>
                           )}
                           

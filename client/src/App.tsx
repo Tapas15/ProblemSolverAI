@@ -10,6 +10,7 @@ import AiAssistantPage from "@/pages/ai-assistant-page";
 import QuizPage from "@/pages/quiz-page";
 import TakeQuizPage from "@/pages/take-quiz-page";
 import DashboardPage from "@/pages/dashboard-page";
+import ScormAdminPage from "@/pages/scorm-admin-page";
 import { AuthProvider } from "@/hooks/use-auth";
 import { ProtectedRoute } from "@/lib/protected-route";
 
