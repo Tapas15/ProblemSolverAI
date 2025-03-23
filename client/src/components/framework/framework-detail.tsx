@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { useParams } from 'wouter';
+import { useParams, Link } from 'wouter';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/use-auth';
 import { Framework, Module } from '@shared/schema';
 import { getFramework, getModules, updateModuleCompletion } from '@/lib/api';
-import { Check, ChevronDown, ChevronUp, Clock, GraduationCap, X } from 'lucide-react';
+import { Check, ChevronDown, ChevronUp, Clock, GraduationCap, X, ClipboardCheck } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -118,25 +118,38 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
                 </div>
               ) : (
                 <>
-                  <div className="flex items-center mb-4 flex-wrap gap-2">
-                    {framework?.status === 'completed' ? (
-                      <Badge className="bg-green-100 text-green-800 mr-3">Completed</Badge>
-                    ) : framework?.status === 'in_progress' ? (
-                      <Badge className="bg-yellow-100 text-yellow-800 mr-3">In Progress</Badge>
-                    ) : (
-                      <Badge className="bg-blue-100 text-blue-800 mr-3">Not Started</Badge>
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <div className="flex items-center mb-4 flex-wrap gap-2">
+                        {framework?.status === 'completed' ? (
+                          <Badge className="bg-green-100 text-green-800 mr-3">Completed</Badge>
+                        ) : framework?.status === 'in_progress' ? (
+                          <Badge className="bg-yellow-100 text-yellow-800 mr-3">In Progress</Badge>
+                        ) : (
+                          <Badge className="bg-blue-100 text-blue-800 mr-3">Not Started</Badge>
+                        )}
+                        
+                        <span className="flex items-center text-xs text-gray-500 mr-3">
+                          <Clock className="mr-1 h-3 w-3" /> {framework?.duration} min
+                        </span>
+                        
+                        <span className="flex items-center text-xs text-gray-500">
+                          <GraduationCap className="mr-1 h-3 w-3" /> {framework?.level}
+                        </span>
+                      </div>
+                      
+                      <p className="text-gray-700">{framework?.description}</p>
+                    </div>
+                    
+                    {framework && (
+                      <Link href={`/quizzes/${framework.id}`}>
+                        <Button variant="outline" className="ml-4">
+                          <ClipboardCheck className="h-4 w-4 mr-2" />
+                          Take Quizzes
+                        </Button>
+                      </Link>
                     )}
-                    
-                    <span className="flex items-center text-xs text-gray-500 mr-3">
-                      <Clock className="mr-1 h-3 w-3" /> {framework?.duration} min
-                    </span>
-                    
-                    <span className="flex items-center text-xs text-gray-500">
-                      <GraduationCap className="mr-1 h-3 w-3" /> {framework?.level}
-                    </span>
                   </div>
-                  
-                  <p className="text-gray-700">{framework?.description}</p>
                 </>
               )}
             </div>

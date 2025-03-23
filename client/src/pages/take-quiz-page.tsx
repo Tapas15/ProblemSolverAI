@@ -118,7 +118,19 @@ export default function TakeQuizPage() {
   
   // Handle quiz submission
   const submitQuizMutation = useMutation({
-    mutationFn: submitQuizAttempt,
+    mutationFn: (data: {
+      quizId: number;
+      answers: string;
+      score: number;
+      maxScore: number;
+      timeTaken?: number;
+    }) => submitQuizAttempt(
+      data.quizId,
+      data.answers,
+      data.score,
+      data.maxScore,
+      data.timeTaken
+    ),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/quiz-attempts/user"] });
       toast({
@@ -163,13 +175,13 @@ export default function TakeQuizPage() {
     setScore(scoreValue);
     
     // Submit quiz attempt
-    submitQuizMutation.mutate(
-      quizIdNum,
-      JSON.stringify(answers),
-      scoreValue,
-      100, // max score is 100%
-      timeTaken
-    );
+    submitQuizMutation.mutate({
+      quizId: quizIdNum,
+      answers: JSON.stringify(answers),
+      score: scoreValue,
+      maxScore: 100, // max score is 100%
+      timeTaken: timeTaken
+    });
     
     setQuizCompleted(true);
   };

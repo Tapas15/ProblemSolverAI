@@ -80,11 +80,18 @@ const FrameworkCard: React.FC<FrameworkCardProps> = ({
           <span className="ml-2 text-xs text-gray-500">{completedModules}/{totalModules} modules</span>
         </div>
         
-        <Link to={`/frameworks/${id}`}>
-          <span className="text-sm font-medium text-secondary hover:underline">
-            {getLinkText()}
-          </span>
-        </Link>
+        <div className="flex gap-3">
+          <Link to={`/quizzes/${id}`}>
+            <span className="text-sm font-medium text-primary hover:underline">
+              Quizzes
+            </span>
+          </Link>
+          <Link to={`/frameworks/${id}`}>
+            <span className="text-sm font-medium text-secondary hover:underline">
+              {getLinkText()}
+            </span>
+          </Link>
+        </div>
       </div>
     </div>
   );

@@ -18,6 +18,8 @@ function Router() {
       <ProtectedRoute path="/" component={HomePage} />
       <ProtectedRoute path="/frameworks/:id" component={FrameworkPage} />
       <ProtectedRoute path="/ai-assistant" component={AiAssistantPage} />
+      <ProtectedRoute path="/quizzes/:frameworkId" component={QuizPage} />
+      <ProtectedRoute path="/quiz/:frameworkId/:quizId" component={TakeQuizPage} />
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
     </Switch>
