@@ -61,7 +61,7 @@ export default function ScormAdminPage() {
             </p>
           </div>
           
-          <Link href="/">
+          <Link to="/">
             <Button variant="outline" className="gap-2">
               <Home className="h-4 w-4" />
               Back to Home
@@ -197,7 +197,7 @@ export default function ScormAdminPage() {
                               )}
                             </div>
                             
-                            <Link href={`/frameworks/${selectedFrameworkId}`}>
+                            <Link to={`/frameworks/${selectedFrameworkId}`}>
                               <Button variant="outline" size="sm">
                                 Go to Module
                               </Button>

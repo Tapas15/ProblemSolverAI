@@ -24,6 +24,9 @@ function Router() {
       <ProtectedRoute path="/quiz/:frameworkId/:quizId" component={TakeQuizPage} />
       <ProtectedRoute path="/dashboard" component={DashboardPage} />
       <ProtectedRoute path="/scorm-admin" component={ScormAdminPage} />
+      <ProtectedRoute path="/learning-path" component={HomePage} /> {/* Temporary redirect to home */}
+      <ProtectedRoute path="/profile" component={DashboardPage} /> {/* Temporary redirect to dashboard */}
+      <ProtectedRoute path="/settings" component={DashboardPage} /> {/* Temporary redirect to dashboard */}
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
     </Switch>
