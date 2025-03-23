@@ -280,6 +280,26 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
                       </Button>
                     </div>
                   </div>
+
+                  <div className="border border-gray-200 rounded-lg overflow-hidden">
+                    <div className="p-4">
+                      <h4 className="font-medium mb-2">Healthcare Operations Optimization</h4>
+                      <p className="text-sm text-gray-600 mb-3">A case study on how a hospital network applied {framework.name} to streamline patient care workflows and reduce wait times.</p>
+                      <Button variant="link" className="text-sm font-medium text-secondary p-0 h-auto">
+                        View Case Study
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="border border-gray-200 rounded-lg overflow-hidden">
+                    <div className="p-4">
+                      <h4 className="font-medium mb-2">Tech Startup Market Entry</h4>
+                      <p className="text-sm text-gray-600 mb-3">How a SaaS startup used {framework.name} to evaluate and prioritize market entry strategies for international expansion.</p>
+                      <Button variant="link" className="text-sm font-medium text-secondary p-0 h-auto">
+                        View Case Study
+                      </Button>
+                    </div>
+                  </div>
                   
                   <div className="border border-gray-200 rounded-lg overflow-hidden">
                     <div className="p-4">
