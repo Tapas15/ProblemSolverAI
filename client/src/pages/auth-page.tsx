@@ -17,7 +17,17 @@ import {
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Loader2, Check } from 'lucide-react';
+import { 
+  Loader2, 
+  Check, 
+  User, 
+  Lock, 
+  Mail, 
+  BookOpen, 
+  Lightbulb, 
+  BarChart4,
+  UserPlus
+} from 'lucide-react';
 
 const loginSchema = z.object({
   username: z.string().min(1, "Username is required"),
@@ -81,19 +91,28 @@ const AuthPage: React.FC = () => {
   
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-secondary" />
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <div className="flex flex-col items-center">
+          <Loader2 className="h-10 w-10 animate-spin text-secondary" />
+          <p className="mt-4 text-gray-600">Loading your profile...</p>
+        </div>
       </div>
     );
   }
   
   return (
-    <div className="min-h-screen bg-background flex flex-col md:flex-row">
+    <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
       {/* Auth form section */}
-      <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
-        <div className="max-w-md mx-auto w-full">
+      <div className="w-full md:w-1/2 py-12 px-6 md:px-12 lg:px-16 flex flex-col justify-center relative overflow-hidden">
+        {/* Background elements */}
+        <div className="absolute inset-0 z-0 opacity-5">
+          <div className="absolute top-20 left-10 w-40 h-40 rounded-full bg-accent"></div>
+          <div className="absolute bottom-20 right-10 w-60 h-60 rounded-full bg-secondary"></div>
+        </div>
+        
+        <div className="max-w-md mx-auto w-full z-10 bg-white rounded-2xl shadow-xl p-8 md:p-10">
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold font-header text-primary mb-2">
+            <h1 className="text-3xl font-bold font-header text-primary mb-3">
               <span className="text-accent">Question</span>
               <span className="text-primary">Pro</span>{' '}
               <span className="text-secondary">AI</span>
@@ -104,22 +123,29 @@ const AuthPage: React.FC = () => {
           </div>
           
           <Tabs defaultValue="login" value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid grid-cols-2 mb-8">
-              <TabsTrigger value="login">Login</TabsTrigger>
-              <TabsTrigger value="register">Register</TabsTrigger>
+            <TabsList className="grid grid-cols-2 mb-8 bg-gray-100/80">
+              <TabsTrigger value="login" className="rounded-lg py-2.5 data-[state=active]:bg-white">Login</TabsTrigger>
+              <TabsTrigger value="register" className="rounded-lg py-2.5 data-[state=active]:bg-white">Register</TabsTrigger>
             </TabsList>
             
             <TabsContent value="login">
               <Form {...loginForm}>
-                <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-6">
+                <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-5">
                   <FormField
                     control={loginForm.control}
                     name="username"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Username</FormLabel>
+                        <FormLabel className="text-gray-700">Username</FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter your username" {...field} />
+                          <div className="relative">
+                            <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                            <Input 
+                              placeholder="Enter your username" 
+                              className="pl-10 py-6 h-11 rounded-lg border-gray-200 focus:border-secondary" 
+                              {...field} 
+                            />
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -131,9 +157,22 @@ const AuthPage: React.FC = () => {
                     name="password"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Password</FormLabel>
+                        <div className="flex justify-between items-center">
+                          <FormLabel className="text-gray-700">Password</FormLabel>
+                          <a href="#" className="text-xs text-secondary hover:text-secondary/80 transition-colors">
+                            Forgot password?
+                          </a>
+                        </div>
                         <FormControl>
-                          <Input type="password" placeholder="Enter your password" {...field} />
+                          <div className="relative">
+                            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                            <Input 
+                              type="password" 
+                              placeholder="Enter your password" 
+                              className="pl-10 py-6 h-11 rounded-lg border-gray-200 focus:border-secondary" 
+                              {...field} 
+                            />
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -149,10 +188,11 @@ const AuthPage: React.FC = () => {
                           <Checkbox 
                             checked={field.value} 
                             onCheckedChange={field.onChange}
+                            className="text-secondary border-gray-300 rounded"
                           />
                         </FormControl>
                         <div className="space-y-1 leading-none">
-                          <FormLabel>Remember me for 14 days</FormLabel>
+                          <FormLabel className="text-gray-600 font-normal text-sm">Remember me for 14 days</FormLabel>
                         </div>
                       </FormItem>
                     )}
@@ -160,7 +200,7 @@ const AuthPage: React.FC = () => {
                   
                   <Button 
                     type="submit" 
-                    className="w-full bg-secondary hover:bg-secondary/90"
+                    className="w-full bg-secondary hover:bg-secondary/90 text-white py-6 h-11 rounded-lg font-medium mt-2 transition-all duration-200 ease-in-out transform hover:translate-y-[-2px] hover:shadow-md"
                     disabled={loginMutation.isPending}
                   >
                     {loginMutation.isPending ? (
@@ -179,7 +219,7 @@ const AuthPage: React.FC = () => {
                 Don't have an account?{" "}
                 <button
                   onClick={() => setActiveTab("register")}
-                  className="text-secondary hover:underline font-medium"
+                  className="text-secondary hover:text-secondary/80 font-medium transition-colors"
                 >
                   Register now
                 </button>
@@ -194,9 +234,16 @@ const AuthPage: React.FC = () => {
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Full Name</FormLabel>
+                        <FormLabel className="text-gray-700">Full Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="John Doe" {...field} />
+                          <div className="relative">
+                            <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                            <Input 
+                              placeholder="John Doe" 
+                              className="pl-10 py-5 h-11 rounded-lg border-gray-200 focus:border-secondary"
+                              {...field} 
+                            />
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -208,9 +255,16 @@ const AuthPage: React.FC = () => {
                     name="username"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Username</FormLabel>
+                        <FormLabel className="text-gray-700">Username</FormLabel>
                         <FormControl>
-                          <Input placeholder="johndoe" {...field} />
+                          <div className="relative">
+                            <UserPlus className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                            <Input 
+                              placeholder="johndoe" 
+                              className="pl-10 py-5 h-11 rounded-lg border-gray-200 focus:border-secondary"
+                              {...field} 
+                            />
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -222,46 +276,72 @@ const AuthPage: React.FC = () => {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Email</FormLabel>
+                        <FormLabel className="text-gray-700">Email</FormLabel>
                         <FormControl>
-                          <Input type="email" placeholder="john.doe@example.com" {...field} />
+                          <div className="relative">
+                            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                            <Input 
+                              type="email" 
+                              placeholder="john.doe@example.com" 
+                              className="pl-10 py-5 h-11 rounded-lg border-gray-200 focus:border-secondary"
+                              {...field} 
+                            />
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                   
-                  <FormField
-                    control={registerForm.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Password</FormLabel>
-                        <FormControl>
-                          <Input type="password" placeholder="Create a password" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={registerForm.control}
-                    name="confirmPassword"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Confirm Password</FormLabel>
-                        <FormControl>
-                          <Input type="password" placeholder="Confirm your password" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <FormField
+                      control={registerForm.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-700">Password</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                              <Input 
+                                type="password" 
+                                placeholder="Create a password" 
+                                className="pl-10 py-5 h-11 rounded-lg border-gray-200 focus:border-secondary"
+                                {...field} 
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={registerForm.control}
+                      name="confirmPassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-700">Confirm Password</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                              <Input 
+                                type="password" 
+                                placeholder="Confirm password" 
+                                className="pl-10 py-5 h-11 rounded-lg border-gray-200 focus:border-secondary"
+                                {...field} 
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                   
                   <Button 
                     type="submit" 
-                    className="w-full bg-secondary hover:bg-secondary/90 mt-2"
+                    className="w-full bg-secondary hover:bg-secondary/90 text-white py-6 h-11 rounded-lg font-medium mt-2 transition-all duration-200 ease-in-out transform hover:translate-y-[-2px] hover:shadow-md"
                     disabled={registerMutation.isPending}
                   >
                     {registerMutation.isPending ? (
@@ -280,7 +360,7 @@ const AuthPage: React.FC = () => {
                 Already have an account?{" "}
                 <button
                   onClick={() => setActiveTab("login")}
-                  className="text-secondary hover:underline font-medium"
+                  className="text-secondary hover:text-secondary/80 font-medium transition-colors"
                 >
                   Log in
                 </button>
@@ -291,37 +371,56 @@ const AuthPage: React.FC = () => {
       </div>
       
       {/* Hero section */}
-      <div className="hidden md:block md:w-1/2 bg-primary p-12 text-white flex flex-col justify-center">
-        <div className="max-w-md mx-auto">
-          <h2 className="text-3xl font-bold font-header mb-6">
+      <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-primary to-primary-800 text-white flex-col justify-center relative overflow-hidden">
+        <div className="absolute inset-0 z-0 opacity-10">
+          <div className="absolute top-0 right-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB2aWV3Qm94PSIwIDAgMTAyNCAxMDI0IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxwYXR0ZXJuIGlkPSJncmlkIiB3aWR0aD0iODAiIGhlaWdodD0iODAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiPjxwYXRoIGQ9Ik0gODAgMCBMIDAgMCAwIDgwIiBmaWxsPSJub25lIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMSIgLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiIC8+PC9zdmc+')]"></div>
+        </div>
+        
+        <div className="max-w-md mx-auto px-8 py-16 z-10">
+          <div className="bg-white/10 backdrop-blur-sm p-2 inline-block rounded-lg mb-6">
+            <div className="bg-secondary/20 text-secondary p-1 px-3 rounded text-sm font-medium">
+              Professional Development Platform
+            </div>
+          </div>
+          
+          <h2 className="text-4xl font-bold font-header mb-6 leading-tight text-white">
             Enhance Your Business Problem-Solving Skills
           </h2>
           
-          <p className="mb-8 text-gray-200">
+          <p className="mb-10 text-gray-100 text-lg">
             QuestionPro AI provides business professionals with structured frameworks and AI assistance
             to solve complex business problems effectively.
           </p>
           
-          <div className="space-y-4">
-            <div className="flex items-start">
-              <div className="flex-shrink-0 h-6 w-6 rounded-full bg-secondary flex items-center justify-center text-white mr-3">
-                <Check className="h-3 w-3" />
+          <div className="space-y-6">
+            <div className="flex items-start group">
+              <div className="flex-shrink-0 h-10 w-10 rounded-full bg-secondary/20 flex items-center justify-center text-secondary mr-4 group-hover:bg-secondary group-hover:text-white transition-all duration-300">
+                <BookOpen className="h-5 w-5" />
               </div>
-              <p className="text-gray-200">Access 10 proven business frameworks with detailed guidance</p>
+              <div>
+                <h3 className="font-medium text-white text-lg mb-1">10 Business Frameworks</h3>
+                <p className="text-gray-200">Access proven problem-solving frameworks with detailed implementation guidance</p>
+              </div>
             </div>
             
-            <div className="flex items-start">
-              <div className="flex-shrink-0 h-6 w-6 rounded-full bg-secondary flex items-center justify-center text-white mr-3">
-                <Check className="h-3 w-3" />
+            <div className="flex items-start group">
+              <div className="flex-shrink-0 h-10 w-10 rounded-full bg-secondary/20 flex items-center justify-center text-secondary mr-4 group-hover:bg-secondary group-hover:text-white transition-all duration-300">
+                <Lightbulb className="h-5 w-5" />
               </div>
-              <p className="text-gray-200">Connect with AI for personalized problem-solving assistance</p>
+              <div>
+                <h3 className="font-medium text-white text-lg mb-1">AI-Powered Assistance</h3>
+                <p className="text-gray-200">Connect with AI for personalized problem-solving support and advanced insights</p>
+              </div>
             </div>
             
-            <div className="flex items-start">
-              <div className="flex-shrink-0 h-6 w-6 rounded-full bg-secondary flex items-center justify-center text-white mr-3">
-                <Check className="h-3 w-3" />
+            <div className="flex items-start group">
+              <div className="flex-shrink-0 h-10 w-10 rounded-full bg-secondary/20 flex items-center justify-center text-secondary mr-4 group-hover:bg-secondary group-hover:text-white transition-all duration-300">
+                <BarChart4 className="h-5 w-5" />
               </div>
-              <p className="text-gray-200">Track your learning progress and build professional skills</p>
+              <div>
+                <h3 className="font-medium text-white text-lg mb-1">Progress Tracking</h3>
+                <p className="text-gray-200">Track your learning journey and build professional skills with comprehensive analytics</p>
+              </div>
             </div>
           </div>
         </div>
