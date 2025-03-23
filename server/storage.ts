@@ -391,6 +391,7 @@ export class MemStorage implements IStorage {
       level: "Intermediate",
       duration: 45,
       status: "not_started",
+      case_studies: null,
       case_studies: null
     };
     this.frameworks.set(meceId, mece);
@@ -403,7 +404,9 @@ export class MemStorage implements IStorage {
       description: "Human-centered approach to innovation that draws from the designer's toolkit to integrate human needs, technology, and business success.",
       level: "Advanced",
       duration: 90,
-      status: "not_started"
+      status: "not_started",
+      case_studies: null,
+      case_studies: null
     };
     this.frameworks.set(designThinkingId, designThinking);
     
@@ -415,7 +418,9 @@ export class MemStorage implements IStorage {
       description: "Structured method to evaluate the Strengths, Weaknesses, Opportunities, and Threats involved in a project or business venture.",
       level: "Beginner",
       duration: 30,
-      status: "not_started"
+      status: "not_started",
+      case_studies: null,
+      case_studies: null
     };
     this.frameworks.set(swotId, swot);
     
@@ -427,7 +432,8 @@ export class MemStorage implements IStorage {
       description: "Breaking down complex problems into their most fundamental truths and building solutions from the ground up.",
       level: "Advanced",
       duration: 75,
-      status: "not_started"
+      status: "not_started",
+      case_studies: null
     };
     this.frameworks.set(firstPrinciplesId, firstPrinciples);
     
@@ -439,7 +445,8 @@ export class MemStorage implements IStorage {
       description: "Framework to analyze competition intensity, attractiveness, and profitability of an industry.",
       level: "Intermediate",
       duration: 50,
-      status: "not_started"
+      status: "not_started",
+      case_studies: null
     };
     this.frameworks.set(portersFiveForcesId, portersFiveForces);
     
@@ -451,7 +458,8 @@ export class MemStorage implements IStorage {
       description: "Framework focusing on understanding customer needs and what jobs they are trying to accomplish.",
       level: "Intermediate",
       duration: 40,
-      status: "not_started"
+      status: "not_started",
+      case_studies: null
     };
     this.frameworks.set(jobsToBeDoneId, jobsToBeDone);
     
@@ -463,7 +471,8 @@ export class MemStorage implements IStorage {
       description: "Framework for finding uncontested market space and making competition irrelevant.",
       level: "Advanced",
       duration: 60,
-      status: "not_started"
+      status: "not_started",
+      case_studies: null
     };
     this.frameworks.set(blueOceanId, blueOcean);
     
@@ -475,7 +484,8 @@ export class MemStorage implements IStorage {
       description: "Technique for creative problem-solving and innovation by examining different aspects of a product or service.",
       level: "Intermediate",
       duration: 35,
-      status: "not_started"
+      status: "not_started",
+      case_studies: null
     };
     this.frameworks.set(scamperId, scamper);
     
@@ -487,7 +497,8 @@ export class MemStorage implements IStorage {
       description: "Visual method for analyzing problems by identifying causes and effects to find comprehensive solutions.",
       level: "Intermediate",
       duration: 45,
-      status: "not_started"
+      status: "not_started",
+      case_studies: null
     };
     this.frameworks.set(problemTreeId, problemTree);
     
@@ -499,7 +510,8 @@ export class MemStorage implements IStorage {
       description: "The 80/20 rule that helps identify which inputs produce the most significant results.",
       level: "Beginner",
       duration: 25,
-      status: "not_started"
+      status: "not_started",
+      case_studies: null
     };
     this.frameworks.set(paretoId, pareto);
     
