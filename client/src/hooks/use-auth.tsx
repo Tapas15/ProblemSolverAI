@@ -22,6 +22,7 @@ type AuthContextType = {
 type LoginData = {
   username: string;
   password: string;
+  rememberMe?: boolean;
 };
 
 const registerSchema = insertUserSchema.extend({
@@ -56,11 +57,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const res = await apiRequest("POST", "/api/login", credentials);
       return await res.json();
     },
-    onSuccess: (user: Omit<SelectUser, "password">) => {
+    onSuccess: (user: Omit<SelectUser, "password">, variables) => {
       queryClient.setQueryData(["/api/user"], user);
       toast({
         title: "Login successful",
-        description: `Welcome back, ${user.name}!`,
+        description: variables.rememberMe 
+          ? `Welcome back, ${user.name}! Your session will be remembered for 14 days.`
+          : `Welcome back, ${user.name}!`,
       });
     },
     onError: (error: Error) => {

@@ -4,7 +4,9 @@ import { useQuery } from '@tanstack/react-query';
 import { getFramework, getModules } from '@/lib/api';
 import MainLayout from '@/components/layout/main-layout';
 import FrameworkDetail from '@/components/framework/framework-detail';
-import { Loader2 } from 'lucide-react';
+import { FrameworkDetailSkeleton } from '@/components/ui/skeleton-loader';
+import { AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const FrameworkPage: React.FC = () => {
   const { id } = useParams();
@@ -20,25 +22,54 @@ const FrameworkPage: React.FC = () => {
     }
   }, [frameworkId, navigate]);
   
-  const { data: framework, isLoading: frameworkLoading } = useQuery({
+  const { 
+    data: framework, 
+    isLoading: frameworkLoading,
+    error: frameworkError
+  } = useQuery({
     queryKey: [`/api/frameworks/${frameworkId}`],
     queryFn: () => getFramework(frameworkId),
     enabled: !isNaN(frameworkId),
   });
   
-  const { data: modules, isLoading: modulesLoading } = useQuery({
+  const { 
+    data: modules, 
+    isLoading: modulesLoading,
+    error: modulesError 
+  } = useQuery({
     queryKey: [`/api/frameworks/${frameworkId}/modules`],
     queryFn: () => getModules(frameworkId),
     enabled: !isNaN(frameworkId),
   });
   
   const isLoading = frameworkLoading || modulesLoading;
+  const error = frameworkError || modulesError;
   
   if (isLoading) {
     return (
       <MainLayout>
-        <div className="flex items-center justify-center min-h-screen">
-          <Loader2 className="h-8 w-8 animate-spin text-secondary" />
+        <FrameworkDetailSkeleton />
+      </MainLayout>
+    );
+  }
+  
+  if (error) {
+    return (
+      <MainLayout>
+        <div className="container mx-auto px-4 py-12">
+          <Alert variant="destructive" className="mb-6">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>
+              {error instanceof Error ? error.message : 'An unexpected error occurred. Please try again.'}
+            </AlertDescription>
+          </Alert>
+          <button 
+            onClick={() => navigate('/')}
+            className="text-secondary hover:underline"
+          >
+            Return to Frameworks
+          </button>
         </div>
       </MainLayout>
     );

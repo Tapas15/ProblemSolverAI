@@ -35,7 +35,10 @@ export function setupAuth(app: Express) {
     saveUninitialized: false,
     store: storage.sessionStore,
     cookie: {
-      maxAge: 1000 * 60 * 60 * 24, // 1 day
+      maxAge: 1000 * 60 * 60 * 24 * 14, // 14 days by default
+      secure: process.env.NODE_ENV === "production",
+      httpOnly: true,
+      sameSite: "lax"
     }
   };
 
@@ -112,6 +115,13 @@ export function setupAuth(app: Express) {
     passport.authenticate("local", (err, user, info) => {
       if (err) return next(err);
       if (!user) return res.status(401).json({ message: "Invalid username or password" });
+      
+      // Check if rememberMe is set to true and adjust session expiration
+      if (req.body.rememberMe) {
+        req.session.cookie.maxAge = 1000 * 60 * 60 * 24 * 14; // 14 days
+      } else {
+        req.session.cookie.maxAge = 1000 * 60 * 60 * 24; // 1 day (default)
+      }
       
       req.login(user, (err) => {
         if (err) return next(err);
