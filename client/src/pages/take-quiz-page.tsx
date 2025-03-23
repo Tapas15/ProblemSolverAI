@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
 import { useParams, useLocation } from "wouter";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getQuiz, submitQuizAttempt } from "@/lib/api";
+import { 
+  getQuiz, 
+  submitQuizAttempt,
+  trackQuizAttempt
+} from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -131,8 +135,28 @@ export default function TakeQuizPage() {
       data.maxScore,
       data.timeTaken
     ),
-    onSuccess: () => {
+    onSuccess: (quizAttempt) => {
       queryClient.invalidateQueries({ queryKey: ["/api/quiz-attempts/user"] });
+      
+      // Track quiz attempt completion with xAPI if the quiz exists
+      if (quiz) {
+        const passingScore = quiz.passingScore || 70;
+        const passed = data.score >= passingScore;
+        
+        // Track quiz attempt using xAPI
+        trackQuizAttempt(
+          quizAttempt.quizId,
+          quiz.title,
+          frameworkIdNum,
+          quizAttempt.score,
+          quizAttempt.maxScore,
+          passed,
+          quizAttempt.timeTaken || 0
+        ).catch(error => {
+          console.error("Error tracking quiz attempt:", error);
+        });
+      }
+      
       toast({
         title: "Quiz submitted",
         description: "Your answers have been recorded."
