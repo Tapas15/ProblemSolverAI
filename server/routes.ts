@@ -337,6 +337,180 @@ export async function registerRoutes(app: Express): Promise<Server> {
       next(error);
     }
   });
+  
+  // Quiz routes
+  app.get("/api/quizzes/framework/:id", async (req, res, next) => {
+    try {
+      const frameworkId = parseInt(req.params.id);
+      const level = req.query.level as string | undefined;
+      
+      if (isNaN(frameworkId)) {
+        return res.status(400).json({ message: "Invalid framework ID" });
+      }
+      
+      const quizzes = await storage.getQuizzesByFramework(frameworkId, level);
+      res.json(quizzes);
+    } catch (error) {
+      next(error);
+    }
+  });
+  
+  app.get("/api/quizzes/:id", async (req, res, next) => {
+    try {
+      const id = parseInt(req.params.id);
+      
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid quiz ID" });
+      }
+      
+      const quiz = await storage.getQuiz(id);
+      
+      if (!quiz) {
+        return res.status(404).json({ message: "Quiz not found" });
+      }
+      
+      res.json(quiz);
+    } catch (error) {
+      next(error);
+    }
+  });
+  
+  app.post("/api/quizzes", async (req, res, next) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    
+    try {
+      // Validate quiz data
+      const parseResult = insertQuizSchema.safeParse(req.body);
+      
+      if (!parseResult.success) {
+        return res.status(400).json({ 
+          message: "Invalid quiz data", 
+          errors: parseResult.error.format() 
+        });
+      }
+      
+      const quizData = parseResult.data;
+      
+      // Check if framework exists
+      const framework = await storage.getFramework(quizData.frameworkId);
+      if (!framework) {
+        return res.status(404).json({ message: "Framework not found" });
+      }
+      
+      const quiz = await storage.createQuiz(quizData);
+      res.status(201).json(quiz);
+    } catch (error) {
+      next(error);
+    }
+  });
+  
+  app.patch("/api/quizzes/:id", async (req, res, next) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    
+    try {
+      const id = parseInt(req.params.id);
+      
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid quiz ID" });
+      }
+      
+      const quiz = await storage.getQuiz(id);
+      
+      if (!quiz) {
+        return res.status(404).json({ message: "Quiz not found" });
+      }
+      
+      const updatedQuiz = await storage.updateQuiz(id, req.body);
+      res.json(updatedQuiz);
+    } catch (error) {
+      next(error);
+    }
+  });
+  
+  app.delete("/api/quizzes/:id", async (req, res, next) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    
+    try {
+      const id = parseInt(req.params.id);
+      
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid quiz ID" });
+      }
+      
+      const quiz = await storage.getQuiz(id);
+      
+      if (!quiz) {
+        return res.status(404).json({ message: "Quiz not found" });
+      }
+      
+      await storage.deleteQuiz(id);
+      res.status(204).send();
+    } catch (error) {
+      next(error);
+    }
+  });
+  
+  // Quiz Attempts routes
+  app.get("/api/quiz-attempts/user", async (req, res, next) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    
+    try {
+      const userId = req.user!.id;
+      const attempts = await storage.getUserQuizAttempts(userId);
+      res.json(attempts);
+    } catch (error) {
+      next(error);
+    }
+  });
+  
+  app.get("/api/quiz-attempts/quiz/:id", async (req, res, next) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    
+    try {
+      const quizId = parseInt(req.params.id);
+      
+      if (isNaN(quizId)) {
+        return res.status(400).json({ message: "Invalid quiz ID" });
+      }
+      
+      const attempts = await storage.getQuizAttemptsByQuiz(quizId);
+      res.json(attempts);
+    } catch (error) {
+      next(error);
+    }
+  });
+  
+  app.post("/api/quiz-attempts", async (req, res, next) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    
+    try {
+      // Validate attempt data
+      const parseResult = insertQuizAttemptSchema.safeParse(req.body);
+      
+      if (!parseResult.success) {
+        return res.status(400).json({ 
+          message: "Invalid quiz attempt data", 
+          errors: parseResult.error.format() 
+        });
+      }
+      
+      const attemptData = {
+        ...parseResult.data,
+        userId: req.user!.id
+      };
+      
+      // Check if quiz exists
+      const quiz = await storage.getQuiz(attemptData.quizId);
+      if (!quiz) {
+        return res.status(404).json({ message: "Quiz not found" });
+      }
+      
+      const attempt = await storage.createQuizAttempt(attemptData);
+      res.status(201).json(attempt);
+    } catch (error) {
+      next(error);
+    }
+  });
 
   const httpServer = createServer(app);
   return httpServer;

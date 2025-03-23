@@ -212,13 +212,22 @@ export class PostgresStorage implements IStorage {
   }
   
   async getQuizzesByFramework(frameworkId: number, level?: string): Promise<Quiz[]> {
-    let query = db.select().from(quizzes).where(eq(quizzes.frameworkId, frameworkId));
-    
     if (level) {
-      query = query.where(eq(quizzes.level, level));
+      return await db
+        .select()
+        .from(quizzes)
+        .where(and(
+          eq(quizzes.frameworkId, frameworkId),
+          eq(quizzes.level, level)
+        ))
+        .execute();
+    } else {
+      return await db
+        .select()
+        .from(quizzes)
+        .where(eq(quizzes.frameworkId, frameworkId))
+        .execute();
     }
-    
-    return await query.execute();
   }
   
   async createQuiz(quiz: InsertQuiz): Promise<Quiz> {

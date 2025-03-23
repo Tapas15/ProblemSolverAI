@@ -7,6 +7,8 @@ import HomePage from "@/pages/home-page";
 import AuthPage from "@/pages/auth-page";
 import FrameworkPage from "@/pages/framework-page";
 import AiAssistantPage from "@/pages/ai-assistant-page";
+import QuizPage from "@/pages/quiz-page";
+import TakeQuizPage from "@/pages/take-quiz-page";
 import { AuthProvider } from "@/hooks/use-auth";
 import { ProtectedRoute } from "@/lib/protected-route";
 
