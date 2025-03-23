@@ -117,14 +117,14 @@ export async function submitQuizAttempt(
   const passingThreshold = 0.7; // 70% by default
   const passed = score >= (maxScore * passingThreshold);
   
+  // Don't send completedAt - let the server handle it with defaultNow()
   const res = await apiRequest("POST", "/api/quiz-attempts", {
     quizId,
     answers,
     score,
     maxScore,
     passed,
-    timeTaken,
-    completedAt: new Date() // This will be converted to proper date on the server
+    timeTaken
   });
   return res.json();
 }

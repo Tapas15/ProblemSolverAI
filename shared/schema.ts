@@ -153,17 +153,10 @@ export const insertQuizAttemptSchema = createInsertSchema(quizAttempts)
     answers: true,
     timeTaken: true,
     passed: true,
-    completedAt: true,
   })
-  .transform((data) => {
-    // If completedAt is a string, convert it to a Date
-    if (typeof data.completedAt === 'string') {
-      return {
-        ...data,
-        completedAt: new Date(data.completedAt)
-      };
-    }
-    return data;
+  // Make completedAt optional as it'll be handled on the server
+  .extend({
+    completedAt: z.date().optional()
   });
 
 // Type exports
