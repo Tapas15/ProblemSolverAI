@@ -835,10 +835,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Implementation will depend on how we want to store LRS configurations
       // For now, we'll return a not implemented error
-      
-      // If we had a specific cache key for LRS configurations, we would invalidate it here
-      // For future implementation: invalidateCache(CACHE_KEYS.LRS_CONFIG);
-      
       res.status(501).json({ message: "API not fully implemented" });
     } catch (error) {
       next(error);
@@ -866,9 +862,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!result) {
         return res.status(500).json({ message: "Failed to store SCORM data" });
       }
-      
-      // Invalidate any SCORM-related caches (currently there are no specific SCORM cache keys)
-      // If we add SCORM-specific cache keys in the future, they should be invalidated here
       
       res.status(201).json(result);
     } catch (error) {
@@ -1158,10 +1151,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const updatedModule = await storage.updateModule(parsedModuleId, {
         scormPath: relativePath
       });
-      
-      // Invalidate module cache
-      invalidateCache(CACHE_KEYS.MODULE(parsedModuleId));
-      invalidateCachesByPattern(`modules:framework:${module.frameworkId}`);
       
       res.json({ 
         message: 'SCORM package uploaded and extracted successfully',
