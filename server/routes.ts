@@ -13,6 +13,11 @@ import { xapiService } from "./services/xapi-service";
 import { scormService } from "./services/scorm-service";
 import path from "path";
 import fs from "fs";
+import multer from "multer";
+import tar from "tar";
+import { createGunzip } from "node:zlib";
+import { createReadStream } from "node:fs";
+import { pipeline } from "node:stream/promises";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication routes
