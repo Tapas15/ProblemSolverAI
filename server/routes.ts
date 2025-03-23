@@ -5,9 +5,14 @@ import { storage } from "./storage";
 import { z } from "zod";
 import { 
   insertAiConversationSchema, AiConversation,
-  insertQuizSchema, insertQuizAttemptSchema
+  insertQuizSchema, insertQuizAttemptSchema,
+  insertXapiStatementSchema, insertLrsConfigurationSchema
 } from "@shared/schema";
 import OpenAI from "openai";
+import { xapiService } from "./services/xapi-service";
+import { scormService } from "./services/scorm-service";
+import path from "path";
+import fs from "fs";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication routes
@@ -510,9 +515,326 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const attempt = await storage.createQuizAttempt(attemptData);
+      
+      // Track quiz attempt with xAPI
+      if (req.user) {
+        try {
+          const framework = await storage.getFramework(quiz.frameworkId);
+          
+          if (framework) {
+            await xapiService.trackQuizAttempt(
+              req.user.id,
+              quiz.id,
+              quiz.title,
+              framework.id,
+              framework.name,
+              attemptData.score,
+              attemptData.maxScore,
+              attemptData.passed,
+              attemptData.timeTaken || 0,
+              {
+                name: req.user.name || req.user.username,
+                email: req.user.email || `${req.user.username}@questionpro.ai`
+              }
+            );
+          }
+        } catch (error) {
+          console.error("xAPI tracking error:", error);
+          // Continue even if xAPI tracking fails
+        }
+      }
+      
       res.status(201).json(attempt);
     } catch (error) {
       console.error("Error creating quiz attempt:", error);
+      next(error);
+    }
+  });
+  
+  // xAPI routes
+  app.post("/api/xapi/statements", async (req, res, next) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    
+    try {
+      const statement = req.body;
+      const parseResult = insertXapiStatementSchema.safeParse({
+        ...statement,
+        userId: req.user!.id,
+        timestamp: new Date(),
+        stored: false
+      });
+      
+      if (!parseResult.success) {
+        return res.status(400).json({
+          message: "Invalid xAPI statement",
+          errors: parseResult.error.format()
+        });
+      }
+      
+      const user = await storage.getUser(req.user!.id);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Get object info based on objectType and objectId
+      let objectInfo = {
+        name: statement.object,
+        type: "http://adlnet.gov/expapi/activities/activity"
+      };
+      
+      if (statement.objectType === "module") {
+        const module = await storage.getModule(statement.objectId);
+        if (module) {
+          const framework = await storage.getFramework(module.frameworkId);
+          objectInfo = {
+            name: module.name,
+            description: `Module in ${framework?.name || ''} framework`,
+            type: "http://adlnet.gov/expapi/activities/module"
+          };
+        }
+      } else if (statement.objectType === "framework") {
+        const framework = await storage.getFramework(statement.objectId);
+        if (framework) {
+          objectInfo = {
+            name: framework.name,
+            description: framework.description,
+            type: "http://adlnet.gov/expapi/activities/course"
+          };
+        }
+      } else if (statement.objectType === "quiz") {
+        const quiz = await storage.getQuiz(statement.objectId);
+        if (quiz) {
+          objectInfo = {
+            name: quiz.title,
+            description: quiz.description,
+            type: "http://adlnet.gov/expapi/activities/assessment"
+          };
+        }
+      }
+      
+      const result = await xapiService.createStatement(
+        parseResult.data,
+        {
+          name: user.name || user.username,
+          email: user.email || `${user.username}@questionpro.ai`
+        },
+        objectInfo
+      );
+      
+      if (!result) {
+        return res.status(500).json({ message: "Failed to create xAPI statement" });
+      }
+      
+      res.status(201).json(result);
+    } catch (error) {
+      next(error);
+    }
+  });
+  
+  app.get("/api/xapi/statements", async (req, res, next) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    
+    try {
+      // Implementation will depend on how we want to query xAPI statements
+      // For now, we'll return a not implemented error
+      res.status(501).json({ message: "API not fully implemented" });
+    } catch (error) {
+      next(error);
+    }
+  });
+  
+  // LRS Configuration routes
+  app.post("/api/lrs/config", async (req, res, next) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    
+    try {
+      const config = req.body;
+      const parseResult = insertLrsConfigurationSchema.safeParse(config);
+      
+      if (!parseResult.success) {
+        return res.status(400).json({
+          message: "Invalid LRS configuration",
+          errors: parseResult.error.format()
+        });
+      }
+      
+      // Implementation will depend on how we want to store LRS configurations
+      // For now, we'll return a not implemented error
+      res.status(501).json({ message: "API not fully implemented" });
+    } catch (error) {
+      next(error);
+    }
+  });
+  
+  // SCORM routes
+  app.post("/api/scorm/data", async (req, res, next) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    
+    try {
+      const { scoId, elementName, elementValue } = req.body;
+      
+      if (!scoId || !elementName || elementValue === undefined) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+      
+      const result = await scormService.storeScormData(
+        req.user!.id,
+        scoId,
+        elementName,
+        elementValue
+      );
+      
+      if (!result) {
+        return res.status(500).json({ message: "Failed to store SCORM data" });
+      }
+      
+      res.status(201).json(result);
+    } catch (error) {
+      next(error);
+    }
+  });
+  
+  app.get("/api/scorm/data/:scoId", async (req, res, next) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    
+    try {
+      const scoId = req.params.scoId;
+      
+      if (!scoId) {
+        return res.status(400).json({ message: "SCO ID is required" });
+      }
+      
+      const data = await scormService.getScormDataBySCO(req.user!.id, scoId);
+      const lmsData = scormService.transformScormDataToLMS(data);
+      
+      res.json(lmsData);
+    } catch (error) {
+      next(error);
+    }
+  });
+  
+  // Serve SCORM API wrapper script
+  app.get("/api/scorm/api-wrapper.js", async (req, res, next) => {
+    try {
+      const version = req.query.version as string || "scorm2004";
+      const apiEndpoint = `${req.protocol}://${req.headers.host}/api/scorm/data`;
+      
+      const script = scormService.getScormApiWrapperScript(
+        version as "scorm1.2" | "scorm2004",
+        apiEndpoint
+      );
+      
+      res.setHeader("Content-Type", "application/javascript");
+      res.send(script);
+    } catch (error) {
+      next(error);
+    }
+  });
+  
+  // Enhanced module completion route with xAPI tracking
+  app.patch("/api/modules/:id/complete-with-tracking", async (req, res, next) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    
+    try {
+      const moduleId = parseInt(req.params.id);
+      const { completed } = req.body;
+      
+      if (isNaN(moduleId)) {
+        return res.status(400).json({ message: "Invalid module ID" });
+      }
+      
+      if (completed === undefined) {
+        return res.status(400).json({ message: "Completed status is required" });
+      }
+      
+      const module = await storage.getModule(moduleId);
+      
+      if (!module) {
+        return res.status(404).json({ message: "Module not found" });
+      }
+      
+      const updatedModule = await storage.updateModule(moduleId, { completed });
+      
+      // Update user progress and track with xAPI
+      if (updatedModule && completed) {
+        const userId = req.user!.id;
+        const frameworkId = updatedModule.frameworkId;
+        
+        // Get all modules for this framework
+        const modules = await storage.getModulesByFrameworkId(frameworkId);
+        
+        // Calculate completed modules
+        const completedModules = modules.filter(m => m.completed).length;
+        const totalModules = modules.length;
+        
+        // Determine status
+        let status = "not_started";
+        if (completedModules === totalModules) {
+          status = "completed";
+        } else if (completedModules > 0) {
+          status = "in_progress";
+        }
+        
+        // Update or create progress
+        const existingProgress = await storage.getUserProgressByFramework(userId, frameworkId);
+        
+        if (existingProgress) {
+          await storage.updateUserProgress(existingProgress.id, {
+            status,
+            completedModules,
+          });
+        } else {
+          await storage.createUserProgress({
+            userId,
+            frameworkId,
+            status,
+            completedModules,
+            totalModules,
+          });
+        }
+        
+        // Track with xAPI if module was completed
+        try {
+          const user = await storage.getUser(userId);
+          const framework = await storage.getFramework(frameworkId);
+          
+          if (user && framework) {
+            await xapiService.trackModuleCompletion(
+              userId,
+              moduleId,
+              updatedModule.name,
+              frameworkId,
+              framework.name,
+              {
+                name: user.name || user.username,
+                email: user.email || `${user.username}@questionpro.ai`
+              }
+            );
+            
+            // If all modules are completed, track framework completion as well
+            if (completedModules === totalModules) {
+              await xapiService.trackFrameworkCompletion(
+                userId,
+                frameworkId,
+                framework.name,
+                completedModules,
+                totalModules,
+                {
+                  name: user.name || user.username,
+                  email: user.email || `${user.username}@questionpro.ai`
+                }
+              );
+            }
+          }
+        } catch (error) {
+          console.error("xAPI tracking error:", error);
+          // Continue even if xAPI tracking fails
+        }
+      }
+      
+      res.json(updatedModule);
+    } catch (error) {
       next(error);
     }
   });

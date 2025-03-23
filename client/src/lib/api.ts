@@ -1,5 +1,6 @@
 import { Framework, Module, UserProgress, AiConversation, Quiz, QuizAttempt } from "@shared/schema";
 import { apiRequest } from "./queryClient";
+import learningTracking from "./learning-tracking";
 
 export async function getFrameworks(): Promise<Framework[]> {
   const res = await apiRequest("GET", "/api/frameworks");
@@ -44,6 +45,14 @@ export async function updateModuleCompletion(
     completed,
   });
   return res.json();
+}
+
+// Enhanced version with xAPI tracking
+export async function updateModuleCompletionWithTracking(
+  moduleId: number,
+  completed: boolean
+): Promise<Module> {
+  return learningTracking.completeModuleWithTracking(moduleId, completed);
 }
 
 export async function askAi(
@@ -128,3 +137,43 @@ export async function submitQuizAttempt(
   });
   return res.json();
 }
+
+// xAPI Tracking functions
+export async function trackModuleCompletion(
+  moduleId: number,
+  moduleName: string,
+  frameworkId: number
+): Promise<any> {
+  return learningTracking.trackModuleCompletion(moduleId, moduleName, frameworkId);
+}
+
+export async function trackFrameworkCompletion(
+  frameworkId: number,
+  frameworkName: string,
+  completedModules: number,
+  totalModules: number
+): Promise<any> {
+  return learningTracking.trackFrameworkCompletion(frameworkId, frameworkName, completedModules, totalModules);
+}
+
+export async function trackQuizAttempt(
+  quizId: number,
+  quizTitle: string,
+  frameworkId: number,
+  score: number,
+  maxScore: number,
+  passed: boolean,
+  timeTaken: number
+): Promise<any> {
+  return learningTracking.trackQuizAttempt(quizId, quizTitle, frameworkId, score, maxScore, passed, timeTaken);
+}
+
+// SCORM API functions
+export const scormApi = {
+  loadWrapper: learningTracking.loadScormApiWrapper,
+  initialize: learningTracking.initializeScorm,
+  terminate: learningTracking.terminateScorm,
+  setValue: learningTracking.setScormValue,
+  getValue: learningTracking.getScormValue,
+  commit: learningTracking.commitScorm
+};
