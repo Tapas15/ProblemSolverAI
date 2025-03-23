@@ -187,3 +187,40 @@
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--muted-foreground));
 }
+
+/* Module content styling */
+.module-content h2 {
+  @apply text-xl font-semibold text-primary mb-3 mt-5;
+}
+
+.module-content h3 {
+  @apply text-lg font-medium text-gray-800 mb-2 mt-4;
+}
+
+.module-content h4 {
+  @apply text-base font-medium text-gray-700 mb-2 mt-3;
+}
+
+.module-content p {
+  @apply text-gray-600 my-3;
+}
+
+.module-content ul, .module-content ol {
+  @apply my-3 ml-5 text-gray-600;
+}
+
+.module-content ul {
+  @apply list-disc;
+}
+
+.module-content ol {
+  @apply list-decimal;
+}
+
+.module-content li {
+  @apply my-1;
+}
+
+.module-content strong {
+  @apply font-semibold text-gray-700;
+}

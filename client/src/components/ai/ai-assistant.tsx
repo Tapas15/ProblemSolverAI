@@ -1,19 +1,23 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { askAi, getAiConversations } from '@/lib/api';
+import { askAi, getAiConversations, getFrameworks } from '@/lib/api';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2 } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Loader2, Lightbulb } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const AiAssistant: React.FC = () => {
   const [question, setQuestion] = useState('');
+  const [selectedFramework, setSelectedFramework] = useState<string>('');
+  const [activeTab, setActiveTab] = useState<string>('custom');
   const [isAiSettingsOpen, setIsAiSettingsOpen] = useState(false);
   const [apiKey, setApiKey] = useState('');
   const [aiProvider, setAiProvider] = useState('openai');
@@ -21,6 +25,11 @@ const AiAssistant: React.FC = () => {
   const { user, updateAiSettingsMutation } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  
+  const { data: frameworks } = useQuery({
+    queryKey: ['/api/frameworks'],
+    queryFn: () => getFrameworks(),
+  });
   
   const { data: conversations, isLoading: conversationsLoading } = useQuery({
     queryKey: ['/api/ai/conversations'],
