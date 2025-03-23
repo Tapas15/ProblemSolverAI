@@ -61,3 +61,7 @@ export async function getAiConversations(): Promise<AiConversation[]> {
   const res = await apiRequest("GET", "/api/ai/conversations");
   return res.json();
 }
+
+export async function clearAiConversations(): Promise<void> {
+  await apiRequest("DELETE", "/api/ai/conversations");
+}

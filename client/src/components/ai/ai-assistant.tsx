@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { askAi, getAiConversations, getFrameworks } from '@/lib/api';
+import { askAi, getAiConversations, getFrameworks, clearAiConversations } from '@/lib/api';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
@@ -36,8 +36,13 @@ const AiAssistant: React.FC = () => {
     queryFn: () => getAiConversations(),
   });
   
+  type AskQuestion = {
+    question: string;
+    frameworkId?: number;
+  };
+  
   const askAiMutation = useMutation({
-    mutationFn: (question: string) => askAi(question),
+    mutationFn: ({ question, frameworkId }: AskQuestion) => askAi(question, frameworkId),
     onSuccess: () => {
       setQuestion('');
       queryClient.invalidateQueries({ queryKey: ['/api/ai/conversations'] });
@@ -51,6 +56,37 @@ const AiAssistant: React.FC = () => {
     }
   });
   
+  // Framework-specific prompt templates
+  const getFrameworkPrompt = (frameworkId: string): string => {
+    const framework = frameworks?.find(f => f.id.toString() === frameworkId);
+    if (!framework) return '';
+    
+    switch (framework.name) {
+      case 'MECE Framework':
+        return `How can I apply the MECE (Mutually Exclusive, Collectively Exhaustive) framework to break down this problem: ${question}`;
+      case 'SWOT Analysis':
+        return `Help me conduct a SWOT Analysis for the following situation: ${question}`;
+      case 'First Principles Thinking':
+        return `Using First Principles Thinking, how would you approach this challenge: ${question}`;
+      case 'Porter\'s Five Forces':
+        return `Analyze the following industry using Porter's Five Forces framework: ${question}`;
+      case 'Design Thinking':
+        return `How can I apply Design Thinking to solve this problem: ${question}`;
+      case 'Jobs To Be Done':
+        return `Using the Jobs To Be Done framework, analyze this customer need: ${question}`;
+      case 'Blue Ocean Strategy':
+        return `How can I create a Blue Ocean Strategy for this market opportunity: ${question}`;
+      case 'SCAMPER':
+        return `Apply the SCAMPER technique to innovate on this product/service: ${question}`;
+      case 'Problem-Tree Analysis':
+        return `Help me build a Problem-Tree Analysis for this issue: ${question}`;
+      case 'Pareto Principle':
+        return `Apply the Pareto Principle (80/20 rule) to optimize this situation: ${question}`;
+      default:
+        return question;
+    }
+  };
+  
   const handleSubmitQuestion = () => {
     if (!question.trim()) return;
     
@@ -59,7 +95,21 @@ const AiAssistant: React.FC = () => {
       return;
     }
     
-    askAiMutation.mutate(question);
+    if (activeTab === 'framework' && selectedFramework) {
+      // For framework-guided mode, send the formatted prompt and the framework ID
+      const frameworkIdNumber = parseInt(selectedFramework, 10);
+      const finalQuestion = getFrameworkPrompt(selectedFramework);
+      
+      askAiMutation.mutate({
+        question: finalQuestion,
+        frameworkId: frameworkIdNumber
+      });
+    } else {
+      // For custom questions, just send the question without a framework ID
+      askAiMutation.mutate({
+        question: question
+      });
+    }
   };
   
   const handleSaveAiSettings = () => {
@@ -98,15 +148,75 @@ const AiAssistant: React.FC = () => {
           The AI assistant will provide tailored guidance to help you implement solutions.
         </p>
         
-        <div className="mb-4">
-          <Textarea
-            rows={4}
-            placeholder="Example: How can I apply the MECE framework to analyze customer satisfaction issues in our retail business?"
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            className="w-full"
-          />
-        </div>
+        <Tabs defaultValue="custom" value={activeTab} onValueChange={setActiveTab} className="mb-4">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="custom">Custom Question</TabsTrigger>
+            <TabsTrigger value="framework">Framework-Guided</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="custom" className="pt-4">
+            <Textarea
+              rows={4}
+              placeholder="Example: How can I apply the MECE framework to analyze customer satisfaction issues in our retail business?"
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              className="w-full"
+            />
+          </TabsContent>
+          
+          <TabsContent value="framework" className="space-y-4 pt-4">
+            <div>
+              <Label htmlFor="framework-select" className="text-sm font-medium">
+                Select a framework
+              </Label>
+              <Select
+                value={selectedFramework}
+                onValueChange={setSelectedFramework}
+              >
+                <SelectTrigger className="w-full mt-1">
+                  <SelectValue placeholder="Choose a business framework" />
+                </SelectTrigger>
+                <SelectContent>
+                  {frameworks?.map((framework) => (
+                    <SelectItem key={framework.id} value={framework.id.toString()}>
+                      {framework.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <Label htmlFor="question-input" className="text-sm font-medium">
+                Your specific challenge or situation
+              </Label>
+              <Textarea
+                id="question-input"
+                rows={3}
+                placeholder="Describe your business challenge or situation"
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                className="w-full mt-1"
+              />
+            </div>
+            
+            {selectedFramework && (
+              <Card className="bg-secondary/5 border-secondary/20">
+                <CardContent className="p-4 flex items-start gap-3">
+                  <Lightbulb className="h-5 w-5 text-secondary flex-shrink-0 mt-0.5" />
+                  <div>
+                    <CardDescription className="text-xs text-secondary font-medium mb-1">
+                      AI will adapt your question to this format:
+                    </CardDescription>
+                    <p className="text-sm text-gray-700">
+                      {getFrameworkPrompt(selectedFramework)}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+        </Tabs>
         
         <div className="flex justify-between items-center">
           <button
@@ -118,7 +228,11 @@ const AiAssistant: React.FC = () => {
           
           <Button
             onClick={handleSubmitQuestion}
-            disabled={askAiMutation.isPending || !question.trim()}
+            disabled={
+              askAiMutation.isPending || 
+              !question.trim() || 
+              (activeTab === 'framework' && !selectedFramework)
+            }
             className="bg-secondary hover:bg-secondary/90"
           >
             {askAiMutation.isPending ? (
@@ -135,7 +249,26 @@ const AiAssistant: React.FC = () => {
       
       {/* AI Conversations History */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold font-header text-primary">Recent Conversations</h3>
+        <div className="flex justify-between items-center mb-3">
+          <h3 className="text-lg font-semibold font-header text-primary">Recent Conversations</h3>
+          
+          {conversations && conversations.length > 0 && (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => {
+                clearAiConversations();
+                queryClient.invalidateQueries({ queryKey: ['/api/ai/conversations'] });
+                toast({
+                  title: "Conversations cleared",
+                  description: "Your conversation history has been cleared.",
+                });
+              }}
+            >
+              Clear History
+            </Button>
+          )}
+        </div>
         
         {conversationsLoading ? (
           <div className="text-center py-8">
@@ -143,20 +276,33 @@ const AiAssistant: React.FC = () => {
             <p className="text-gray-500 mt-2">Loading conversations...</p>
           </div>
         ) : conversations && conversations.length > 0 ? (
-          conversations.map((conversation) => (
-            <Card key={conversation.id} className="overflow-hidden">
-              <CardHeader className="bg-gray-50 py-3 px-4">
-                <CardTitle className="text-sm font-medium text-gray-700">
-                  {conversation.question}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-4">
-                <div className="text-sm text-gray-600 whitespace-pre-line">
-                  {conversation.answer}
-                </div>
-              </CardContent>
-            </Card>
-          ))
+          conversations.map((conversation) => {
+            // Find the framework name if the conversation has a frameworkId
+            const framework = conversation.frameworkId && frameworks ? 
+              frameworks.find(f => f.id === conversation.frameworkId) : null;
+              
+            return (
+              <Card key={conversation.id} className="overflow-hidden">
+                <CardHeader className="bg-gray-50 py-3 px-4">
+                  <div className="flex justify-between items-start">
+                    <CardTitle className="text-sm font-medium text-gray-700">
+                      {conversation.question}
+                    </CardTitle>
+                    {framework && (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary/10 text-secondary">
+                        {framework.name}
+                      </span>
+                    )}
+                  </div>
+                </CardHeader>
+                <CardContent className="p-4">
+                  <div className="text-sm text-gray-600 whitespace-pre-line">
+                    {conversation.answer}
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })
         ) : (
           <Card>
             <CardContent className="p-8 text-center">
