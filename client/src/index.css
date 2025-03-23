@@ -4,52 +4,52 @@
 
 @layer base {
   :root {
-    --background: 210 33% 98%; /* #F5F7FA */
-    --foreground: 222 14% 23%; /* #2D3748 */
+    --background: 210 40% 98%; /* #F4F7FB */
+    --foreground: 222 20% 18%; /* #242A36 */
     
     --card: 0 0% 100%;
-    --card-foreground: 222 14% 23%;
+    --card-foreground: 222 20% 18%;
     
     --popover: 0 0% 100%;
-    --popover-foreground: 222 14% 23%;
+    --popover-foreground: 222 20% 18%;
     
     --primary: 222 47% 15%; /* #0A2540 */
     --primary-foreground: 0 0% 100%;
     
-    --secondary: 197 100% 44%; /* #00A3E0 */
+    --secondary: 197 100% 40%; /* #0091C7 */
     --secondary-foreground: 0 0% 100%;
     
-    --accent: 40 100% 55%; /* #FFB81C */
+    --accent: 40 100% 50%; /* #FFA500 */
     --accent-foreground: 222 47% 15%;
     
-    --muted: 210 20% 92%;
-    --muted-foreground: 215 14% 40%;
+    --muted: 210 25% 95%;
+    --muted-foreground: 215 20% 45%;
     
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
     
-    --border: 215 16% 88%;
-    --input: 215 16% 88%;
-    --ring: 197 100% 44%; /* #00A3E0 */
+    --border: 215 20% 90%;
+    --input: 215 20% 90%;
+    --ring: 197 100% 40%; /* #0091C7 */
     
-    --radius: 0.5rem;
+    --radius: 0.75rem;
     
     /* Chart colors */
-    --chart-1: 197 100% 44%;
-    --chart-2: 40 100% 55%;
+    --chart-1: 197 100% 40%;
+    --chart-2: 40 100% 50%;
     --chart-3: 222 47% 15%;
-    --chart-4: 152 69% 31%;
-    --chart-5: 345 83% 41%;
+    --chart-4: 152 69% 35%;
+    --chart-5: 345 83% 45%;
     
     /* Sidebar colors */
     --sidebar-background: 222 47% 15%;
     --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 197 100% 44%;
+    --sidebar-primary: 197 100% 40%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 40 100% 55%;
+    --sidebar-accent: 40 100% 50%;
     --sidebar-accent-foreground: 222 47% 15%;
     --sidebar-border: 222 30% 25%;
-    --sidebar-ring: 197 100% 44%;
+    --sidebar-ring: 197 100% 40%;
   }
  
   .dark {
@@ -62,13 +62,13 @@
     --popover: 222 47% 10%;
     --popover-foreground: 0 0% 100%;
     
-    --primary: 197 100% 44%;
+    --primary: 197 100% 40%;
     --primary-foreground: 0 0% 100%;
     
     --secondary: 222 47% 15%;
     --secondary-foreground: 0 0% 100%;
     
-    --accent: 40 100% 55%;
+    --accent: 40 100% 50%;
     --accent-foreground: 0 0% 0%;
     
     --muted: 222 47% 15%;
@@ -79,11 +79,11 @@
     
     --border: 222 30% 25%;
     --input: 222 30% 25%;
-    --ring: 197 100% 44%;
+    --ring: 197 100% 40%;
     
     /* Chart colors */
-    --chart-1: 197 100% 44%;
-    --chart-2: 40 100% 55%;
+    --chart-1: 197 100% 40%;
+    --chart-2: 40 100% 50%;
     --chart-3: 210 20% 80%;
     --chart-4: 152 69% 45%;
     --chart-5: 345 83% 65%;
@@ -91,12 +91,12 @@
     /* Sidebar colors - keep same as light to maintain consistency */
     --sidebar-background: 222 47% 15%;
     --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 197 100% 44%;
+    --sidebar-primary: 197 100% 40%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 40 100% 55%;
+    --sidebar-accent: 40 100% 50%;
     --sidebar-accent-foreground: 222 47% 15%;
     --sidebar-border: 222 30% 25%;
-    --sidebar-ring: 197 100% 44%;
+    --sidebar-ring: 197 100% 40%;
   }
 }
 
@@ -114,11 +114,11 @@
   }
   
   h1 {
-    @apply text-3xl md:text-4xl mb-6;
+    @apply text-3xl md:text-4xl mb-6 text-primary;
   }
 
   h2 {
-    @apply text-2xl md:text-3xl mb-4;
+    @apply text-2xl md:text-3xl mb-4 text-primary/90;
   }
   
   code, pre {
@@ -126,7 +126,7 @@
   }
 
   .card {
-    @apply bg-white shadow-sm hover:shadow-md transition-shadow duration-200 rounded-lg border border-slate-200;
+    @apply bg-white shadow-md hover:shadow-lg transition-all duration-300 rounded-xl border border-slate-100;
   }
 
   .btn-primary {
@@ -149,12 +149,15 @@
 
 /* Framework card hover effect */
 .framework-card {
-  transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(226, 232, 240, 0.8);
 }
 
 .framework-card:hover {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  transform: translateY(-2px);
+  box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  transform: translateY(-3px);
+  border-color: rgba(226, 232, 240, 0.5);
 }
 
 /* Progress bar animation */
@@ -165,24 +168,24 @@
 }
 
 .animate-progress {
-  animation: progress 1s ease-out;
+  animation: progress 1.2s cubic-bezier(0.26, 0.86, 0.44, 0.985);
 }
 
-/* Button hover transitions */
+/* Button styling */
 .btn-primary {
-  @apply bg-secondary text-white transition-colors duration-200;
+  @apply bg-secondary text-white transition-all duration-300 font-medium px-6 py-2.5 rounded-lg shadow-md hover:shadow-lg;
 }
 
 .btn-primary:hover {
-  @apply bg-secondary/90;
+  @apply bg-secondary/90 transform -translate-y-0.5;
 }
 
 .btn-secondary {
-  @apply border border-secondary text-secondary bg-transparent transition-colors duration-200;
+  @apply border-2 border-secondary text-secondary bg-transparent transition-all duration-300 font-medium px-6 py-2.5 rounded-lg;
 }
 
 .btn-secondary:hover {
-  @apply bg-secondary/10;
+  @apply bg-secondary/10 transform -translate-y-0.5;
 }
 
 /* Custom scrollbar */
@@ -197,7 +200,7 @@
 
 ::-webkit-scrollbar-thumb {
   background: hsl(var(--muted));
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -205,24 +208,28 @@
 }
 
 /* Module content styling */
+.module-content {
+  @apply leading-relaxed text-gray-700;
+}
+
 .module-content h2 {
-  @apply text-xl font-semibold text-primary mb-3 mt-5;
+  @apply text-xl font-semibold text-primary mb-4 mt-6 pb-2 border-b border-primary/20;
 }
 
 .module-content h3 {
-  @apply text-lg font-medium text-gray-800 mb-2 mt-4;
+  @apply text-lg font-medium text-gray-800 mb-3 mt-5;
 }
 
 .module-content h4 {
-  @apply text-base font-medium text-gray-700 mb-2 mt-3;
+  @apply text-base font-medium text-gray-700 mb-2 mt-4;
 }
 
 .module-content p {
-  @apply text-gray-600 my-3;
+  @apply text-gray-700 my-4 leading-relaxed;
 }
 
 .module-content ul, .module-content ol {
-  @apply my-3 ml-5 text-gray-600;
+  @apply my-4 ml-6 text-gray-700;
 }
 
 .module-content ul {
@@ -234,9 +241,29 @@
 }
 
 .module-content li {
-  @apply my-1;
+  @apply my-2;
 }
 
 .module-content strong {
-  @apply font-semibold text-gray-700;
+  @apply font-semibold text-gray-800;
+}
+
+/* Input field styling */
+input, textarea, select {
+  @apply border-2 border-gray-200 focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all duration-300;
+}
+
+/* Navigation styling */
+nav {
+  @apply shadow-md bg-white border-b border-gray-100;
+}
+
+/* Card transitions */
+.transition-card {
+  @apply transition-all duration-300 ease-in-out;
+}
+
+/* Glass effect */
+.glass-effect {
+  @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-lg;
 }

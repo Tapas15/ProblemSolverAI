@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'wouter';
 import { Framework, Module } from '@shared/schema';
-import { Clock, GraduationCap, Check, X } from 'lucide-react';
+import { Clock, GraduationCap, Check, X, ArrowRight, Award } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 interface FrameworkCardProps {
@@ -18,16 +18,16 @@ const FrameworkCard: React.FC<FrameworkCardProps> = ({
   completedModules = 0 
 }) => {
   const { id, name, description, level, duration } = framework;
-  const totalModules = modules.length;
+  const totalModules = modules.length || 6; // Fallback for display
   
   const getStatusBadge = () => {
     switch (progressStatus) {
       case 'completed':
-        return <Badge className="bg-green-100 text-green-800 hover:bg-green-200">Completed</Badge>;
+        return <Badge className="bg-green-100 text-green-800 hover:bg-green-200 font-medium px-3 py-1">Completed</Badge>;
       case 'in_progress':
-        return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">In Progress</Badge>;
+        return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-200 font-medium px-3 py-1">In Progress</Badge>;
       default:
-        return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">Not Started</Badge>;
+        return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200 font-medium px-3 py-1">Not Started</Badge>;
     }
   };
   
@@ -36,62 +36,74 @@ const FrameworkCard: React.FC<FrameworkCardProps> = ({
       case 'completed':
         return "View Framework";
       case 'in_progress':
-        return "Continue";
+        return "Continue Learning";
       default:
         return "Start Learning";
     }
   };
+
+  const getProgressPercentage = () => {
+    if (totalModules === 0) return 0;
+    return (completedModules / totalModules) * 100;
+  };
   
   return (
-    <div className="bg-white rounded-lg shadow-sm overflow-hidden transition-shadow hover:shadow-md">
-      <div className="p-5">
-        <div className="flex justify-between items-start">
-          <h3 className="text-lg font-semibold font-header text-primary">{name}</h3>
+    <div className="framework-card rounded-xl overflow-hidden bg-white">
+      <div className="p-6">
+        <div className="flex justify-between items-start mb-3">
+          <h3 className="text-xl font-semibold font-header text-primary">{name}</h3>
           {getStatusBadge()}
         </div>
         
-        <p className="mt-2 text-sm text-gray-600">{description}</p>
+        <p className="mt-2 text-gray-700 mb-4 line-clamp-3">{description}</p>
         
-        <div className="mt-4 flex items-center text-xs text-gray-500">
+        <div className="mt-4 flex items-center text-sm text-gray-600 mb-4">
           <span className="flex items-center">
-            <Clock className="mr-1 h-3 w-3" /> {duration} min
+            <Clock className="mr-1.5 h-4 w-4 text-primary/70" /> 
+            <span>{duration} min</span>
           </span>
-          <span className="mx-2">•</span>
+          <span className="mx-3 text-gray-300">•</span>
           <span className="flex items-center">
-            <GraduationCap className="mr-1 h-3 w-3" /> {level}
+            <GraduationCap className="mr-1.5 h-4 w-4 text-primary/70" /> 
+            <span className="capitalize">{level}</span>
           </span>
+          {progressStatus === 'completed' && (
+            <>
+              <span className="mx-3 text-gray-300">•</span>
+              <span className="flex items-center">
+                <Award className="mr-1.5 h-4 w-4 text-amber-500" /> 
+                <span className="text-amber-700">Mastered</span>
+              </span>
+            </>
+          )}
+        </div>
+
+        {/* Progress bar */}
+        <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+          <div 
+            className="bg-secondary h-full rounded-full transition-all duration-500 ease-out"
+            style={{ width: `${getProgressPercentage()}%` }}
+          />
+        </div>
+        <div className="flex justify-between mt-2 text-xs text-gray-500">
+          <span>{completedModules} completed</span>
+          <span>{totalModules} total modules</span>
         </div>
       </div>
       
-      <div className="bg-gray-50 px-5 py-3 flex justify-between items-center">
-        <div className="flex items-center">
-          <div className="flex -space-x-1">
-            {Array.from({ length: totalModules }).map((_, index) => (
-              <span 
-                key={index} 
-                className={`inline-block h-5 w-5 rounded-full ${
-                  index < completedModules ? 'bg-green-500 text-white' : 'bg-gray-300 text-white'
-                } flex items-center justify-center text-xs`}
-              >
-                {index < completedModules ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
-              </span>
-            ))}
-          </div>
-          <span className="ml-2 text-xs text-gray-500">{completedModules}/{totalModules} modules</span>
-        </div>
+      <div className="bg-gray-50 px-6 py-4 flex justify-between items-center border-t border-gray-100">
+        <Link to={`/quizzes/${id}`}>
+          <span className="text-sm font-medium text-primary hover:text-primary/80 transition-colors">
+            View Quizzes
+          </span>
+        </Link>
         
-        <div className="flex gap-3">
-          <Link to={`/quizzes/${id}`}>
-            <span className="text-sm font-medium text-primary hover:underline">
-              Quizzes
-            </span>
-          </Link>
-          <Link to={`/frameworks/${id}`}>
-            <span className="text-sm font-medium text-secondary hover:underline">
-              {getLinkText()}
-            </span>
-          </Link>
-        </div>
+        <Link to={`/frameworks/${id}`}>
+          <div className="flex items-center text-sm font-medium text-secondary hover:text-secondary/80 transition-colors">
+            {getLinkText()}
+            <ArrowRight className="ml-1.5 h-4 w-4" />
+          </div>
+        </Link>
       </div>
     </div>
   );
