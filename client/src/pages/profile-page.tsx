@@ -39,7 +39,8 @@ const ProfilePage: React.FC = () => {
   const [notifications, setNotifications] = useState({
     emailNotifications: true,
     learningReminders: true,
-    frameworkUpdates: true
+    frameworkUpdates: true,
+    quizResults: false
   });
   
   // Loading state for form submission
@@ -203,7 +204,8 @@ const ProfilePage: React.FC = () => {
           setNotifications({
             emailNotifications: parsedPreferences.emailNotifications !== false,
             learningReminders: parsedPreferences.learningReminders !== false,
-            frameworkUpdates: parsedPreferences.frameworkUpdates !== false
+            frameworkUpdates: parsedPreferences.frameworkUpdates !== false,
+            quizResults: parsedPreferences.quizResults || false
           });
         }
       } catch (error) {
