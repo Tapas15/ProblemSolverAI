@@ -171,7 +171,7 @@ export class MemStorage implements IStorage {
       ...framework, 
       id,
       status: framework.status || "not_started",
-      caseStudies: framework.caseStudies || null
+      case_studies: framework.case_studies || null
     };
     this.frameworks.set(id, newFramework);
     return newFramework;
@@ -391,7 +391,7 @@ export class MemStorage implements IStorage {
       level: "Intermediate",
       duration: 45,
       status: "not_started",
-      caseStudies: null
+      case_studies: null
     };
     this.frameworks.set(meceId, mece);
     

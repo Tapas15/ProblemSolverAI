@@ -465,22 +465,22 @@ async function updateQuizzes() {
 async function updateCaseStudies() {
   console.log("Updating case studies...");
   
-  const caseStudies = [
+  const case_studies = [
     {
       frameworkId: 1, // MECE Framework
-      caseStudy: "McKinsey's Revenue Growth Analysis\n\nMcKinsey was hired by a consumer electronics company to analyze declining revenue. They used MECE to break down possible causes into: Product factors (features, quality, pricing), Market factors (competition, demand shifts, regulations), and Operational factors (distribution, marketing, sales). Each category was further broken down in a MECE way, leading to a comprehensive analysis that identified critical issues in product pricing and distribution channels that weren't apparent initially."
+      case_study: "McKinsey's Revenue Growth Analysis\n\nMcKinsey was hired by a consumer electronics company to analyze declining revenue. They used MECE to break down possible causes into: Product factors (features, quality, pricing), Market factors (competition, demand shifts, regulations), and Operational factors (distribution, marketing, sales). Each category was further broken down in a MECE way, leading to a comprehensive analysis that identified critical issues in product pricing and distribution channels that weren't apparent initially."
     },
     {
       frameworkId: 2, // Design Thinking
-      caseStudy: "IDEO's Shopping Cart Redesign\n\nIn the late 1990s, IDEO was challenged to redesign the shopping cart in just five days. They used Design Thinking's five stages: Empathize (observed shoppers and store employees), Define (identified pain points like maneuverability and child safety), Ideate (brainstormed hundreds of ideas), Prototype (built rough models of promising concepts), and Test (gathered feedback from actual users). The result was an innovative cart with features like a removable basket for checkout, child-safe seating, and improved navigation."
+      case_study: "IDEO's Shopping Cart Redesign\n\nIn the late 1990s, IDEO was challenged to redesign the shopping cart in just five days. They used Design Thinking's five stages: Empathize (observed shoppers and store employees), Define (identified pain points like maneuverability and child safety), Ideate (brainstormed hundreds of ideas), Prototype (built rough models of promising concepts), and Test (gathered feedback from actual users). The result was an innovative cart with features like a removable basket for checkout, child-safe seating, and improved navigation."
     },
     {
       frameworkId: 3, // SWOT
-      caseStudy: "Tesla's Strategic Expansion\n\nTesla used SWOT analysis when deciding to expand into the energy storage market with Powerwall. Strengths included battery technology expertise and brand recognition. Weaknesses included manufacturing constraints and cash flow challenges. Opportunities included growing renewable energy adoption and utility partnerships. Threats included established competitors and regulatory uncertainty. The analysis helped Tesla time their market entry and position their products to leverage their strengths while mitigating weaknesses."
+      case_study: "Tesla's Strategic Expansion\n\nTesla used SWOT analysis when deciding to expand into the energy storage market with Powerwall. Strengths included battery technology expertise and brand recognition. Weaknesses included manufacturing constraints and cash flow challenges. Opportunities included growing renewable energy adoption and utility partnerships. Threats included established competitors and regulatory uncertainty. The analysis helped Tesla time their market entry and position their products to leverage their strengths while mitigating weaknesses."
     }
   ];
   
-  for (const item of caseStudies) {
+  for (const item of case_studies) {
     try {
       // First get framework to ensure it exists
       const response = await makeRequest('GET', `/api/frameworks/${item.frameworkId}`);
@@ -494,7 +494,7 @@ async function updateCaseStudies() {
       console.log(`Adding case study to framework: ${framework.name}`);
       
       const updateResponse = await makeRequest('PATCH', `/api/frameworks/${item.frameworkId}`, {
-        case_studies: item.caseStudy
+        case_studies: item.case_study
       });
       
       if (updateResponse.statusCode === 200) {
