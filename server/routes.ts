@@ -399,6 +399,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         answer
       });
       
+      // Invalidate conversations cache
+      invalidateCache(CACHE_KEYS.AI_CONVERSATIONS(userId));
+      
       res.json(conversation);
     } catch (error) {
       next(error);
@@ -410,7 +413,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     try {
       const userId = req.user!.id;
+      
+      // Check cache first
+      const cacheKey = CACHE_KEYS.AI_CONVERSATIONS(userId);
+      const cachedConversations = getCachedData<AiConversation[]>(cacheKey);
+      
+      if (cachedConversations) {
+        return res.json(cachedConversations);
+      }
+      
+      // If not in cache, fetch from storage
       const conversations = await storage.getAiConversations(userId);
+      
+      // Cache the result for 5 minutes
+      cacheData(cacheKey, conversations, 300);
+      
       res.json(conversations);
     } catch (error) {
       next(error);
@@ -432,6 +449,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       for (const conversation of conversations) {
         await storage.deleteAiConversation(conversation.id);
       }
+      
+      // Invalidate the AI conversations cache
+      invalidateCache(CACHE_KEYS.AI_CONVERSATIONS(userId));
       
       res.status(204).send();
     } catch (error) {

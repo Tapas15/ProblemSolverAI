@@ -18,6 +18,7 @@ export const CACHE_KEYS = {
   USER_PROGRESS: (userId: number) => `user:${userId}:progress`,
   USER_QUIZ_ATTEMPTS: (userId: number) => `user:${userId}:quiz-attempts`,
   QUIZ_ATTEMPTS: (quizId: number) => `quiz:${quizId}:attempts`,
+  AI_CONVERSATIONS: (userId: number) => `user:${userId}:ai-conversations`,
 };
 
 // Helper functions to work with the cache
