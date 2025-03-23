@@ -159,6 +159,65 @@ export const insertQuizAttemptSchema = createInsertSchema(quizAttempts)
     completedAt: z.date().optional()
   });
 
+// xAPI Statements schema
+export const xapiStatements = pgTable("xapi_statements", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  verb: text("verb").notNull(), // e.g., "completed", "attempted", "experienced"
+  object: text("object").notNull(), // The activity or thing being interacted with
+  objectType: text("object_type").notNull(), // e.g., "module", "quiz", "framework"
+  objectId: integer("object_id").notNull(), // ID of the related object
+  result: text("result"), // JSON string with score, success, etc.
+  context: text("context"), // JSON string with contextual information
+  timestamp: timestamp("timestamp").defaultNow(),
+  stored: boolean("stored").default(false), // Whether it's been sent to an LRS
+});
+
+export const insertXapiStatementSchema = createInsertSchema(xapiStatements).pick({
+  userId: true,
+  verb: true,
+  object: true,
+  objectType: true,
+  objectId: true,
+  result: true,
+  context: true,
+});
+
+// SCORM Tracking schema
+export const scormTrackingData = pgTable("scorm_tracking_data", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  scoId: text("sco_id").notNull(), // Shareable Content Object ID
+  elementName: text("element_name").notNull(), // SCORM data model element name
+  elementValue: text("element_value").notNull(), // The value of the element
+  timestamp: timestamp("timestamp").defaultNow(),
+});
+
+export const insertScormTrackingDataSchema = createInsertSchema(scormTrackingData).pick({
+  userId: true,
+  scoId: true,
+  elementName: true,
+  elementValue: true,
+});
+
+// LRS Configuration schema (Learning Record Store)
+export const lrsConfigurations = pgTable("lrs_configurations", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  endpoint: text("endpoint").notNull(),
+  username: text("username").notNull(),
+  password: text("password").notNull(),
+  isActive: boolean("is_active").default(true),
+});
+
+export const insertLrsConfigurationSchema = createInsertSchema(lrsConfigurations).pick({
+  name: true,
+  endpoint: true,
+  username: true,
+  password: true,
+  isActive: true,
+});
+
 // Type exports
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -180,3 +239,12 @@ export type Quiz = typeof quizzes.$inferSelect;
 
 export type InsertQuizAttempt = z.infer<typeof insertQuizAttemptSchema>;
 export type QuizAttempt = typeof quizAttempts.$inferSelect;
+
+export type InsertXapiStatement = z.infer<typeof insertXapiStatementSchema>;
+export type XapiStatement = typeof xapiStatements.$inferSelect;
+
+export type InsertScormTrackingData = z.infer<typeof insertScormTrackingDataSchema>;
+export type ScormTrackingData = typeof scormTrackingData.$inferSelect;
+
+export type InsertLrsConfiguration = z.infer<typeof insertLrsConfigurationSchema>;
+export type LrsConfiguration = typeof lrsConfigurations.$inferSelect;
