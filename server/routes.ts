@@ -930,6 +930,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const updatedModule = await storage.updateModule(moduleId, { completed });
       
+      // Invalidate module cache
+      invalidateCache(CACHE_KEYS.MODULE(moduleId));
+      
       // Update user progress and track with xAPI
       if (updatedModule && completed) {
         const userId = req.user!.id;
@@ -967,6 +970,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
             totalModules,
           });
         }
+        
+        // Invalidate user progress cache
+        invalidateCache(CACHE_KEYS.USER_PROGRESS(userId));
         
         // Track with xAPI if module was completed
         try {
