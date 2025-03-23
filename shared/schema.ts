@@ -30,7 +30,7 @@ export const frameworks = pgTable("frameworks", {
   level: text("level").notNull(), // beginner, intermediate, advanced
   duration: integer("duration").notNull(), // in minutes
   status: text("status").notNull().default("not_started"), // not_started, in_progress, completed
-  caseStudies: text("case_studies"), // Detailed case studies with examples
+  case_studies: text("case_studies"), // Detailed case studies with examples
 });
 
 export const insertFrameworkSchema = createInsertSchema(frameworks).pick({
@@ -39,7 +39,7 @@ export const insertFrameworkSchema = createInsertSchema(frameworks).pick({
   level: true,
   duration: true,
   status: true,
-  caseStudies: true,
+  case_studies: true,
 });
 
 // Module schema

@@ -270,11 +270,11 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
               <div className="mb-8">
                 <h3 className="text-lg font-semibold font-header text-primary mb-4">Case Studies</h3>
                 
-                {framework.caseStudies ? (
+                {framework.case_studies ? (
                   <div className="border border-gray-200 rounded-lg overflow-hidden">
                     <div className="p-4">
                       <div className="prose prose-sm max-w-none">
-                        <div dangerouslySetInnerHTML={{ __html: framework.caseStudies }} />
+                        <div dangerouslySetInnerHTML={{ __html: framework.case_studies }} />
                       </div>
                     </div>
                   </div>
