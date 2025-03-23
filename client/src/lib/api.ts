@@ -88,7 +88,7 @@ export async function getQuizzesByFramework(frameworkId: number, level?: string)
   const url = level 
     ? `/api/quizzes/framework/${frameworkId}?level=${encodeURIComponent(level)}` 
     : `/api/quizzes/framework/${frameworkId}`;
-  
+
   const res = await apiRequest("GET", url);
   return res.json();
 }
@@ -133,7 +133,7 @@ export async function submitQuizAttempt(
   // Calculate if passed based on the quiz's passing score or default to 70%
   const passingThreshold = 0.7; // 70% by default
   const passed = score >= (maxScore * passingThreshold);
-  
+
   // Don't send completedAt - let the server handle it with defaultNow()
   const res = await apiRequest("POST", "/api/quiz-attempts", {
     quizId,
@@ -186,7 +186,7 @@ export async function uploadScormPackage(file: File, moduleId: number): Promise<
   const formData = new FormData();
   formData.append('scormPackage', file);
   formData.append('moduleId', moduleId.toString());
-  
+
   const res = await fetch('/api/scorm/upload', {
     method: 'POST',
     body: formData,
@@ -196,12 +196,12 @@ export async function uploadScormPackage(file: File, moduleId: number): Promise<
     },
     credentials: 'same-origin'
   });
-  
+
   if (!res.ok) {
     const error = await res.json();
     throw new Error(error.message || 'Failed to upload SCORM package');
   }
-  
+
   return res.json();
 }
 
@@ -218,3 +218,9 @@ export const scormApi = {
   getValue: learningTracking.getScormValue,
   commit: learningTracking.commitScorm
 };
+
+export async function getQuizAttempts() {
+  const response = await fetch('/api/quiz-attempts/user');
+  if (!response.ok) throw new Error('Failed to fetch quiz attempts');
+  return response.json();
+}
