@@ -9,13 +9,15 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Search, Menu, ChevronDown } from 'lucide-react';
+import { Search, Menu, ChevronDown, FileCode } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
 const Navbar: React.FC = () => {
   const [location] = useLocation();
   const { user, logoutMutation } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  
+  const isAdmin = user && user.username === 'admin';
   
   const handleLogout = () => {
     logoutMutation.mutate();
@@ -89,6 +91,14 @@ const Navbar: React.FC = () => {
                 <DropdownMenuItem>
                   <Link to="/dashboard" className="w-full">My Dashboard</Link>
                 </DropdownMenuItem>
+                {isAdmin && (
+                  <DropdownMenuItem>
+                    <Link to="/scorm-admin" className="w-full flex items-center gap-2">
+                      <FileCode className="h-4 w-4" />
+                      SCORM Admin
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="text-red-500" onClick={handleLogout}>
                   Sign out
@@ -130,6 +140,14 @@ const Navbar: React.FC = () => {
                 Dashboard
               </span>
             </Link>
+            {isAdmin && (
+              <Link to="/scorm-admin" onClick={() => setMobileMenuOpen(false)}>
+                <span className={`block py-2 px-1 flex items-center gap-2 ${location === '/scorm-admin' ? 'text-secondary' : 'text-white'}`}>
+                  <FileCode className="h-4 w-4" />
+                  SCORM Admin
+                </span>
+              </Link>
+            )}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
               <Input 

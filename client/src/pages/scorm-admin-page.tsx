@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { FileCode, Books, Home } from 'lucide-react';
+import { FileCode, Book, Home } from 'lucide-react';
 import { Link } from 'wouter';
 
 export default function ScormAdminPage() {
@@ -94,7 +94,7 @@ export default function ScormAdminPage() {
                         className="w-full justify-start"
                         onClick={() => setSelectedFrameworkId(framework.id)}
                       >
-                        <Books className="h-4 w-4 mr-2" />
+                        <Book className="h-4 w-4 mr-2" />
                         {framework.name}
                       </Button>
                     ))}
@@ -197,7 +197,7 @@ export default function ScormAdminPage() {
                               )}
                             </div>
                             
-                            <Link href={`/framework/${selectedFrameworkId}`}>
+                            <Link href={`/frameworks/${selectedFrameworkId}`}>
                               <Button variant="outline" size="sm">
                                 Go to Module
                               </Button>

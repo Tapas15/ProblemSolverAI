@@ -23,6 +23,7 @@ function Router() {
       <ProtectedRoute path="/quizzes/:frameworkId" component={QuizPage} />
       <ProtectedRoute path="/quiz/:frameworkId/:quizId" component={TakeQuizPage} />
       <ProtectedRoute path="/dashboard" component={DashboardPage} />
+      <ProtectedRoute path="/scorm-admin" component={ScormAdminPage} />
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
     </Switch>
