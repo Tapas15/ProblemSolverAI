@@ -61,7 +61,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Check cache first
-      const cacheKey = `${CACHE_KEYS.FRAMEWORK_DETAIL}_${id}`;
+      const cacheKey = CACHE_KEYS.FRAMEWORK(id);
       const cachedData = getCachedData(cacheKey);
       if (cachedData) {
         return res.json(cachedData);
@@ -91,7 +91,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Check cache first
-      const cacheKey = `${CACHE_KEYS.MODULES}_${frameworkId}`;
+      const cacheKey = CACHE_KEYS.MODULES(frameworkId);
       const cachedData = getCachedData(cacheKey);
       if (cachedData) {
         return res.json(cachedData);
@@ -241,6 +241,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const updatedModule = await storage.updateModule(moduleId, { completed });
       
+      // Invalidate caches for this module and related framework modules
+      invalidateCache(CACHE_KEYS.MODULE(moduleId));
+      invalidateCachesByPattern(`modules:framework:${module.frameworkId}`);
+      
       // Update user progress
       if (updatedModule) {
         const userId = req.user!.id;
@@ -278,6 +282,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
             totalModules,
           });
         }
+        
+        // Invalidate user progress cache
+        invalidateCachesByPattern(`user:${userId}:progress`);
       }
       
       res.json(updatedModule);
@@ -396,7 +403,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid framework ID" });
       }
       
+      // Check cache first
+      const cacheKey = CACHE_KEYS.QUIZZES(frameworkId, level);
+      const cachedData = getCachedData(cacheKey);
+      if (cachedData) {
+        return res.json(cachedData);
+      }
+      
       const quizzes = await storage.getQuizzesByFramework(frameworkId, level);
+      
+      // Cache the quizzes data
+      cacheData(cacheKey, quizzes);
       res.json(quizzes);
     } catch (error) {
       next(error);
@@ -411,12 +428,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid quiz ID" });
       }
       
+      // Check cache first
+      const cacheKey = CACHE_KEYS.QUIZ(id);
+      const cachedData = getCachedData(cacheKey);
+      if (cachedData) {
+        return res.json(cachedData);
+      }
+      
       const quiz = await storage.getQuiz(id);
       
       if (!quiz) {
         return res.status(404).json({ message: "Quiz not found" });
       }
       
+      // Cache the quiz data
+      cacheData(cacheKey, quiz);
       res.json(quiz);
     } catch (error) {
       next(error);
@@ -446,6 +472,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const quiz = await storage.createQuiz(quizData);
+      
+      // Invalidate cached framework quizzes
+      invalidateCachesByPattern(`quizzes:framework:${quizData.frameworkId}`);
+      
       res.status(201).json(quiz);
     } catch (error) {
       next(error);
@@ -469,6 +499,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const updatedQuiz = await storage.updateQuiz(id, req.body);
+      
+      // Invalidate caches for this quiz and related framework quizzes
+      invalidateCache(CACHE_KEYS.QUIZ(id));
+      invalidateCachesByPattern(`quizzes:framework:${quiz.frameworkId}`);
+      
       res.json(updatedQuiz);
     } catch (error) {
       next(error);
@@ -492,6 +527,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       await storage.deleteQuiz(id);
+      
+      // Invalidate caches for this quiz and related framework quizzes
+      invalidateCache(CACHE_KEYS.QUIZ(id));
+      invalidateCachesByPattern(`quizzes:framework:${quiz.frameworkId}`);
+      
       res.status(204).send();
     } catch (error) {
       next(error);
