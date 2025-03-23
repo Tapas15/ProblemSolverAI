@@ -178,7 +178,7 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
                     </div>
                     
                     {framework && (
-                      <Link href={`/quizzes/${framework.id}`}>
+                      <Link to={`/quizzes/${framework.id}`}>
                         <Button variant="outline" className="ml-4">
                           <ClipboardCheck className="h-4 w-4 mr-2" />
                           Take Quizzes

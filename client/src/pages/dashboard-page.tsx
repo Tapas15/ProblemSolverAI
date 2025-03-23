@@ -247,7 +247,7 @@ const DashboardPage = () => {
                             <div className="text-sm text-gray-600">
                               {progress.completedModules || 0} of {progress.totalModules} modules complete
                             </div>
-                            <Link href={`/frameworks/${framework?.id}`}>
+                            <Link to={`/frameworks/${framework?.id}`}>
                               <Button variant="outline" size="sm" className="flex items-center">
                                 Continue Learning <ChevronRight className="ml-1 h-4 w-4" />
                               </Button>

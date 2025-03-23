@@ -82,22 +82,28 @@ const Navbar: React.FC = () => {
                 <ChevronDown className="h-4 w-4" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem>
-                  <Link to="/profile" className="w-full">Profile</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link to="/settings" className="w-full">Account Settings</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link to="/dashboard" className="w-full">My Dashboard</Link>
-                </DropdownMenuItem>
-                {isAdmin && (
+                <Link to="/profile">
                   <DropdownMenuItem>
-                    <Link to="/scorm-admin" className="w-full flex items-center gap-2">
+                    Profile
+                  </DropdownMenuItem>
+                </Link>
+                <Link to="/settings">
+                  <DropdownMenuItem>
+                    Account Settings
+                  </DropdownMenuItem>
+                </Link>
+                <Link to="/dashboard">
+                  <DropdownMenuItem>
+                    My Dashboard
+                  </DropdownMenuItem>
+                </Link>
+                {isAdmin && (
+                  <Link to="/scorm-admin">
+                    <DropdownMenuItem className="flex items-center gap-2">
                       <FileCode className="h-4 w-4" />
                       SCORM Admin
-                    </Link>
-                  </DropdownMenuItem>
+                    </DropdownMenuItem>
+                  </Link>
                 )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="text-red-500" onClick={handleLogout}>
