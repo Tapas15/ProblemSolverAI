@@ -18,15 +18,34 @@ import * as tar from "tar";
 import { createGunzip } from "node:zlib";
 import { createReadStream } from "node:fs";
 import { pipeline } from "node:stream/promises";
+import { 
+  cache, cacheData, getCachedData, invalidateCache, 
+  invalidateRelatedCaches, CACHE_KEYS, cachingMiddleware, 
+  addCacheHeaders, invalidateCachesByPattern 
+} from "./cache";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Add caching middleware
+  app.use(cachingMiddleware);
+  
+  // Add cache headers for static assets
+  app.use(addCacheHeaders);
+  
   // Set up authentication routes
   setupAuth(app);
   
   // Framework routes
   app.get("/api/frameworks", async (req, res, next) => {
     try {
+      // Check cache first
+      const cachedData = getCachedData(CACHE_KEYS.FRAMEWORKS);
+      if (cachedData) {
+        return res.json(cachedData);
+      }
+
+      // If not in cache, get from storage and cache it
       const frameworks = await storage.getAllFrameworks();
+      cacheData(CACHE_KEYS.FRAMEWORKS, frameworks);
       res.json(frameworks);
     } catch (error) {
       next(error);
@@ -41,12 +60,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid framework ID" });
       }
       
+      // Check cache first
+      const cacheKey = `${CACHE_KEYS.FRAMEWORK_DETAIL}_${id}`;
+      const cachedData = getCachedData(cacheKey);
+      if (cachedData) {
+        return res.json(cachedData);
+      }
+      
       const framework = await storage.getFramework(id);
       
       if (!framework) {
         return res.status(404).json({ message: "Framework not found" });
       }
       
+      // Cache the framework data
+      cacheData(cacheKey, framework);
       res.json(framework);
     } catch (error) {
       next(error);
@@ -62,7 +90,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid framework ID" });
       }
       
+      // Check cache first
+      const cacheKey = `${CACHE_KEYS.MODULES}_${frameworkId}`;
+      const cachedData = getCachedData(cacheKey);
+      if (cachedData) {
+        return res.json(cachedData);
+      }
+      
       const modules = await storage.getModulesByFrameworkId(frameworkId);
+      
+      // Cache the modules data
+      cacheData(cacheKey, modules);
       res.json(modules);
     } catch (error) {
       next(error);
