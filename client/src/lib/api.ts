@@ -218,3 +218,34 @@ export const scormApi = {
   getValue: learningTracking.getScormValue,
   commit: learningTracking.commitScorm
 };
+
+// User settings API functions
+export async function updateAiSettings(settings: { apiKey?: string; aiProvider?: string }): Promise<any> {
+  const res = await apiRequest("PATCH", "/api/user/ai-settings", settings);
+  return res.json();
+}
+
+export async function updatePassword(data: { currentPassword: string; newPassword: string }): Promise<{ message: string }> {
+  const res = await apiRequest("PATCH", "/api/user/password", data);
+  return res.json();
+}
+
+export async function updatePrivacySettings(settings: { 
+  allowAnalytics?: boolean; 
+  publicProfile?: boolean;
+  allowPersonalization?: boolean;
+}): Promise<{ message: string; user: any }> {
+  const res = await apiRequest("PATCH", "/api/user/privacy", settings);
+  return res.json();
+}
+
+export async function updateNotificationSettings(settings: {
+  learningReminders?: boolean;
+  frameworkUpdates?: boolean;
+  quizResults?: boolean;
+  productUpdates?: boolean;
+  emailFrequency?: 'immediately' | 'daily' | 'weekly' | 'none';
+}): Promise<{ message: string; user: any }> {
+  const res = await apiRequest("PATCH", "/api/user/notifications", settings);
+  return res.json();
+}
