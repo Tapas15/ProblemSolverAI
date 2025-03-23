@@ -148,7 +148,8 @@ export class MemStorage implements IStorage {
     const newFramework: Framework = { 
       ...framework, 
       id,
-      status: framework.status || "not_started"
+      status: framework.status || "not_started",
+      caseStudies: framework.caseStudies || null
     };
     this.frameworks.set(id, newFramework);
     return newFramework;
@@ -290,7 +291,8 @@ export class MemStorage implements IStorage {
       description: "Mutually Exclusive, Collectively Exhaustive approach to breaking down problems into non-overlapping components.",
       level: "Intermediate",
       duration: 45,
-      status: "not_started"
+      status: "not_started",
+      caseStudies: null
     };
     this.frameworks.set(meceId, mece);
     
