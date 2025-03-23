@@ -212,7 +212,8 @@ export class MemStorage implements IStorage {
       keyTakeaways: module.keyTakeaways || null,
       quizQuestions: module.quizQuestions || null,
       videoUrl: module.videoUrl || null,
-      resources: module.resources || null
+      resources: module.resources || null,
+      scormPath: module.scormPath || null
     };
     this.modules.set(id, newModule);
     return newModule;

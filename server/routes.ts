@@ -14,7 +14,7 @@ import { scormService } from "./services/scorm-service";
 import path from "path";
 import fs from "fs";
 import multer from "multer";
-import tar from "tar";
+import * as tar from "tar";
 import { createGunzip } from "node:zlib";
 import { createReadStream } from "node:fs";
 import { pipeline } from "node:stream/promises";
@@ -841,6 +841,215 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(updatedModule);
     } catch (error) {
       next(error);
+    }
+  });
+
+  // Configure multer storage for SCORM uploads
+  const scormStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      // Create directory if it doesn't exist
+      const uploadDir = './public/scorm-packages';
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
+      cb(null, uploadDir);
+    },
+    filename: (req, file, cb) => {
+      // Create a unique filename with timestamp
+      const uniquePrefix = Date.now() + '-';
+      cb(null, uniquePrefix + file.originalname);
+    }
+  });
+  
+  // Create multer upload instance
+  const scormUpload = multer({ 
+    storage: scormStorage,
+    limits: {
+      fileSize: 50 * 1024 * 1024, // 50MB file size limit
+    },
+    fileFilter: (req, file, cb) => {
+      // Accept only zip files
+      if (file.mimetype === 'application/zip' || 
+          file.mimetype === 'application/x-zip-compressed' ||
+          file.mimetype === 'application/octet-stream') {
+        cb(null, true);
+      } else {
+        cb(new Error('Only ZIP files are allowed for SCORM packages'));
+      }
+    }
+  });
+
+  // SCORM package upload route
+  app.post('/api/scorm/upload', scormUpload.single('scormPackage'), async (req, res, next) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: 'No file uploaded' });
+      }
+      
+      const { moduleId } = req.body;
+      
+      if (!moduleId) {
+        return res.status(400).json({ message: 'Module ID is required' });
+      }
+      
+      const parsedModuleId = parseInt(moduleId, 10);
+      if (isNaN(parsedModuleId)) {
+        return res.status(400).json({ message: 'Invalid module ID' });
+      }
+      
+      // Get the module
+      const module = await storage.getModule(parsedModuleId);
+      if (!module) {
+        return res.status(404).json({ message: 'Module not found' });
+      }
+      
+      // Extract the filename and create a directory for the package
+      const uploadedFilename = req.file.filename;
+      const packageName = path.basename(uploadedFilename, path.extname(uploadedFilename));
+      const extractPath = path.join('./public/scorm-packages', packageName);
+      
+      // Create directory if it doesn't exist
+      if (!fs.existsSync(extractPath)) {
+        fs.mkdirSync(extractPath, { recursive: true });
+      }
+      
+      // Extract the uploaded ZIP file
+      const extractFile = async () => {
+        try {
+          // Use extract-zip package which should be installed
+          const extractZip = require('extract-zip');
+          await extractZip(req.file!.path, { dir: path.resolve(extractPath) });
+          
+          // Check if the package has an imsmanifest.xml file (required for SCORM)
+          const manifestPath = path.join(extractPath, 'imsmanifest.xml');
+          if (fs.existsSync(manifestPath)) {
+            return manifestPath;
+          } else {
+            throw new Error('Invalid SCORM package: missing imsmanifest.xml');
+          }
+        } catch (error) {
+          throw error;
+        }
+      };
+      
+      await extractFile();
+      
+      // Delete the original zip file
+      fs.unlinkSync(req.file.path);
+      
+      // Update the module with the SCORM package path
+      // Find the index.html file in the extracted package
+      let indexPath = '';
+      const findIndexFile = (dir: string): string | null => {
+        const files = fs.readdirSync(dir);
+        
+        // Check if index.html exists in the current directory
+        if (files.includes('index.html')) {
+          return path.join(dir, 'index.html');
+        }
+        
+        // Look in subdirectories
+        for (const file of files) {
+          const filePath = path.join(dir, file);
+          if (fs.statSync(filePath).isDirectory()) {
+            const indexInSubdir = findIndexFile(filePath);
+            if (indexInSubdir) {
+              return indexInSubdir;
+            }
+          }
+        }
+        
+        return null;
+      };
+      
+      const indexFile = findIndexFile(extractPath);
+      if (!indexFile) {
+        throw new Error('Invalid SCORM package: no index.html found');
+      }
+      
+      // Get relative path from public directory
+      const relativePath = indexFile.replace('./public', '');
+      
+      // Update the module with the SCORM package path
+      const updatedModule = await storage.updateModule(parsedModuleId, {
+        scormPath: relativePath
+      });
+      
+      res.json({ 
+        message: 'SCORM package uploaded and extracted successfully',
+        module: updatedModule
+      });
+      
+    } catch (error: any) {
+      console.error('SCORM upload error:', error);
+      
+      // Clean up any partially uploaded files
+      if (req.file && fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+      
+      res.status(500).json({ message: `SCORM upload failed: ${error.message}` });
+    }
+  });
+
+  // SCORM package list route
+  app.get('/api/scorm/packages', async (req, res, next) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    
+    try {
+      const scormPackagesDir = './public/scorm-packages';
+      
+      if (!fs.existsSync(scormPackagesDir)) {
+        return res.json([]);
+      }
+      
+      const packages = fs.readdirSync(scormPackagesDir)
+        .filter(item => {
+          const itemPath = path.join(scormPackagesDir, item);
+          return fs.statSync(itemPath).isDirectory();
+        })
+        .map(dir => {
+          const manifestPath = path.join(scormPackagesDir, dir, 'imsmanifest.xml');
+          const hasManifest = fs.existsSync(manifestPath);
+          
+          return {
+            name: dir,
+            path: `/scorm-packages/${dir}`,
+            isValid: hasManifest,
+            uploadedAt: fs.statSync(path.join(scormPackagesDir, dir)).birthtime
+          };
+        });
+      
+      res.json(packages);
+      
+    } catch (error: any) {
+      console.error('Error listing SCORM packages:', error);
+      res.status(500).json({ message: `Failed to list SCORM packages: ${error.message}` });
+    }
+  });
+  
+  // SCORM package delete route
+  app.delete('/api/scorm/packages/:name', async (req, res, next) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    
+    try {
+      const packageName = req.params.name;
+      const packagePath = path.join('./public/scorm-packages', packageName);
+      
+      if (!fs.existsSync(packagePath)) {
+        return res.status(404).json({ message: 'SCORM package not found' });
+      }
+      
+      // Remove the package directory recursively
+      fs.rmSync(packagePath, { recursive: true, force: true });
+      
+      res.status(204).send();
+      
+    } catch (error: any) {
+      console.error('Error deleting SCORM package:', error);
+      res.status(500).json({ message: `Failed to delete SCORM package: ${error.message}` });
     }
   });
 

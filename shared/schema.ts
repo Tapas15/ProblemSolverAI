@@ -56,6 +56,7 @@ export const modules = pgTable("modules", {
   resources: text("resources"), // Additional learning resources
   completed: boolean("completed").default(false),
   order: integer("order").notNull(),
+  scormPath: text("scorm_path"), // Path to SCORM package index.html
 });
 
 export const insertModuleSchema = createInsertSchema(modules).pick({
@@ -70,6 +71,7 @@ export const insertModuleSchema = createInsertSchema(modules).pick({
   resources: true,
   completed: true,
   order: true,
+  scormPath: true,
 });
 
 // User Progress schema

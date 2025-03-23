@@ -2,6 +2,14 @@ import { Framework, Module, UserProgress, AiConversation, Quiz, QuizAttempt } fr
 import { apiRequest } from "./queryClient";
 import learningTracking from "./learning-tracking";
 
+// Interface for SCORM package metadata
+export interface ScormPackage {
+  name: string;
+  path: string;
+  isValid: boolean;
+  uploadedAt: string;
+}
+
 export async function getFrameworks(): Promise<Framework[]> {
   const res = await apiRequest("GET", "/api/frameworks");
   return res.json();
@@ -166,6 +174,39 @@ export async function trackQuizAttempt(
   timeTaken: number
 ): Promise<any> {
   return learningTracking.trackQuizAttempt(quizId, quizTitle, frameworkId, score, maxScore, passed, timeTaken);
+}
+
+// SCORM package management functions
+export async function getScormPackages(): Promise<ScormPackage[]> {
+  const res = await apiRequest("GET", "/api/scorm/packages");
+  return res.json();
+}
+
+export async function uploadScormPackage(file: File, moduleId: number): Promise<{ message: string; module: Module }> {
+  const formData = new FormData();
+  formData.append('scormPackage', file);
+  formData.append('moduleId', moduleId.toString());
+  
+  const res = await fetch('/api/scorm/upload', {
+    method: 'POST',
+    body: formData,
+    // Don't set Content-Type header, let the browser set it with the boundary
+    headers: {
+      // Include auth credentials but don't set content-type
+    },
+    credentials: 'same-origin'
+  });
+  
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.message || 'Failed to upload SCORM package');
+  }
+  
+  return res.json();
+}
+
+export async function deleteScormPackage(name: string): Promise<void> {
+  await apiRequest("DELETE", `/api/scorm/packages/${encodeURIComponent(name)}`);
 }
 
 // SCORM API functions
