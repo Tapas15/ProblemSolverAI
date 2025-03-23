@@ -271,7 +271,7 @@ const DashboardPage = () => {
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <Link href="/">
+                      <Link to="/">
                         <Button>
                           Browse Frameworks
                         </Button>
@@ -347,7 +347,7 @@ const DashboardPage = () => {
                                 Score: {Math.round((attempt.score / attempt.maxScore) * 100)}%
                               </span>
                             </div>
-                            <Link href={`/quizzes/${attempt.quizId}`}>
+                            <Link to={`/quizzes/${attempt.quizId}`}>
                               <Button variant="outline" size="sm">
                                 Try Again
                               </Button>
@@ -366,7 +366,7 @@ const DashboardPage = () => {
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <Link href="/">
+                      <Link to="/">
                         <Button>
                           Browse Frameworks
                         </Button>
