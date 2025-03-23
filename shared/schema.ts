@@ -145,16 +145,26 @@ export const quizAttempts = pgTable("quiz_attempts", {
   passed: boolean("passed").notNull(),
 });
 
-export const insertQuizAttemptSchema = createInsertSchema(quizAttempts).pick({
-  userId: true,
-  quizId: true,
-  score: true,
-  maxScore: true,
-  answers: true,
-  timeTaken: true,
-  passed: true,
-  completedAt: true,
-});
+export const insertQuizAttemptSchema = createInsertSchema(quizAttempts)
+  .pick({
+    quizId: true,  // userId will be added by the server
+    score: true,
+    maxScore: true,
+    answers: true,
+    timeTaken: true,
+    passed: true,
+    completedAt: true,
+  })
+  .transform((data) => {
+    // If completedAt is a string, convert it to a Date
+    if (typeof data.completedAt === 'string') {
+      return {
+        ...data,
+        completedAt: new Date(data.completedAt)
+      };
+    }
+    return data;
+  });
 
 // Type exports
 export type InsertUser = z.infer<typeof insertUserSchema>;

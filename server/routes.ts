@@ -484,20 +484,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (!req.isAuthenticated()) return res.sendStatus(401);
     
     try {
+      // Add userId to the body before validation
+      const requestDataWithUserId = {
+        ...req.body,
+        userId: req.user!.id
+      };
+      
       // Validate attempt data
-      const parseResult = insertQuizAttemptSchema.safeParse(req.body);
+      const parseResult = insertQuizAttemptSchema.safeParse(requestDataWithUserId);
       
       if (!parseResult.success) {
+        console.log("Quiz attempt validation error:", parseResult.error.format());
         return res.status(400).json({ 
           message: "Invalid quiz attempt data", 
           errors: parseResult.error.format() 
         });
       }
       
-      const attemptData = {
-        ...parseResult.data,
-        userId: req.user!.id
-      };
+      const attemptData = parseResult.data;
       
       // Check if quiz exists
       const quiz = await storage.getQuiz(attemptData.quizId);
@@ -508,6 +512,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const attempt = await storage.createQuizAttempt(attemptData);
       res.status(201).json(attempt);
     } catch (error) {
+      console.error("Error creating quiz attempt:", error);
       next(error);
     }
   });

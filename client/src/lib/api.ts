@@ -113,14 +113,18 @@ export async function submitQuizAttempt(
   maxScore: number,
   timeTaken?: number
 ): Promise<QuizAttempt> {
+  // Calculate if passed based on the quiz's passing score or default to 70%
+  const passingThreshold = 0.7; // 70% by default
+  const passed = score >= (maxScore * passingThreshold);
+  
   const res = await apiRequest("POST", "/api/quiz-attempts", {
     quizId,
     answers,
     score,
     maxScore,
-    passed: score >= (maxScore * 0.7), // 70% passing threshold by default
+    passed,
     timeTaken,
-    completedAt: new Date()  // Add the completedAt field which is required
+    completedAt: new Date() // This will be converted to proper date on the server
   });
   return res.json();
 }
