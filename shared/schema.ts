@@ -164,11 +164,11 @@ export const insertQuizAttemptSchema = createInsertSchema(quizAttempts)
 // xAPI Statements schema
 export const xapiStatements = pgTable("xapi_statements", {
   id: serial("id").primaryKey(),
-  userId: integer("userid").notNull(),
+  userId: integer("user_id").notNull(),
   verb: text("verb").notNull(), // e.g., "completed", "attempted", "experienced"
   object: text("object").notNull(), // The activity or thing being interacted with
-  objectType: text("objecttype").notNull(), // e.g., "module", "quiz", "framework"
-  objectId: integer("objectid").notNull(), // ID of the related object
+  objectType: text("object_type").notNull(), // e.g., "module", "quiz", "framework"
+  objectId: integer("object_id").notNull(), // ID of the related object
   result: text("result"), // JSON string with score, success, etc.
   context: text("context"), // JSON string with contextual information
   timestamp: timestamp("timestamp").defaultNow(),
