@@ -270,47 +270,21 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
               <div className="mb-8">
                 <h3 className="text-lg font-semibold font-header text-primary mb-4">Case Studies</h3>
                 
-                <div className="space-y-4">
+                {framework.caseStudies ? (
                   <div className="border border-gray-200 rounded-lg overflow-hidden">
                     <div className="p-4">
-                      <h4 className="font-medium mb-2">Retail Profitability Analysis</h4>
-                      <p className="text-sm text-gray-600 mb-3">How a major retail chain used {framework.name} to analyze and improve store profitability across their network.</p>
-                      <Button variant="link" className="text-sm font-medium text-secondary p-0 h-auto">
-                        View Case Study
-                      </Button>
+                      <div className="prose prose-sm max-w-none">
+                        <div dangerouslySetInnerHTML={{ __html: framework.caseStudies }} />
+                      </div>
                     </div>
                   </div>
-
+                ) : (
                   <div className="border border-gray-200 rounded-lg overflow-hidden">
-                    <div className="p-4">
-                      <h4 className="font-medium mb-2">Healthcare Operations Optimization</h4>
-                      <p className="text-sm text-gray-600 mb-3">A case study on how a hospital network applied {framework.name} to streamline patient care workflows and reduce wait times.</p>
-                      <Button variant="link" className="text-sm font-medium text-secondary p-0 h-auto">
-                        View Case Study
-                      </Button>
+                    <div className="p-4 text-center py-8">
+                      <p className="text-gray-500">Case studies for this framework will be available soon.</p>
                     </div>
                   </div>
-
-                  <div className="border border-gray-200 rounded-lg overflow-hidden">
-                    <div className="p-4">
-                      <h4 className="font-medium mb-2">Tech Startup Market Entry</h4>
-                      <p className="text-sm text-gray-600 mb-3">How a SaaS startup used {framework.name} to evaluate and prioritize market entry strategies for international expansion.</p>
-                      <Button variant="link" className="text-sm font-medium text-secondary p-0 h-auto">
-                        View Case Study
-                      </Button>
-                    </div>
-                  </div>
-                  
-                  <div className="border border-gray-200 rounded-lg overflow-hidden">
-                    <div className="p-4">
-                      <h4 className="font-medium mb-2">Customer Satisfaction Framework</h4>
-                      <p className="text-sm text-gray-600 mb-3">Creating a structured approach to analyze and address customer satisfaction issues in a service business.</p>
-                      <Button variant="link" className="text-sm font-medium text-secondary p-0 h-auto">
-                        View Case Study
-                      </Button>
-                    </div>
-                  </div>
-                </div>
+                )}
               </div>
             )}
             
