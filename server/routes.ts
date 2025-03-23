@@ -34,6 +34,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication routes
   setupAuth(app);
   
+  // User settings routes
+  app.patch("/api/user/ai-settings", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+      
+      const updateSchema = z.object({
+        apiKey: z.string().optional(),
+        aiProvider: z.string().optional(),
+      });
+      
+      const validatedData = updateSchema.parse(req.body);
+      const updatedUser = await storage.updateUser(req.user.id, validatedData);
+      
+      if (!updatedUser) {
+        return res.status(404).send("User not found");
+      }
+      
+      // Remove password from response
+      const { password, ...userWithoutPassword } = updatedUser;
+      
+      // Update user in session
+      req.login(updatedUser, (err) => {
+        if (err) return next(err);
+        res.status(200).json(userWithoutPassword);
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
+  
   // Framework routes
   app.get("/api/frameworks", async (req, res, next) => {
     try {

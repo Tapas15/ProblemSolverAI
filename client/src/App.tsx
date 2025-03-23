@@ -10,6 +10,8 @@ import AiAssistantPage from "@/pages/ai-assistant-page";
 import QuizPage from "@/pages/quiz-page";
 import TakeQuizPage from "@/pages/take-quiz-page";
 import DashboardPage from "@/pages/dashboard-page";
+import ProfilePage from "@/pages/profile-page";
+import SettingsPage from "@/pages/settings-page";
 import ScormAdminPage from "@/pages/scorm-admin-page";
 import { AuthProvider } from "@/hooks/use-auth";
 import { ProtectedRoute } from "@/lib/protected-route";
@@ -23,10 +25,10 @@ function Router() {
       <ProtectedRoute path="/quizzes/:frameworkId" component={QuizPage} />
       <ProtectedRoute path="/quiz/:frameworkId/:quizId" component={TakeQuizPage} />
       <ProtectedRoute path="/dashboard" component={DashboardPage} />
+      <ProtectedRoute path="/profile" component={ProfilePage} />
+      <ProtectedRoute path="/settings" component={SettingsPage} />
       <ProtectedRoute path="/scorm-admin" component={ScormAdminPage} />
       <ProtectedRoute path="/learning-path" component={HomePage} /> {/* Temporary redirect to home */}
-      <ProtectedRoute path="/profile" component={DashboardPage} /> {/* Temporary redirect to dashboard */}
-      <ProtectedRoute path="/settings" component={DashboardPage} /> {/* Temporary redirect to dashboard */}
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
     </Switch>
