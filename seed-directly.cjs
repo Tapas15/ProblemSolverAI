@@ -11,38 +11,50 @@ let authCookie = null;
 // Function to authenticate first
 async function authenticate() {
   try {
-    // Register a test user
+    // Try multiple usernames for registration
+    const randomId = Math.floor(Math.random() * 100000);
+    
+    // Try registering with a unique email and username
     const userData = {
-      username: "admin" + Math.floor(Math.random() * 10000),
+      username: "admin" + randomId,
       password: "password123",
-      email: "admin@example.com",
+      email: `admin${randomId}@example.com`, // Use unique email
       name: "Admin User"
     };
     
+    console.log(`Attempting to register user: ${userData.username}`);
     const response = await makeRequest('POST', '/api/register', userData);
     
     if (response.statusCode === 201 && response.headers && response.headers['set-cookie']) {
       // Extract and store the cookie
       authCookie = response.headers['set-cookie'][0].split(';')[0];
-      console.log("Authentication successful");
+      console.log("Authentication successful through registration");
       return true;
     } else {
-      console.log("Authentication failed, trying login");
+      console.log("Registration failed, trying existing users...");
       
-      // Try logging in if registration fails
-      const loginResponse = await makeRequest('POST', '/api/login', {
-        username: userData.username,
-        password: userData.password
-      });
+      // Try a few common test accounts that might have been created earlier
+      const testAccounts = [
+        { username: "admin", password: "password123" },
+        { username: "admin7167", password: "password123" }, // From last run
+        { username: "test", password: "password123" },
+        { username: "user", password: "password123" }
+      ];
       
-      if (loginResponse.statusCode === 200 && loginResponse.headers && loginResponse.headers['set-cookie']) {
-        authCookie = loginResponse.headers['set-cookie'][0].split(';')[0];
-        console.log("Login successful");
-        return true;
+      // Try each account
+      for (const account of testAccounts) {
+        console.log(`Trying to login with username: ${account.username}`);
+        const loginResponse = await makeRequest('POST', '/api/login', account);
+        
+        if (loginResponse.statusCode === 200 && loginResponse.headers && loginResponse.headers['set-cookie']) {
+          authCookie = loginResponse.headers['set-cookie'][0].split(';')[0];
+          console.log(`Login successful with username: ${account.username}`);
+          return true;
+        }
       }
     }
     
-    console.error("Failed to authenticate");
+    console.error("Failed to authenticate with any account");
     return false;
   } catch (error) {
     console.error("Authentication error:", error);
@@ -348,52 +360,58 @@ async function updateQuizzes() {
     }
   ];
   
+  // Check if we have any quizzes already
+  const allQuizzesResponse = await makeRequest('GET', '/api/quizzes');
+  const quizzesExist = allQuizzesResponse.data && Array.isArray(allQuizzesResponse.data) && allQuizzesResponse.data.length > 0;
+  
   for (const quiz of quizTemplates) {
     try {
-      // Check if quiz already exists
-      const response = await makeRequest('GET', `/api/quizzes?frameworkId=${quiz.frameworkId}&level=${quiz.level}`);
-      
-      const quizzes = response.data;
-      
-      if (quizzes && quizzes.length > 0) {
-        // Update existing quiz
-        const existingQuiz = quizzes[0];
-        console.log(`Updating ${quiz.level} quiz for framework ID ${quiz.frameworkId}`);
+      if (quizzesExist) {
+        // Check if quiz already exists for this framework and level
+        const response = await makeRequest('GET', `/api/quizzes?frameworkId=${quiz.frameworkId}&level=${quiz.level}`);
+        const existingQuizzes = response.data;
         
-        const updateResponse = await makeRequest('PATCH', `/api/quizzes/${existingQuiz.id}`, {
-          title: quiz.title,
-          description: quiz.description,
-          questions: quiz.questions,
-          timeLimit: quiz.timeLimit,
-          passingScore: quiz.passingScore,
-          isActive: true
-        });
-        
-        if (updateResponse.statusCode === 200) {
-          console.log(`Successfully updated ${quiz.level} quiz for framework ID ${quiz.frameworkId}`);
-        } else {
-          console.error(`Failed to update quiz: ${JSON.stringify(updateResponse)}`);
+        if (existingQuizzes && existingQuizzes.length > 0) {
+          // Update existing quiz
+          const existingQuiz = existingQuizzes[0];
+          console.log(`Updating ${quiz.level} quiz for framework ID ${quiz.frameworkId}`);
+          
+          const updateResponse = await makeRequest('PATCH', `/api/quizzes/${existingQuiz.id}`, {
+            title: quiz.title,
+            description: quiz.description,
+            questions: quiz.questions,
+            timeLimit: quiz.timeLimit,
+            passingScore: quiz.passingScore,
+            isActive: true
+          });
+          
+          if (updateResponse.statusCode === 200) {
+            console.log(`Successfully updated ${quiz.level} quiz for framework ID ${quiz.frameworkId}`);
+          } else {
+            console.error(`Failed to update quiz: ${JSON.stringify(updateResponse)}`);
+          }
+          continue;
         }
+      }
+      
+      // Create new quiz
+      console.log(`Creating ${quiz.level} quiz for framework ID ${quiz.frameworkId}`);
+      
+      const createResponse = await makeRequest('POST', '/api/quizzes', {
+        frameworkId: quiz.frameworkId,
+        title: quiz.title,
+        description: quiz.description,
+        level: quiz.level,
+        questions: quiz.questions,
+        timeLimit: quiz.timeLimit,
+        passingScore: quiz.passingScore,
+        isActive: true
+      });
+      
+      if (createResponse.statusCode === 201) {
+        console.log(`Successfully created ${quiz.level} quiz for framework ID ${quiz.frameworkId}`);
       } else {
-        // Create new quiz
-        console.log(`Creating ${quiz.level} quiz for framework ID ${quiz.frameworkId}`);
-        
-        const createResponse = await makeRequest('POST', '/api/quizzes', {
-          frameworkId: quiz.frameworkId,
-          title: quiz.title,
-          description: quiz.description,
-          level: quiz.level,
-          questions: quiz.questions,
-          timeLimit: quiz.timeLimit,
-          passingScore: quiz.passingScore,
-          isActive: true
-        });
-        
-        if (createResponse.statusCode === 201) {
-          console.log(`Successfully created ${quiz.level} quiz for framework ID ${quiz.frameworkId}`);
-        } else {
-          console.error(`Failed to create quiz: ${JSON.stringify(createResponse)}`);
-        }
+        console.error(`Failed to create quiz: ${JSON.stringify(createResponse)}`);
       }
     } catch (error) {
       console.error(`Error processing ${quiz.level} quiz for framework ${quiz.frameworkId}:`, error);
