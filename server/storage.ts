@@ -1,8 +1,9 @@
-import { users, frameworks, modules, userProgress, aiConversations } from "@shared/schema";
+import { users, frameworks, modules, userProgress, aiConversations, quizzes, quizAttempts } from "@shared/schema";
 import type { 
   User, InsertUser, Framework, InsertFramework, 
   Module, InsertModule, UserProgress, InsertUserProgress, 
-  AiConversation, InsertAiConversation 
+  AiConversation, InsertAiConversation,
+  Quiz, InsertQuiz, QuizAttempt, InsertQuizAttempt
 } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";

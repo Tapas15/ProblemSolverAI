@@ -1,6 +1,10 @@
-import { users, frameworks, modules, userProgress, aiConversations } from "@shared/schema";
+import { users, frameworks, modules, userProgress, aiConversations, quizzes, quizAttempts } from "@shared/schema";
 import { eq, and, desc } from "drizzle-orm";
-import type { User, InsertUser, Framework, InsertFramework, Module, InsertModule, UserProgress, InsertUserProgress, AiConversation, InsertAiConversation } from "@shared/schema";
+import type { 
+  User, InsertUser, Framework, InsertFramework, Module, InsertModule, 
+  UserProgress, InsertUserProgress, AiConversation, InsertAiConversation,
+  Quiz, InsertQuiz, QuizAttempt, InsertQuizAttempt
+} from "@shared/schema";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import { IStorage } from "./storage";
@@ -199,6 +203,78 @@ export class PostgresStorage implements IStorage {
       .delete(aiConversations)
       .where(eq(aiConversations.id, id))
       .execute();
+  }
+  
+  // Quiz methods
+  async getQuiz(id: number): Promise<Quiz | undefined> {
+    const results = await db.select().from(quizzes).where(eq(quizzes.id, id)).execute();
+    return results[0];
+  }
+  
+  async getQuizzesByFramework(frameworkId: number, level?: string): Promise<Quiz[]> {
+    let query = db.select().from(quizzes).where(eq(quizzes.frameworkId, frameworkId));
+    
+    if (level) {
+      query = query.where(eq(quizzes.level, level));
+    }
+    
+    return await query.execute();
+  }
+  
+  async createQuiz(quiz: InsertQuiz): Promise<Quiz> {
+    const results = await db.insert(quizzes).values(quiz).returning().execute();
+    return results[0];
+  }
+  
+  async updateQuiz(id: number, quizData: Partial<Quiz>): Promise<Quiz | undefined> {
+    const results = await db
+      .update(quizzes)
+      .set(quizData)
+      .where(eq(quizzes.id, id))
+      .returning()
+      .execute();
+    return results[0];
+  }
+  
+  async deleteQuiz(id: number): Promise<void> {
+    await db
+      .delete(quizzes)
+      .where(eq(quizzes.id, id))
+      .execute();
+  }
+  
+  // Quiz Attempt methods
+  async getQuizAttempt(id: number): Promise<QuizAttempt | undefined> {
+    const results = await db.select().from(quizAttempts).where(eq(quizAttempts.id, id)).execute();
+    return results[0];
+  }
+  
+  async getUserQuizAttempts(userId: number): Promise<QuizAttempt[]> {
+    return await db
+      .select()
+      .from(quizAttempts)
+      .where(eq(quizAttempts.userId, userId))
+      .execute();
+  }
+  
+  async getQuizAttemptsByQuiz(quizId: number): Promise<QuizAttempt[]> {
+    return await db
+      .select()
+      .from(quizAttempts)
+      .where(eq(quizAttempts.quizId, quizId))
+      .execute();
+  }
+  
+  async createQuizAttempt(attempt: InsertQuizAttempt): Promise<QuizAttempt> {
+    const results = await db
+      .insert(quizAttempts)
+      .values({
+        ...attempt,
+        completedAt: new Date()
+      })
+      .returning()
+      .execute();
+    return results[0];
   }
   
   // Seed data for frameworks and modules

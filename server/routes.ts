@@ -3,7 +3,10 @@ import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { z } from "zod";
-import { insertAiConversationSchema, AiConversation } from "@shared/schema";
+import { 
+  insertAiConversationSchema, AiConversation,
+  insertQuizSchema, insertQuizAttemptSchema
+} from "@shared/schema";
 import OpenAI from "openai";
 
 export async function registerRoutes(app: Express): Promise<Server> {
