@@ -206,7 +206,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     try {
       const userId = req.user!.id;
+      
+      // Check cache first
+      const cacheKey = CACHE_KEYS.USER_PROGRESS(userId);
+      const cachedData = getCachedData(cacheKey);
+      if (cachedData) {
+        return res.json(cachedData);
+      }
+      
       const progress = await storage.getUserProgress(userId);
+      
+      // Cache the progress data
+      cacheData(cacheKey, progress);
       res.json(progress);
     } catch (error) {
       next(error);
@@ -579,7 +590,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     try {
       const userId = req.user!.id;
+      
+      // Check cache first
+      const cacheKey = CACHE_KEYS.USER_QUIZ_ATTEMPTS(userId);
+      const cachedData = getCachedData(cacheKey);
+      if (cachedData) {
+        return res.json(cachedData);
+      }
+      
       const attempts = await storage.getUserQuizAttempts(userId);
+      
+      // Cache the attempts data
+      cacheData(cacheKey, attempts);
       res.json(attempts);
     } catch (error) {
       next(error);
@@ -596,7 +618,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid quiz ID" });
       }
       
+      // Check cache first
+      const cacheKey = CACHE_KEYS.QUIZ_ATTEMPTS(quizId);
+      const cachedData = getCachedData(cacheKey);
+      if (cachedData) {
+        return res.json(cachedData);
+      }
+      
       const attempts = await storage.getQuizAttemptsByQuiz(quizId);
+      
+      // Cache the attempts data
+      cacheData(cacheKey, attempts);
       res.json(attempts);
     } catch (error) {
       next(error);
@@ -633,6 +665,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const attempt = await storage.createQuizAttempt(attemptData);
+      
+      // Invalidate quiz attempts caches
+      invalidateCache(CACHE_KEYS.USER_QUIZ_ATTEMPTS(req.user!.id));
+      invalidateCache(CACHE_KEYS.QUIZ_ATTEMPTS(attemptData.quizId));
       
       // Track quiz attempt with xAPI
       if (req.user) {
