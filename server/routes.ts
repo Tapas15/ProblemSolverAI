@@ -56,6 +56,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Create module
+  app.post("/api/modules", async (req, res, next) => {
+    try {
+      const moduleData = req.body;
+      
+      if (!moduleData) {
+        return res.status(400).json({ message: "No data provided" });
+      }
+      
+      if (!moduleData.frameworkId) {
+        return res.status(400).json({ message: "Framework ID is required" });
+      }
+      
+      if (!moduleData.name) {
+        return res.status(400).json({ message: "Module name is required" });
+      }
+      
+      const framework = await storage.getFramework(moduleData.frameworkId);
+      
+      if (!framework) {
+        return res.status(404).json({ message: "Framework not found" });
+      }
+      
+      const newModule = await storage.createModule(moduleData);
+      res.status(201).json(newModule);
+    } catch (error) {
+      next(error);
+    }
+  });
+  
   // Update module content
   app.patch("/api/modules/:id", async (req, res, next) => {
     try {
