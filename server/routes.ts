@@ -1,6 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { setupAuth } from "./auth";
+import { setupAuth, hashPassword, comparePasswords } from "./auth";
 import { storage } from "./storage";
 import { z } from "zod";
 import { 
@@ -60,6 +60,178 @@ export async function registerRoutes(app: Express): Promise<Server> {
       req.login(updatedUser, (err) => {
         if (err) return next(err);
         res.status(200).json(userWithoutPassword);
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
+  
+  // Update user password
+  app.patch("/api/user/password", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+      
+      const updateSchema = z.object({
+        currentPassword: z.string(),
+        newPassword: z.string().min(6, "Password must be at least 6 characters"),
+      });
+      
+      const validatedData = updateSchema.parse(req.body);
+      
+      // Get the user with password
+      const user = await storage.getUser(req.user.id);
+      
+      if (!user) {
+        return res.status(404).send("User not found");
+      }
+      
+      // Verify current password
+      const isPasswordValid = await comparePasswords(validatedData.currentPassword, user.password);
+      
+      if (!isPasswordValid) {
+        return res.status(400).json({ message: "Current password is incorrect" });
+      }
+      
+      // Hash the new password
+      const hashedPassword = await hashPassword(validatedData.newPassword);
+      
+      // Update password
+      const updatedUser = await storage.updateUser(req.user.id, { password: hashedPassword });
+      
+      if (!updatedUser) {
+        return res.status(404).send("User not found");
+      }
+      
+      res.status(200).json({ message: "Password updated successfully" });
+    } catch (error) {
+      next(error);
+    }
+  });
+  
+  // Update user privacy settings
+  app.patch("/api/user/privacy", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+      
+      const updateSchema = z.object({
+        allowAnalytics: z.boolean().optional(),
+        publicProfile: z.boolean().optional(), 
+        allowPersonalization: z.boolean().optional(),
+      });
+      
+      const validatedData = updateSchema.parse(req.body);
+      
+      // Store privacy settings in userPreferences field as JSON
+      let userPreferences = {};
+      
+      // Get existing preferences if they exist
+      if (req.user.userPreferences) {
+        try {
+          userPreferences = typeof req.user.userPreferences === 'string' 
+            ? JSON.parse(req.user.userPreferences) 
+            : req.user.userPreferences;
+        } catch (e) {
+          console.error("Failed to parse user preferences:", e);
+        }
+      }
+      
+      // Update preferences with new values
+      const updatedPreferences = {
+        ...userPreferences,
+        privacy: {
+          ...((userPreferences as any)?.privacy || {}),
+          ...validatedData
+        }
+      };
+      
+      // Update user with new preferences
+      const updatedUser = await storage.updateUser(req.user.id, { 
+        userPreferences: JSON.stringify(updatedPreferences) 
+      });
+      
+      if (!updatedUser) {
+        return res.status(404).send("User not found");
+      }
+      
+      // Remove password from response
+      const { password, ...userWithoutPassword } = updatedUser;
+      
+      // Update user in session
+      req.login(updatedUser, (err) => {
+        if (err) return next(err);
+        res.status(200).json({ 
+          message: "Privacy settings updated successfully",
+          user: userWithoutPassword
+        });
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
+  
+  // Update user notification settings
+  app.patch("/api/user/notifications", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+      
+      const updateSchema = z.object({
+        learningReminders: z.boolean().optional(),
+        frameworkUpdates: z.boolean().optional(),
+        quizResults: z.boolean().optional(),
+        productUpdates: z.boolean().optional(),
+        emailFrequency: z.enum(['immediately', 'daily', 'weekly', 'none']).optional()
+      });
+      
+      const validatedData = updateSchema.parse(req.body);
+      
+      // Store notification settings in userPreferences field as JSON
+      let userPreferences = {};
+      
+      // Get existing preferences if they exist
+      if (req.user.userPreferences) {
+        try {
+          userPreferences = typeof req.user.userPreferences === 'string' 
+            ? JSON.parse(req.user.userPreferences) 
+            : req.user.userPreferences;
+        } catch (e) {
+          console.error("Failed to parse user preferences:", e);
+        }
+      }
+      
+      // Update preferences with new values
+      const updatedPreferences = {
+        ...userPreferences,
+        notifications: {
+          ...((userPreferences as any)?.notifications || {}),
+          ...validatedData
+        }
+      };
+      
+      // Update user with new preferences
+      const updatedUser = await storage.updateUser(req.user.id, { 
+        userPreferences: JSON.stringify(updatedPreferences) 
+      });
+      
+      if (!updatedUser) {
+        return res.status(404).send("User not found");
+      }
+      
+      // Remove password from response
+      const { password, ...userWithoutPassword } = updatedUser;
+      
+      // Update user in session
+      req.login(updatedUser, (err) => {
+        if (err) return next(err);
+        res.status(200).json({ 
+          message: "Notification settings updated successfully",
+          user: userWithoutPassword
+        });
       });
     } catch (error) {
       next(error);
