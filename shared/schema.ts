@@ -46,6 +46,12 @@ export const modules = pgTable("modules", {
   frameworkId: integer("framework_id").notNull(),
   name: text("name").notNull(),
   description: text("description").notNull(),
+  content: text("content"), // Detailed HTML/markdown content
+  examples: text("examples"), // Practical examples
+  keyTakeaways: text("key_takeaways"), // Key points to remember
+  quizQuestions: text("quiz_questions"), // JSON string of quiz questions
+  videoUrl: text("video_url"), // URL to video content if any
+  resources: text("resources"), // Additional learning resources
   completed: boolean("completed").default(false),
   order: integer("order").notNull(),
 });
@@ -54,6 +60,12 @@ export const insertModuleSchema = createInsertSchema(modules).pick({
   frameworkId: true,
   name: true,
   description: true,
+  content: true,
+  examples: true,
+  keyTakeaways: true,
+  quizQuestions: true,
+  videoUrl: true,
+  resources: true,
   completed: true,
   order: true,
 });
