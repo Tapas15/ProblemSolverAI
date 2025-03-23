@@ -49,9 +49,9 @@ const Navbar: React.FC = () => {
                 AI Assistant
               </span>
             </Link>
-            <Link to="/resources">
-              <span className={`py-2 px-1 ${location === '/resources' ? 'border-b-2 border-secondary' : 'hover:border-b-2 hover:border-secondary transition-all'}`}>
-                Resources
+            <Link to="/dashboard">
+              <span className={`py-2 px-1 ${location === '/dashboard' ? 'border-b-2 border-secondary' : 'hover:border-b-2 hover:border-secondary transition-all'}`}>
+                Dashboard
               </span>
             </Link>
           </div>
@@ -87,7 +87,7 @@ const Navbar: React.FC = () => {
                   <Link to="/settings" className="w-full">Account Settings</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <Link to="/progress" className="w-full">Learning Progress</Link>
+                  <Link to="/dashboard" className="w-full">My Dashboard</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="text-red-500" onClick={handleLogout}>
@@ -125,9 +125,9 @@ const Navbar: React.FC = () => {
                 AI Assistant
               </span>
             </Link>
-            <Link to="/resources" onClick={() => setMobileMenuOpen(false)}>
-              <span className={`block py-2 px-1 ${location === '/resources' ? 'text-secondary' : 'text-white'}`}>
-                Resources
+            <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)}>
+              <span className={`block py-2 px-1 ${location === '/dashboard' ? 'text-secondary' : 'text-white'}`}>
+                Dashboard
               </span>
             </Link>
             <div className="relative">

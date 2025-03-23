@@ -9,6 +9,7 @@ import FrameworkPage from "@/pages/framework-page";
 import AiAssistantPage from "@/pages/ai-assistant-page";
 import QuizPage from "@/pages/quiz-page";
 import TakeQuizPage from "@/pages/take-quiz-page";
+import DashboardPage from "@/pages/dashboard-page";
 import { AuthProvider } from "@/hooks/use-auth";
 import { ProtectedRoute } from "@/lib/protected-route";
 
@@ -20,6 +21,7 @@ function Router() {
       <ProtectedRoute path="/ai-assistant" component={AiAssistantPage} />
       <ProtectedRoute path="/quizzes/:frameworkId" component={QuizPage} />
       <ProtectedRoute path="/quiz/:frameworkId/:quizId" component={TakeQuizPage} />
+      <ProtectedRoute path="/dashboard" component={DashboardPage} />
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
     </Switch>
