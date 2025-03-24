@@ -6,9 +6,20 @@ import FrameworkDetail from './framework-detail';
 import { Framework, Module, UserProgress } from '@shared/schema';
 import { Skeleton } from '@/components/ui/skeleton';
 
-// Create empty modules array with the right type for use when we only need the length
+// Create a properly typed empty module placeholder
+const EMPTY_MODULE: Module = {
+  id: 0,
+  frameworkId: 0,
+  title: '',
+  content: '',
+  order: 0,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+} as Module;
+
+// Create empty modules array with properly typed elements
 const createEmptyModules = (count: number): Module[] => {
-  return Array(count).fill({} as Module);
+  return Array(count).fill(EMPTY_MODULE);
 };
 
 const FrameworkGrid: React.FC = () => {
@@ -104,7 +115,7 @@ const FrameworkGrid: React.FC = () => {
                 <div key={framework.id} onClick={() => handleFrameworkClick(framework.id)} className="cursor-pointer">
                   <FrameworkCard 
                     framework={framework}
-                    modules={Array(totalModules).fill({})} // Create array with correct length
+                    modules={createEmptyModules(totalModules)}
                     progressStatus={status}
                     completedModules={completedModules}
                   />
@@ -125,7 +136,7 @@ const FrameworkGrid: React.FC = () => {
                 <div key={framework.id} onClick={() => handleFrameworkClick(framework.id)} className="cursor-pointer">
                   <FrameworkCard 
                     framework={framework}
-                    modules={Array(totalModules).fill({})} // Create array with correct length
+                    modules={createEmptyModules(totalModules)}
                     progressStatus={status}
                     completedModules={completedModules}
                   />
@@ -146,7 +157,7 @@ const FrameworkGrid: React.FC = () => {
                 <div key={framework.id} onClick={() => handleFrameworkClick(framework.id)} className="cursor-pointer">
                   <FrameworkCard 
                     framework={framework}
-                    modules={Array(totalModules).fill({})} // Create array with correct length
+                    modules={createEmptyModules(totalModules)}
                     progressStatus={status}
                     completedModules={completedModules}
                   />
