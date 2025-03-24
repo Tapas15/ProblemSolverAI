@@ -1,4 +1,4 @@
-import type { Express } from "express";
+import express, { type Express } from "express";
 import { createServer, type Server } from "http";
 import { setupAuth, hashPassword, comparePasswords } from "./auth";
 import { storage } from "./storage";
@@ -50,6 +50,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Add cache headers for static assets
   app.use(addCacheHeaders);
+  
+  // Serve uploaded files
+  app.use('/uploads', (req, res, next) => {
+    const filePath = path.join(process.cwd(), 'uploads', req.path);
+    if (fs.existsSync(filePath)) {
+      res.sendFile(filePath);
+    } else {
+      next();
+    }
+  });
   
   // Set up authentication routes
   setupAuth(app);

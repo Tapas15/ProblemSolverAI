@@ -314,7 +314,7 @@ const ProfilePage: React.FC = () => {
               <CardContent className="pt-6">
                 <div className="flex flex-col items-center text-center">
                   <Avatar className="h-24 w-24 border-4 border-secondary/20 mb-4">
-                    <AvatarImage src="" alt={user.name} />
+                    <AvatarImage src={user.avatarUrl || ''} alt={user.name} />
                     <AvatarFallback className="bg-secondary text-white text-lg">
                       {user.name.substring(0, 2).toUpperCase()}
                     </AvatarFallback>
