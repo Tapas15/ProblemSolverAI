@@ -21,11 +21,10 @@ export default function ExerciseDetailPage() {
   const exerciseId = params?.exerciseId ? parseInt(params.exerciseId) : undefined;
   const [, setLocation] = useLocation();
   const [solution, setSolution] = useState("");
-  const [comment, setComment] = useState("");
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("description");
   const { user } = useAuth();
-  const [isSolutionUpdated, setIsSolutionUpdated] = useState(false);
+  const [practiceMode, setPracticeMode] = useState(false);
 
   // Fetch exercise
   const { data: exercise, isLoading: exerciseLoading } = useQuery({
