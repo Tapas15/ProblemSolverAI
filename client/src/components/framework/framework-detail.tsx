@@ -154,15 +154,24 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
                 </div>
               ) : (
                 <>
-                  {framework?.imageUrl && (
-                    <div className="mb-6 rounded-lg overflow-hidden">
+                  <div className="mb-6 rounded-lg overflow-hidden bg-gray-100">
+                    {framework?.imageUrl ? (
                       <img 
                         src={framework.imageUrl} 
                         alt={framework.name} 
                         className="w-full h-64 object-cover"
+                        onError={(e) => {
+                          // Use a backup image if the main one fails to load
+                          e.currentTarget.src = "https://images.unsplash.com/photo-1542744094-3a31f272c490?q=80&w=500&auto=format&fit=crop";
+                          e.currentTarget.onerror = null; // Prevent infinite loop
+                        }}
                       />
-                    </div>
-                  )}
+                    ) : (
+                      <div className="w-full h-64 flex items-center justify-center bg-gray-200 text-gray-500">
+                        <span className="text-xl font-medium">{framework?.name || 'Framework'}</span>
+                      </div>
+                    )}
+                  </div>
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
                       <div className="flex items-center mb-4 flex-wrap gap-2">
@@ -236,15 +245,24 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
                       
                       {expandedModule === module.id && (
                         <div className="p-4">
-                          {module.imageUrl && (
-                            <div className="mb-4 rounded-lg overflow-hidden">
+                          <div className="mb-4 rounded-lg overflow-hidden bg-gray-100">
+                            {module.imageUrl ? (
                               <img 
                                 src={module.imageUrl} 
                                 alt={module.name} 
                                 className="w-full h-48 object-cover"
+                                onError={(e) => {
+                                  // Use a backup image if the main one fails to load
+                                  e.currentTarget.src = "https://images.unsplash.com/photo-1542744094-3a31f272c490?q=80&w=500&auto=format&fit=crop";
+                                  e.currentTarget.onerror = null; // Prevent infinite loop
+                                }}
                               />
-                            </div>
-                          )}
+                            ) : (
+                              <div className="w-full h-48 flex items-center justify-center bg-gray-200 text-gray-500">
+                                <span className="text-lg font-medium">{module.name}</span>
+                              </div>
+                            )}
+                          </div>
                           <p className="text-sm text-gray-600 mb-3">{module.description}</p>
                           
                           <div className="flex flex-wrap gap-2 mb-4">

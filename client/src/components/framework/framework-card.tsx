@@ -49,15 +49,24 @@ const FrameworkCard: React.FC<FrameworkCardProps> = ({
   
   return (
     <div className="framework-card rounded-xl overflow-hidden bg-white">
-      {imageUrl && (
-        <div className="h-40 overflow-hidden">
+      <div className="h-40 overflow-hidden bg-gray-100">
+        {imageUrl ? (
           <img 
             src={imageUrl} 
-            alt={name} 
+            alt={name}
+            onError={(e) => {
+              // Replace with a default image on error
+              e.currentTarget.src = "https://images.unsplash.com/photo-1542744094-3a31f272c490?q=80&w=500&auto=format&fit=crop";
+              e.currentTarget.onerror = null; // Prevent infinite loop if default also fails
+            }}
             className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
           />
-        </div>
-      )}
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400">
+            <span className="text-sm">{name}</span>
+          </div>
+        )}
+      </div>
       <div className="p-6">
         <div className="flex justify-between items-start mb-3">
           <h3 className="text-xl font-semibold font-header text-primary">{name}</h3>
