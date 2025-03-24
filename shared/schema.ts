@@ -264,3 +264,60 @@ export type ScormTrackingData = typeof scormTrackingData.$inferSelect;
 
 export type InsertLrsConfiguration = z.infer<typeof insertLrsConfigurationSchema>;
 export type LrsConfiguration = typeof lrsConfigurations.$inferSelect;
+
+// Interactive Exercises schema
+export const exercises = pgTable("exercises", {
+  id: serial("id").primaryKey(),
+  frameworkId: integer("framework_id").notNull(),
+  moduleId: integer("module_id").notNull(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  scenario: text("scenario").notNull(), // Real-world problem scenario
+  steps: text("steps").notNull(), // JSON string of step-by-step instructions
+  sampleSolution: text("sample_solution"), // Example solution for reference
+  difficulty: text("difficulty").notNull().default("intermediate"), // beginner, intermediate, advanced
+  estimatedTime: integer("estimated_time").notNull(), // in minutes
+  resources: text("resources"), // Additional resources for exercise completion
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertExerciseSchema = createInsertSchema(exercises).pick({
+  frameworkId: true,
+  moduleId: true,
+  title: true,
+  description: true,
+  scenario: true,
+  steps: true,
+  sampleSolution: true,
+  difficulty: true,
+  estimatedTime: true,
+  resources: true,
+});
+
+// User Exercise Submissions schema
+export const exerciseSubmissions = pgTable("exercise_submissions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  exerciseId: integer("exercise_id").notNull(),
+  solution: text("solution").notNull(), // User's solution to the exercise
+  feedback: text("feedback"), // AI or instructor feedback on the solution
+  status: text("status").notNull().default("submitted"), // submitted, reviewed, completed
+  score: integer("score"), // Optional scoring (1-100)
+  completedAt: timestamp("completed_at").defaultNow(),
+});
+
+export const insertExerciseSubmissionSchema = createInsertSchema(exerciseSubmissions).pick({
+  userId: true,
+  exerciseId: true,
+  solution: true,
+  feedback: true,
+  status: true,
+  score: true,
+});
+
+export type InsertExercise = z.infer<typeof insertExerciseSchema>;
+export type Exercise = typeof exercises.$inferSelect;
+
+export type InsertExerciseSubmission = z.infer<typeof insertExerciseSubmissionSchema>;
+export type ExerciseSubmission = typeof exerciseSubmissions.$inferSelect;

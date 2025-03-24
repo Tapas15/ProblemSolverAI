@@ -59,6 +59,21 @@ export interface IStorage {
   
   // Session store
   sessionStore: any;
+  
+  // Exercise methods
+  getExercise(id: number): Promise<Exercise | undefined>;
+  getExercisesByModule(moduleId: number): Promise<Exercise[]>;
+  getExercisesByFramework(frameworkId: number): Promise<Exercise[]>;
+  createExercise(exercise: InsertExercise): Promise<Exercise>;
+  updateExercise(id: number, exerciseData: Partial<Exercise>): Promise<Exercise | undefined>;
+  deleteExercise(id: number): Promise<void>;
+  
+  // Exercise Submission methods
+  getExerciseSubmission(id: number): Promise<ExerciseSubmission | undefined>;
+  getUserExerciseSubmissions(userId: number): Promise<ExerciseSubmission[]>;
+  getExerciseSubmissionsByExercise(exerciseId: number): Promise<ExerciseSubmission[]>;
+  createExerciseSubmission(submission: InsertExerciseSubmission): Promise<ExerciseSubmission>;
+  updateExerciseSubmission(id: number, submissionData: Partial<ExerciseSubmission>): Promise<ExerciseSubmission | undefined>;
 }
 
 // In-memory storage implementation
@@ -79,6 +94,10 @@ export class MemStorage implements IStorage {
   private conversationIdCounter: number;
   private quizIdCounter: number;
   private quizAttemptIdCounter: number;
+  private exercises: Map<number, Exercise>;
+  private exerciseSubmissions: Map<number, ExerciseSubmission>;
+  private exerciseIdCounter: number;
+  private exerciseSubmissionIdCounter: number;
   
   constructor() {
     this.users = new Map();
@@ -88,6 +107,8 @@ export class MemStorage implements IStorage {
     this.aiConversations = new Map();
     this.quizzes = new Map();
     this.quizAttempts = new Map();
+    this.exercises = new Map();
+    this.exerciseSubmissions = new Map();
     
     this.userIdCounter = 1;
     this.frameworkIdCounter = 1;
@@ -96,6 +117,8 @@ export class MemStorage implements IStorage {
     this.conversationIdCounter = 1;
     this.quizIdCounter = 1;
     this.quizAttemptIdCounter = 1;
+    this.exerciseIdCounter = 1;
+    this.exerciseSubmissionIdCounter = 1;
     
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000,
