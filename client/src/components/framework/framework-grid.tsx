@@ -40,14 +40,15 @@ const FrameworkGrid: React.FC = () => {
   };
   
   const getFrameworkProgress = (frameworkId: number) => {
-    if (!userProgress) return { status: 'not_started', completedModules: 0 };
+    if (!userProgress) return { status: 'not_started', completedModules: 0, totalModules: 0 };
     
     const progress = userProgress.find(p => p.frameworkId === frameworkId);
-    if (!progress) return { status: 'not_started', completedModules: 0 };
+    if (!progress) return { status: 'not_started', completedModules: 0, totalModules: 0 };
     
     return {
       status: progress.status,
-      completedModules: progress.completedModules
+      completedModules: progress.completedModules,
+      totalModules: progress.totalModules
     };
   };
   
@@ -93,12 +94,12 @@ const FrameworkGrid: React.FC = () => {
           <h2 className="text-xl font-semibold mb-4 text-primary">Completed Frameworks</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             {groupedFrameworks['completed'].map((framework) => {
-              const { status, completedModules } = getFrameworkProgress(framework.id);
+              const { status, completedModules, totalModules } = getFrameworkProgress(framework.id);
               return (
                 <div key={framework.id} onClick={() => handleFrameworkClick(framework.id)} className="cursor-pointer">
                   <FrameworkCard 
                     framework={framework}
-                    modules={[]}
+                    modules={Array(totalModules).fill({})} // Create array with correct length
                     progressStatus={status}
                     completedModules={completedModules}
                   />
@@ -114,12 +115,12 @@ const FrameworkGrid: React.FC = () => {
           <h2 className="text-xl font-semibold mb-4 text-primary">In Progress</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             {groupedFrameworks['in_progress'].map((framework) => {
-              const { status, completedModules } = getFrameworkProgress(framework.id);
+              const { status, completedModules, totalModules } = getFrameworkProgress(framework.id);
               return (
                 <div key={framework.id} onClick={() => handleFrameworkClick(framework.id)} className="cursor-pointer">
                   <FrameworkCard 
                     framework={framework}
-                    modules={[]}
+                    modules={Array(totalModules).fill({})} // Create array with correct length
                     progressStatus={status}
                     completedModules={completedModules}
                   />

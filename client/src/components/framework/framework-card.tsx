@@ -19,7 +19,7 @@ const FrameworkCard: React.FC<FrameworkCardProps> = ({
   completedModules = 0 
 }) => {
   const { id, name, description, level, duration, imageUrl } = framework;
-  const totalModules = modules.length || 6; // Fallback for display
+  const totalModules = modules.length; // Use actual module count
   
   // Generate a unique gradient based on framework ID for visual variety
   const getGradient = (id: number) => {
