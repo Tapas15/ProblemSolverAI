@@ -51,18 +51,18 @@ const Navbar: React.FC = () => {
 
           <div className="hidden md:flex space-x-8 ml-16">
             <Link to="/">
-              <div className={`py-2 flex items-center space-x-1.5 group ${location === '/' ? 'text-secondary' : 'text-white hover:text-secondary'} transition-colors`}>
-                <BookOpen className={`h-4 w-4 ${location === '/' ? 'text-secondary' : 'text-white group-hover:text-secondary'} transition-colors`} />
-                <span className={`${location === '/' ? 'border-b-2 border-secondary' : 'border-b-2 border-transparent group-hover:border-secondary/50'} transition-all pb-0.5`}>
-                  Frameworks
+              <div className={`py-2 flex items-center space-x-1.5 group ${location.startsWith('/frameworks') || location === '/' ? 'text-secondary' : 'text-white hover:text-secondary'} transition-colors`}>
+                <BookOpen className={`h-4 w-4 ${location.startsWith('/frameworks') || location === '/' ? 'text-secondary' : 'text-white group-hover:text-secondary'} transition-colors`} />
+                <span className={`${location.startsWith('/frameworks') || location === '/' ? 'border-b-2 border-secondary' : 'border-b-2 border-transparent group-hover:border-secondary/50'} transition-all pb-0.5`}>
+                  Business Problem Solving
                 </span>
               </div>
             </Link>
             <Link to="/learning-path">
-              <div className={`py-2 flex items-center space-x-1.5 group ${location === '/learning-path' ? 'text-secondary' : 'text-white hover:text-secondary'} transition-colors`}>
-                <BarChart className={`h-4 w-4 ${location === '/learning-path' ? 'text-secondary' : 'text-white group-hover:text-secondary'} transition-colors`} />
-                <span className={`${location === '/learning-path' ? 'border-b-2 border-secondary' : 'border-b-2 border-transparent group-hover:border-secondary/50'} transition-all pb-0.5`}>
-                  Learning Path
+              <div className={`py-2 flex items-center space-x-1.5 group ${location.startsWith('/learning-path') ? 'text-secondary' : 'text-white hover:text-secondary'} transition-colors`}>
+                <BarChart className={`h-4 w-4 ${location.startsWith('/learning-path') ? 'text-secondary' : 'text-white group-hover:text-secondary'} transition-colors`} />
+                <span className={`${location.startsWith('/learning-path') ? 'border-b-2 border-secondary' : 'border-b-2 border-transparent group-hover:border-secondary/50'} transition-all pb-0.5`}>
+                  Your Learning Journey
                 </span>
               </div>
             </Link>
