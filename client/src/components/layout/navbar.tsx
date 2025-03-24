@@ -28,13 +28,15 @@ const Navbar: React.FC = () => {
   const [location] = useLocation();
   const { user, logoutMutation } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  
+
   const isAdmin = user && user.username === 'admin';
-  
+  const isFrameworkPage = location.startsWith('/'); // Adjust this condition as needed
+  const isLearningPathPage = location.startsWith('/learning-path'); // Adjust this condition as needed
+
   const handleLogout = () => {
     logoutMutation.mutate();
   };
-  
+
   return (
     <nav className="bg-primary text-white shadow-lg backdrop-blur-sm">
       <div className="container mx-auto px-6 py-4 flex justify-between items-center">
@@ -46,7 +48,7 @@ const Navbar: React.FC = () => {
               <span className="text-secondary ml-1">AI</span>
             </div>
           </Link>
-          
+
           <div className="hidden md:flex space-x-8 ml-16">
             <Link to="/">
               <div className={`py-2 flex items-center space-x-1.5 group ${location === '/' ? 'text-secondary' : 'text-white hover:text-secondary'} transition-colors`}>
@@ -82,7 +84,7 @@ const Navbar: React.FC = () => {
             </Link>
           </div>
         </div>
-        
+
         {user && (
           <div className="flex items-center space-x-6">
             <div className="relative hidden md:block">
@@ -93,7 +95,7 @@ const Navbar: React.FC = () => {
                 className="pl-10 py-1.5 rounded-full text-sm text-gray-700 pr-4 focus:outline-none focus:ring-2 focus:ring-secondary/40 focus:border-secondary w-48 md:w-56 border-2 bg-white/95"
               />
             </div>
-            
+
             <DropdownMenu>
               <DropdownMenuTrigger className="flex items-center space-x-2 focus:outline-none">
                 <div className="flex items-center bg-primary-800/40 py-1.5 px-2 rounded-full hover:bg-primary-800/60 transition-colors">
@@ -144,7 +146,7 @@ const Navbar: React.FC = () => {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            
+
             <button 
               className="md:hidden focus:outline-none bg-primary-800/40 p-2 rounded-full hover:bg-primary-800/60 transition-colors"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -154,7 +156,7 @@ const Navbar: React.FC = () => {
           </div>
         )}
       </div>
-      
+
       {/* Mobile menu */}
       {mobileMenuOpen && user && (
         <div className="md:hidden bg-primary/95 border-t border-primary-700 py-4 px-6 backdrop-blur-sm space-y-4 shadow-lg">
