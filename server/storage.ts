@@ -1,10 +1,11 @@
-import { users, frameworks, modules, userProgress, aiConversations, quizzes, quizAttempts, exercises, exerciseSubmissions } from "@shared/schema";
+import { users, frameworks, modules, userProgress, aiConversations, quizzes, quizAttempts, exercises, exerciseSubmissions, certificates } from "@shared/schema";
 import type { 
   User, InsertUser, Framework, InsertFramework, 
   Module, InsertModule, UserProgress, InsertUserProgress, 
   AiConversation, InsertAiConversation,
   Quiz, InsertQuiz, QuizAttempt, InsertQuizAttempt,
-  Exercise, InsertExercise, ExerciseSubmission, InsertExerciseSubmission
+  Exercise, InsertExercise, ExerciseSubmission, InsertExerciseSubmission,
+  Certificate, InsertCertificate
 } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
@@ -76,6 +77,14 @@ export interface IStorage {
   createExerciseSubmission(submission: InsertExerciseSubmission): Promise<ExerciseSubmission>;
   updateExerciseSubmission(id: number, submissionData: Partial<ExerciseSubmission>): Promise<ExerciseSubmission | undefined>;
   deleteExerciseSubmission(id: number): Promise<void>;
+  
+  // Certificate methods
+  getCertificate(id: number): Promise<Certificate | undefined>;
+  getUserCertificates(userId: number): Promise<Certificate[]>;
+  getFrameworkCertificates(frameworkId: number): Promise<Certificate[]>;
+  createCertificate(certificate: InsertCertificate): Promise<Certificate>;
+  updateCertificate(id: number, certificateData: Partial<Certificate>): Promise<Certificate | undefined>;
+  revokeCertificate(id: number): Promise<Certificate | undefined>;
 }
 
 // In-memory storage implementation
@@ -98,8 +107,10 @@ export class MemStorage implements IStorage {
   private quizAttemptIdCounter: number;
   private exercises: Map<number, Exercise>;
   private exerciseSubmissions: Map<number, ExerciseSubmission>;
+  private certificates: Map<number, Certificate>;
   private exerciseIdCounter: number;
   private exerciseSubmissionIdCounter: number;
+  private certificateIdCounter: number;
   
   constructor() {
     this.users = new Map();
@@ -111,6 +122,7 @@ export class MemStorage implements IStorage {
     this.quizAttempts = new Map();
     this.exercises = new Map();
     this.exerciseSubmissions = new Map();
+    this.certificates = new Map();
     
     this.userIdCounter = 1;
     this.frameworkIdCounter = 1;
@@ -121,6 +133,7 @@ export class MemStorage implements IStorage {
     this.quizAttemptIdCounter = 1;
     this.exerciseIdCounter = 1;
     this.exerciseSubmissionIdCounter = 1;
+    this.certificateIdCounter = 1;
     
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000,
@@ -504,6 +517,62 @@ export class MemStorage implements IStorage {
   
   async deleteExerciseSubmission(id: number): Promise<void> {
     this.exerciseSubmissions.delete(id);
+  }
+  
+  // Certificate methods
+  async getCertificate(id: number): Promise<Certificate | undefined> {
+    return this.certificates.get(id);
+  }
+  
+  async getUserCertificates(userId: number): Promise<Certificate[]> {
+    const result: Certificate[] = [];
+    for (const certificate of this.certificates.values()) {
+      if (certificate.userId === userId) {
+        result.push(certificate);
+      }
+    }
+    return result;
+  }
+  
+  async getFrameworkCertificates(frameworkId: number): Promise<Certificate[]> {
+    const result: Certificate[] = [];
+    for (const certificate of this.certificates.values()) {
+      if (certificate.frameworkId === frameworkId) {
+        result.push(certificate);
+      }
+    }
+    return result;
+  }
+  
+  async createCertificate(certificate: InsertCertificate): Promise<Certificate> {
+    const id = this.certificateIdCounter++;
+    const now = new Date();
+    const newCertificate: Certificate = {
+      ...certificate,
+      id,
+      issueDate: now,
+      status: certificate.status || "active",
+    };
+    this.certificates.set(id, newCertificate);
+    return newCertificate;
+  }
+  
+  async updateCertificate(id: number, certificateData: Partial<Certificate>): Promise<Certificate | undefined> {
+    const existingCertificate = this.certificates.get(id);
+    if (!existingCertificate) return undefined;
+    
+    const updatedCertificate = { ...existingCertificate, ...certificateData };
+    this.certificates.set(id, updatedCertificate);
+    return updatedCertificate;
+  }
+  
+  async revokeCertificate(id: number): Promise<Certificate | undefined> {
+    const existingCertificate = this.certificates.get(id);
+    if (!existingCertificate) return undefined;
+    
+    existingCertificate.status = "revoked";
+    this.certificates.set(id, existingCertificate);
+    return existingCertificate;
   }
   
   // Seed initial framework and module data
