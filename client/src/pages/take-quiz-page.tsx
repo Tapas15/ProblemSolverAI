@@ -141,7 +141,7 @@ export default function TakeQuizPage() {
       // Track quiz attempt completion with xAPI if the quiz exists
       if (quiz) {
         const passingScore = quiz.passingScore || 70;
-        const passed = data.score >= passingScore;
+        const passed = quizAttempt.score >= passingScore;
         
         // Track quiz attempt using xAPI
         trackQuizAttempt(
@@ -246,7 +246,7 @@ export default function TakeQuizPage() {
         <div className="text-destructive mb-4">Error loading quiz</div>
         <Button variant="outline" onClick={() => navigate(`/quizzes/${frameworkId}`)}>
           <ChevronLeft className="mr-2 h-4 w-4" />
-          Back to quizzes
+          Back to Framework Quizzes
         </Button>
       </div>
     );
@@ -314,7 +314,7 @@ export default function TakeQuizPage() {
             <CardFooter className="flex justify-between">
               <Button variant="outline" onClick={() => navigate(`/quizzes/${frameworkId}`)}>
                 <ChevronLeft className="mr-2 h-4 w-4" />
-                Back to {frameworkIdNum ? `${quiz?.frameworkName || 'Framework'}` : ''} Quizzes
+                Back to Framework Quizzes
               </Button>
               <Button onClick={() => navigate("/")}>
                 Go to Dashboard
@@ -335,7 +335,7 @@ export default function TakeQuizPage() {
         <div className="text-destructive mb-4">Error: No questions found</div>
         <Button variant="outline" onClick={() => navigate(`/quizzes/${frameworkId}`)}>
           <ChevronLeft className="mr-2 h-4 w-4" />
-          Back to quizzes
+          Back to Framework Quizzes
         </Button>
       </div>
     );
