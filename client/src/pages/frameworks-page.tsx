@@ -23,7 +23,8 @@ export default function FrameworksPage() {
   const getFrameworkProgress = (frameworkId: number) => {
     if (!progressData) return 0;
     const progress = progressData.find(p => p.frameworkId === frameworkId);
-    return progress ? progress.completedModules / progress.totalModules * 100 : 0;
+    if (!progress || !progress.completedModules || !progress.totalModules) return 0;
+    return progress.completedModules / progress.totalModules * 100;
   };
 
   const isLoading = frameworksLoading || progressLoading;
@@ -67,7 +68,7 @@ export default function FrameworksPage() {
                       {framework.name}
                     </CardTitle>
                     <Badge variant="outline" className="bg-[#7d5af1]/10 text-[#7d5af1] border-[#7d5af1]/20">
-                      {framework.type || 'Strategy'}
+                      {framework.level}
                     </Badge>
                   </div>
                   <CardDescription className="line-clamp-2">
@@ -96,7 +97,7 @@ export default function FrameworksPage() {
                       <div className="flex justify-between items-center text-sm text-gray-500">
                         <div className="flex items-center">
                           <Clock className="h-3.5 w-3.5 mr-1" />
-                          <span>{framework.estimatedTime || '30-60 min'}</span>
+                          <span>{`${framework.duration} min`}</span>
                         </div>
                         <span>{Math.round(getFrameworkProgress(framework.id))}% Complete</span>
                       </div>

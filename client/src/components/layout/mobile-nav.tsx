@@ -120,10 +120,10 @@ const MobileNav: React.FC = () => {
                 isActive={location === '/'} 
               />
               <NavItem 
-                to="/" 
+                to="/frameworks" 
                 icon={<BookOpen className="h-5 w-5" />} 
                 label="Frameworks" 
-                isActive={location === '/' || location.startsWith('/frameworks')} 
+                isActive={location === '/frameworks' || location.startsWith('/frameworks/')} 
               />
               <NavItem 
                 to="/learning-path" 

@@ -26,6 +26,7 @@ function Router() {
   return (
     <Switch>
       <ProtectedRoute path="/" component={HomePage} />
+      <ProtectedRoute path="/frameworks" component={FrameworksPage} />
       <ProtectedRoute path="/frameworks/:id" component={FrameworkPage} />
       <ProtectedRoute path="/ai-assistant" component={AiAssistantPage} />
       <ProtectedRoute path="/quizzes/:frameworkId" component={QuizPage} />
