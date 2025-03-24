@@ -21,8 +21,11 @@ export default function ExerciseDetailPage() {
   const exerciseId = params?.exerciseId ? parseInt(params.exerciseId) : undefined;
   const [, setLocation] = useLocation();
   const [solution, setSolution] = useState("");
+  const [comment, setComment] = useState("");
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("description");
+  const { user } = useAuth();
+  const [isSolutionUpdated, setIsSolutionUpdated] = useState(false);
 
   // Fetch exercise
   const { data: exercise, isLoading: exerciseLoading } = useQuery({
@@ -46,6 +49,55 @@ export default function ExerciseDetailPage() {
   // Check if user has already submitted a solution
   const hasSubmitted = exerciseSubmissions && exerciseSubmissions.length > 0;
   const latestSubmission = hasSubmitted ? exerciseSubmissions[0] : null;
+  
+  // Connect to WebSocket for real-time collaboration if user is logged in
+  const { status: wsStatus, messages, activeUsers, updateSolution, addComment } = useWebSocket(
+    exerciseId || 0,
+    user?.id || 0,
+    user?.username || 'Anonymous',
+    {
+      onOpen: () => {
+        toast({
+          title: "Collaboration active",
+          description: "You are now connected to the collaboration server."
+        });
+      },
+      onClose: () => {
+        toast({
+          title: "Collaboration ended",
+          description: "You have been disconnected from the collaboration server."
+        });
+      }
+    }
+  );
+  
+  // Handle when a user is typing their solution
+  useEffect(() => {
+    if (!isSolutionUpdated && solution && !hasSubmitted) {
+      // Debounce to avoid sending too many updates
+      const timeout = setTimeout(() => {
+        updateSolution(solution);
+        setIsSolutionUpdated(true);
+        
+        // Reset flag after some time
+        setTimeout(() => {
+          setIsSolutionUpdated(false);
+        }, 3000);
+      }, 1000);
+      
+      return () => clearTimeout(timeout);
+    }
+  }, [solution, updateSolution, hasSubmitted, isSolutionUpdated]);
+  
+  // Handle posting a comment
+  const handleCommentSubmit = () => {
+    if (!comment.trim()) return;
+    
+    const success = addComment(comment);
+    if (success) {
+      setComment("");
+    }
+  };
 
   // Submit solution mutation
   const submitMutation = useMutation({
@@ -144,21 +196,54 @@ export default function ExerciseDetailPage() {
         </div>
       </div>
 
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex items-center space-x-4 w-full">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1">
+            <TabsList className="grid grid-cols-5 mb-8">
+              <TabsTrigger value="description" className="flex items-center">
+                <BookOpen className="mr-2 h-4 w-4" /> Description
+              </TabsTrigger>
+              <TabsTrigger value="steps" className="flex items-center">
+                <ListChecks className="mr-2 h-4 w-4" /> Steps
+              </TabsTrigger>
+              <TabsTrigger value="solution" className="flex items-center">
+                <CheckCircle className="mr-2 h-4 w-4" /> Your Solution
+              </TabsTrigger>
+              <TabsTrigger value="help" className="flex items-center">
+                <HelpCircle className="mr-2 h-4 w-4" /> Help
+              </TabsTrigger>
+              <TabsTrigger value="collaborate" className="flex items-center">
+                <Users className="mr-2 h-4 w-4" /> Collaborate
+                {activeUsers.length > 1 && (
+                  <Badge variant="secondary" className="ml-2">
+                    {activeUsers.length}
+                  </Badge>
+                )}
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+
+          {/* Connection status indicator */}
+          <div className="flex items-center">
+            <div className={`w-2 h-2 rounded-full mr-2 ${
+              wsStatus === 'open' 
+                ? 'bg-green-500' 
+                : wsStatus === 'connecting' 
+                  ? 'bg-yellow-500 animate-pulse' 
+                  : 'bg-red-500'
+            }`} />
+            <span className="text-sm text-muted-foreground">
+              {wsStatus === 'open' 
+                ? 'Connected' 
+                : wsStatus === 'connecting' 
+                  ? 'Connecting...' 
+                  : 'Disconnected'}
+            </span>
+          </div>
+        </div>
+      </div>
+
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid grid-cols-4 mb-8">
-          <TabsTrigger value="description" className="flex items-center">
-            <BookOpen className="mr-2 h-4 w-4" /> Description
-          </TabsTrigger>
-          <TabsTrigger value="steps" className="flex items-center">
-            <ListChecks className="mr-2 h-4 w-4" /> Steps
-          </TabsTrigger>
-          <TabsTrigger value="solution" className="flex items-center">
-            <CheckCircle className="mr-2 h-4 w-4" /> Your Solution
-          </TabsTrigger>
-          <TabsTrigger value="help" className="flex items-center">
-            <HelpCircle className="mr-2 h-4 w-4" /> Help
-          </TabsTrigger>
-        </TabsList>
 
         <TabsContent value="description">
           <Card>
@@ -308,6 +393,115 @@ export default function ExerciseDetailPage() {
                     </ul>
                   </div>
                 )}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="collaborate">
+          <Card>
+            <CardHeader>
+              <CardTitle>Real-time Collaboration</CardTitle>
+              <CardDescription>
+                Work on this exercise with your peers in real-time
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Active users panel */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold mb-2">Active Users ({activeUsers.length})</h3>
+                  <div className="border rounded p-4 min-h-[200px] bg-muted/30">
+                    {activeUsers.length > 0 ? (
+                      <ul className="space-y-2">
+                        {activeUsers.map((user, index) => (
+                          <li key={index} className="flex items-center p-2 rounded hover:bg-muted">
+                            <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center mr-3">
+                              {user.username.charAt(0).toUpperCase()}
+                            </div>
+                            <span>{user.username}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-muted-foreground text-sm text-center pt-6">
+                        No active users
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Activity feed panel */}
+                <div className="space-y-4 md:col-span-2">
+                  <h3 className="text-lg font-semibold mb-2">Activity Feed</h3>
+                  <div className="border rounded p-4 h-[300px] overflow-y-auto bg-muted/30">
+                    {messages.length > 0 ? (
+                      <div className="space-y-4">
+                        {messages.map((msg, index) => (
+                          <div key={index} className="flex flex-col space-y-1 px-3 py-2 rounded bg-muted/50">
+                            <div className="flex items-center">
+                              <span className="font-medium mr-2">{msg.username}</span>
+                              <span className="text-xs text-muted-foreground">
+                                {new Date(msg.timestamp).toLocaleTimeString()}
+                              </span>
+                            </div>
+                            
+                            {msg.type === 'user-joined' && (
+                              <p className="text-green-600 dark:text-green-400 text-sm">
+                                User joined the collaboration
+                              </p>
+                            )}
+                            
+                            {msg.type === 'user-left' && (
+                              <p className="text-orange-600 dark:text-orange-400 text-sm">
+                                User left the collaboration
+                              </p>
+                            )}
+                            
+                            {msg.type === 'solution-updated' && (
+                              <p className="text-blue-600 dark:text-blue-400 text-sm">
+                                Updated their solution
+                              </p>
+                            )}
+                            
+                            {msg.type === 'new-comment' && (
+                              <div className="mt-1 text-sm bg-background p-2 rounded">
+                                {msg.comment}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-muted-foreground text-sm text-center pt-6">
+                        No activity yet
+                      </p>
+                    )}
+                  </div>
+                  
+                  {/* Comment input */}
+                  <div className="flex space-x-2">
+                    <Input
+                      placeholder="Type a comment..."
+                      value={comment}
+                      onChange={(e) => setComment(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          handleCommentSubmit();
+                        }
+                      }}
+                    />
+                    <Button 
+                      onClick={handleCommentSubmit}
+                      disabled={!comment.trim()}
+                      size="sm"
+                    >
+                      <MessageSquare className="h-4 w-4 mr-2" />
+                      Send
+                    </Button>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
