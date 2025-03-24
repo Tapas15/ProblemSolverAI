@@ -286,6 +286,105 @@ export class PostgresStorage implements IStorage {
       .execute();
     return results[0];
   }
+
+  // Exercise methods
+  async getExercise(id: number): Promise<Exercise | undefined> {
+    const results = await db.select().from(exercises).where(eq(exercises.id, id)).execute();
+    return results[0];
+  }
+
+  async getExercisesByModule(moduleId: number): Promise<Exercise[]> {
+    return await db
+      .select()
+      .from(exercises)
+      .where(eq(exercises.moduleId, moduleId))
+      .execute();
+  }
+
+  async getExercisesByFramework(frameworkId: number): Promise<Exercise[]> {
+    return await db
+      .select()
+      .from(exercises)
+      .where(eq(exercises.frameworkId, frameworkId))
+      .execute();
+  }
+
+  async createExercise(exercise: InsertExercise): Promise<Exercise> {
+    const results = await db
+      .insert(exercises)
+      .values({
+        ...exercise,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
+      .returning()
+      .execute();
+    return results[0];
+  }
+
+  async updateExercise(id: number, exerciseData: Partial<Exercise>): Promise<Exercise | undefined> {
+    const results = await db
+      .update(exercises)
+      .set({
+        ...exerciseData,
+        updatedAt: new Date()
+      })
+      .where(eq(exercises.id, id))
+      .returning()
+      .execute();
+    return results[0];
+  }
+
+  async deleteExercise(id: number): Promise<void> {
+    await db
+      .delete(exercises)
+      .where(eq(exercises.id, id))
+      .execute();
+  }
+
+  // Exercise Submission methods
+  async getExerciseSubmission(id: number): Promise<ExerciseSubmission | undefined> {
+    const results = await db.select().from(exerciseSubmissions).where(eq(exerciseSubmissions.id, id)).execute();
+    return results[0];
+  }
+
+  async getUserExerciseSubmissions(userId: number): Promise<ExerciseSubmission[]> {
+    return await db
+      .select()
+      .from(exerciseSubmissions)
+      .where(eq(exerciseSubmissions.userId, userId))
+      .execute();
+  }
+
+  async getExerciseSubmissionsByExercise(exerciseId: number): Promise<ExerciseSubmission[]> {
+    return await db
+      .select()
+      .from(exerciseSubmissions)
+      .where(eq(exerciseSubmissions.exerciseId, exerciseId))
+      .execute();
+  }
+
+  async createExerciseSubmission(submission: InsertExerciseSubmission): Promise<ExerciseSubmission> {
+    const results = await db
+      .insert(exerciseSubmissions)
+      .values({
+        ...submission,
+        completedAt: new Date()
+      })
+      .returning()
+      .execute();
+    return results[0];
+  }
+
+  async updateExerciseSubmission(id: number, submissionData: Partial<ExerciseSubmission>): Promise<ExerciseSubmission | undefined> {
+    const results = await db
+      .update(exerciseSubmissions)
+      .set(submissionData)
+      .where(eq(exerciseSubmissions.id, id))
+      .returning()
+      .execute();
+    return results[0];
+  }
   
   // Seed data for frameworks and modules
   private async seedFrameworks() {

@@ -7,7 +7,9 @@ import {
   insertAiConversationSchema, AiConversation,
   insertQuizSchema, insertQuizAttemptSchema,
   insertXapiStatementSchema, insertLrsConfigurationSchema,
-  XapiStatement
+  XapiStatement,
+  insertExerciseSchema, insertExerciseSubmissionSchema,
+  Exercise, ExerciseSubmission
 } from "@shared/schema";
 import OpenAI from "openai";
 import { xapiService } from "./services/xapi-service";
