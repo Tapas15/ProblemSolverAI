@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,71 +6,78 @@
 
 @layer base {
   :root {
-    --background: 220 30% 99%; /* #F7F8FF - Subtle blue-violet hint background */
-    --foreground: 225 45% 15%; /* #131334 - Deep indigo */
+    --background: 280 30% 98%; /* #faf6ff - Soft purple hint background */
+    --foreground: 270 50% 15%; /* #1e1133 - Deep purple */
     
     --card: 0 0% 100%;
-    --card-foreground: 225 45% 15%;
+    --card-foreground: 270 50% 15%;
     
     --popover: 0 0% 100%;
-    --popover-foreground: 225 45% 15%;
+    --popover-foreground: 270 50% 15%;
     
-    --primary: 230 55% 52%; /* #4a6bbd - Royal blue-violet */
+    --primary: 265 80% 60%; /* #7d5af1 - Vibrant purple */
     --primary-foreground: 0 0% 100%;
     
-    --secondary: 245 70% 55%; /* #6952d4 - Rich violet */
+    --secondary: 230 90% 65%; /* #5c8afa - Electric blue */
     --secondary-foreground: 0 0% 100%;
     
-    --accent: 210 90% 95%; /* #EAF4FF - Soft blue accent */
-    --accent-foreground: 225 45% 15%;
+    --accent: 320 95% 95%; /* #ffecf8 - Soft pink accent */
+    --accent-foreground: 270 50% 15%;
     
-    --tertiary: 190 80% 50%; /* #1aadce - Ocean blue */
+    --tertiary: 180 80% 50%; /* #1ee0d6 - Turquoise */
     --tertiary-foreground: 0 0% 100%;
     
-    --quaternary: 270 60% 65%; /* #a57fe9 - Lavender */
+    --quaternary: 330 90% 65%; /* #ff59b2 - Hot pink */
     --quaternary-foreground: 0 0% 100%;
     
-    --muted: 225 25% 96%;
-    --muted-foreground: 225 25% 40%;
+    --muted: 270 20% 96%;
+    --muted-foreground: 270 25% 40%;
     
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
     
-    --border: 220 25% 90%;
-    --input: 220 25% 90%;
-    --ring: 230 55% 52%; 
+    --border: 280 30% 92%;
+    --input: 280 30% 92%;
+    --ring: 265 80% 60%; 
     
-    --radius: 0.65rem;
+    --radius: 1.25rem;
     
     /* Color palette */
-    --royal-blue: 230 55% 52%; /* #4a6bbd */
-    --cobalt-blue: 215 70% 40%; /* #2158a3 */
-    --azure-blue: 210 80% 50%; /* #1c85de */
-    --sky-blue: 200 90% 55%; /* #20a8e9 */
-    --teal-blue: 190 80% 50%; /* #1aadce */
+    --violet-main: 265 80% 60%; /* #7d5af1 - Vibrant purple */
+    --violet-dark: 268 70% 40%; /* #4b28b4 - Deep violet */
+    --violet-light: 260 90% 80%; /* #c6afff - Light violet */
+    --violet-pastel: 262 100% 88%; /* #d7baff - Pastel violet */
     
-    --violet: 245 70% 55%; /* #6952d4 */
-    --purple: 265 60% 50%; /* #7f42c6 */
-    --lavender: 270 60% 65%; /* #a57fe9 */
-    --orchid: 280 50% 65%; /* #c27bdb */
-    --mauve: 290 40% 70%; /* #c98fcc */
+    --blue-electric: 230 90% 65%; /* #5c8afa - Electric blue */
+    --blue-bright: 210 100% 60%; /* #1a88ff - Bright blue */
+    --blue-sky: 200 95% 65%; /* #33beff - Sky blue */
+    --blue-pastel: 205 100% 85%; /* #aedfff - Pastel blue */
+    
+    --pink-hot: 330 90% 65%; /* #ff59b2 - Hot pink */
+    --pink-bright: 315 100% 60%; /* #ff1a8c - Bright pink */
+    --pink-light: 320 100% 75%; /* #ff7ac6 - Light pink */
+    --pink-pastel: 325 100% 90%; /* #ffc6e6 - Pastel pink */
+    
+    --turquoise-bright: 180 80% 50%; /* #1ee0d6 - Turquoise */
+    --turquoise-light: 175 90% 65%; /* #5aeddf - Light turquoise */
+    --turquoise-pastel: 170 100% 85%; /* #c5fffa - Pastel turquoise */
     
     /* Chart colors */
-    --chart-1: 230 55% 52%; /* Royal blue-violet */
-    --chart-2: 245 70% 55%; /* Rich violet */
-    --chart-3: 210 80% 50%; /* Azure blue */
-    --chart-4: 190 80% 50%; /* Teal blue */
-    --chart-5: 270 60% 65%; /* Lavender */
+    --chart-1: 265 80% 60%; /* Vibrant purple */
+    --chart-2: 230 90% 65%; /* Electric blue */
+    --chart-3: 330 90% 65%; /* Hot pink */
+    --chart-4: 180 80% 50%; /* Turquoise */
+    --chart-5: 290 90% 70%; /* Orchid */
     
     /* Sidebar colors */
-    --sidebar-background: 225 45% 15%; /* Deep indigo */
+    --sidebar-background: 270 50% 15%; /* Deep purple */
     --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 230 55% 52%; /* Royal blue-violet */
+    --sidebar-primary: 265 80% 60%; /* Vibrant purple */
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 210 90% 95%; /* Soft blue accent */
-    --sidebar-accent-foreground: 225 45% 15%;
-    --sidebar-border: 225 40% 25%;
-    --sidebar-ring: 230 55% 52%;
+    --sidebar-accent: 230 90% 95%; /* Soft blue accent */
+    --sidebar-accent-foreground: 270 50% 15%;
+    --sidebar-border: 270 45% 25%;
+    --sidebar-ring: 265 80% 60%;
   }
  
   .dark {
@@ -157,22 +164,23 @@
 
 /* Custom font family classes */
 .font-header {
-  font-family: 'IBM Plex Sans', 'Merriweather', serif;
+  font-family: 'Space Grotesk', 'Outfit', sans-serif;
 }
 
 .font-body {
-  font-family: 'Open Sans', sans-serif;
+  font-family: 'Outfit', 'Inter', sans-serif;
 }
 
 .font-code {
-  font-family: 'Roboto Mono', monospace;
+  font-family: 'Space Grotesk', monospace;
 }
 
-/* Framework card hover effect with elegant blue-violet theme */
+/* Framework card hover effect with vibrant neon theme */
 .framework-card {
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 4px 20px -2px rgba(74, 107, 189, 0.08), 0 3px 8px -3px rgba(74, 107, 189, 0.05);
-  border: 1px solid rgba(210, 220, 250, 0.9);
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 4px 20px -2px rgba(125, 90, 241, 0.08), 0 3px 8px -3px rgba(125, 90, 241, 0.05);
+  border: 1px solid rgba(230, 220, 250, 0.9);
+  border-radius: 18px;
   position: relative;
   z-index: 1;
   overflow: hidden;
@@ -187,27 +195,27 @@
   width: 100%;
   height: 100%;
   background: linear-gradient(135deg, 
-    rgba(74, 107, 189, 0.03) 0%, 
-    rgba(165, 127, 233, 0.07) 100%
+    rgba(125, 90, 241, 0.03) 0%, 
+    rgba(255, 89, 178, 0.05) 100%
   );
   z-index: -1;
   transition: all 0.5s ease;
 }
 
 .framework-card:hover {
-  box-shadow: 0 20px 30px -8px rgba(74, 107, 189, 0.16), 0 10px 20px -5px rgba(105, 82, 212, 0.12);
-  transform: translateY(-5px) scale(1.02);
-  border-color: rgba(74, 107, 189, 0.3);
+  box-shadow: 0 20px 30px -10px rgba(125, 90, 241, 0.2), 0 10px 20px -5px rgba(255, 89, 178, 0.12);
+  transform: translateY(-7px) scale(1.03);
+  border-color: rgba(125, 90, 241, 0.3);
 }
 
 .framework-card:hover::before {
   background: linear-gradient(135deg, 
-    rgba(74, 107, 189, 0.07) 0%, 
-    rgba(165, 127, 233, 0.12) 100%
+    rgba(125, 90, 241, 0.07) 0%, 
+    rgba(255, 89, 178, 0.1) 100%
   );
 }
 
-/* Blue-violet accent for framework cards */
+/* Vibrant accent for framework cards */
 .framework-card::after {
   content: "";
   position: absolute;
@@ -215,23 +223,24 @@
   left: 0;
   width: 5px;
   height: 0;
-  background: linear-gradient(to bottom, #4a6bbd, #6952d4);
+  background: linear-gradient(to bottom, #7d5af1, #ff59b2);
   transition: height 0.5s cubic-bezier(0.19, 1, 0.22, 1);
-  box-shadow: 0 0 15px rgba(74, 107, 189, 0.4);
+  box-shadow: 0 0 20px rgba(125, 90, 241, 0.5);
 }
 
 .framework-card:hover::after {
   height: 100%;
 }
 
-/* Add subtle glow effect to cards */
+/* Add neon glow effect to cards */
 .framework-card .card-title {
-  transition: color 0.3s ease;
+  transition: all 0.3s ease;
+  position: relative;
 }
 
 .framework-card:hover .card-title {
-  color: #4a6bbd;
-  text-shadow: 0 0 1px rgba(74, 107, 189, 0.1);
+  color: #7d5af1;
+  text-shadow: 0 0 8px rgba(125, 90, 241, 0.3);
 }
 
 /* Add shine effect on hover */
@@ -279,14 +288,15 @@
   animation: progress 1.2s cubic-bezier(0.26, 0.86, 0.44, 0.985);
 }
 
-/* Enhanced Button styling with blue-violet gradient */
+/* Enhanced Button styling with vibrant neon gradient */
 .btn-primary {
-  @apply text-white transition-all duration-300 font-medium px-6 py-2.5 rounded-lg;
-  background: linear-gradient(90deg, #4a6bbd 0%, #6952d4 100%);
+  @apply text-white transition-all duration-300 font-medium px-6 py-2.5 rounded-xl;
+  background: linear-gradient(90deg, #7d5af1 0%, #ff59b2 100%);
   position: relative;
   z-index: 1;
   overflow: hidden;
-  box-shadow: 0 4px 15px -3px rgba(74, 107, 189, 0.25);
+  box-shadow: 0 4px 15px -3px rgba(125, 90, 241, 0.3);
+  border: 1px solid rgba(125, 90, 241, 0.1);
 }
 
 .btn-primary::before {
@@ -296,19 +306,20 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, #6952d4 0%, #4a6bbd 100%);
+  background: linear-gradient(90deg, #ff59b2 0%, #7d5af1 100%);
   transition: left 0.4s cubic-bezier(0.19, 1, 0.22, 1);
   z-index: -1;
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px -4px rgba(74, 107, 189, 0.4);
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 10px 25px -6px rgba(125, 90, 241, 0.5), 0 0 0 1px rgba(125, 90, 241, 0.2);
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
 }
 
 .btn-primary:active {
-  transform: translateY(1px);
-  box-shadow: 0 2px 10px -2px rgba(74, 107, 189, 0.25);
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 2px 10px -2px rgba(125, 90, 241, 0.25);
   transition: all 0.1s ease;
 }
 
@@ -323,13 +334,13 @@
 
 @keyframes pulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(74, 107, 189, 0.4);
+    box-shadow: 0 0 0 0 rgba(125, 90, 241, 0.6);
   }
   70% {
-    box-shadow: 0 0 0 10px rgba(74, 107, 189, 0);
+    box-shadow: 0 0 0 12px rgba(125, 90, 241, 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(74, 107, 189, 0);
+    box-shadow: 0 0 0 0 rgba(125, 90, 241, 0);
   }
 }
 
