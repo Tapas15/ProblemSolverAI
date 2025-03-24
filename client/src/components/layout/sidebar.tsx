@@ -82,7 +82,7 @@ const Sidebar: React.FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
                 <div className="relative">
                   <span className="text-[#ff59b2]">Q</span>
                   <span className="text-white">Pro</span>
-                  <span className="text-[#7d5af1]">AI</span>
+                  <span className="text-[#9545ff]">AI</span>
                 </div>
               </div>
             </Link>
@@ -101,7 +101,7 @@ const Sidebar: React.FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
             className="h-8 w-8 rounded-full hover:bg-[#36005A]/50"
           >
             <ChevronRight className={cn(
-              "h-4 w-4 text-[#7d5af1]",
+              "h-4 w-4 text-[#9545ff]",
               isCollapsed && "rotate-180"
             )} />
           </Button>
@@ -120,7 +120,7 @@ const Sidebar: React.FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
                     <div className="flex items-center space-x-3">
                       <Avatar className="h-9 w-9 ring-2 ring-[#ff59b2]/30 shadow-inner">
                         <AvatarImage src="" alt={user.name} />
-                        <AvatarFallback className="bg-gradient-to-br from-[#7d5af1] to-[#ff59b2] text-white font-medium">
+                        <AvatarFallback className="bg-gradient-to-br from-[#9545ff] to-[#ff59b2] text-white font-medium">
                           {user.name.substring(0, 2).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
@@ -136,20 +136,20 @@ const Sidebar: React.FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
                   <div className="p-2">
                     <Link to="/profile">
                       <DropdownMenuItem className="py-2 px-3 rounded-lg cursor-pointer hover:bg-[#36005A]/50 flex items-center space-x-2 text-sm text-white">
-                        <User className="h-4 w-4 text-[#7d5af1]" />
+                        <User className="h-4 w-4 text-[#9545ff]" />
                         <span>Profile</span>
                       </DropdownMenuItem>
                     </Link>
                     <Link to="/settings">
                       <DropdownMenuItem className="py-2 px-3 rounded-lg cursor-pointer hover:bg-[#36005A]/50 flex items-center space-x-2 text-sm text-white">
-                        <Settings className="h-4 w-4 text-[#7d5af1]" />
+                        <Settings className="h-4 w-4 text-[#9545ff]" />
                         <span>Settings</span>
                       </DropdownMenuItem>
                     </Link>
                     {isAdmin && (
                       <Link to="/scorm-admin">
                         <DropdownMenuItem className="py-2 px-3 rounded-lg cursor-pointer hover:bg-[#36005A]/50 flex items-center space-x-2 text-sm text-white">
-                          <FileCode className="h-4 w-4 text-[#7d5af1]" />
+                          <FileCode className="h-4 w-4 text-[#9545ff]" />
                           <span>Admin Panel</span>
                           <Badge className="ml-2 bg-[#ff59b2]/10 text-[#ff59b2] hover:bg-[#ff59b2]/20 px-1.5 py-0 text-[10px]">
                             Admin

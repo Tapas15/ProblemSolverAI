@@ -46,7 +46,7 @@ const MobileNav: React.FC = () => {
           {icon}
         </div>
         <span className="font-medium">{label}</span>
-        {isActive && <div className="ml-auto h-full w-1 rounded-full bg-gradient-to-b from-[#7d5af1] to-[#ff59b2]"></div>}
+        {isActive && <div className="ml-auto h-full w-1 rounded-full bg-gradient-to-b from-[#9545ff] to-[#ff59b2]"></div>}
       </div>
     </Link>
   );
@@ -58,7 +58,7 @@ const MobileNav: React.FC = () => {
           <div className="relative">
             <span className="text-[#ff59b2]">Question</span>
             <span className="text-white">Pro</span>
-            <span className="text-[#7d5af1]">AI</span>
+            <span className="text-[#9545ff]">AI</span>
           </div>
         </div>
       </Link>
@@ -78,7 +78,7 @@ const MobileNav: React.FC = () => {
               <div className="p-4 border-b border-[#7d5af1]/10 flex items-center space-x-3">
                 <Avatar className="h-10 w-10 ring-2 ring-[#ff59b2]/30">
                   <AvatarImage src="" alt={user.name} />
-                  <AvatarFallback className="bg-gradient-to-br from-[#7d5af1] to-[#ff59b2] text-white font-medium">
+                  <AvatarFallback className="bg-gradient-to-br from-[#9545ff] to-[#ff59b2] text-white font-medium">
                     {user.name.substring(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
@@ -194,7 +194,7 @@ const MobileNav: React.FC = () => {
             {!user && (
               <div className="p-4 border-t border-[#7d5af1]/10">
                 <Link to="/auth" onClick={() => setIsOpen(false)}>
-                  <Button className="w-full bg-gradient-to-r from-[#7d5af1] to-[#ff59b2] hover:from-[#7d5af1]/90 hover:to-[#ff59b2]/90 text-white shadow-md hover:shadow-lg transition-all rounded-xl">
+                  <Button className="w-full bg-gradient-to-r from-[#9545ff] to-[#ff59b2] hover:from-[#9545ff]/90 hover:to-[#ff59b2]/90 text-white shadow-md hover:shadow-lg transition-all rounded-xl">
                     Sign In
                   </Button>
                 </Link>
