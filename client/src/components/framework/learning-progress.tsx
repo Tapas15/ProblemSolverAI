@@ -52,13 +52,22 @@ const LearningProgress: React.FC = () => {
   const nextRecommendedFramework = getNextRecommendedFramework();
   
   return (
-    <div className="mt-6 bg-white rounded-lg shadow-sm p-4 max-w-3xl">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="text-primary font-medium">Your Learning Progress</h3>
+    <div className="mt-6 bg-white rounded-lg shadow-md border border-[#E0F0FF] p-5 max-w-3xl hover:shadow-lg transition-all duration-300 relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#0078D7]/5 to-[#00A5E0]/10 rounded-full -mt-20 -mr-20 blur-2xl"></div>
+      
+      <div className="flex items-center justify-between mb-3 relative z-10">
+        <h3 className="text-[#0078D7] font-medium flex items-center">
+          Your Learning Progress
+          {progressPercentage === 100 && (
+            <span className="ml-2 text-xs bg-[#DCEFFF] text-[#0078D7] px-2 py-0.5 rounded-full border border-[#0078D7]/20">
+              All Complete!
+            </span>
+          )}
+        </h3>
         {isLoading ? (
           <Skeleton className="h-4 w-32" />
         ) : (
-          <span className="text-sm text-gray-500">
+          <span className="text-sm text-gray-500 font-medium">
             {completedFrameworks} of {totalFrameworks} frameworks completed
           </span>
         )}
@@ -67,10 +76,10 @@ const LearningProgress: React.FC = () => {
       {isLoading ? (
         <Skeleton className="h-2 w-full rounded-full" />
       ) : (
-        <Progress value={progressPercentage} className="h-2" />
+        <Progress value={progressPercentage} className="h-2 blue-progress" />
       )}
       
-      <div className="flex items-center justify-between mt-4">
+      <div className="flex items-center justify-between mt-4 relative z-10">
         <div>
           {isLoading ? (
             <div className="space-y-2">
@@ -80,7 +89,7 @@ const LearningProgress: React.FC = () => {
           ) : (
             <>
               <span className="text-sm text-gray-600">Next recommended framework:</span>
-              <span className="ml-1 text-sm font-medium">
+              <span className="ml-1 text-sm font-semibold text-[#0A2540]">
                 {nextRecommendedFramework?.name || "All frameworks completed!"}
               </span>
             </>
@@ -89,8 +98,12 @@ const LearningProgress: React.FC = () => {
         
         {!isLoading && nextRecommendedFramework && (
           <Link to={`/frameworks/${nextRecommendedFramework.id}`}>
-            <span className="text-secondary hover:underline text-sm font-medium">
-              Continue Learning →
+            <span className="flex items-center text-[#0078D7] hover:text-[#00A5E0] text-sm font-medium transition-all duration-200 group">
+              Continue Learning 
+              <svg className="h-4 w-4 ml-1 transform group-hover:translate-x-1 transition-transform duration-200" 
+                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
             </span>
           </Link>
         )}

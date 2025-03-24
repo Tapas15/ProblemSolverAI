@@ -10,50 +10,66 @@ interface FrameworkTabsProps {
 const FrameworkTabs: React.FC<FrameworkTabsProps> = ({ activeTab, onTabChange }) => {
   return (
     <div className="mb-8">
-      <div className="border-b border-gray-200">
+      <div className="border-b border-[#E0F0FF]">
         <nav className="-mb-px flex space-x-8 overflow-x-auto">
           <button
             className={`border-b-2 ${
               activeTab === 'all' 
-                ? 'border-secondary text-secondary' 
-                : 'border-transparent hover:border-gray-300 text-gray-500 hover:text-gray-700'
-            } py-4 px-1 font-medium text-sm`}
+                ? 'border-[#0078D7] text-[#0078D7] font-semibold' 
+                : 'border-transparent hover:border-[#0078D7]/30 text-gray-500 hover:text-[#0078D7]/80'
+            } py-4 px-1 font-medium text-sm transition-all duration-200 relative group`}
             onClick={() => onTabChange('all')}
           >
-            All Frameworks
+            <span className="relative z-10">All Frameworks</span>
+            {activeTab === 'all' && (
+              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-[#0078D7] to-[#00A5E0] -mb-0.5"></span>
+            )}
+            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-[#0078D7]/70 to-[#00A5E0]/70 -mb-0.5 group-hover:w-full transition-all duration-300 ease-out"></span>
           </button>
           
           <button
             className={`border-b-2 ${
               activeTab === 'completed' 
-                ? 'border-secondary text-secondary' 
-                : 'border-transparent hover:border-gray-300 text-gray-500 hover:text-gray-700'
-            } py-4 px-1 font-medium text-sm whitespace-nowrap`}
+                ? 'border-[#0078D7] text-[#0078D7] font-semibold' 
+                : 'border-transparent hover:border-[#0078D7]/30 text-gray-500 hover:text-[#0078D7]/80'
+            } py-4 px-1 font-medium text-sm whitespace-nowrap transition-all duration-200 relative group`}
             onClick={() => onTabChange('completed')}
           >
-            Completed
+            <span className="relative z-10">Completed</span>
+            {activeTab === 'completed' && (
+              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-[#0078D7] to-[#00A5E0] -mb-0.5"></span>
+            )}
+            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-[#0078D7]/70 to-[#00A5E0]/70 -mb-0.5 group-hover:w-full transition-all duration-300 ease-out"></span>
           </button>
           
           <button
             className={`border-b-2 ${
               activeTab === 'in_progress' 
-                ? 'border-secondary text-secondary' 
-                : 'border-transparent hover:border-gray-300 text-gray-500 hover:text-gray-700'
-            } py-4 px-1 font-medium text-sm whitespace-nowrap`}
+                ? 'border-[#0078D7] text-[#0078D7] font-semibold' 
+                : 'border-transparent hover:border-[#0078D7]/30 text-gray-500 hover:text-[#0078D7]/80'
+            } py-4 px-1 font-medium text-sm whitespace-nowrap transition-all duration-200 relative group`}
             onClick={() => onTabChange('in_progress')}
           >
-            In Progress
+            <span className="relative z-10">In Progress</span>
+            {activeTab === 'in_progress' && (
+              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-[#0078D7] to-[#00A5E0] -mb-0.5"></span>
+            )}
+            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-[#0078D7]/70 to-[#00A5E0]/70 -mb-0.5 group-hover:w-full transition-all duration-300 ease-out"></span>
           </button>
           
           <button
             className={`border-b-2 ${
               activeTab === 'recommended' 
-                ? 'border-secondary text-secondary' 
-                : 'border-transparent hover:border-gray-300 text-gray-500 hover:text-gray-700'
-            } py-4 px-1 font-medium text-sm whitespace-nowrap`}
+                ? 'border-[#0078D7] text-[#0078D7] font-semibold' 
+                : 'border-transparent hover:border-[#0078D7]/30 text-gray-500 hover:text-[#0078D7]/80'
+            } py-4 px-1 font-medium text-sm whitespace-nowrap transition-all duration-200 relative group`}
             onClick={() => onTabChange('recommended')}
           >
-            Recommended for You
+            <span className="relative z-10">Recommended for You</span>
+            {activeTab === 'recommended' && (
+              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-[#0078D7] to-[#00A5E0] -mb-0.5"></span>
+            )}
+            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-[#0078D7]/70 to-[#00A5E0]/70 -mb-0.5 group-hover:w-full transition-all duration-300 ease-out"></span>
           </button>
         </nav>
       </div>
