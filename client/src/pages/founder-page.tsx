@@ -21,7 +21,7 @@ const FounderPage: React.FC = () => {
       <div className="bg-gray-50 py-8">
         <div className="container max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-            <div className="bg-gradient-to-r from-primary/10 to-secondary/10 h-32 sm:h-48"></div>
+            <div className="bg-gradient-to-r from-[#0A2540] via-[#0E3A5C] to-[#0078D7] h-32 sm:h-48"></div>
             
             <div className="relative px-6 sm:px-8 pb-8">
               <div className="flex flex-col sm:flex-row items-center sm:items-end -mt-20 mb-6">
