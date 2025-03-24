@@ -133,9 +133,9 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center overflow-y-auto">
       <div className="bg-white w-full md:w-4/5 md:mx-auto md:my-8 md:rounded-lg overflow-hidden flex flex-col shadow-xl max-h-[90vh]">
-        <div className="p-5 bg-primary text-white flex justify-between items-center">
+        <div className="p-5 bg-gradient-to-r from-[#9545ff] to-[#ff59b2] text-white flex justify-between items-center">
           <h2 className="text-xl font-bold font-header">
-            {isLoading ? <Skeleton className="h-6 w-40 bg-gray-700" /> : framework?.name}
+            {isLoading ? <Skeleton className="h-6 w-40 bg-white/30" /> : framework?.name}
           </h2>
           <button className="focus:outline-none" onClick={onClose}>
             <X />
@@ -148,9 +148,9 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
             <div className="mb-8 pb-6 border-b border-gray-200">
               {isLoading ? (
                 <div className="space-y-2">
-                  <Skeleton className="h-6 w-24" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-6 w-24 bg-gradient-to-r from-[#9545ff]/10 to-[#ff59b2]/10" />
+                  <Skeleton className="h-4 w-full bg-gradient-to-r from-[#9545ff]/10 to-[#ff59b2]/10" />
+                  <Skeleton className="h-4 w-3/4 bg-gradient-to-r from-[#9545ff]/10 to-[#ff59b2]/10" />
                 </div>
               ) : (
                 <>
@@ -197,7 +197,7 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
                     
                     {framework && (
                       <Link to={`/quizzes/${framework.id}`}>
-                        <Button variant="outline" className="ml-4">
+                        <Button variant="outline" className="ml-4 border-[#9545ff]/60 text-[#9545ff] hover:bg-[#9545ff]/5">
                           <ClipboardCheck className="h-4 w-4 mr-2" />
                           Take Quizzes
                         </Button>
@@ -217,7 +217,7 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
                   {[1, 2, 3].map((idx) => (
                     <div key={idx} className="border border-gray-200 rounded-lg overflow-hidden">
                       <div className="bg-gray-50 px-4 py-3">
-                        <Skeleton className="h-6 w-40" />
+                        <Skeleton className="h-6 w-40 bg-gradient-to-r from-[#9545ff]/10 to-[#ff59b2]/10" />
                       </div>
                     </div>
                   ))}
@@ -331,7 +331,7 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
                             <Button
                               variant="outline"
                               size="sm"
-                              className={module.completed ? "text-green-600 border-green-600" : ""}
+                              className={module.completed ? "text-green-600 border-green-600" : "text-[#9545ff] border-[#9545ff]/60 hover:bg-[#9545ff]/5"}
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleModuleStatusChange(module.id, !module.completed, module.name);
@@ -406,7 +406,7 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
             )}
             
             {/* AI Assistant section */}
-            <div className="bg-primary/5 border border-primary/10 rounded-lg p-5">
+            <div className="bg-[#9545ff]/5 border border-[#9545ff]/10 rounded-lg p-5">
               <h3 className="text-lg font-semibold font-header text-primary mb-3">
                 Get AI Assistance with This Framework
               </h3>
@@ -417,7 +417,7 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
               <Textarea 
                 rows={3} 
                 placeholder={`Example: How can I use ${framework?.name || 'this framework'} to analyze our declining customer retention?`}
-                className="w-full rounded-md border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-secondary focus:border-secondary"
+                className="w-full rounded-md border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-[#9545ff] focus:border-[#9545ff]"
                 value={aiQuestion}
                 onChange={(e) => setAiQuestion(e.target.value)}
               />
@@ -433,7 +433,7 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
               
               <div className="mt-3 flex justify-end">
                 <Button 
-                  className="bg-secondary hover:bg-secondary/90 text-white font-medium"
+                  className="bg-gradient-to-r from-[#9545ff] to-[#ff59b2] hover:from-[#9545ff]/90 hover:to-[#ff59b2]/90 text-white font-medium"
                   size="sm"
                   onClick={handleAiQuestion}
                   disabled={isAiLoading || !aiQuestion.trim()}
