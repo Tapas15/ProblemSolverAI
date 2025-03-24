@@ -154,6 +154,15 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
                 </div>
               ) : (
                 <>
+                  {framework?.imageUrl && (
+                    <div className="mb-6 rounded-lg overflow-hidden">
+                      <img 
+                        src={framework.imageUrl} 
+                        alt={framework.name} 
+                        className="w-full h-64 object-cover"
+                      />
+                    </div>
+                  )}
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
                       <div className="flex items-center mb-4 flex-wrap gap-2">
@@ -227,6 +236,15 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
                       
                       {expandedModule === module.id && (
                         <div className="p-4">
+                          {module.imageUrl && (
+                            <div className="mb-4 rounded-lg overflow-hidden">
+                              <img 
+                                src={module.imageUrl} 
+                                alt={module.name} 
+                                className="w-full h-48 object-cover"
+                              />
+                            </div>
+                          )}
                           <p className="text-sm text-gray-600 mb-3">{module.description}</p>
                           
                           <div className="flex flex-wrap gap-2 mb-4">
