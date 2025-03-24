@@ -45,6 +45,7 @@ export const frameworks = pgTable("frameworks", {
   duration: integer("duration").notNull(), // in minutes
   status: text("status").notNull().default("not_started"), // not_started, in_progress, completed
   case_studies: text("case_studies"), // Detailed case studies with examples
+  imageUrl: text("image_url"), // URL to framework featured image
 });
 
 export const insertFrameworkSchema = createInsertSchema(frameworks).pick({
@@ -54,6 +55,7 @@ export const insertFrameworkSchema = createInsertSchema(frameworks).pick({
   duration: true,
   status: true,
   case_studies: true,
+  imageUrl: true,
 });
 
 // Module schema
@@ -68,6 +70,7 @@ export const modules = pgTable("modules", {
   quizQuestions: text("quiz_questions"), // JSON string of quiz questions
   videoUrl: text("video_url"), // URL to video content if any
   resources: text("resources"), // Additional learning resources
+  imageUrl: text("image_url"), // URL to module featured image
   completed: boolean("completed").default(false),
   order: integer("order").notNull(),
   scormPath: text("scorm_path"), // Path to SCORM package index.html
@@ -83,6 +86,7 @@ export const insertModuleSchema = createInsertSchema(modules).pick({
   quizQuestions: true,
   videoUrl: true,
   resources: true,
+  imageUrl: true,
   completed: true,
   order: true,
   scormPath: true,
