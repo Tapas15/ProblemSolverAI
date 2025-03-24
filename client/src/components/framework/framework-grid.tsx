@@ -6,6 +6,11 @@ import FrameworkDetail from './framework-detail';
 import { Framework, Module, UserProgress } from '@shared/schema';
 import { Skeleton } from '@/components/ui/skeleton';
 
+// Create empty modules array with the right type for use when we only need the length
+const createEmptyModules = (count: number): Module[] => {
+  return Array(count).fill({} as Module);
+};
+
 const FrameworkGrid: React.FC = () => {
   const [selectedFrameworkId, setSelectedFrameworkId] = useState<number | null>(null);
   
@@ -47,8 +52,8 @@ const FrameworkGrid: React.FC = () => {
     
     return {
       status: progress.status,
-      completedModules: progress.completedModules,
-      totalModules: progress.totalModules
+      completedModules: progress.completedModules || 0,
+      totalModules: progress.totalModules || 0
     };
   };
   
@@ -136,12 +141,12 @@ const FrameworkGrid: React.FC = () => {
           <h2 className="text-xl font-semibold mb-4 text-primary">Available Frameworks</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {groupedFrameworks['not_started'].map((framework) => {
-              const { status, completedModules } = getFrameworkProgress(framework.id);
+              const { status, completedModules, totalModules } = getFrameworkProgress(framework.id);
               return (
                 <div key={framework.id} onClick={() => handleFrameworkClick(framework.id)} className="cursor-pointer">
                   <FrameworkCard 
                     framework={framework}
-                    modules={[]}
+                    modules={Array(totalModules).fill({})} // Create array with correct length
                     progressStatus={status}
                     completedModules={completedModules}
                   />
