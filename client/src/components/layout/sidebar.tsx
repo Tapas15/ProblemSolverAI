@@ -58,7 +58,7 @@ const Sidebar: React.FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
         </div>
         {!isCollapsed && <span className="text-sm font-medium truncate">{label}</span>}
         {isActive && !isCollapsed && (
-          <div className="ml-auto w-1.5 h-6 rounded-full bg-gradient-to-b from-[#7d5af1] to-[#ff59b2]"></div>
+          <div className="ml-auto w-1.5 h-6 rounded-full bg-gradient-to-b from-[#9545ff] to-[#ff59b2]"></div>
         )}
       </div>
     </Link>
