@@ -98,6 +98,11 @@ export default function ExerciseDetailPage() {
       return;
     }
 
+    // Turn off practice mode when submitting
+    if (practiceMode) {
+      setPracticeMode(false);
+    }
+    
     submitMutation.mutate({ exerciseId: exerciseId!, solution });
   };
 
@@ -263,6 +268,15 @@ export default function ExerciseDetailPage() {
                       {latestSubmission?.solution}
                     </div>
                     
+                    {exercise.sampleSolution && (
+                      <>
+                        <h3 className="text-xl font-semibold mt-6 mb-3">Original Solution</h3>
+                        <div className="bg-muted p-4 rounded-md whitespace-pre-line">
+                          {exercise.sampleSolution}
+                        </div>
+                      </>
+                    )}
+                    
                     {latestSubmission?.feedback && (
                       <>
                         <h3 className="text-xl font-semibold mt-6 mb-3">Feedback</h3>
@@ -289,7 +303,7 @@ export default function ExerciseDetailPage() {
                       <RefreshCw className="h-4 w-4 mr-2" />
                       <AlertTitle>Practice Mode Active</AlertTitle> 
                       <AlertDescription>
-                        You're now in practice mode. Your solution won't be saved or submitted.
+                        Practice mode - submit to override your previous solution.
                       </AlertDescription>
                     </Alert>
                   )}
@@ -307,11 +321,15 @@ export default function ExerciseDetailPage() {
                   
                   <Button 
                     onClick={handleSubmit}
-                    disabled={submitMutation.isPending || practiceMode}
+                    disabled={submitMutation.isPending}
                     className="w-full"
                   >
                     {submitMutation.isPending ? (
                       <>Submitting...</>
+                    ) : practiceMode ? (
+                      <>
+                        <SendIcon className="mr-2 h-4 w-4" /> Submit & Override Previous Solution
+                      </>
                     ) : (
                       <>
                         <SendIcon className="mr-2 h-4 w-4" /> Submit Solution
