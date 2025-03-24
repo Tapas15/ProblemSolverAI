@@ -96,7 +96,7 @@ const DashboardPage = () => {
 
   return (
     <MainLayout>
-      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6">
+      <div className="container mx-auto px-2 sm:px-6 py-3 sm:py-6">
         {isLoading ? (
           <div className="flex flex-col space-y-8 animate-pulse">
             <div className="h-20 bg-slate-100 rounded-lg"></div>
@@ -405,11 +405,11 @@ const DashboardPage = () => {
             </TabsContent>
             
             <TabsContent value="recommendations" className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6">
                 <Card className="shadow-md">
                   <CardHeader className="px-3 pt-3 pb-1 sm:p-6 sm:pb-2">
-                    <CardTitle className="flex items-center text-blue-600">
-                      <Lightbulb className="h-5 w-5 mr-2" />
+                    <CardTitle className="flex items-center text-blue-600 text-sm sm:text-base">
+                      <Lightbulb className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                       Suggested Framework
                     </CardTitle>
                     <CardDescription>
@@ -418,12 +418,12 @@ const DashboardPage = () => {
                   </CardHeader>
                   <CardContent className="space-y-4 px-3 pb-3 sm:p-6">
                     <div className="flex items-center gap-4">
-                      <div className="h-16 w-16 rounded-lg bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center text-white">
-                        <BookOpen className="h-8 w-8" />
+                      <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-lg bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center text-white">
+                        <BookOpen className="h-6 w-6 sm:h-8 sm:w-8" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-lg">Design Thinking</h3>
-                        <p className="text-sm text-muted-foreground">Perfect next step for your learning journey</p>
+                        <h3 className="font-semibold text-base sm:text-lg">Design Thinking</h3>
+                        <p className="text-xs sm:text-sm text-muted-foreground">Perfect next step for your learning journey</p>
                       </div>
                     </div>
                     
@@ -437,8 +437,8 @@ const DashboardPage = () => {
                 
                 <Card className="shadow-md">
                   <CardHeader className="px-3 pt-3 pb-1 sm:p-6 sm:pb-2">
-                    <CardTitle className="flex items-center text-blue-600">
-                      <Target className="h-5 w-5 mr-2" />
+                    <CardTitle className="flex items-center text-blue-600 text-sm sm:text-base">
+                      <Target className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                       Practice Recommendation
                     </CardTitle>
                     <CardDescription>
@@ -451,8 +451,8 @@ const DashboardPage = () => {
                         <BarChart2 className="h-8 w-8" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-lg">Take Your First Quiz</h3>
-                        <p className="text-sm text-muted-foreground">Test your knowledge with a beginner quiz</p>
+                        <h3 className="font-semibold text-base sm:text-lg">Take Your First Quiz</h3>
+                        <p className="text-xs sm:text-sm text-muted-foreground">Test your knowledge with a beginner quiz</p>
                       </div>
                     </div>
                     
