@@ -248,7 +248,7 @@ const DashboardPage = () => {
                               {progress.completedModules || 0} of {progress.totalModules} modules complete
                             </div>
                             <Link to={`/frameworks/${framework?.id}`}>
-                              <Button variant="outline" size="sm" className="flex items-center text-[#0078D7] hover:text-[#0078D7]/90 hover:bg-[#DCEFFF]/50 transition-all duration-300">
+                              <Button variant="outline" size="sm" className="flex items-center text-[#0078D7] hover:text-[#0078D7]/90 hover:bg-[#DCEFFF]/50 hover:border-[#0078D7] transition-all duration-300">
                                 Continue Learning <ChevronRight className="ml-1 h-4 w-4" />
                               </Button>
                             </Link>
@@ -272,7 +272,7 @@ const DashboardPage = () => {
                     </CardHeader>
                     <CardContent>
                       <Link to="/">
-                        <Button>
+                        <Button className="btn-blue-gradient">
                           Browse Frameworks
                         </Button>
                       </Link>
@@ -348,7 +348,7 @@ const DashboardPage = () => {
                               </span>
                             </div>
                             <Link to={`/quizzes/${attempt.quizId}`}>
-                              <Button variant="outline" size="sm" className="text-[#0078D7] hover:text-[#0078D7]/90 hover:bg-[#DCEFFF]/50 transition-all duration-300">
+                              <Button variant="outline" size="sm" className="text-[#0078D7] hover:text-[#0078D7]/90 hover:bg-[#DCEFFF]/50 hover:border-[#0078D7] transition-all duration-300">
                                 Try Again
                               </Button>
                             </Link>
@@ -367,7 +367,7 @@ const DashboardPage = () => {
                     </CardHeader>
                     <CardContent>
                       <Link to="/">
-                        <Button>
+                        <Button className="btn-blue-gradient">
                           Browse Frameworks
                         </Button>
                       </Link>
