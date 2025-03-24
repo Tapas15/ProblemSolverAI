@@ -138,7 +138,7 @@ const DashboardPage = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold mb-1">{stats?.completedFrameworks}/{stats?.totalFrameworks}</div>
-                  <Progress value={stats?.frameworkProgress} className="h-2" />
+                  <Progress value={stats?.frameworkProgress} className="h-2 blue-progress" />
                   <p className="text-xs text-gray-500 mt-2">
                     {stats?.frameworkProgress}% of frameworks completed
                   </p>
@@ -154,7 +154,7 @@ const DashboardPage = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold mb-1">{stats?.completedModules}/{stats?.totalModules}</div>
-                  <Progress value={stats?.moduleProgress} className="h-2" />
+                  <Progress value={stats?.moduleProgress} className="h-2 blue-progress" />
                   <p className="text-xs text-gray-500 mt-2">
                     {stats?.moduleProgress}% of modules completed
                   </p>
@@ -170,7 +170,7 @@ const DashboardPage = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold mb-1">{stats?.passedQuizzes}/{stats?.totalQuizzes}</div>
-                  <Progress value={stats?.quizProgress} className="h-2" />
+                  <Progress value={stats?.quizProgress} className="h-2 blue-progress" />
                   <p className="text-xs text-gray-500 mt-2">
                     {stats?.quizProgress}% of quizzes passed
                   </p>
@@ -186,7 +186,7 @@ const DashboardPage = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold mb-1">{stats?.averageScore}%</div>
-                  <Progress value={stats?.averageScore} className="h-2" />
+                  <Progress value={stats?.averageScore} className="h-2 blue-progress" />
                   <p className="text-xs text-gray-500 mt-2">
                     Across all quiz attempts
                   </p>
@@ -233,9 +233,9 @@ const DashboardPage = () => {
                           <div className="flex justify-between">
                             <CardTitle>{framework?.name}</CardTitle>
                             {progress.status === 'completed' ? (
-                              <Badge className="bg-green-100 text-green-800">Completed</Badge>
+                              <Badge className="bg-[#DCEFFF] text-[#0078D7] border border-[#0078D7]/20">Completed</Badge>
                             ) : progress.status === 'in_progress' ? (
-                              <Badge className="bg-yellow-100 text-yellow-800">In Progress</Badge>
+                              <Badge className="bg-[#FFF4DC] text-[#F59E0B] border border-[#F59E0B]/20">In Progress</Badge>
                             ) : (
                               <Badge className="bg-blue-100 text-blue-800">Not Started</Badge>
                             )}
@@ -256,7 +256,7 @@ const DashboardPage = () => {
                           <Progress 
                             value={progress.totalModules > 0 ? 
                               Math.round(((progress.completedModules || 0) / progress.totalModules) * 100) : 0} 
-                            className="h-2 mt-3" 
+                            className="h-2 mt-3 blue-progress" 
                           />
                         </CardContent>
                       </Card>
