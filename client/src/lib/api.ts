@@ -359,6 +359,6 @@ export async function updateExerciseSubmission(
   return res.json();
 }
 
-export async function deleteExerciseSubmissions(exerciseId: number): Promise<void> {
-  await apiRequest("DELETE", `/api/exercises/${exerciseId}/submissions`);
+export async function deleteExerciseSubmission(submissionId: number): Promise<void> {
+  await apiRequest("DELETE", `/api/exercise-submissions/${submissionId}`);
 }
