@@ -17,7 +17,7 @@ const FrameworkCard: React.FC<FrameworkCardProps> = ({
   progressStatus = 'not_started',
   completedModules = 0 
 }) => {
-  const { id, name, description, level, duration } = framework;
+  const { id, name, description, level, duration, imageUrl } = framework;
   const totalModules = modules.length || 6; // Fallback for display
   
   const getStatusBadge = () => {
@@ -49,6 +49,15 @@ const FrameworkCard: React.FC<FrameworkCardProps> = ({
   
   return (
     <div className="framework-card rounded-xl overflow-hidden bg-white">
+      {imageUrl && (
+        <div className="h-40 overflow-hidden">
+          <img 
+            src={imageUrl} 
+            alt={name} 
+            className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+          />
+        </div>
+      )}
       <div className="p-6">
         <div className="flex justify-between items-start mb-3">
           <h3 className="text-xl font-semibold font-header text-primary">{name}</h3>

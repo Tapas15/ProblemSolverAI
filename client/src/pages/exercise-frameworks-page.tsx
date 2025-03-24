@@ -72,6 +72,15 @@ function FrameworkCard({ framework }: FrameworkCardProps) {
 
   return (
     <Card className="h-full flex flex-col hover:shadow-md transition-shadow duration-200 border-t-4 hover:border-t-4" style={{ borderTopColor: `var(--${framework.id % 2 === 0 ? 'accent' : 'secondary'})` }}>
+      {framework.imageUrl && (
+        <div className="h-40 overflow-hidden rounded-t-lg">
+          <img 
+            src={framework.imageUrl} 
+            alt={framework.name} 
+            className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+          />
+        </div>
+      )}
       <CardHeader className="pb-2">
         <CardTitle className="text-xl">{framework.name}</CardTitle>
         <CardDescription className="line-clamp-2">{framework.description.substring(0, 100)}...</CardDescription>
