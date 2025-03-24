@@ -25,8 +25,8 @@ const FounderPage: React.FC = () => {
           <div className="relative px-6 sm:px-8 pb-8">
             <div className="flex flex-col sm:flex-row items-center sm:items-end -mt-20 mb-6">
               <img 
-                src="/images/manas-kumar.jpg" 
-                alt="Manas Kumar Mahanandia" 
+                src="/images/manas_profile.jpg" 
+                alt="Manas Kumar" 
                 className="w-32 h-32 sm:w-40 sm:h-40 rounded-full border-4 border-white shadow-md object-cover"
               />
               
