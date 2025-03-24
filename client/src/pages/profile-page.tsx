@@ -18,6 +18,43 @@ const ProfilePage: React.FC = () => {
   const { user, updateAiSettingsMutation } = useAuth();
   const { toast } = useToast();
   
+  // Update profile mutation
+  const updateProfileMutation = useMutation({
+    mutationFn: (data: any) => fetch('/api/user/profile', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    }).then(res => res.json()),
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Profile updated successfully",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update profile",
+        variant: "destructive"
+      });
+    }
+  });
+
+  // Update preferences mutation  
+  const updatePreferencesMutation = useMutation({
+    mutationFn: (data: any) => fetch('/api/user/preferences', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    }).then(res => res.json()),
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Preferences updated successfully",
+      });
+    }
+  });
+
   // User form state
   const [personalInfo, setPersonalInfo] = useState({
     name: '',
@@ -179,6 +216,12 @@ const ProfilePage: React.FC = () => {
     };
   };
   
+  // Handle personal info form submission
+  const handlePersonalInfoSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    updateProfileMutation.mutate(personalInfo);
+  };
+
   // Initialize form values when user data is available
   useEffect(() => {
     if (user) {
