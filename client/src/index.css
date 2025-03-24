@@ -420,6 +420,16 @@
   background: hsl(var(--muted-foreground));
 }
 
+/* Hide scrollbar class for mobile */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+  
+.no-scrollbar::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+
 /* Enhanced Module content styling */
 .module-content {
   @apply leading-relaxed text-gray-700 mx-auto max-w-4xl;
