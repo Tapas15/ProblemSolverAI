@@ -6,49 +6,49 @@
 
 @layer base {
   :root {
-    --background: 280 30% 98%; /* #faf6ff - Soft purple hint background */
-    --foreground: 270 50% 15%; /* #1e1133 - Deep purple */
+    --background: 210 30% 98%; /* #f6f8fc - Soft blue hint background */
+    --foreground: 220 50% 15%; /* #111833 - Deep blue */
     
     --card: 0 0% 100%;
-    --card-foreground: 270 50% 15%;
+    --card-foreground: 220 50% 15%;
     
     --popover: 0 0% 100%;
-    --popover-foreground: 270 50% 15%;
+    --popover-foreground: 220 50% 15%;
     
-    --primary: 265 80% 60%; /* #7d5af1 - Vibrant purple */
+    --primary: 220 80% 55%; /* #2563eb - Vibrant blue */
     --primary-foreground: 0 0% 100%;
     
-    --secondary: 230 90% 65%; /* #5c8afa - Electric blue */
+    --secondary: 210 90% 65%; /* #4f92fa - Electric blue */
     --secondary-foreground: 0 0% 100%;
     
-    --accent: 320 95% 95%; /* #ffecf8 - Soft pink accent */
-    --accent-foreground: 270 50% 15%;
+    --accent: 210 95% 95%; /* #ecf5ff - Soft blue accent */
+    --accent-foreground: 220 50% 15%;
     
-    --tertiary: 180 80% 50%; /* #1ee0d6 - Turquoise */
+    --tertiary: 200 80% 50%; /* #1eb8e0 - Sky blue */
     --tertiary-foreground: 0 0% 100%;
     
-    --quaternary: 330 90% 65%; /* #ff59b2 - Hot pink */
+    --quaternary: 240 90% 65%; /* #5659ff - Indigo */
     --quaternary-foreground: 0 0% 100%;
     
-    --muted: 270 20% 96%;
-    --muted-foreground: 270 25% 40%;
+    --muted: 220 20% 96%;
+    --muted-foreground: 220 25% 40%;
     
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
     
-    --border: 280 30% 92%;
-    --input: 280 30% 92%;
-    --ring: 265 80% 60%; 
+    --border: 210 30% 92%;
+    --input: 210 30% 92%;
+    --ring: 220 80% 55%; 
     
     --radius: 1.25rem;
     
     /* Color palette */
-    --violet-main: 265 80% 60%; /* #7d5af1 - Vibrant purple */
-    --violet-dark: 268 70% 40%; /* #4b28b4 - Deep violet */
-    --violet-light: 260 90% 80%; /* #c6afff - Light violet */
-    --violet-pastel: 262 100% 88%; /* #d7baff - Pastel violet */
+    --violet-main: 220 80% 55%; /* #2563eb - Vibrant blue */
+    --violet-dark: 220 70% 40%; /* #1d4ed8 - Deep blue */
+    --violet-light: 220 90% 80%; /* #93c5fd - Light blue */
+    --violet-pastel: 220 100% 88%; /* #bfdbfe - Pastel blue */
     
-    --blue-electric: 230 90% 65%; /* #5c8afa - Electric blue */
+    --blue-electric: 210 90% 65%; /* #4f92fa - Electric blue */
     --blue-bright: 210 100% 60%; /* #1a88ff - Bright blue */
     --blue-sky: 200 95% 65%; /* #33beff - Sky blue */
     --blue-pastel: 205 100% 85%; /* #aedfff - Pastel blue */
@@ -70,14 +70,14 @@
     --chart-5: 290 90% 70%; /* Orchid */
     
     /* Sidebar colors */
-    --sidebar-background: 270 50% 15%; /* Deep purple */
+    --sidebar-background: 220 50% 15%; /* Deep blue */
     --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 265 80% 60%; /* Vibrant purple */
+    --sidebar-primary: 220 80% 55%; /* Vibrant blue */
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 230 90% 95%; /* Soft blue accent */
-    --sidebar-accent-foreground: 270 50% 15%;
-    --sidebar-border: 270 45% 25%;
-    --sidebar-ring: 265 80% 60%;
+    --sidebar-accent: 210 90% 95%; /* Soft blue accent */
+    --sidebar-accent-foreground: 220 50% 15%;
+    --sidebar-border: 220 45% 25%;
+    --sidebar-ring: 220 80% 55%;
   }
  
   .dark {
