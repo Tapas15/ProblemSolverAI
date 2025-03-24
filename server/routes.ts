@@ -55,6 +55,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Add cache headers for static assets
   app.use(addCacheHeaders);
   
+  // Serve static files from the server/public directory
+  app.use('/api/static', express.static(path.join(process.cwd(), 'server/public')));
+  
   // Serve uploaded files
   app.use('/uploads', (req, res, next) => {
     const filePath = path.join(process.cwd(), 'uploads', req.path);
