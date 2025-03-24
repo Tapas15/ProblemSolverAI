@@ -422,15 +422,7 @@ const SettingsPage: React.FC = () => {
                   <div className="space-y-4">
                     <h3 className="text-lg font-medium">Data Management</h3>
                     
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h4 className="font-medium">Export Your Data</h4>
-                        <p className="text-sm text-gray-500">Download all your data including progress and quiz results</p>
-                      </div>
-                      <Button variant="outline">
-                        Export
-                      </Button>
-                    </div>
+                    <DataExport />
                     
                     <Separator />
                     

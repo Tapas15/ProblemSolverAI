@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2, Shield, ShieldCheck, ShieldAlert, Download, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
+import { useQueryClient } from "@tanstack/react-query";
 import { setup2FA, verify2FA, disable2FA, use2FABackupCode, generateNew2FABackupCodes } from "@/lib/api";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -33,7 +34,8 @@ type BackupCodeFormValues = z.infer<typeof backupCodeSchema>;
 type DisableFormValues = z.infer<typeof disableSchema>;
 
 export function TwoFactorAuth() {
-  const { user, queryClient } = useAuth();
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
   const { toast } = useToast();
   const [setupData, setSetupData] = useState<{ secret: string; qrCode: string } | null>(null);
   const [backupCodes, setBackupCodes] = useState<string[]>([]);
@@ -72,7 +74,7 @@ export function TwoFactorAuth() {
       const data = await setup2FA();
       setSetupData(data);
       setStep('verify');
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "2FA Setup Error",
         description: error.message || "Failed to initialize 2FA setup",
@@ -98,7 +100,7 @@ export function TwoFactorAuth() {
         title: "2FA Enabled",
         description: "Two-factor authentication has been successfully enabled",
       });
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Verification Error",
         description: error.message || "Failed to verify the authentication code",
@@ -124,7 +126,7 @@ export function TwoFactorAuth() {
         title: "2FA Disabled",
         description: "Two-factor authentication has been successfully disabled",
       });
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Error Disabling 2FA",
         description: error.message || "Failed to disable two-factor authentication",
@@ -150,7 +152,7 @@ export function TwoFactorAuth() {
       
       setShowBackupCodeInput(false);
       backupCodeForm.reset();
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Backup Code Error",
         description: error.message || "Failed to verify backup code",
@@ -182,7 +184,7 @@ export function TwoFactorAuth() {
         title: "New Backup Codes",
         description: "New backup codes have been generated successfully",
       });
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Error",
         description: error.message || "Failed to generate new backup codes",
