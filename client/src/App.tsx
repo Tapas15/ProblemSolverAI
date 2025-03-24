@@ -17,6 +17,7 @@ import LearningPathPage from "@/pages/learning-path-page";
 import ExercisePage from "@/pages/exercise-page";
 import ExerciseDetailPage from "@/pages/exercise-detail-page";
 import ExerciseFrameworksPage from "@/pages/exercise-frameworks-page";
+import FounderPage from "@/pages/founder-page";
 import { AuthProvider } from "@/hooks/use-auth";
 import { ProtectedRoute } from "@/lib/protected-route";
 
@@ -36,6 +37,7 @@ function Router() {
       <ProtectedRoute path="/settings" component={SettingsPage} />
       <ProtectedRoute path="/scorm-admin" component={ScormAdminPage} />
       <ProtectedRoute path="/learning-path" component={LearningPathPage} />
+      <ProtectedRoute path="/founder" component={FounderPage} />
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
     </Switch>

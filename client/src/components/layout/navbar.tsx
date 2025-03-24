@@ -15,6 +15,7 @@ import {
   ChevronDown, 
   FileCode, 
   User, 
+  Users,
   Settings, 
   LayoutDashboard, 
   LogOut,
@@ -88,6 +89,14 @@ const Navbar: React.FC = () => {
                 <Dumbbell className={`h-4 w-4 ${location.startsWith('/exercises') || location.startsWith('/exercise/') ? 'text-secondary' : 'text-white group-hover:text-secondary'} transition-colors`} />
                 <span className={`${location.startsWith('/exercises') || location.startsWith('/exercise/') ? 'border-b-2 border-secondary' : 'border-b-2 border-transparent group-hover:border-secondary/50'} transition-all pb-0.5`}>
                   Practice Exercises
+                </span>
+              </div>
+            </Link>
+            <Link to="/founder">
+              <div className={`py-2 flex items-center space-x-1.5 group ${location === '/founder' ? 'text-secondary' : 'text-white hover:text-secondary'} transition-colors`}>
+                <Users className={`h-4 w-4 ${location === '/founder' ? 'text-secondary' : 'text-white group-hover:text-secondary'} transition-colors`} />
+                <span className={`${location === '/founder' ? 'border-b-2 border-secondary' : 'border-b-2 border-transparent group-hover:border-secondary/50'} transition-all pb-0.5`}>
+                  Our Founder
                 </span>
               </div>
             </Link>
