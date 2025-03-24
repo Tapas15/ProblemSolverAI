@@ -11,6 +11,8 @@ import { Shield, Lock, Key, AlertTriangle, Settings, Bell, Fingerprint } from 'l
 import { useToast } from '@/hooks/use-toast';
 import { useMutation } from '@tanstack/react-query';
 import { updatePassword, updatePrivacySettings, updateNotificationSettings } from '@/lib/api';
+import { TwoFactorAuth } from '@/components/settings/two-factor-auth';
+import { DataExport } from '@/components/settings/data-export';
 
 const SettingsPage: React.FC = () => {
   const { user, updateAiSettingsMutation } = useAuth();
@@ -328,19 +330,7 @@ const SettingsPage: React.FC = () => {
                 
                 <div className="space-y-4">
                   <h3 className="text-lg font-medium">Two-Factor Authentication</h3>
-                  <p className="text-sm text-gray-600">
-                    Add an extra layer of security to your account by enabling two-factor authentication.
-                  </p>
-                  
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-medium">Two-Factor Authentication</h4>
-                      <p className="text-sm text-gray-500">Secure your account with 2FA</p>
-                    </div>
-                    <Button variant="outline">
-                      Enable
-                    </Button>
-                  </div>
+                  <TwoFactorAuth />
                 </div>
               </CardContent>
             </Card>
