@@ -671,10 +671,11 @@ input:hover, textarea:hover, select:hover {
   transform: rotate(45deg);
 }
 
-/* Navigation styling with blue-violet accents */
+/* Navigation styling with light background and blue-violet accents */
 nav {
-  @apply shadow-md bg-white border-b border-indigo-50;
+  @apply shadow-md bg-gradient-to-r from-indigo-50/70 via-blue-50/70 to-violet-50/70 border-b border-indigo-100/50;
   position: relative;
+  backdrop-filter: blur(5px);
 }
 
 nav::after {
@@ -686,8 +687,8 @@ nav::after {
   height: 1px;
   background: linear-gradient(90deg, 
     rgba(74, 107, 189, 0.1) 0%, 
-    rgba(74, 107, 189, 0.5) 25%, 
-    rgba(105, 82, 212, 0.5) 75%, 
+    rgba(74, 107, 189, 0.4) 25%, 
+    rgba(105, 82, 212, 0.4) 75%, 
     rgba(105, 82, 212, 0.1) 100%
   );
 }
@@ -784,7 +785,7 @@ nav::after {
   border-color: rgba(105, 82, 212, 0.15);
 }
 
-/* Blue-violet progress bars with enhanced styling */
+/* Progress bars with various color themes */
 .blue-progress {
   @apply rounded-full overflow-hidden;
   height: 6px;
@@ -797,6 +798,192 @@ nav::after {
   background: linear-gradient(90deg, #4a6bbd, #6952d4);
   transition: width 0.5s cubic-bezier(0.26, 0.86, 0.44, 0.985);
   box-shadow: 0 1px 2px rgba(74, 107, 189, 0.2);
+}
+
+/* Framework-specific colors */
+.framework-mece, .framework-id-1 {
+  --framework-color-light: #4a6bbd;
+  --framework-color-dark: #345299;
+  --framework-gradient-start: #4a6bbd;
+  --framework-gradient-end: #6952d4;
+  --framework-bg-light: rgba(74, 107, 189, 0.1);
+}
+
+/* Utility classes for framework colors */
+.text-framework {
+  color: var(--framework-color-light);
+}
+
+.bg-framework {
+  background-color: var(--framework-bg-light);
+}
+
+.border-framework {
+  border-color: var(--framework-color-light);
+}
+
+.gradient-framework {
+  background: linear-gradient(135deg, 
+    var(--framework-gradient-start), 
+    var(--framework-gradient-end)
+  );
+}
+
+.framework-design-thinking, .framework-id-8 {
+  --framework-color-light: #16a6b6;
+  --framework-color-dark: #0e7a85;
+  --framework-gradient-start: #16a6b6;
+  --framework-gradient-end: #0591e3;
+  --framework-bg-light: rgba(22, 166, 182, 0.1);
+}
+
+.framework-swot, .framework-id-3 {
+  --framework-color-light: #2c8bc1;
+  --framework-color-dark: #1a699e;
+  --framework-gradient-start: #2c8bc1;
+  --framework-gradient-end: #4a6bbd;
+  --framework-bg-light: rgba(44, 139, 193, 0.1);
+}
+
+.framework-first-principles, .framework-id-5 {
+  --framework-color-light: #6952d4;
+  --framework-color-dark: #5032c8;
+  --framework-gradient-start: #6952d4;
+  --framework-gradient-end: #9755d3;
+  --framework-bg-light: rgba(105, 82, 212, 0.1);
+}
+
+.framework-porters, .framework-id-4 {
+  --framework-color-light: #4285f4;
+  --framework-color-dark: #2968d6;
+  --framework-gradient-start: #4285f4;
+  --framework-gradient-end: #5b6af9;
+  --framework-bg-light: rgba(66, 133, 244, 0.1);
+}
+
+.framework-jobs, .framework-id-2 {
+  --framework-color-light: #00a8e8;
+  --framework-color-dark: #0082b3;
+  --framework-gradient-start: #00a8e8;
+  --framework-gradient-end: #00c6ff;
+  --framework-bg-light: rgba(0, 168, 232, 0.1);
+}
+
+.framework-blue-ocean, .framework-id-7 {
+  --framework-color-light: #1e88e5;
+  --framework-color-dark: #1565c0;
+  --framework-gradient-start: #1e88e5;
+  --framework-gradient-end: #40c4ff;
+  --framework-bg-light: rgba(30, 136, 229, 0.1);
+}
+
+.framework-scamper, .framework-id-6 {
+  --framework-color-light: #7e57c2;
+  --framework-color-dark: #5e35b1;
+  --framework-gradient-start: #7e57c2;
+  --framework-gradient-end: #b39ddb;
+  --framework-bg-light: rgba(126, 87, 194, 0.1);
+}
+
+.framework-problem-tree, .framework-id-9 {
+  --framework-color-light: #43a047;
+  --framework-color-dark: #2e7d32;
+  --framework-gradient-start: #43a047;
+  --framework-gradient-end: #66bb6a;
+  --framework-bg-light: rgba(67, 160, 71, 0.1);
+}
+
+.framework-pareto, .framework-id-10 {
+  --framework-color-light: #fb8c00;
+  --framework-color-dark: #ef6c00;
+  --framework-gradient-start: #fb8c00;
+  --framework-gradient-end: #ffa726;
+  --framework-bg-light: rgba(251, 140, 0, 0.1);
+}
+
+/* Framework-specific card styles */
+.framework-card.framework-mece::after,
+.framework-card.framework-design-thinking::after,
+.framework-card.framework-swot::after,
+.framework-card.framework-first-principles::after,
+.framework-card.framework-porters::after,
+.framework-card.framework-jobs::after,
+.framework-card.framework-blue-ocean::after,
+.framework-card.framework-scamper::after,
+.framework-card.framework-problem-tree::after,
+.framework-card.framework-pareto::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 5px;
+  height: 0;
+  background: linear-gradient(to bottom, 
+    var(--framework-gradient-start), 
+    var(--framework-gradient-end)
+  );
+  transition: height 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+  box-shadow: 0 0 15px rgba(var(--framework-color-light), 0.4);
+}
+
+.framework-card.framework-mece:hover::after,
+.framework-card.framework-design-thinking:hover::after,
+.framework-card.framework-swot:hover::after,
+.framework-card.framework-first-principles:hover::after,
+.framework-card.framework-porters:hover::after,
+.framework-card.framework-jobs:hover::after,
+.framework-card.framework-blue-ocean:hover::after,
+.framework-card.framework-scamper:hover::after,
+.framework-card.framework-problem-tree:hover::after,
+.framework-card.framework-pareto:hover::after {
+  height: 100%;
+}
+
+.framework-card.framework-mece:hover .card-title,
+.framework-card.framework-design-thinking:hover .card-title,
+.framework-card.framework-swot:hover .card-title,
+.framework-card.framework-first-principles:hover .card-title,
+.framework-card.framework-porters:hover .card-title,
+.framework-card.framework-jobs:hover .card-title,
+.framework-card.framework-blue-ocean:hover .card-title,
+.framework-card.framework-scamper:hover .card-title,
+.framework-card.framework-problem-tree:hover .card-title,
+.framework-card.framework-pareto:hover .card-title {
+  color: var(--framework-color-light);
+}
+
+/* Framework progress bars with different colors */
+.progress-mece {
+  background: var(--framework-bg-light);
+}
+
+.progress-mece .progress-fill {
+  background: linear-gradient(90deg, 
+    var(--framework-gradient-start), 
+    var(--framework-gradient-end)
+  );
+}
+
+.progress-design-thinking {
+  background: var(--framework-bg-light);
+}
+
+.progress-design-thinking .progress-fill {
+  background: linear-gradient(90deg, 
+    var(--framework-gradient-start), 
+    var(--framework-gradient-end)
+  );
+}
+
+.progress-swot {
+  background: var(--framework-bg-light);
+}
+
+.progress-swot .progress-fill {
+  background: linear-gradient(90deg, 
+    var(--framework-gradient-start), 
+    var(--framework-gradient-end)
+  );
 }
 
 /* Animated loading spinner with blue-violet theme */
@@ -875,7 +1062,7 @@ nav::after {
   background-color: #6952d4;
 }
 
-/* Blue-violet gradient button */
+/* Gradient buttons with various colors */
 .btn-blue-gradient {
   background: linear-gradient(135deg, #4a6bbd, #6952d4);
   color: white;
@@ -914,6 +1101,51 @@ nav::after {
   transform: translateY(1px);
   box-shadow: 0 2px 6px rgba(74, 107, 189, 0.2);
   transition: all 0.1s ease;
+}
+
+/* Framework-specific buttons */
+.btn-mece {
+  background: linear-gradient(135deg, var(--framework-gradient-start), var(--framework-gradient-end));
+  color: white;
+  box-shadow: 0 2px 8px rgba(74, 107, 189, 0.15), 0 1px 3px rgba(105, 82, 212, 0.1);
+}
+
+.btn-mece:hover {
+  background: linear-gradient(135deg, var(--framework-gradient-end), var(--framework-gradient-start));
+  box-shadow: 0 6px 15px rgba(74, 107, 189, 0.25), 0 2px 4px rgba(105, 82, 212, 0.15);
+}
+
+.btn-design-thinking {
+  background: linear-gradient(135deg, var(--framework-gradient-start), var(--framework-gradient-end));
+  color: white;
+  box-shadow: 0 2px 8px rgba(22, 166, 182, 0.15), 0 1px 3px rgba(5, 145, 227, 0.1);
+}
+
+.btn-design-thinking:hover {
+  background: linear-gradient(135deg, var(--framework-gradient-end), var(--framework-gradient-start));
+  box-shadow: 0 6px 15px rgba(22, 166, 182, 0.25), 0 2px 4px rgba(5, 145, 227, 0.15);
+}
+
+.btn-swot {
+  background: linear-gradient(135deg, var(--framework-gradient-start), var(--framework-gradient-end));
+  color: white;
+  box-shadow: 0 2px 8px rgba(44, 139, 193, 0.15), 0 1px 3px rgba(74, 107, 189, 0.1);
+}
+
+.btn-swot:hover {
+  background: linear-gradient(135deg, var(--framework-gradient-end), var(--framework-gradient-start));
+  box-shadow: 0 6px 15px rgba(44, 139, 193, 0.25), 0 2px 4px rgba(74, 107, 189, 0.15);
+}
+
+.btn-first-principles {
+  background: linear-gradient(135deg, var(--framework-gradient-start), var(--framework-gradient-end));
+  color: white;
+  box-shadow: 0 2px 8px rgba(105, 82, 212, 0.15), 0 1px 3px rgba(151, 85, 211, 0.1);
+}
+
+.btn-first-principles:hover {
+  background: linear-gradient(135deg, var(--framework-gradient-end), var(--framework-gradient-start));
+  box-shadow: 0 6px 15px rgba(105, 82, 212, 0.25), 0 2px 4px rgba(151, 85, 211, 0.15);
 }
 
 .loading-dots span:nth-child(1) {
