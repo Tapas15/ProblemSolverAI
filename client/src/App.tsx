@@ -13,6 +13,7 @@ import DashboardPage from "@/pages/dashboard-page";
 import ProfilePage from "@/pages/profile-page";
 import SettingsPage from "@/pages/settings-page";
 import ScormAdminPage from "@/pages/scorm-admin-page";
+import LearningPathPage from "@/pages/learning-path-page";
 import { AuthProvider } from "@/hooks/use-auth";
 import { ProtectedRoute } from "@/lib/protected-route";
 
@@ -28,7 +29,8 @@ function Router() {
       <ProtectedRoute path="/profile" component={ProfilePage} />
       <ProtectedRoute path="/settings" component={SettingsPage} />
       <ProtectedRoute path="/scorm-admin" component={ScormAdminPage} />
-      <ProtectedRoute path="/learning-path" component={LearningPathPage} />
+      {/* Temporarily reroute /learning-path to home page until full implementation */}
+      <ProtectedRoute path="/learning-path" component={HomePage} />
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
     </Switch>
