@@ -44,8 +44,9 @@ export default function ExerciseDetailPage() {
   );
 
   // Check if user has already submitted a solution
-  const hasSubmitted = exerciseSubmissions && exerciseSubmissions.length > 0 && !practiceMode;
-  const latestSubmission = hasSubmitted ? exerciseSubmissions[0] : null;
+  const hasSubmission = exerciseSubmissions && exerciseSubmissions.length > 0;
+  const hasSubmitted = hasSubmission && !practiceMode;
+  const latestSubmission = hasSubmission ? exerciseSubmissions[0] : null;
 
   // Handle practice mode toggle
   const togglePracticeMode = () => {
@@ -54,12 +55,12 @@ export default function ExerciseDetailPage() {
       setSolution("");
       toast({
         title: "Practice Mode Enabled",
-        description: "You can now practice this exercise again. Your solution won't be saved.",
+        description: "You can now practice this exercise again.",
       });
     } else {
       toast({
         title: "Practice Mode Disabled",
-        description: "Your previous submission is now visible.",
+        description: "Your previous submission is visible again.",
       });
     }
   };
@@ -226,7 +227,7 @@ export default function ExerciseDetailPage() {
             <CardHeader>
               <CardTitle className="flex justify-between items-center">
                 <span>Your Solution</span>
-                {hasSubmitted && (
+                {hasSubmission && (
                   <Button 
                     variant="outline" 
                     size="sm" 
@@ -234,7 +235,7 @@ export default function ExerciseDetailPage() {
                     className="flex items-center"
                   >
                     <RefreshCw className="mr-2 h-4 w-4" />
-                    Practice Again
+                    {practiceMode ? "View My Submission" : "Practice Again"}
                   </Button>
                 )}
               </CardTitle>
