@@ -29,8 +29,7 @@ function Router() {
       <ProtectedRoute path="/profile" component={ProfilePage} />
       <ProtectedRoute path="/settings" component={SettingsPage} />
       <ProtectedRoute path="/scorm-admin" component={ScormAdminPage} />
-      {/* Temporarily reroute /learning-path to home page until full implementation */}
-      <ProtectedRoute path="/learning-path" component={HomePage} />
+      <ProtectedRoute path="/learning-path" component={LearningPathPage} />
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
     </Switch>
