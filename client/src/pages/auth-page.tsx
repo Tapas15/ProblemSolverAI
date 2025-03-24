@@ -112,10 +112,10 @@ const AuthPage: React.FC = () => {
         
         <div className="max-w-md mx-auto w-full z-10 bg-white rounded-2xl shadow-xl p-8 md:p-10">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold font-header text-primary mb-3">
-              <span className="text-accent">Question</span>
-              <span className="text-primary">Pro</span>{' '}
-              <span className="text-secondary">AI</span>
+            <h1 className="text-3xl font-bold font-header mb-3">
+              <span className="text-[#3b82f6]">Question</span>
+              <span className="text-gray-800">Pro</span>{' '}
+              <span className="text-[#60a5fa]">AI</span>
             </h1>
             <p className="text-gray-600">
               Enhance your business problem-solving skills with AI-powered frameworks
@@ -142,7 +142,7 @@ const AuthPage: React.FC = () => {
                             <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                             <Input 
                               placeholder="Enter your username" 
-                              className="pl-10 py-6 h-11 rounded-lg border-gray-200 focus:border-secondary" 
+                              className="pl-10 py-6 h-11 rounded-lg border-gray-200 focus:border-[#3b82f6]" 
                               {...field} 
                             />
                           </div>
@@ -159,7 +159,7 @@ const AuthPage: React.FC = () => {
                       <FormItem>
                         <div className="flex justify-between items-center">
                           <FormLabel className="text-gray-700">Password</FormLabel>
-                          <a href="#" className="text-xs text-secondary hover:text-secondary/80 transition-colors">
+                          <a href="#" className="text-xs text-[#3b82f6] hover:text-[#3b82f6]/80 transition-colors">
                             Forgot password?
                           </a>
                         </div>
@@ -188,7 +188,7 @@ const AuthPage: React.FC = () => {
                           <Checkbox 
                             checked={field.value} 
                             onCheckedChange={field.onChange}
-                            className="text-secondary border-gray-300 rounded"
+                            className="text-[#3b82f6] border-gray-300 rounded"
                           />
                         </FormControl>
                         <div className="space-y-1 leading-none">
@@ -200,7 +200,7 @@ const AuthPage: React.FC = () => {
                   
                   <Button 
                     type="submit" 
-                    className="w-full bg-secondary hover:bg-secondary/90 text-white py-6 h-11 rounded-lg font-medium mt-2 transition-all duration-200 ease-in-out transform hover:translate-y-[-2px] hover:shadow-md"
+                    className="w-full bg-gradient-to-r from-[#3b82f6] to-[#60a5fa] hover:from-[#3b82f6]/90 hover:to-[#60a5fa]/90 text-white py-6 h-11 rounded-lg font-medium mt-2 transition-all duration-200 ease-in-out transform hover:translate-y-[-2px] hover:shadow-md"
                     disabled={loginMutation.isPending}
                   >
                     {loginMutation.isPending ? (
@@ -219,7 +219,7 @@ const AuthPage: React.FC = () => {
                 Don't have an account?{" "}
                 <button
                   onClick={() => setActiveTab("register")}
-                  className="text-secondary hover:text-secondary/80 font-medium transition-colors"
+                  className="text-[#3b82f6] hover:text-[#3b82f6]/80 font-medium transition-colors"
                 >
                   Register now
                 </button>
@@ -341,7 +341,7 @@ const AuthPage: React.FC = () => {
                   
                   <Button 
                     type="submit" 
-                    className="w-full bg-secondary hover:bg-secondary/90 text-white py-6 h-11 rounded-lg font-medium mt-2 transition-all duration-200 ease-in-out transform hover:translate-y-[-2px] hover:shadow-md"
+                    className="w-full bg-gradient-to-r from-[#3b82f6] to-[#60a5fa] hover:from-[#3b82f6]/90 hover:to-[#60a5fa]/90 text-white py-6 h-11 rounded-lg font-medium mt-2 transition-all duration-200 ease-in-out transform hover:translate-y-[-2px] hover:shadow-md"
                     disabled={registerMutation.isPending}
                   >
                     {registerMutation.isPending ? (
@@ -360,7 +360,7 @@ const AuthPage: React.FC = () => {
                 Already have an account?{" "}
                 <button
                   onClick={() => setActiveTab("login")}
-                  className="text-secondary hover:text-secondary/80 font-medium transition-colors"
+                  className="text-[#3b82f6] hover:text-[#3b82f6]/80 font-medium transition-colors"
                 >
                   Log in
                 </button>
