@@ -83,7 +83,7 @@ const Navbar: React.FC = () => {
                 </span>
               </div>
             </Link>
-            <Link to="/exercises/1">
+            <Link to="/exercises">
               <div className={`py-2 flex items-center space-x-1.5 group ${location.startsWith('/exercises') || location.startsWith('/exercise/') ? 'text-secondary' : 'text-white hover:text-secondary'} transition-colors`}>
                 <Dumbbell className={`h-4 w-4 ${location.startsWith('/exercises') || location.startsWith('/exercise/') ? 'text-secondary' : 'text-white group-hover:text-secondary'} transition-colors`} />
                 <span className={`${location.startsWith('/exercises') || location.startsWith('/exercise/') ? 'border-b-2 border-secondary' : 'border-b-2 border-transparent group-hover:border-secondary/50'} transition-all pb-0.5`}>
@@ -194,7 +194,7 @@ const Navbar: React.FC = () => {
                 <span className="font-medium">Dashboard</span>
               </div>
             </Link>
-            <Link to="/exercises/1" onClick={() => setMobileMenuOpen(false)}>
+            <Link to="/exercises" onClick={() => setMobileMenuOpen(false)}>
               <div className={`flex items-center space-x-3 py-2 px-3 rounded-lg ${location.startsWith('/exercises') || location.startsWith('/exercise/') ? 'bg-primary-800 text-secondary' : 'text-white hover:bg-primary-800/60'}`}>
                 <Dumbbell className="h-5 w-5" />
                 <span className="font-medium">Practice Exercises</span>
