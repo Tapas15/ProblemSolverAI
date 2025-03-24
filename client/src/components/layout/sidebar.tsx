@@ -66,7 +66,7 @@ const Sidebar: React.FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
 
   return (
     <div className={cn(
-      "fixed inset-y-0 left-0 z-50 transition-all duration-300 bg-gradient-to-b from-[#16001E] to-[#270033] border-r border-[#7d5af1]/10",
+      "h-screen sticky top-0 z-50 transition-all duration-300 bg-gradient-to-b from-[#16001E] to-[#270033] border-r border-[#7d5af1]/10",
       isCollapsed ? "w-[70px]" : "w-[240px]",
       isMobile && "hidden"
     )}>

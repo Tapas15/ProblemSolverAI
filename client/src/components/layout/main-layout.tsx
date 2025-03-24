@@ -10,26 +10,26 @@ interface MainLayoutProps {
 
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   return (
-    <div className="min-h-screen flex flex-col bg-[#F7F9FF]">
-      {/* Sidebar for desktop */}
-      <Sidebar />
-      
-      {/* Mobile navigation */}
-      <MobileNav />
+    <div className="min-h-screen flex bg-[#F7F9FF]">
+      {/* Sidebar for desktop - hidden on mobile */}
+      <div className="hidden lg:block">
+        <Sidebar />
+      </div>
       
       {/* Main content area */}
-      <div className="flex flex-col min-h-screen">
-        {/* Content with padding to account for sidebar */}
-        <div className="flex-1 lg:ml-[240px] pt-16 lg:pt-0 px-4 sm:px-6 md:px-8">
+      <div className="flex flex-col flex-1 min-h-screen">
+        {/* Mobile navigation - shown only on mobile */}
+        <MobileNav />
+        
+        {/* Content */}
+        <div className="flex-1 pt-16 lg:pt-0 px-4 sm:px-6 md:px-8">
           <div className="max-w-7xl mx-auto py-6">
             {children}
           </div>
         </div>
         
-        {/* Footer with padding to account for sidebar */}
-        <div className="lg:ml-[240px]">
-          <Footer />
-        </div>
+        {/* Footer */}
+        <Footer />
       </div>
     </div>
   );
