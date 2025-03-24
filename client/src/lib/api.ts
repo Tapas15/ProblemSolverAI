@@ -249,3 +249,48 @@ export async function updateNotificationSettings(settings: {
   const res = await apiRequest("PATCH", "/api/user/notifications", settings);
   return res.json();
 }
+
+// 2FA API Functions
+export async function setup2FA(): Promise<{ secret: string; qrCode: string }> {
+  const res = await apiRequest('POST', '/api/user/2fa/setup');
+  return await res.json();
+}
+
+export async function verify2FA(token: string): Promise<{ 
+  message: string; 
+  user: any;
+  backupCodes: string[]; 
+}> {
+  const res = await apiRequest('POST', '/api/user/2fa/verify', { token });
+  return await res.json();
+}
+
+export async function disable2FA(currentPassword: string, token: string): Promise<{ 
+  message: string; 
+  user: any;
+}> {
+  const res = await apiRequest('POST', '/api/user/2fa/disable', { currentPassword, token });
+  return await res.json();
+}
+
+export async function use2FABackupCode(backupCode: string): Promise<{ 
+  message: string; 
+  user: any;
+}> {
+  const res = await apiRequest('POST', '/api/user/2fa/backup', { backupCode });
+  return await res.json();
+}
+
+export async function generateNew2FABackupCodes(token: string): Promise<{ 
+  message: string; 
+  backupCodes: string[]; 
+}> {
+  const res = await apiRequest('POST', '/api/user/2fa/generate-backup-codes', { token });
+  return await res.json();
+}
+
+// Export user data
+export async function exportUserData(): Promise<Blob> {
+  const res = await apiRequest('GET', '/api/user/export');
+  return await res.blob();
+}

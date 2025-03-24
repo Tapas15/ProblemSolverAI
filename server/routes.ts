@@ -88,6 +88,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Export user data
+  app.get("/api/user/export", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+
+      // Get the user's basic information (without password)
+      const user = await storage.getUser(req.user.id);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Remove sensitive data
+      const { password, ...userInfo } = user;
+      
+      // Get user's progress data
+      const progressData = await storage.getUserProgress(req.user.id);
+      
+      // Get user's quiz attempts
+      const quizAttempts = await storage.getUserQuizAttempts(req.user.id);
+      
+      // Get user's AI conversations
+      const aiConversations = await storage.getAiConversations(req.user.id);
+      
+      // Compile all data
+      const userData = {
+        userInfo,
+        progressData,
+        quizAttempts,
+        aiConversations,
+        exportedAt: new Date().toISOString()
+      };
+      
+      // Convert to JSON
+      const jsonData = JSON.stringify(userData, null, 2);
+      
+      // Set headers for file download
+      res.setHeader('Content-Disposition', `attachment; filename="user-data-export-${new Date().toISOString().split('T')[0]}.json"`);
+      res.setHeader('Content-Type', 'application/json');
+      
+      // Send the data
+      res.send(jsonData);
+    } catch (error) {
+      next(error);
+    }
+  });
+
   // Update user profile
   app.patch("/api/user/profile", async (req, res, next) => {
     try {
