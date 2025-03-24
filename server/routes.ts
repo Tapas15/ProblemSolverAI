@@ -1852,6 +1852,291 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Exercise routes
+  // Get all exercises for a framework
+  app.get("/api/frameworks/:frameworkId/exercises", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+
+      const frameworkId = parseInt(req.params.frameworkId);
+      if (isNaN(frameworkId)) {
+        return res.status(400).json({ message: "Invalid framework ID" });
+      }
+
+      const exercises = await storage.getExercisesByFramework(frameworkId);
+      res.json(exercises);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Get all exercises for a module
+  app.get("/api/modules/:moduleId/exercises", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+
+      const moduleId = parseInt(req.params.moduleId);
+      if (isNaN(moduleId)) {
+        return res.status(400).json({ message: "Invalid module ID" });
+      }
+
+      const exercises = await storage.getExercisesByModule(moduleId);
+      res.json(exercises);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Get a specific exercise
+  app.get("/api/exercises/:exerciseId", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+
+      const exerciseId = parseInt(req.params.exerciseId);
+      if (isNaN(exerciseId)) {
+        return res.status(400).json({ message: "Invalid exercise ID" });
+      }
+
+      const exercise = await storage.getExercise(exerciseId);
+      if (!exercise) {
+        return res.status(404).json({ message: "Exercise not found" });
+      }
+
+      res.json(exercise);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Create a new exercise
+  app.post("/api/exercises", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+
+      // Validate the request body using the insert schema
+      const validatedData = insertExerciseSchema.parse(req.body);
+      
+      // Create the exercise
+      const exercise = await storage.createExercise(validatedData);
+      
+      // Return the created exercise
+      res.status(201).json(exercise);
+      
+      // Invalidate related caches
+      invalidateRelatedCaches([
+        `${CACHE_KEYS.FRAMEWORK_EXERCISES_PREFIX}${exercise.frameworkId}`,
+        `${CACHE_KEYS.MODULE_EXERCISES_PREFIX}${exercise.moduleId}`
+      ]);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Update an existing exercise
+  app.patch("/api/exercises/:exerciseId", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+
+      const exerciseId = parseInt(req.params.exerciseId);
+      if (isNaN(exerciseId)) {
+        return res.status(400).json({ message: "Invalid exercise ID" });
+      }
+
+      // Find the exercise
+      const existingExercise = await storage.getExercise(exerciseId);
+      if (!existingExercise) {
+        return res.status(404).json({ message: "Exercise not found" });
+      }
+
+      // Validate the request body
+      const updateSchema = z.object({
+        title: z.string().optional(),
+        description: z.string().optional(),
+        scenario: z.string().optional(),
+        steps: z.string().optional(),
+        resources: z.string().nullable().optional(),
+        sampleSolution: z.string().nullable().optional(),
+        difficulty: z.string().optional(),
+        estimatedTime: z.number().optional()
+      });
+
+      const validatedData = updateSchema.parse(req.body);
+      
+      // Update the exercise
+      const updatedExercise = await storage.updateExercise(exerciseId, validatedData);
+      
+      // Return the updated exercise
+      res.json(updatedExercise);
+      
+      // Invalidate related caches
+      invalidateRelatedCaches([
+        `${CACHE_KEYS.EXERCISE_PREFIX}${exerciseId}`,
+        `${CACHE_KEYS.FRAMEWORK_EXERCISES_PREFIX}${existingExercise.frameworkId}`,
+        `${CACHE_KEYS.MODULE_EXERCISES_PREFIX}${existingExercise.moduleId}`
+      ]);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Delete an exercise
+  app.delete("/api/exercises/:exerciseId", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+
+      const exerciseId = parseInt(req.params.exerciseId);
+      if (isNaN(exerciseId)) {
+        return res.status(400).json({ message: "Invalid exercise ID" });
+      }
+
+      // Find the exercise
+      const exercise = await storage.getExercise(exerciseId);
+      if (!exercise) {
+        return res.status(404).json({ message: "Exercise not found" });
+      }
+
+      // Delete the exercise
+      await storage.deleteExercise(exerciseId);
+      
+      // Return success
+      res.status(204).send();
+      
+      // Invalidate related caches
+      invalidateRelatedCaches([
+        `${CACHE_KEYS.EXERCISE_PREFIX}${exerciseId}`,
+        `${CACHE_KEYS.FRAMEWORK_EXERCISES_PREFIX}${exercise.frameworkId}`,
+        `${CACHE_KEYS.MODULE_EXERCISES_PREFIX}${exercise.moduleId}`
+      ]);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Get submissions for an exercise
+  app.get("/api/exercises/:exerciseId/submissions", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+
+      const exerciseId = parseInt(req.params.exerciseId);
+      if (isNaN(exerciseId)) {
+        return res.status(400).json({ message: "Invalid exercise ID" });
+      }
+
+      const submissions = await storage.getExerciseSubmissionsByExercise(exerciseId);
+      res.json(submissions);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Get user's exercise submissions
+  app.get("/api/user/exercise-submissions", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+
+      const submissions = await storage.getUserExerciseSubmissions(req.user.id);
+      res.json(submissions);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Submit a solution for an exercise
+  app.post("/api/exercises/:exerciseId/submit", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+
+      const exerciseId = parseInt(req.params.exerciseId);
+      if (isNaN(exerciseId)) {
+        return res.status(400).json({ message: "Invalid exercise ID" });
+      }
+
+      // Find the exercise
+      const exercise = await storage.getExercise(exerciseId);
+      if (!exercise) {
+        return res.status(404).json({ message: "Exercise not found" });
+      }
+
+      // Validate the request body
+      const submitSchema = z.object({
+        solution: z.string(),
+        status: z.string().default("submitted")
+      });
+
+      const validatedData = submitSchema.parse(req.body);
+      
+      // Create the submission
+      const submission = await storage.createExerciseSubmission({
+        exerciseId,
+        userId: req.user.id,
+        solution: validatedData.solution,
+        status: validatedData.status,
+        score: null,
+        feedback: null
+      });
+      
+      // Return the submission
+      res.status(201).json(submission);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Update a submission (provide feedback or score)
+  app.patch("/api/exercise-submissions/:submissionId", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+
+      const submissionId = parseInt(req.params.submissionId);
+      if (isNaN(submissionId)) {
+        return res.status(400).json({ message: "Invalid submission ID" });
+      }
+
+      // Find the submission
+      const submission = await storage.getExerciseSubmission(submissionId);
+      if (!submission) {
+        return res.status(404).json({ message: "Submission not found" });
+      }
+
+      // Validate the request body
+      const updateSchema = z.object({
+        status: z.string().optional(),
+        score: z.number().nullable().optional(),
+        feedback: z.string().nullable().optional()
+      });
+
+      const validatedData = updateSchema.parse(req.body);
+      
+      // Update the submission
+      const updatedSubmission = await storage.updateExerciseSubmission(submissionId, validatedData);
+      
+      // Return the updated submission
+      res.json(updatedSubmission);
+    } catch (error) {
+      next(error);
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

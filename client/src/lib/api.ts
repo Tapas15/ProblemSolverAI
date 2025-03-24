@@ -1,4 +1,4 @@
-import { Framework, Module, UserProgress, AiConversation, Quiz, QuizAttempt } from "@shared/schema";
+import { Framework, Module, UserProgress, AiConversation, Quiz, QuizAttempt, Exercise, ExerciseSubmission } from "@shared/schema";
 import { apiRequest } from "./queryClient";
 import learningTracking from "./learning-tracking";
 
@@ -293,4 +293,68 @@ export async function generateNew2FABackupCodes(token: string): Promise<{
 export async function exportUserData(): Promise<Blob> {
   const res = await apiRequest('GET', '/api/user/export');
   return await res.blob();
+}
+
+// Exercise API functions
+export async function getFrameworkExercises(frameworkId: number): Promise<Exercise[]> {
+  const res = await apiRequest("GET", `/api/frameworks/${frameworkId}/exercises`);
+  return res.json();
+}
+
+export async function getModuleExercises(moduleId: number): Promise<Exercise[]> {
+  const res = await apiRequest("GET", `/api/modules/${moduleId}/exercises`);
+  return res.json();
+}
+
+export async function getExercise(id: number): Promise<Exercise> {
+  const res = await apiRequest("GET", `/api/exercises/${id}`);
+  return res.json();
+}
+
+export async function createExercise(exerciseData: Omit<Exercise, "id" | "createdAt" | "updatedAt">): Promise<Exercise> {
+  const res = await apiRequest("POST", "/api/exercises", exerciseData);
+  return res.json();
+}
+
+export async function updateExercise(id: number, exerciseData: Partial<Exercise>): Promise<Exercise> {
+  const res = await apiRequest("PATCH", `/api/exercises/${id}`, exerciseData);
+  return res.json();
+}
+
+export async function deleteExercise(id: number): Promise<void> {
+  await apiRequest("DELETE", `/api/exercises/${id}`);
+}
+
+export async function getExerciseSubmissions(exerciseId: number): Promise<ExerciseSubmission[]> {
+  const res = await apiRequest("GET", `/api/exercises/${exerciseId}/submissions`);
+  return res.json();
+}
+
+export async function getUserExerciseSubmissions(): Promise<ExerciseSubmission[]> {
+  const res = await apiRequest("GET", "/api/user/exercise-submissions");
+  return res.json();
+}
+
+export async function submitExerciseSolution(
+  exerciseId: number,
+  solution: string,
+  status: string = "submitted"
+): Promise<ExerciseSubmission> {
+  const res = await apiRequest("POST", `/api/exercises/${exerciseId}/submit`, {
+    solution,
+    status
+  });
+  return res.json();
+}
+
+export async function updateExerciseSubmission(
+  submissionId: number,
+  updateData: {
+    status?: string;
+    score?: number | null;
+    feedback?: string | null;
+  }
+): Promise<ExerciseSubmission> {
+  const res = await apiRequest("PATCH", `/api/exercise-submissions/${submissionId}`, updateData);
+  return res.json();
 }

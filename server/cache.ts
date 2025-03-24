@@ -19,6 +19,12 @@ export const CACHE_KEYS = {
   USER_QUIZ_ATTEMPTS: (userId: number) => `user:${userId}:quiz-attempts`,
   QUIZ_ATTEMPTS: (quizId: number) => `quiz:${quizId}:attempts`,
   AI_CONVERSATIONS: (userId: number) => `user:${userId}:ai-conversations`,
+  // Exercise related cache keys
+  EXERCISE_PREFIX: 'exercise:',
+  FRAMEWORK_EXERCISES_PREFIX: 'framework:exercises:',
+  MODULE_EXERCISES_PREFIX: 'module:exercises:',
+  USER_EXERCISE_SUBMISSIONS: (userId: number) => `user:${userId}:exercise-submissions`,
+  EXERCISE_SUBMISSIONS: (exerciseId: number) => `exercise:${exerciseId}:submissions`,
 };
 
 // Helper functions to work with the cache
