@@ -149,14 +149,15 @@
   font-family: 'Roboto Mono', monospace;
 }
 
-/* Framework card hover effect with blue theme */
+/* Framework card hover effect with enhanced blue theme */
 .framework-card {
-  transition: all 0.3s ease-in-out;
-  box-shadow: 0 4px 12px -2px rgba(7, 89, 173, 0.08), 0 3px 6px -3px rgba(7, 89, 173, 0.05);
-  border: 1px solid rgba(200, 224, 246, 0.8);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 4px 20px -2px rgba(7, 89, 173, 0.08), 0 3px 8px -3px rgba(7, 89, 173, 0.05);
+  border: 1px solid rgba(200, 224, 246, 0.9);
   position: relative;
   z-index: 1;
   overflow: hidden;
+  background-color: white;
 }
 
 .framework-card::before {
@@ -168,17 +169,17 @@
   height: 100%;
   background: linear-gradient(135deg, rgba(0, 120, 215, 0.03) 0%, rgba(197, 242, 255, 0.1) 100%);
   z-index: -1;
-  transition: all 0.4s ease;
+  transition: all 0.5s ease;
 }
 
 .framework-card:hover {
-  box-shadow: 0 15px 28px -5px rgba(7, 89, 173, 0.12), 0 10px 16px -5px rgba(7, 89, 173, 0.08);
-  transform: translateY(-3px) scale(1.01);
-  border-color: rgba(0, 120, 215, 0.2);
+  box-shadow: 0 20px 30px -8px rgba(7, 89, 173, 0.16), 0 10px 20px -5px rgba(7, 89, 173, 0.1);
+  transform: translateY(-5px) scale(1.02);
+  border-color: rgba(0, 120, 215, 0.3);
 }
 
 .framework-card:hover::before {
-  background: linear-gradient(135deg, rgba(0, 120, 215, 0.07) 0%, rgba(197, 242, 255, 0.2) 100%);
+  background: linear-gradient(135deg, rgba(0, 120, 215, 0.08) 0%, rgba(197, 242, 255, 0.22) 100%);
 }
 
 /* Blue accent for framework cards */
@@ -187,14 +188,59 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: 4px;
+  width: 5px;
   height: 0;
   background: linear-gradient(to bottom, #0078D7, #00A5E0);
-  transition: height 0.4s ease;
+  transition: height 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+  box-shadow: 0 0 15px rgba(0, 120, 215, 0.5);
 }
 
 .framework-card:hover::after {
   height: 100%;
+}
+
+/* Add subtle glow effect to cards */
+.framework-card .card-title {
+  transition: color 0.3s ease;
+}
+
+.framework-card:hover .card-title {
+  color: #0078D7;
+  text-shadow: 0 0 1px rgba(0, 120, 215, 0.1);
+}
+
+/* Add shine effect on hover */
+.framework-card .shine {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.25),
+    transparent
+  );
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.framework-card:hover .shine {
+  animation: shine 1.5s ease-in-out;
+  opacity: 1;
+}
+
+@keyframes shine {
+  0% {
+    left: -100%;
+    opacity: 0.7;
+  }
+  100% {
+    left: 100%;
+    opacity: 0;
+  }
 }
 
 /* Progress bar animation */
@@ -208,13 +254,14 @@
   animation: progress 1.2s cubic-bezier(0.26, 0.86, 0.44, 0.985);
 }
 
-/* Button styling with blue gradient */
+/* Enhanced Button styling with blue gradient */
 .btn-primary {
-  @apply text-white transition-all duration-300 font-medium px-6 py-2.5 rounded-lg shadow-md hover:shadow-lg;
+  @apply text-white transition-all duration-300 font-medium px-6 py-2.5 rounded-lg;
   background: linear-gradient(90deg, #0078D7 0%, #00A5E0 100%);
   position: relative;
   z-index: 1;
   overflow: hidden;
+  box-shadow: 0 4px 15px -3px rgba(0, 120, 215, 0.25);
 }
 
 .btn-primary::before {
@@ -225,16 +272,40 @@
   width: 100%;
   height: 100%;
   background: linear-gradient(90deg, #00A5E0 0%, #0078D7 100%);
-  transition: left 0.3s ease;
+  transition: left 0.4s cubic-bezier(0.19, 1, 0.22, 1);
   z-index: -1;
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
+  box-shadow: 0 8px 20px -4px rgba(0, 120, 215, 0.4);
+}
+
+.btn-primary:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 10px -2px rgba(0, 120, 215, 0.25);
+  transition: all 0.1s ease;
 }
 
 .btn-primary:hover::before {
   left: 0;
+}
+
+/* Pulsing effect for primary buttons */
+.btn-primary-pulse {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 120, 215, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(0, 120, 215, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 120, 215, 0);
+  }
 }
 
 .btn-secondary {
@@ -243,6 +314,7 @@
   position: relative;
   z-index: 1;
   overflow: hidden;
+  box-shadow: 0 2px 8px -2px rgba(0, 120, 215, 0.12);
 }
 
 .btn-secondary::before {
@@ -252,20 +324,41 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, rgba(0, 120, 215, 0.05) 0%, rgba(0, 165, 224, 0.1) 100%);
+  background: linear-gradient(90deg, rgba(0, 120, 215, 0.05) 0%, rgba(0, 165, 224, 0.15) 100%);
   transform: scaleX(0);
   transform-origin: left;
-  transition: transform 0.3s ease;
+  transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
   z-index: -1;
 }
 
 .btn-secondary:hover {
   @apply border-primary;
   transform: translateY(-2px);
+  box-shadow: 0 6px 15px -3px rgba(0, 120, 215, 0.15);
+}
+
+.btn-secondary:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 5px -1px rgba(0, 120, 215, 0.12);
+  transition: all 0.1s ease;
 }
 
 .btn-secondary:hover::before {
   transform: scaleX(1);
+}
+
+/* Fancy icon button with blue glow */
+.btn-icon {
+  @apply rounded-full p-2 transition-all duration-300;
+  background: linear-gradient(135deg, #0078D7, #00A5E0);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 12px -4px rgba(0, 120, 215, 0.3);
+}
+
+.btn-icon:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 16px -4px rgba(0, 120, 215, 0.4), 0 0 0 5px rgba(0, 120, 215, 0.05);
 }
 
 /* Custom scrollbar */
@@ -287,29 +380,61 @@
   background: hsl(var(--muted-foreground));
 }
 
-/* Module content styling */
+/* Enhanced Module content styling */
 .module-content {
-  @apply leading-relaxed text-gray-700;
+  @apply leading-relaxed text-gray-700 mx-auto max-w-4xl;
+  font-family: 'Inter', sans-serif;
 }
 
 .module-content h2 {
-  @apply text-xl font-semibold text-primary mb-4 mt-6 pb-2 border-b border-primary/20;
+  @apply text-xl font-semibold mb-4 mt-8 pb-2;
+  color: #0078D7;
+  border-bottom: 2px solid rgba(0, 120, 215, 0.15);
+  padding-left: 0.5rem;
+  position: relative;
+}
+
+.module-content h2::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.25rem;
+  bottom: 0.5rem;
+  width: 3px;
+  background: linear-gradient(to bottom, #0078D7, #00A5E0);
+  border-radius: 3px;
 }
 
 .module-content h3 {
-  @apply text-lg font-medium text-gray-800 mb-3 mt-5;
+  @apply text-lg font-medium mb-3 mt-6 text-[#0E3A5C];
+  padding-left: 0.5rem;
+  position: relative;
+}
+
+.module-content h3::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.25rem;
+  bottom: 0.25rem;
+  width: 2px;
+  background: #00A5E0;
+  border-radius: 2px;
+  opacity: 0.7;
 }
 
 .module-content h4 {
-  @apply text-base font-medium text-gray-700 mb-2 mt-4;
+  @apply text-base font-medium text-gray-800 mb-2 mt-5;
 }
 
 .module-content p {
-  @apply text-gray-700 my-4 leading-relaxed;
+  @apply my-4 leading-relaxed text-gray-700;
+  font-size: 1.05rem;
+  line-height: 1.7;
 }
 
 .module-content ul, .module-content ol {
-  @apply my-4 ml-6 text-gray-700;
+  @apply my-4 ml-8 text-gray-700 space-y-2;
 }
 
 .module-content ul {
@@ -321,16 +446,201 @@
 }
 
 .module-content li {
-  @apply my-2;
+  @apply my-2 pl-1;
+  line-height: 1.6;
 }
 
 .module-content strong {
-  @apply font-semibold text-gray-800;
+  @apply font-semibold text-[#0A2540];
 }
 
-/* Input field styling */
+.module-content a {
+  @apply text-[#0078D7] underline decoration-[#0078D7]/30 underline-offset-2 hover:decoration-[#0078D7] transition-all;
+}
+
+.module-content blockquote {
+  @apply italic pl-4 border-l-4 border-[#00A5E0]/30 my-6 text-gray-600 bg-blue-50/50 py-2 pr-4 rounded-r-md;
+}
+
+.module-content pre {
+  @apply my-4 p-4 rounded-md bg-gray-50 border border-gray-200 overflow-x-auto;
+}
+
+.module-content code {
+  @apply text-[#0078D7] text-sm px-1.5 py-0.5 rounded-md bg-blue-50 border border-blue-100;
+  font-family: 'Roboto Mono', monospace;
+}
+
+.module-content pre code {
+  @apply text-gray-800 border-0 bg-transparent p-0;
+}
+
+.module-content img {
+  @apply rounded-lg shadow-md my-6 mx-auto max-w-full border border-gray-100;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.module-content img:hover {
+  transform: scale(1.01);
+  box-shadow: 0 8px 30px rgba(0, 120, 215, 0.12);
+}
+
+.module-content table {
+  @apply w-full my-6 border-collapse;
+}
+
+.module-content th {
+  @apply bg-[#0078D7]/10 text-[#0A2540] font-semibold p-3 border border-blue-100 text-left;
+}
+
+.module-content td {
+  @apply p-3 border border-gray-200;
+}
+
+.module-content tr:nth-child(even) {
+  @apply bg-gray-50;
+}
+
+.module-content tr:hover {
+  @apply bg-blue-50/50;
+}
+
+/* Enhanced input field styling */
 input, textarea, select {
-  @apply border-2 border-gray-200 focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all duration-300;
+  @apply border-2 border-gray-200 focus:border-[#00A5E0] focus:ring-2 focus:ring-[#0078D7]/10 transition-all duration-300 rounded-lg;
+  background-color: white;
+}
+
+input:hover, textarea:hover, select:hover {
+  @apply border-gray-300;
+}
+
+/* Modern form field with blue accents */
+.form-field-blue {
+  @apply border-2 rounded-lg p-3 w-full bg-white;
+  border-color: rgba(0, 120, 215, 0.25);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 0 2px 4px rgba(0, 120, 215, 0.03);
+}
+
+.form-field-blue:hover {
+  border-color: rgba(0, 120, 215, 0.4);
+  box-shadow: 0 3px 8px rgba(0, 120, 215, 0.06);
+}
+
+.form-field-blue:focus {
+  @apply outline-none;
+  border-color: rgba(0, 120, 215, 0.8);
+  box-shadow: 0 0 0 3px rgba(0, 120, 215, 0.15), 0 3px 10px rgba(0, 120, 215, 0.05);
+}
+
+/* Form label styling */
+.form-label {
+  @apply block mb-2 font-medium text-sm text-[#0A2540];
+  position: relative;
+  padding-left: 0.5rem;
+}
+
+.form-label::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.15rem;
+  bottom: 0.15rem;
+  width: 2px;
+  background: linear-gradient(to bottom, #0078D7, #00A5E0);
+  border-radius: 2px;
+  opacity: 0.6;
+}
+
+/* Form container with blue accents */
+.form-container {
+  @apply p-6 rounded-xl bg-white shadow-md border border-gray-100 relative overflow-hidden;
+  background: linear-gradient(to bottom right, white, #F8FCFF);
+}
+
+.form-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(to right, #0078D7, #00A5E0);
+}
+
+/* Floating label input effect */
+.floating-label {
+  position: relative;
+}
+
+.floating-label input,
+.floating-label textarea {
+  @apply py-3 px-4 w-full text-base rounded-lg border-2 border-gray-200 bg-white;
+  height: 56px;
+  transition: all 0.3s ease;
+}
+
+.floating-label input:focus,
+.floating-label textarea:focus {
+  @apply border-[#00A5E0] ring-2 ring-[#0078D7]/10;
+  outline: none;
+}
+
+.floating-label label {
+  @apply text-gray-500 text-sm;
+  position: absolute;
+  left: 16px;
+  top: 17px;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+.floating-label input:focus ~ label,
+.floating-label input:not(:placeholder-shown) ~ label,
+.floating-label textarea:focus ~ label,
+.floating-label textarea:not(:placeholder-shown) ~ label {
+  transform: translateY(-24px) scale(0.85);
+  @apply text-[#0078D7] font-medium;
+}
+
+.floating-label input:focus ~ label,
+.floating-label textarea:focus ~ label {
+  @apply text-[#0078D7];
+}
+
+.floating-label input:focus::placeholder,
+.floating-label textarea:focus::placeholder {
+  color: transparent;
+}
+
+/* Custom checkbox styling */
+.custom-checkbox {
+  @apply appearance-none h-5 w-5 border-2 border-gray-300 rounded;
+  transition: all 0.2s ease;
+  vertical-align: middle;
+  position: relative;
+  cursor: pointer;
+}
+
+.custom-checkbox:checked {
+  @apply bg-[#0078D7] border-[#0078D7];
+}
+
+.custom-checkbox:hover {
+  @apply border-[#0078D7]/50;
+}
+
+.custom-checkbox:checked::after {
+  content: "";
+  position: absolute;
+  left: 39%;
+  top: 18%;
+  width: 25%;
+  height: 50%;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
 }
 
 /* Navigation styling with blue accents */
@@ -438,28 +748,105 @@ nav::after {
   border-color: rgba(0, 120, 215, 0.15);
 }
 
-/* Form field with blue accents */
-.form-field-blue {
-  @apply border rounded-md p-2 w-full;
-  border-color: rgba(0, 120, 215, 0.3);
-  transition: all 0.3s ease;
-}
+/* Removed duplicate - this is now defined above */
 
-.form-field-blue:focus {
-  @apply outline-none;
-  border-color: rgba(0, 120, 215, 0.8);
-  box-shadow: 0 0 0 3px rgba(0, 120, 215, 0.15);
-}
-
-/* Blue progress bars */
+/* Blue progress bars with enhanced styling */
 .blue-progress {
   @apply rounded-full overflow-hidden;
   height: 6px;
   background: rgba(0, 120, 215, 0.1);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .blue-progress-fill {
   height: 100%;
   background: linear-gradient(90deg, #0078D7, #00A5E0);
-  transition: width 0.5s ease;
+  transition: width 0.5s cubic-bezier(0.26, 0.86, 0.44, 0.985);
+  box-shadow: 0 1px 2px rgba(0, 120, 215, 0.2);
+}
+
+/* Animated loading spinner with blue theme */
+.loading-spinner {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  border: 3px solid rgba(0, 120, 215, 0.1);
+  border-radius: 50%;
+  border-top-color: #0078D7;
+  animation: spin 1s ease-in-out infinite;
+}
+
+.loading-spinner.small {
+  width: 20px;
+  height: 20px;
+  border-width: 2px;
+}
+
+.loading-spinner.large {
+  width: 40px;
+  height: 40px;
+  border-width: 4px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Animated skeleton loading state */
+.skeleton {
+  @apply rounded animate-pulse;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 120, 215, 0.05) 25%,
+    rgba(0, 165, 224, 0.1) 50%,
+    rgba(0, 120, 215, 0.05) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Pulsing dot loading indicator */
+.loading-dots {
+  display: inline-flex;
+  align-items: center;
+}
+
+.loading-dots span {
+  width: 6px;
+  height: 6px;
+  margin: 0 2px;
+  background-color: #0078D7;
+  border-radius: 50%;
+  display: inline-block;
+  animation: dots 1.4s infinite ease-in-out both;
+}
+
+.loading-dots span:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.loading-dots span:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes dots {
+  0%, 80%, 100% { 
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  40% { 
+    transform: scale(1);
+    opacity: 1;
+  }
 }
