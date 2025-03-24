@@ -6,6 +6,7 @@ import NotFound from "@/pages/not-found";
 import HomePage from "@/pages/home-page";
 import AuthPage from "@/pages/auth-page";
 import FrameworkPage from "@/pages/framework-page";
+import FrameworksPage from "@/pages/frameworks-page";
 import AiAssistantPage from "@/pages/ai-assistant-page";
 import QuizPage from "@/pages/quiz-page";
 import TakeQuizPage from "@/pages/take-quiz-page";

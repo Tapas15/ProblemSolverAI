@@ -212,10 +212,10 @@ const Sidebar: React.FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
             isActive={location === '/'} 
           />
           <NavLink 
-            to="/frameworks" 
+            to="/" 
             icon={<BookOpen className="h-5 w-5" />} 
             label="Frameworks" 
-            isActive={location.startsWith('/frameworks')} 
+            isActive={location === '/' || location.startsWith('/frameworks')} 
           />
           <NavLink 
             to="/learning-path" 
