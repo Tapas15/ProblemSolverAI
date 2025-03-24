@@ -684,6 +684,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Module media upload
+  app.post("/api/modules/:id/media", upload.single('media'), async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.sendStatus(401);
+      
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
+      const moduleId = parseInt(req.params.id);
+      if (isNaN(moduleId)) {
+        return res.status(400).json({ message: "Invalid module ID" });
+      }
+
+      const mediaUrl = `/uploads/${req.file.filename}`;
+      
+      res.json({ mediaUrl });
+    } catch (error) {
+      next(error);
+    }
+  });
+
   // Module routes
   app.get("/api/frameworks/:id/modules", async (req, res, next) => {
     try {
