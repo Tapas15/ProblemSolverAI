@@ -1,9 +1,10 @@
-import { users, frameworks, modules, userProgress, aiConversations, quizzes, quizAttempts } from "@shared/schema";
+import { users, frameworks, modules, userProgress, aiConversations, quizzes, quizAttempts, exercises, exerciseSubmissions } from "@shared/schema";
 import type { 
   User, InsertUser, Framework, InsertFramework, 
   Module, InsertModule, UserProgress, InsertUserProgress, 
   AiConversation, InsertAiConversation,
-  Quiz, InsertQuiz, QuizAttempt, InsertQuizAttempt
+  Quiz, InsertQuiz, QuizAttempt, InsertQuizAttempt,
+  Exercise, InsertExercise, ExerciseSubmission, InsertExerciseSubmission
 } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
@@ -401,6 +402,105 @@ export class MemStorage implements IStorage {
     return newAttempt;
   }
   
+  // Exercise methods
+  async getExercise(id: number): Promise<Exercise | undefined> {
+    return this.exercises.get(id);
+  }
+  
+  async getExercisesByModule(moduleId: number): Promise<Exercise[]> {
+    const result: Exercise[] = [];
+    for (const exercise of this.exercises.values()) {
+      if (exercise.moduleId === moduleId) {
+        result.push(exercise);
+      }
+    }
+    return result;
+  }
+  
+  async getExercisesByFramework(frameworkId: number): Promise<Exercise[]> {
+    const result: Exercise[] = [];
+    for (const exercise of this.exercises.values()) {
+      if (exercise.frameworkId === frameworkId) {
+        result.push(exercise);
+      }
+    }
+    return result;
+  }
+  
+  async createExercise(exercise: InsertExercise): Promise<Exercise> {
+    const id = this.exerciseIdCounter++;
+    const now = new Date();
+    const newExercise: Exercise = {
+      ...exercise,
+      id,
+      createdAt: now,
+      updatedAt: now,
+    };
+    this.exercises.set(id, newExercise);
+    return newExercise;
+  }
+  
+  async updateExercise(id: number, exerciseData: Partial<Exercise>): Promise<Exercise | undefined> {
+    const existingExercise = this.exercises.get(id);
+    if (!existingExercise) return undefined;
+    
+    const now = new Date();
+    const updatedExercise = { ...existingExercise, ...exerciseData, updatedAt: now };
+    this.exercises.set(id, updatedExercise);
+    return updatedExercise;
+  }
+  
+  async deleteExercise(id: number): Promise<void> {
+    this.exercises.delete(id);
+  }
+  
+  // Exercise Submission methods
+  async getExerciseSubmission(id: number): Promise<ExerciseSubmission | undefined> {
+    return this.exerciseSubmissions.get(id);
+  }
+  
+  async getUserExerciseSubmissions(userId: number): Promise<ExerciseSubmission[]> {
+    const result: ExerciseSubmission[] = [];
+    for (const submission of this.exerciseSubmissions.values()) {
+      if (submission.userId === userId) {
+        result.push(submission);
+      }
+    }
+    return result;
+  }
+  
+  async getExerciseSubmissionsByExercise(exerciseId: number): Promise<ExerciseSubmission[]> {
+    const result: ExerciseSubmission[] = [];
+    for (const submission of this.exerciseSubmissions.values()) {
+      if (submission.exerciseId === exerciseId) {
+        result.push(submission);
+      }
+    }
+    return result;
+  }
+  
+  async createExerciseSubmission(submission: InsertExerciseSubmission): Promise<ExerciseSubmission> {
+    const id = this.exerciseSubmissionIdCounter++;
+    const now = new Date();
+    const newSubmission: ExerciseSubmission = {
+      ...submission,
+      id,
+      completedAt: now,
+      status: submission.status || "submitted",
+    };
+    this.exerciseSubmissions.set(id, newSubmission);
+    return newSubmission;
+  }
+  
+  async updateExerciseSubmission(id: number, submissionData: Partial<ExerciseSubmission>): Promise<ExerciseSubmission | undefined> {
+    const existingSubmission = this.exerciseSubmissions.get(id);
+    if (!existingSubmission) return undefined;
+    
+    const updatedSubmission = { ...existingSubmission, ...submissionData };
+    this.exerciseSubmissions.set(id, updatedSubmission);
+    return updatedSubmission;
+  }
+  
   // Seed initial framework and module data
   private seedFrameworks() {
     if (this.frameworks.size > 0) return; // already seeded
@@ -414,7 +514,6 @@ export class MemStorage implements IStorage {
       level: "Intermediate",
       duration: 45,
       status: "not_started",
-      case_studies: null,
       case_studies: null
     };
     this.frameworks.set(meceId, mece);
@@ -428,7 +527,6 @@ export class MemStorage implements IStorage {
       level: "Advanced",
       duration: 90,
       status: "not_started",
-      case_studies: null,
       case_studies: null
     };
     this.frameworks.set(designThinkingId, designThinking);
@@ -442,7 +540,6 @@ export class MemStorage implements IStorage {
       level: "Beginner",
       duration: 30,
       status: "not_started",
-      case_studies: null,
       case_studies: null
     };
     this.frameworks.set(swotId, swot);
