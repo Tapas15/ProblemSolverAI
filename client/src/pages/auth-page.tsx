@@ -371,14 +371,14 @@ const AuthPage: React.FC = () => {
       </div>
       
       {/* Hero section */}
-      <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-primary to-primary-800 text-white flex-col justify-center relative overflow-hidden">
+      <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-[#0f2544] to-[#19355f] text-white flex-col justify-center relative overflow-hidden">
         <div className="absolute inset-0 z-0 opacity-10">
           <div className="absolute top-0 right-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB2aWV3Qm94PSIwIDAgMTAyNCAxMDI0IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxwYXR0ZXJuIGlkPSJncmlkIiB3aWR0aD0iODAiIGhlaWdodD0iODAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiPjxwYXRoIGQ9Ik0gODAgMCBMIDAgMCAwIDgwIiBmaWxsPSJub25lIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMSIgLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiIC8+PC9zdmc+')]"></div>
         </div>
         
         <div className="max-w-md mx-auto px-8 py-16 z-10">
           <div className="bg-white/10 backdrop-blur-sm p-2 inline-block rounded-lg mb-6">
-            <div className="bg-secondary/20 text-secondary p-1 px-3 rounded text-sm font-medium">
+            <div className="bg-[#3b82f6]/20 text-[#60a5fa] p-1 px-3 rounded text-sm font-medium">
               Professional Development Platform
             </div>
           </div>
@@ -394,7 +394,7 @@ const AuthPage: React.FC = () => {
           
           <div className="space-y-6">
             <div className="flex items-start group">
-              <div className="flex-shrink-0 h-10 w-10 rounded-full bg-secondary/20 flex items-center justify-center text-secondary mr-4 group-hover:bg-secondary group-hover:text-white transition-all duration-300">
+              <div className="flex-shrink-0 h-10 w-10 rounded-full bg-[#3b82f6]/20 flex items-center justify-center text-[#60a5fa] mr-4 group-hover:bg-[#3b82f6] group-hover:text-white transition-all duration-300">
                 <BookOpen className="h-5 w-5" />
               </div>
               <div>
@@ -404,7 +404,7 @@ const AuthPage: React.FC = () => {
             </div>
             
             <div className="flex items-start group">
-              <div className="flex-shrink-0 h-10 w-10 rounded-full bg-secondary/20 flex items-center justify-center text-secondary mr-4 group-hover:bg-secondary group-hover:text-white transition-all duration-300">
+              <div className="flex-shrink-0 h-10 w-10 rounded-full bg-[#3b82f6]/20 flex items-center justify-center text-[#60a5fa] mr-4 group-hover:bg-[#3b82f6] group-hover:text-white transition-all duration-300">
                 <Lightbulb className="h-5 w-5" />
               </div>
               <div>
@@ -414,7 +414,7 @@ const AuthPage: React.FC = () => {
             </div>
             
             <div className="flex items-start group">
-              <div className="flex-shrink-0 h-10 w-10 rounded-full bg-secondary/20 flex items-center justify-center text-secondary mr-4 group-hover:bg-secondary group-hover:text-white transition-all duration-300">
+              <div className="flex-shrink-0 h-10 w-10 rounded-full bg-[#3b82f6]/20 flex items-center justify-center text-[#60a5fa] mr-4 group-hover:bg-[#3b82f6] group-hover:text-white transition-all duration-300">
                 <BarChart4 className="h-5 w-5" />
               </div>
               <div>
