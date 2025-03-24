@@ -66,7 +66,7 @@ const Sidebar: React.FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
 
   return (
     <div className={cn(
-      "h-screen sticky top-0 z-50 transition-all duration-300 bg-gradient-to-b from-[#16001E] to-[#270033] border-r border-[#7d5af1]/10",
+      "h-screen sticky top-0 z-50 transition-all duration-300 bg-gradient-to-b from-[#0f2544] to-[#19355f] border-r border-[#3b82f6]/10",
       isCollapsed ? "w-[70px]" : "w-[240px]",
       isMobile && "hidden"
     )}>
@@ -80,9 +80,9 @@ const Sidebar: React.FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
             <Link to="/">
               <div className="font-bold text-xl font-header tracking-tight flex items-center group">
                 <div className="relative">
-                  <span className="text-[#ff59b2]">Q</span>
-                  <span className="text-white">Pro</span>
-                  <span className="text-[#9545ff]">AI</span>
+                  <span className="text-[#3b82f6]">Question</span>
+                  <span className="text-white">Pro </span>
+                  <span className="text-[#60a5fa]">AI</span>
                 </div>
               </div>
             </Link>
@@ -90,7 +90,7 @@ const Sidebar: React.FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
           {isCollapsed && (
             <Link to="/">
               <div className="font-bold text-2xl font-header">
-                <span className="text-[#ff59b2]">Q</span>
+                <span className="text-[#3b82f6]">Q</span>
               </div>
             </Link>
           )}

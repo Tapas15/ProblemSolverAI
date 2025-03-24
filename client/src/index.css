@@ -6,19 +6,19 @@
 
 @layer base {
   :root {
-    --background: 280 30% 98%; /* #faf6ff - Soft purple hint background */
-    --foreground: 270 50% 15%; /* #1e1133 - Deep purple */
+    --background: 213 30% 98%; /* #f6f9ff - Soft blue hint background */
+    --foreground: 213 50% 15%; /* #11213c - Deep blue */
     
     --card: 0 0% 100%;
-    --card-foreground: 270 50% 15%;
+    --card-foreground: 213 50% 15%;
     
     --popover: 0 0% 100%;
-    --popover-foreground: 270 50% 15%;
+    --popover-foreground: 213 50% 15%;
     
-    --primary: 265 80% 60%; /* #7d5af1 - Vibrant purple */
+    --primary: 216 90% 60%; /* #3b82f6 - Blue */
     --primary-foreground: 0 0% 100%;
     
-    --secondary: 230 90% 65%; /* #5c8afa - Electric blue */
+    --secondary: 210 100% 65%; /* #60a5fa - Light blue */
     --secondary-foreground: 0 0% 100%;
     
     --accent: 320 95% 95%; /* #ffecf8 - Soft pink accent */
@@ -70,14 +70,14 @@
     --chart-5: 290 90% 70%; /* Orchid */
     
     /* Sidebar colors */
-    --sidebar-background: 270 50% 15%; /* Deep purple */
+    --sidebar-background: 213 50% 15%; /* Deep blue */
     --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 265 80% 60%; /* Vibrant purple */
+    --sidebar-primary: 216 90% 60%; /* Blue */
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 230 90% 95%; /* Soft blue accent */
-    --sidebar-accent-foreground: 270 50% 15%;
-    --sidebar-border: 270 45% 25%;
-    --sidebar-ring: 265 80% 60%;
+    --sidebar-accent: 210 90% 95%; /* Soft blue accent */
+    --sidebar-accent-foreground: 213 50% 15%;
+    --sidebar-border: 213 45% 25%;
+    --sidebar-ring: 216 90% 60%;
   }
  
   .dark {

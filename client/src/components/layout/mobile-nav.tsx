@@ -52,30 +52,30 @@ const MobileNav: React.FC = () => {
   );
 
   return (
-    <div className="lg:hidden fixed top-0 left-0 right-0 z-50 h-16 bg-gradient-to-r from-[#16001E] to-[#270033] border-b border-[#7d5af1]/20 flex items-center justify-between px-4">
+    <div className="lg:hidden fixed top-0 left-0 right-0 z-50 h-16 bg-gradient-to-r from-[#0f2544] to-[#19355f] border-b border-[#3b82f6]/20 flex items-center justify-between px-4">
       <Link to="/">
         <div className="font-bold text-xl font-header tracking-tight flex items-center group">
           <div className="relative">
-            <span className="text-[#ff59b2]">Question</span>
-            <span className="text-white">Pro</span>
-            <span className="text-[#9545ff]">AI</span>
+            <span className="text-[#3b82f6]">Question</span>
+            <span className="text-white">Pro </span>
+            <span className="text-[#60a5fa]">AI</span>
           </div>
         </div>
       </Link>
 
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>
-          <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full bg-[#36005A]/50">
+          <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full bg-[#1a4482]/50">
             <Menu className="h-5 w-5 text-white" />
           </Button>
         </SheetTrigger>
-        <SheetContent side="left" className="p-0 w-[280px] border-r border-[#7d5af1]/20 bg-gradient-to-b from-[#16001E] to-[#270033]">
+        <SheetContent side="left" className="p-0 w-[280px] border-r border-[#3b82f6]/20 bg-gradient-to-b from-[#0f2544] to-[#19355f]">
           <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
           <SheetDescription className="sr-only">App navigation links and settings</SheetDescription>
           <div className="flex flex-col h-full">
             {/* User profile section */}
             {user && (
-              <div className="p-4 border-b border-[#7d5af1]/10 flex items-center space-x-3">
+              <div className="p-4 border-b border-[#3b82f6]/10 flex items-center space-x-3">
                 <Avatar className="h-10 w-10 ring-2 ring-[#ff59b2]/30">
                   <AvatarImage src="" alt={user.name} />
                   <AvatarFallback className="bg-gradient-to-br from-[#9545ff] to-[#ff59b2] text-white font-medium">
