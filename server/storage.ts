@@ -170,8 +170,14 @@ export class MemStorage implements IStorage {
     const user: User = { 
       ...insertUser, 
       id,
+      role: insertUser.role || null,
       apiKey: insertUser.apiKey || null,
-      aiProvider: insertUser.aiProvider || null
+      aiProvider: insertUser.aiProvider || null,
+      userPreferences: insertUser.userPreferences || null,
+      avatarUrl: insertUser.avatarUrl || null,
+      twoFactorEnabled: insertUser.twoFactorEnabled || null,
+      twoFactorSecret: insertUser.twoFactorSecret || null,
+      twoFactorBackupCodes: insertUser.twoFactorBackupCodes || null
     };
     this.users.set(id, user);
     return user;
@@ -588,7 +594,8 @@ export class MemStorage implements IStorage {
       level: "Intermediate",
       duration: 45,
       status: "not_started",
-      case_studies: null
+      case_studies: null,
+      imageUrl: null
     };
     this.frameworks.set(meceId, mece);
     
@@ -601,7 +608,8 @@ export class MemStorage implements IStorage {
       level: "Advanced",
       duration: 90,
       status: "not_started",
-      case_studies: null
+      case_studies: null,
+      imageUrl: null
     };
     this.frameworks.set(designThinkingId, designThinking);
     

@@ -2247,7 +2247,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Only allow users to see their own certificates unless they're admins
-      if (certificate.userId !== req.user.id && req.user.role !== "admin") {
+      if (certificate.userId !== req.user.id && (!req.user.role || req.user.role !== "admin")) {
         return res.status(403).send("Forbidden");
       }
       
@@ -2264,7 +2264,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Only admins can create certificates
-      if (req.user.role !== "admin") {
+      if (!req.user.role || req.user.role !== "admin") {
         return res.status(403).send("Only administrators can issue certificates");
       }
       
@@ -2339,7 +2339,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Only admins can update certificates
-      if (req.user.role !== "admin") {
+      if (!req.user.role || req.user.role !== "admin") {
         return res.status(403).send("Only administrators can update certificates");
       }
       
@@ -2366,7 +2366,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Only admins can revoke certificates
-      if (req.user.role !== "admin") {
+      if (!req.user.role || req.user.role !== "admin") {
         return res.status(403).send("Only administrators can revoke certificates");
       }
       
