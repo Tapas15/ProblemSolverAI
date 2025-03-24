@@ -118,9 +118,9 @@ const Sidebar: React.FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative w-full p-0 h-auto flex items-center justify-between bg-transparent">
                     <div className="flex items-center space-x-3">
-                      <Avatar className="h-9 w-9 ring-2 ring-[#ff59b2]/30 shadow-inner">
+                      <Avatar className="h-9 w-9 ring-2 ring-[#60a5fa]/30 shadow-inner">
                         <AvatarImage src="" alt={user.name} />
-                        <AvatarFallback className="bg-gradient-to-br from-[#9545ff] to-[#ff59b2] text-white font-medium">
+                        <AvatarFallback className="bg-gradient-to-br from-[#3b82f6] to-[#60a5fa] text-white font-medium">
                           {user.name.substring(0, 2).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
@@ -171,9 +171,9 @@ const Sidebar: React.FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Avatar className="h-9 w-9 ring-2 ring-[#ff59b2]/30 shadow-inner">
+              <Avatar className="h-9 w-9 ring-2 ring-[#60a5fa]/30 shadow-inner">
                 <AvatarImage src="" alt={user?.name} />
-                <AvatarFallback className="bg-gradient-to-br from-[#9545ff] to-[#ff59b2] text-white font-medium">
+                <AvatarFallback className="bg-gradient-to-br from-[#3b82f6] to-[#60a5fa] text-white font-medium">
                   {user?.name.substring(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>

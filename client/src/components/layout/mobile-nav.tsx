@@ -76,9 +76,9 @@ const MobileNav: React.FC = () => {
             {/* User profile section */}
             {user && (
               <div className="p-4 border-b border-[#3b82f6]/10 flex items-center space-x-3">
-                <Avatar className="h-10 w-10 ring-2 ring-[#ff59b2]/30">
+                <Avatar className="h-10 w-10 ring-2 ring-[#60a5fa]/30">
                   <AvatarImage src="" alt={user.name} />
-                  <AvatarFallback className="bg-gradient-to-br from-[#9545ff] to-[#ff59b2] text-white font-medium">
+                  <AvatarFallback className="bg-gradient-to-br from-[#3b82f6] to-[#60a5fa] text-white font-medium">
                     {user.name.substring(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
@@ -90,20 +90,20 @@ const MobileNav: React.FC = () => {
             )}
 
             {/* Search bar */}
-            <div className="p-4 border-b border-[#7d5af1]/10">
+            <div className="p-4 border-b border-[#3b82f6]/10">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#ff59b2]/70 h-4 w-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#60a5fa]/70 h-4 w-4" />
                 <Input 
                   type="text" 
                   value={searchValue}
                   onChange={(e) => setSearchValue(e.target.value)}
                   placeholder="Search..." 
-                  className="pl-10 py-2 rounded-xl text-sm text-white pr-8 focus:ring-1 focus:ring-[#ff59b2] w-full bg-[#36005A]/30 border-0"
+                  className="pl-10 py-2 rounded-xl text-sm text-white pr-8 focus:ring-1 focus:ring-[#3b82f6] w-full bg-[#1a4482]/30 border-0"
                 />
                 {searchValue && (
                   <button 
                     onClick={() => setSearchValue('')}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#ff59b2]/70 hover:text-[#ff59b2]"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#60a5fa]/70 hover:text-[#60a5fa]"
                   >
                     <X className="h-3.5 w-3.5" />
                   </button>
@@ -179,10 +179,10 @@ const MobileNav: React.FC = () => {
 
             {/* Logout button */}
             {user && (
-              <div className="p-4 border-t border-[#7d5af1]/10">
+              <div className="p-4 border-t border-[#3b82f6]/10">
                 <Button 
                   variant="ghost" 
-                  className="w-full flex items-center space-x-2 justify-center p-3 rounded-xl text-red-400 hover:text-red-300 hover:bg-[#36005A]/50"
+                  className="w-full flex items-center space-x-2 justify-center p-3 rounded-xl text-red-400 hover:text-red-300 hover:bg-[#1a4482]/50"
                   onClick={handleLogout}
                 >
                   <LogOut className="h-5 w-5" />
@@ -192,9 +192,9 @@ const MobileNav: React.FC = () => {
             )}
 
             {!user && (
-              <div className="p-4 border-t border-[#7d5af1]/10">
+              <div className="p-4 border-t border-[#3b82f6]/10">
                 <Link to="/auth" onClick={() => setIsOpen(false)}>
-                  <Button className="w-full bg-gradient-to-r from-[#9545ff] to-[#ff59b2] hover:from-[#9545ff]/90 hover:to-[#ff59b2]/90 text-white shadow-md hover:shadow-lg transition-all rounded-xl">
+                  <Button className="w-full bg-gradient-to-r from-[#3b82f6] to-[#60a5fa] hover:from-[#3b82f6]/90 hover:to-[#60a5fa]/90 text-white shadow-md hover:shadow-lg transition-all rounded-xl">
                     Sign In
                   </Button>
                 </Link>
