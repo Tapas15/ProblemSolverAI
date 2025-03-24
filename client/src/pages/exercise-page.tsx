@@ -10,6 +10,7 @@ import { ArrowLeft, Clock, Info } from "lucide-react";
 import { Link } from "wouter";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import MainLayout from "@/components/layout/main-layout";
 
 export default function ExercisePage() {
   const [, params] = useRoute("/exercises/:frameworkId");
@@ -18,15 +19,17 @@ export default function ExercisePage() {
   // Redirect if no frameworkId
   if (!frameworkId) {
     return (
-      <div className="container mx-auto py-8">
-        <h1 className="text-3xl font-bold mb-6">Exercises</h1>
-        <p>Please select a framework to view its exercises.</p>
-        <Link href="/">
-          <Button className="mt-4">
-            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Home
-          </Button>
-        </Link>
-      </div>
+      <MainLayout>
+        <div className="container mx-auto">
+          <h1 className="text-3xl font-bold mb-6">Exercises</h1>
+          <p>Please select a framework to view its exercises.</p>
+          <Link href="/">
+            <Button className="mt-4">
+              <ArrowLeft className="mr-2 h-4 w-4" /> Back to Home
+            </Button>
+          </Link>
+        </div>
+      </MainLayout>
     );
   }
 
@@ -45,52 +48,56 @@ export default function ExercisePage() {
   // Loading state
   if (frameworkLoading || exercisesLoading) {
     return (
-      <div className="container mx-auto py-8">
-        <Skeleton className="h-12 w-2/3 mb-6" />
-        <Skeleton className="h-6 w-full mb-4" />
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <Skeleton key={i} className="h-64 w-full rounded-lg" />
-          ))}
+      <MainLayout>
+        <div className="container mx-auto">
+          <Skeleton className="h-12 w-2/3 mb-6" />
+          <Skeleton className="h-6 w-full mb-4" />
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <Skeleton key={i} className="h-64 w-full rounded-lg" />
+            ))}
+          </div>
         </div>
-      </div>
+      </MainLayout>
     );
   }
 
   return (
-    <div className="container mx-auto py-8">
-      <div className="flex items-center mb-6">
-        <Link href="/exercises">
-          <Button variant="ghost" size="sm" className="mr-4">
-            <ArrowLeft className="h-4 w-4 mr-2" /> Back to Frameworks
-          </Button>
-        </Link>
-        <h1 className="text-3xl font-bold">{framework?.name} Exercises</h1>
+    <MainLayout>
+      <div className="container mx-auto">
+        <div className="flex items-center mb-6">
+          <Link href="/exercises">
+            <Button variant="ghost" size="sm" className="mr-4">
+              <ArrowLeft className="h-4 w-4 mr-2" /> Back to Frameworks
+            </Button>
+          </Link>
+          <h1 className="text-3xl font-bold">{framework?.name} Exercises</h1>
+        </div>
+        
+        <p className="text-lg text-muted-foreground mb-8">
+          Apply {framework?.name} to real-world business scenarios and practice your problem-solving skills.
+        </p>
+        
+        <Separator className="my-8" />
+        
+        {exercises && exercises.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {exercises.map((exercise) => (
+              <ExerciseCard key={exercise.id} exercise={exercise} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <Info className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+            <h3 className="text-xl font-medium mb-2">No exercises available</h3>
+            <p className="text-muted-foreground">
+              There are currently no exercises available for this framework.
+            </p>
+          </div>
+        )}
       </div>
-      
-      <p className="text-lg text-muted-foreground mb-8">
-        Apply {framework?.name} to real-world business scenarios and practice your problem-solving skills.
-      </p>
-      
-      <Separator className="my-8" />
-      
-      {exercises && exercises.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {exercises.map((exercise) => (
-            <ExerciseCard key={exercise.id} exercise={exercise} />
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-12">
-          <Info className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-          <h3 className="text-xl font-medium mb-2">No exercises available</h3>
-          <p className="text-muted-foreground">
-            There are currently no exercises available for this framework.
-          </p>
-        </div>
-      )}
-    </div>
+    </MainLayout>
   );
 }
 

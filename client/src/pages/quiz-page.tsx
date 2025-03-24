@@ -10,6 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { Loader2, ChevronLeft, Clock, Award, BarChart } from "lucide-react";
 import { getQuizzesByFramework, getFramework } from "@/lib/api";
 import { useAuth } from "@/hooks/use-auth";
+import MainLayout from "@/components/layout/main-layout";
 
 export default function QuizPage() {
   const { user } = useAuth();
@@ -66,73 +67,79 @@ export default function QuizPage() {
   
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-[calc(100vh-6rem)]">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
+      <MainLayout>
+        <div className="flex items-center justify-center h-[calc(100vh-10rem)]">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </MainLayout>
     );
   }
   
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center h-[calc(100vh-6rem)]">
-        <div className="text-destructive mb-4">Error loading quizzes</div>
-        <Button variant="outline" onClick={() => navigate("/")}>
-          <ChevronLeft className="mr-2 h-4 w-4" />
-          Back to home
-        </Button>
-      </div>
+      <MainLayout>
+        <div className="flex flex-col items-center justify-center h-[calc(100vh-10rem)]">
+          <div className="text-destructive mb-4">Error loading quizzes</div>
+          <Button variant="outline" onClick={() => navigate("/")}>
+            <ChevronLeft className="mr-2 h-4 w-4" />
+            Back to home
+          </Button>
+        </div>
+      </MainLayout>
     );
   }
   
   return (
-    <div className="container mx-auto py-6">
-      <div className="flex items-center mb-6">
-        <Button 
-          variant="ghost" 
-          className="mr-4" 
-          onClick={() => navigate("/")}
-        >
-          <ChevronLeft className="mr-2 h-4 w-4" />
-          Back to Frameworks
-        </Button>
-        <div>
-          <h1 className="text-3xl font-bold">{framework?.name} Quizzes</h1>
-          <p className="text-muted-foreground">
-            Test your knowledge on different aspects of {framework?.name}
-          </p>
+    <MainLayout>
+      <div className="container mx-auto">
+        <div className="flex items-center mb-6">
+          <Button 
+            variant="ghost" 
+            className="mr-4" 
+            onClick={() => navigate("/")}
+          >
+            <ChevronLeft className="mr-2 h-4 w-4" />
+            Back to Frameworks
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold">{framework?.name} Quizzes</h1>
+            <p className="text-muted-foreground">
+              Test your knowledge on different aspects of {framework?.name}
+            </p>
+          </div>
         </div>
-      </div>
-      
-      <Tabs defaultValue="beginner" value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="mb-6">
-          <TabsTrigger value="beginner">Beginner</TabsTrigger>
-          <TabsTrigger value="intermediate">Intermediate</TabsTrigger>
-          <TabsTrigger value="advanced">Advanced</TabsTrigger>
-        </TabsList>
         
-        {["beginner", "intermediate", "advanced"].map(level => (
-          <TabsContent key={level} value={level} className="space-y-4">
-            {!quizzes || quizzes.length === 0 ? (
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="text-center p-6">
-                    <p>No {level} quizzes available for this framework yet.</p>
-                  </div>
-                </CardContent>
-              </Card>
-            ) : (
-              quizzes.map((quiz: Quiz) => (
-                <QuizCard 
-                  key={quiz.id} 
-                  quiz={quiz} 
-                  onStart={() => navigate(`/quiz/${frameworkId}/${quiz.id}`)} 
-                />
-              ))
-            )}
-          </TabsContent>
-        ))}
-      </Tabs>
-    </div>
+        <Tabs defaultValue="beginner" value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="mb-6">
+            <TabsTrigger value="beginner">Beginner</TabsTrigger>
+            <TabsTrigger value="intermediate">Intermediate</TabsTrigger>
+            <TabsTrigger value="advanced">Advanced</TabsTrigger>
+          </TabsList>
+          
+          {["beginner", "intermediate", "advanced"].map(level => (
+            <TabsContent key={level} value={level} className="space-y-4">
+              {!quizzes || quizzes.length === 0 ? (
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="text-center p-6">
+                      <p>No {level} quizzes available for this framework yet.</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ) : (
+                quizzes.map((quiz: Quiz) => (
+                  <QuizCard 
+                    key={quiz.id} 
+                    quiz={quiz} 
+                    onStart={() => navigate(`/quiz/${frameworkId}/${quiz.id}`)} 
+                  />
+                ))
+              )}
+            </TabsContent>
+          ))}
+        </Tabs>
+      </div>
+    </MainLayout>
   );
 }
 
