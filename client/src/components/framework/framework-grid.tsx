@@ -10,12 +10,19 @@ import { Skeleton } from '@/components/ui/skeleton';
 const EMPTY_MODULE: Module = {
   id: 0,
   frameworkId: 0,
-  title: '',
-  content: '',
+  name: '',
+  description: '',
+  content: null,
+  examples: null,
+  keyTakeaways: null,
+  quizQuestions: null,
+  videoUrl: null,
+  resources: null,
+  imageUrl: null,
+  completed: false,
   order: 0,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-} as Module;
+  scormPath: null,
+};
 
 // Create empty modules array with properly typed elements
 const createEmptyModules = (count: number): Module[] => {
@@ -75,18 +82,18 @@ const FrameworkGrid: React.FC = () => {
           <div key={idx} className="bg-white rounded-lg shadow-sm overflow-hidden">
             <div className="p-5 space-y-4">
               <div className="flex justify-between">
-                <Skeleton className="h-6 w-40" />
-                <Skeleton className="h-6 w-20" />
+                <Skeleton className="h-6 w-40 bg-gradient-to-r from-[#9545ff]/10 to-[#ff59b2]/10" />
+                <Skeleton className="h-6 w-20 bg-gradient-to-r from-[#9545ff]/10 to-[#ff59b2]/10" />
               </div>
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-4 w-full bg-gradient-to-r from-[#9545ff]/10 to-[#ff59b2]/10" />
+              <Skeleton className="h-4 w-3/4 bg-gradient-to-r from-[#9545ff]/10 to-[#ff59b2]/10" />
               <div className="flex space-x-4">
-                <Skeleton className="h-4 w-20" />
-                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-4 w-20 bg-gradient-to-r from-[#9545ff]/10 to-[#ff59b2]/10" />
+                <Skeleton className="h-4 w-20 bg-gradient-to-r from-[#9545ff]/10 to-[#ff59b2]/10" />
               </div>
             </div>
             <div className="bg-gray-50 px-5 py-3">
-              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-full bg-gradient-to-r from-[#9545ff]/10 to-[#ff59b2]/10" />
             </div>
           </div>
         ))}

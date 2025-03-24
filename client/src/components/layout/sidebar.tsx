@@ -173,7 +173,7 @@ const Sidebar: React.FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
             ) : (
               <Avatar className="h-9 w-9 ring-2 ring-[#ff59b2]/30 shadow-inner">
                 <AvatarImage src="" alt={user?.name} />
-                <AvatarFallback className="bg-gradient-to-br from-[#7d5af1] to-[#ff59b2] text-white font-medium">
+                <AvatarFallback className="bg-gradient-to-br from-[#9545ff] to-[#ff59b2] text-white font-medium">
                   {user?.name.substring(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
@@ -254,7 +254,7 @@ const Sidebar: React.FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
           {!user ? (
             <Link to="/auth">
               <Button className={cn(
-                "w-full bg-gradient-to-r from-[#7d5af1] to-[#ff59b2] hover:from-[#7d5af1]/90 hover:to-[#ff59b2]/90 text-white shadow-md hover:shadow-lg transition-all rounded-xl",
+                "w-full bg-gradient-to-r from-[#9545ff] to-[#ff59b2] hover:from-[#9545ff]/90 hover:to-[#ff59b2]/90 text-white shadow-md hover:shadow-lg transition-all rounded-xl",
                 isCollapsed && "aspect-square p-0"
               )}>
                 {isCollapsed ? <User className="h-5 w-5" /> : "Sign In"}
