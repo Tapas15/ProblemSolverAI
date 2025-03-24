@@ -37,7 +37,7 @@ function Router() {
       <ProtectedRoute path="/settings" component={SettingsPage} />
       <ProtectedRoute path="/scorm-admin" component={ScormAdminPage} />
       <ProtectedRoute path="/learning-path" component={LearningPathPage} />
-      <ProtectedRoute path="/founder" component={FounderPage} />
+      <Route path="/founder" component={FounderPage} />
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
     </Switch>

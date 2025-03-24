@@ -209,6 +209,12 @@ const Navbar: React.FC = () => {
                 <span className="font-medium">Practice Exercises</span>
               </div>
             </Link>
+            <Link to="/founder" onClick={() => setMobileMenuOpen(false)}>
+              <div className={`flex items-center space-x-3 py-2 px-3 rounded-lg ${location === '/founder' ? 'bg-primary-800 text-secondary' : 'text-white hover:bg-primary-800/60'}`}>
+                <Users className="h-5 w-5" />
+                <span className="font-medium">Our Founder</span>
+              </div>
+            </Link>
             {isAdmin && (
               <Link to="/scorm-admin" onClick={() => setMobileMenuOpen(false)}>
                 <div className={`flex items-center space-x-3 py-2 px-3 rounded-lg ${location === '/scorm-admin' ? 'bg-primary-800 text-secondary' : 'text-white hover:bg-primary-800/60'}`}>

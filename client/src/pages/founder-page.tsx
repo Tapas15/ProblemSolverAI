@@ -1,7 +1,7 @@
 import React from 'react';
-import { Link } from 'wouter';
+import { Link, useLocation } from 'wouter';
 import { SiLinkedin, SiInstagram } from 'react-icons/si';
-import { ArrowLeft, Award, Globe, Briefcase, BookOpen } from 'lucide-react';
+import { ArrowLeft, Award, Globe, Briefcase, BookOpen, Menu, ChevronDown } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
