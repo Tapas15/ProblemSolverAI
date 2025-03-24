@@ -16,6 +16,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Loader2, ChevronLeft, Clock, AlertCircle, CheckCircle2, XCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
+import MainLayout from "@/components/layout/main-layout";
 
 type Question = {
   id: number;
@@ -234,21 +235,25 @@ export default function TakeQuizPage() {
   
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-[calc(100vh-6rem)]">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
+      <MainLayout>
+        <div className="flex items-center justify-center h-[calc(100vh-10rem)]">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </MainLayout>
     );
   }
   
   if (error || !quiz) {
     return (
-      <div className="flex flex-col items-center justify-center h-[calc(100vh-6rem)]">
-        <div className="text-destructive mb-4">Error loading quiz</div>
-        <Button variant="outline" onClick={() => navigate(`/quizzes/${frameworkId}`)}>
-          <ChevronLeft className="mr-2 h-4 w-4" />
-          Back to Framework Quizzes
-        </Button>
-      </div>
+      <MainLayout>
+        <div className="flex flex-col items-center justify-center h-[calc(100vh-10rem)]">
+          <div className="text-destructive mb-4">Error loading quiz</div>
+          <Button variant="outline" onClick={() => navigate(`/quizzes/${frameworkId}`)}>
+            <ChevronLeft className="mr-2 h-4 w-4" />
+            Back to Framework Quizzes
+          </Button>
+        </div>
+      </MainLayout>
     );
   }
   
@@ -258,71 +263,73 @@ export default function TakeQuizPage() {
     const passed = score >= passingScore;
     
     return (
-      <div className="container mx-auto py-6">
-        <div className="max-w-2xl mx-auto">
-          <Card>
-            <CardHeader>
-              <CardTitle>Quiz Results</CardTitle>
-              <CardDescription>{quiz.title}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="text-center p-4">
-                {passed ? (
-                  <div className="text-green-600 flex flex-col items-center">
-                    <CheckCircle2 className="h-16 w-16 mb-2" />
-                    <h2 className="text-2xl font-bold">Congratulations!</h2>
-                    <p>You passed the quiz</p>
+      <MainLayout>
+        <div className="container mx-auto">
+          <div className="max-w-2xl mx-auto">
+            <Card>
+              <CardHeader>
+                <CardTitle>Quiz Results</CardTitle>
+                <CardDescription>{quiz.title}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="text-center p-4">
+                  {passed ? (
+                    <div className="text-green-600 flex flex-col items-center">
+                      <CheckCircle2 className="h-16 w-16 mb-2" />
+                      <h2 className="text-2xl font-bold">Congratulations!</h2>
+                      <p>You passed the quiz</p>
+                    </div>
+                  ) : (
+                    <div className="text-red-600 flex flex-col items-center">
+                      <XCircle className="h-16 w-16 mb-2" />
+                      <h2 className="text-2xl font-bold">Better luck next time!</h2>
+                      <p>You didn't reach the passing score</p>
+                    </div>
+                  )}
+                </div>
+                
+                <Separator />
+                
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span>Your Score</span>
+                    <span className="font-semibold">{score}%</span>
                   </div>
-                ) : (
-                  <div className="text-red-600 flex flex-col items-center">
-                    <XCircle className="h-16 w-16 mb-2" />
-                    <h2 className="text-2xl font-bold">Better luck next time!</h2>
-                    <p>You didn't reach the passing score</p>
+                  <Progress value={score} className="h-2" />
+                </div>
+                
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span>Passing Score</span>
+                    <span className="font-semibold">{passingScore}%</span>
                   </div>
-                )}
-              </div>
-              
-              <Separator />
-              
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span>Your Score</span>
-                  <span className="font-semibold">{score}%</span>
+                  <Progress value={passingScore} className="h-2" />
                 </div>
-                <Progress value={score} className="h-2" />
-              </div>
-              
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span>Passing Score</span>
-                  <span className="font-semibold">{passingScore}%</span>
+                
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div className="bg-slate-100 dark:bg-slate-800 p-3 rounded">
+                    <div className="text-muted-foreground">Time Taken</div>
+                    <div className="font-medium">{Math.floor(calculateTimeTaken() / 60)}m {calculateTimeTaken() % 60}s</div>
+                  </div>
+                  <div className="bg-slate-100 dark:bg-slate-800 p-3 rounded">
+                    <div className="text-muted-foreground">Correct Answers</div>
+                    <div className="font-medium">{Math.round(score / 100 * questions.length)} of {questions.length}</div>
+                  </div>
                 </div>
-                <Progress value={passingScore} className="h-2" />
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div className="bg-slate-100 dark:bg-slate-800 p-3 rounded">
-                  <div className="text-muted-foreground">Time Taken</div>
-                  <div className="font-medium">{Math.floor(calculateTimeTaken() / 60)}m {calculateTimeTaken() % 60}s</div>
-                </div>
-                <div className="bg-slate-100 dark:bg-slate-800 p-3 rounded">
-                  <div className="text-muted-foreground">Correct Answers</div>
-                  <div className="font-medium">{Math.round(score / 100 * questions.length)} of {questions.length}</div>
-                </div>
-              </div>
-            </CardContent>
-            <CardFooter className="flex justify-between">
-              <Button variant="outline" onClick={() => navigate(`/quizzes/${frameworkId}`)}>
-                <ChevronLeft className="mr-2 h-4 w-4" />
-                Back to Framework Quizzes
-              </Button>
-              <Button onClick={() => navigate("/")}>
-                Go to Dashboard
-              </Button>
-            </CardFooter>
-          </Card>
+              </CardContent>
+              <CardFooter className="flex justify-between">
+                <Button variant="outline" onClick={() => navigate(`/quizzes/${frameworkId}`)}>
+                  <ChevronLeft className="mr-2 h-4 w-4" />
+                  Back to Framework Quizzes
+                </Button>
+                <Button onClick={() => navigate("/")}>
+                  Go to Dashboard
+                </Button>
+              </CardFooter>
+            </Card>
+          </div>
         </div>
-      </div>
+      </MainLayout>
     );
   }
   
@@ -331,67 +338,71 @@ export default function TakeQuizPage() {
   
   if (!question) {
     return (
-      <div className="flex flex-col items-center justify-center h-[calc(100vh-6rem)]">
-        <div className="text-destructive mb-4">Error: No questions found</div>
-        <Button variant="outline" onClick={() => navigate(`/quizzes/${frameworkId}`)}>
-          <ChevronLeft className="mr-2 h-4 w-4" />
-          Back to Framework Quizzes
-        </Button>
-      </div>
+      <MainLayout>
+        <div className="flex flex-col items-center justify-center h-[calc(100vh-10rem)]">
+          <div className="text-destructive mb-4">Error: No questions found</div>
+          <Button variant="outline" onClick={() => navigate(`/quizzes/${frameworkId}`)}>
+            <ChevronLeft className="mr-2 h-4 w-4" />
+            Back to Framework Quizzes
+          </Button>
+        </div>
+      </MainLayout>
     );
   }
   
   return (
-    <div className="container mx-auto py-6">
-      <div className="max-w-2xl mx-auto">
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle>{quiz.title}</CardTitle>
-                <CardDescription>Question {currentQuestion + 1} of {questions.length}</CardDescription>
-              </div>
-              {timeRemaining !== null && (
-                <div className="flex items-center text-muted-foreground">
-                  <Clock className="mr-2 h-4 w-4" />
-                  <span>{formatTimeRemaining()}</span>
+    <MainLayout>
+      <div className="container mx-auto">
+        <div className="max-w-2xl mx-auto">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>{quiz.title}</CardTitle>
+                  <CardDescription>Question {currentQuestion + 1} of {questions.length}</CardDescription>
                 </div>
-              )}
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <Progress value={(currentQuestion + 1) / questions.length * 100} className="h-2" />
-            
-            <div className="font-medium text-lg">{question.text}</div>
-            
-            <RadioGroup 
-              value={selectedAnswers[question.id]?.toString()} 
-              onValueChange={(value) => handleSelectAnswer(question.id, parseInt(value))}
-            >
-              <div className="space-y-3">
-                {question.options.map((option, index) => (
-                  <div key={index} className="flex items-center space-x-2">
-                    <RadioGroupItem value={index.toString()} id={`option-${index}`} />
-                    <Label htmlFor={`option-${index}`} className="cursor-pointer">{option}</Label>
+                {timeRemaining !== null && (
+                  <div className="flex items-center text-muted-foreground">
+                    <Clock className="mr-2 h-4 w-4" />
+                    <span>{formatTimeRemaining()}</span>
                   </div>
-                ))}
+                )}
               </div>
-            </RadioGroup>
-          </CardContent>
-          <CardFooter className="flex justify-between">
-            <Button 
-              variant="outline" 
-              onClick={handlePrevQuestion}
-              disabled={currentQuestion === 0}
-            >
-              Previous
-            </Button>
-            <Button onClick={handleNextQuestion}>
-              {currentQuestion < questions.length - 1 ? "Next" : "Submit"}
-            </Button>
-          </CardFooter>
-        </Card>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <Progress value={(currentQuestion + 1) / questions.length * 100} className="h-2" />
+              
+              <div className="font-medium text-lg">{question.text}</div>
+              
+              <RadioGroup 
+                value={selectedAnswers[question.id]?.toString()} 
+                onValueChange={(value) => handleSelectAnswer(question.id, parseInt(value))}
+              >
+                <div className="space-y-3">
+                  {question.options.map((option, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <RadioGroupItem value={index.toString()} id={`option-${index}`} />
+                      <Label htmlFor={`option-${index}`} className="cursor-pointer">{option}</Label>
+                    </div>
+                  ))}
+                </div>
+              </RadioGroup>
+            </CardContent>
+            <CardFooter className="flex justify-between">
+              <Button 
+                variant="outline" 
+                onClick={handlePrevQuestion}
+                disabled={currentQuestion === 0}
+              >
+                Previous
+              </Button>
+              <Button onClick={handleNextQuestion}>
+                {currentQuestion < questions.length - 1 ? "Next" : "Submit"}
+              </Button>
+            </CardFooter>
+          </Card>
+        </div>
       </div>
-    </div>
+    </MainLayout>
   );
 }
