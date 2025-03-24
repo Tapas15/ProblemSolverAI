@@ -1350,8 +1350,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "User not found" });
       }
       
+      // Define the object info type
+      interface ObjectInfo {
+        name: string;
+        description?: string;
+        type: string;
+      }
+      
       // Get object info based on objectType and objectId
-      let objectInfo = {
+      let objectInfo: ObjectInfo = {
         name: statement.object,
         type: "http://adlnet.gov/expapi/activities/activity"
       };
@@ -1386,8 +1393,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
+      // Extract and properly type the statement data to match the expected schema
+      const { userId, verb, object, objectType, objectId } = parseResult.data;
+      
+      // Create a properly typed statement object
+      const statementData: Omit<XapiStatement, 'id' | 'timestamp' | 'stored'> = {
+        userId,
+        verb,
+        object,
+        objectType,
+        objectId,
+        // Ensure these fields are string or null, not undefined
+        result: parseResult.data.result !== undefined ? parseResult.data.result : null,
+        context: parseResult.data.context !== undefined ? parseResult.data.context : null
+      };
+      
       const result = await xapiService.createStatement(
-        parseResult.data,
+        statementData,
         {
           name: user.name || user.username,
           email: user.email || `${user.username}@questionpro.ai`
