@@ -2,16 +2,22 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getUserProgress, getUserQuizAttempts, getFrameworks } from '@/lib/api';
 import { Framework, UserProgress, QuizAttempt } from '@shared/schema';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CheckCircle, Clock, Award, BookOpen, ChevronRight, BarChart2, Target, BookCheck } from 'lucide-react';
+import { 
+  CheckCircle, Clock, Award, BookOpen, ChevronRight, BarChart2, 
+  Target, BookCheck, User, Brain, TrendingUp, Calendar, Medal,
+  BadgeCheck, LineChart, Flame, Zap, Calendar as CalendarIcon
+} from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Link } from 'wouter';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Separator } from '@/components/ui/separator';
 
 const DashboardPage = () => {
   const { user } = useAuth();
