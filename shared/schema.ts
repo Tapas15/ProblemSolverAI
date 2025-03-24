@@ -325,3 +325,35 @@ export type Exercise = typeof exercises.$inferSelect;
 
 export type InsertExerciseSubmission = z.infer<typeof insertExerciseSubmissionSchema>;
 export type ExerciseSubmission = typeof exerciseSubmissions.$inferSelect;
+
+// Certificates schema
+export const certificates = pgTable("certificates", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  frameworkId: integer("framework_id").notNull(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  issueDate: timestamp("issue_date").defaultNow(),
+  expiryDate: timestamp("expiry_date"),
+  certificateNumber: text("certificate_number").notNull().unique(),
+  status: text("status").notNull().default("active"), // active, expired, revoked
+  imageUrl: text("image_url"), // URL to certificate template/image
+  achievements: text("achievements"), // JSON string describing achievements that led to this certificate
+  metaData: text("meta_data"), // Additional information about the certificate
+});
+
+export const insertCertificateSchema = createInsertSchema(certificates).pick({
+  userId: true,
+  frameworkId: true,
+  title: true,
+  description: true,
+  expiryDate: true,
+  certificateNumber: true,
+  status: true,
+  imageUrl: true,
+  achievements: true,
+  metaData: true,
+});
+
+export type InsertCertificate = z.infer<typeof insertCertificateSchema>;
+export type Certificate = typeof certificates.$inferSelect;
