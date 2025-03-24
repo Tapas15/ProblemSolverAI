@@ -14,6 +14,8 @@ import ProfilePage from "@/pages/profile-page";
 import SettingsPage from "@/pages/settings-page";
 import ScormAdminPage from "@/pages/scorm-admin-page";
 import LearningPathPage from "@/pages/learning-path-page";
+import ExercisePage from "@/pages/exercise-page";
+import ExerciseDetailPage from "@/pages/exercise-detail-page";
 import { AuthProvider } from "@/hooks/use-auth";
 import { ProtectedRoute } from "@/lib/protected-route";
 
@@ -25,6 +27,8 @@ function Router() {
       <ProtectedRoute path="/ai-assistant" component={AiAssistantPage} />
       <ProtectedRoute path="/quizzes/:frameworkId" component={QuizPage} />
       <ProtectedRoute path="/quiz/:frameworkId/:quizId" component={TakeQuizPage} />
+      <ProtectedRoute path="/exercises/:frameworkId" component={ExercisePage} />
+      <ProtectedRoute path="/exercise/:exerciseId" component={ExerciseDetailPage} />
       <ProtectedRoute path="/dashboard" component={DashboardPage} />
       <ProtectedRoute path="/profile" component={ProfilePage} />
       <ProtectedRoute path="/settings" component={SettingsPage} />

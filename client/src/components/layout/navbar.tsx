@@ -20,7 +20,8 @@ import {
   LogOut,
   BookOpen,
   Lightbulb,
-  BarChart
+  BarChart,
+  Dumbbell
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
@@ -79,6 +80,14 @@ const Navbar: React.FC = () => {
                 <LayoutDashboard className={`h-4 w-4 ${location === '/dashboard' ? 'text-secondary' : 'text-white group-hover:text-secondary'} transition-colors`} />
                 <span className={`${location === '/dashboard' ? 'border-b-2 border-secondary' : 'border-b-2 border-transparent group-hover:border-secondary/50'} transition-all pb-0.5`}>
                   Dashboard
+                </span>
+              </div>
+            </Link>
+            <Link to="/exercises/1">
+              <div className={`py-2 flex items-center space-x-1.5 group ${location.startsWith('/exercises') || location.startsWith('/exercise/') ? 'text-secondary' : 'text-white hover:text-secondary'} transition-colors`}>
+                <Dumbbell className={`h-4 w-4 ${location.startsWith('/exercises') || location.startsWith('/exercise/') ? 'text-secondary' : 'text-white group-hover:text-secondary'} transition-colors`} />
+                <span className={`${location.startsWith('/exercises') || location.startsWith('/exercise/') ? 'border-b-2 border-secondary' : 'border-b-2 border-transparent group-hover:border-secondary/50'} transition-all pb-0.5`}>
+                  Practice Exercises
                 </span>
               </div>
             </Link>
@@ -183,6 +192,12 @@ const Navbar: React.FC = () => {
               <div className={`flex items-center space-x-3 py-2 px-3 rounded-lg ${location === '/dashboard' ? 'bg-primary-800 text-secondary' : 'text-white hover:bg-primary-800/60'}`}>
                 <LayoutDashboard className="h-5 w-5" />
                 <span className="font-medium">Dashboard</span>
+              </div>
+            </Link>
+            <Link to="/exercises/1" onClick={() => setMobileMenuOpen(false)}>
+              <div className={`flex items-center space-x-3 py-2 px-3 rounded-lg ${location.startsWith('/exercises') || location.startsWith('/exercise/') ? 'bg-primary-800 text-secondary' : 'text-white hover:bg-primary-800/60'}`}>
+                <Dumbbell className="h-5 w-5" />
+                <span className="font-medium">Practice Exercises</span>
               </div>
             </Link>
             {isAdmin && (
