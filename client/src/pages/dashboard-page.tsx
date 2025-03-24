@@ -155,15 +155,15 @@ const DashboardPage = () => {
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
             <Card className="shadow-md bg-gradient-to-b from-white to-[#F7FAFF] border border-[#E0F0FF]">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm flex items-center">
+              <CardHeader className="pb-1 px-3 pt-3 sm:p-6 sm:pb-2">
+                <CardTitle className="text-xs sm:text-sm flex items-center">
                   <BookCheck className="h-4 w-4 mr-2 text-[#0078D7]" />
                   Frameworks
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="px-3 pb-3 sm:p-6">
                 <div className="text-2xl font-bold mb-1 text-[#0A2540]">{stats?.completedFrameworks || 0}/{stats?.totalFrameworks || 0}</div>
                 <Progress value={stats?.frameworkProgress} className="h-2 bg-[#E0F0FF]" />
                 <p className="text-xs text-gray-500 mt-2">
@@ -173,13 +173,13 @@ const DashboardPage = () => {
             </Card>
 
             <Card className="shadow-md bg-gradient-to-b from-white to-[#F7FAFF] border border-[#E0F0FF]">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm flex items-center">
+              <CardHeader className="pb-1 px-3 pt-3 sm:p-6 sm:pb-2">
+                <CardTitle className="text-xs sm:text-sm flex items-center">
                   <BookOpen className="h-4 w-4 mr-2 text-[#00A5E0]" />
                   Modules
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="px-3 pb-3 sm:p-6">
                 <div className="text-2xl font-bold mb-1 text-[#0A2540]">{stats?.completedModules || 0}/{stats?.totalModules || 0}</div>
                 <Progress value={stats?.moduleProgress} className="h-2 bg-[#E0F0FF]" />
                 <p className="text-xs text-gray-500 mt-2">
@@ -189,13 +189,13 @@ const DashboardPage = () => {
             </Card>
 
             <Card className="shadow-md bg-gradient-to-b from-white to-[#F7FAFF] border border-[#E0F0FF]">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm flex items-center">
+              <CardHeader className="pb-1 px-3 pt-3 sm:p-6 sm:pb-2">
+                <CardTitle className="text-xs sm:text-sm flex items-center">
                   <BarChart2 className="h-4 w-4 mr-2 text-[#0096F6]" />
                   Quizzes
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="px-3 pb-3 sm:p-6">
                 <div className="text-2xl font-bold mb-1 text-[#0A2540]">{stats?.passedQuizzes || 0}/{stats?.totalQuizzes || 0}</div>
                 <Progress value={stats?.quizProgress} className="h-2 bg-[#E0F0FF]" />
                 <p className="text-xs text-gray-500 mt-2">
@@ -205,13 +205,13 @@ const DashboardPage = () => {
             </Card>
 
             <Card className="shadow-md bg-gradient-to-b from-white to-[#F7FAFF] border border-[#E0F0FF]">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm flex items-center">
+              <CardHeader className="pb-1 px-3 pt-3 sm:p-6 sm:pb-2">
+                <CardTitle className="text-xs sm:text-sm flex items-center">
                   <Target className="h-4 w-4 mr-2 text-[#00B1F5]" />
                   Average Score
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="px-3 pb-3 sm:p-6">
                 <div className="text-2xl font-bold mb-1 text-[#0A2540]">{stats?.averageScore || 0}%</div>
                 <Progress value={stats?.averageScore} className="h-2 bg-[#E0F0FF]" />
                 <p className="text-xs text-gray-500 mt-2">
@@ -366,15 +366,15 @@ const DashboardPage = () => {
                             </CardDescription>
                           </CardHeader>
                           <CardContent>
-                            <div className="flex justify-between items-center">
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                               <div className="flex items-center">
                                 <Award className="mr-1 h-4 w-4 text-amber-500" />
                                 <span className="text-sm font-medium">
                                   Score: {Math.round((attempt.score / attempt.maxScore) * 100)}%
                                 </span>
                               </div>
-                              <Link to={`/quizzes/${attempt.quizId}`}>
-                                <Button variant="outline" size="sm">
+                              <Link to={`/quizzes/${attempt.quizId}`} className="w-full sm:w-auto">
+                                <Button variant="outline" size="sm" className="w-full sm:w-auto">
                                   Try Again
                                 </Button>
                               </Link>
@@ -405,9 +405,9 @@ const DashboardPage = () => {
             </TabsContent>
             
             <TabsContent value="recommendations" className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <Card className="shadow-md">
-                  <CardHeader>
+                  <CardHeader className="px-3 pt-3 pb-1 sm:p-6 sm:pb-2">
                     <CardTitle className="flex items-center text-blue-600">
                       <Lightbulb className="h-5 w-5 mr-2" />
                       Suggested Framework
@@ -416,7 +416,7 @@ const DashboardPage = () => {
                       Based on your learning patterns
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-4">
+                  <CardContent className="space-y-4 px-3 pb-3 sm:p-6">
                     <div className="flex items-center gap-4">
                       <div className="h-16 w-16 rounded-lg bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center text-white">
                         <BookOpen className="h-8 w-8" />
@@ -436,7 +436,7 @@ const DashboardPage = () => {
                 </Card>
                 
                 <Card className="shadow-md">
-                  <CardHeader>
+                  <CardHeader className="px-3 pt-3 pb-1 sm:p-6 sm:pb-2">
                     <CardTitle className="flex items-center text-blue-600">
                       <Target className="h-5 w-5 mr-2" />
                       Practice Recommendation
@@ -445,7 +445,7 @@ const DashboardPage = () => {
                       Strengthen your knowledge
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-4">
+                  <CardContent className="space-y-4 px-3 pb-3 sm:p-6">
                     <div className="flex items-center gap-4">
                       <div className="h-16 w-16 rounded-lg bg-gradient-to-br from-blue-500 to-blue-300 flex items-center justify-center text-white">
                         <BarChart2 className="h-8 w-8" />
