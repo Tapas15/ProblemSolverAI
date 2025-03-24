@@ -136,20 +136,20 @@ const Navbar: React.FC = () => {
           <div className="flex items-center space-x-2 md:space-x-6">
             <div className="relative hidden md:block">
               <div className="relative group">
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-[#0078D7] via-[#00A5E0] to-[#C5F2FF] rounded-full opacity-75 group-hover:opacity-100 blur-sm transition duration-200"></div>
-                <div className="relative flex items-center bg-[#0A2540] rounded-full">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-[#7d5af1] via-[#ff59b2] to-[#7d5af1] rounded-full opacity-75 group-hover:opacity-100 blur-sm transition duration-200"></div>
+                <div className="relative flex items-center bg-[#270033]/80 rounded-full">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#ff59b2]/70 h-4 w-4" />
                   <Input 
                     type="text" 
                     value={searchValue}
                     onChange={(e) => setSearchValue(e.target.value)}
                     placeholder="Search frameworks..." 
-                    className="pl-10 py-1.5 rounded-full text-sm text-white border-0 bg-[#0A2540]/90 focus:ring-1 focus:ring-[#00A5E0]/80 w-48 md:w-56"
+                    className="pl-10 py-1.5 rounded-full text-sm text-white border-0 bg-transparent focus:ring-1 focus:ring-[#ff59b2]/80 w-48 md:w-56"
                   />
                   {searchValue && (
                     <button 
                       onClick={() => setSearchValue('')}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#ff59b2]/70 hover:text-[#ff59b2]"
                     >
                       <X className="h-3.5 w-3.5" />
                     </button>
@@ -161,11 +161,11 @@ const Navbar: React.FC = () => {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative group">
-                  <div className="absolute -inset-0.5 bg-gradient-to-r from-[#0078D7] to-[#00A5E0] rounded-full opacity-0 group-hover:opacity-100 blur-sm transition duration-200"></div>
-                  <div className="relative flex items-center space-x-2 py-1.5 px-2 rounded-full bg-[#0E3A5C]/40 hover:bg-[#0E3A5C]/60 transition-all">
-                    <Avatar className="h-8 w-8 ring-2 ring-[#00A5E0]/60 shadow-inner">
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-[#7d5af1] to-[#ff59b2] rounded-full opacity-0 group-hover:opacity-100 blur-sm transition duration-200"></div>
+                  <div className="relative flex items-center space-x-2 py-1.5 px-2 rounded-full bg-[#270033]/50 hover:bg-[#270033]/70 transition-all">
+                    <Avatar className="h-8 w-8 ring-2 ring-[#ff59b2]/60 shadow-inner">
                       <AvatarImage src="" alt={user.name} />
-                      <AvatarFallback className="bg-gradient-to-br from-[#0078D7] to-[#00A5E0] text-white font-medium">
+                      <AvatarFallback className="bg-gradient-to-br from-[#7d5af1] to-[#ff59b2] text-white font-medium">
                         {user.name.substring(0, 2).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
@@ -174,46 +174,46 @@ const Navbar: React.FC = () => {
                   </div>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-60 py-2 rounded-xl border border-[#E1F5FE] shadow-xl bg-white/95 backdrop-blur-sm">
-                <div className="px-4 py-2 border-b border-[#E1F5FE]">
-                  <p className="text-sm font-medium text-[#0078D7]">{user.name}</p>
-                  <p className="text-xs text-[#0A2540]/70 truncate">{user.email}</p>
+              <DropdownMenuContent align="end" className="w-60 py-2 rounded-xl border border-[#7d5af1]/20 shadow-xl bg-white/95 backdrop-blur-sm">
+                <div className="px-4 py-2 border-b border-[#ff59b2]/10">
+                  <p className="text-sm font-medium text-[#7d5af1]">{user.name}</p>
+                  <p className="text-xs text-[#36005A]/60 truncate">{user.email}</p>
                 </div>
                 <div className="p-2">
                   <Link to="/profile">
-                    <DropdownMenuItem className="py-2 px-3 rounded-lg cursor-pointer hover:bg-[#F0F9FF] flex items-center space-x-2 text-sm">
-                      <User className="h-4 w-4 text-[#0078D7]/70" />
+                    <DropdownMenuItem className="py-2 px-3 rounded-lg cursor-pointer hover:bg-[#7d5af1]/5 flex items-center space-x-2 text-sm">
+                      <User className="h-4 w-4 text-[#7d5af1]/70" />
                       <span>Profile</span>
                     </DropdownMenuItem>
                   </Link>
                   <Link to="/settings">
-                    <DropdownMenuItem className="py-2 px-3 rounded-lg cursor-pointer hover:bg-[#F0F9FF] flex items-center space-x-2 text-sm">
-                      <Settings className="h-4 w-4 text-[#0078D7]/70" />
+                    <DropdownMenuItem className="py-2 px-3 rounded-lg cursor-pointer hover:bg-[#7d5af1]/5 flex items-center space-x-2 text-sm">
+                      <Settings className="h-4 w-4 text-[#7d5af1]/70" />
                       <span>Account Settings</span>
                     </DropdownMenuItem>
                   </Link>
                   <Link to="/dashboard">
-                    <DropdownMenuItem className="py-2 px-3 rounded-lg cursor-pointer hover:bg-[#F0F9FF] flex items-center space-x-2 text-sm">
-                      <LayoutDashboard className="h-4 w-4 text-[#0078D7]/70" />
+                    <DropdownMenuItem className="py-2 px-3 rounded-lg cursor-pointer hover:bg-[#7d5af1]/5 flex items-center space-x-2 text-sm">
+                      <LayoutDashboard className="h-4 w-4 text-[#7d5af1]/70" />
                       <span>My Dashboard</span>
                     </DropdownMenuItem>
                   </Link>
                   {isAdmin && (
                     <Link to="/scorm-admin">
-                      <DropdownMenuItem className="py-2 px-3 rounded-lg cursor-pointer hover:bg-[#F0F9FF] flex items-center space-x-2 text-sm">
-                        <FileCode className="h-4 w-4 text-[#0078D7]/70" />
+                      <DropdownMenuItem className="py-2 px-3 rounded-lg cursor-pointer hover:bg-[#7d5af1]/5 flex items-center space-x-2 text-sm">
+                        <FileCode className="h-4 w-4 text-[#7d5af1]/70" />
                         <span>Admin Panel</span>
-                        <Badge className="ml-2 bg-[#0078D7]/10 text-[#0078D7] hover:bg-[#0078D7]/20 px-1.5 py-0 text-[10px]">
+                        <Badge className="ml-2 bg-[#ff59b2]/10 text-[#ff59b2] hover:bg-[#ff59b2]/20 px-1.5 py-0 text-[10px]">
                           Admin
                         </Badge>
                       </DropdownMenuItem>
                     </Link>
                   )}
                 </div>
-                <DropdownMenuSeparator className="my-1" />
+                <DropdownMenuSeparator className="my-1 bg-[#7d5af1]/10" />
                 <div className="p-2">
                   <DropdownMenuItem 
-                    className="py-2 px-3 rounded-lg cursor-pointer hover:bg-red-50 flex items-center space-x-2 text-sm text-red-600 hover:text-red-700" 
+                    className="py-2 px-3 rounded-lg cursor-pointer hover:bg-red-50 flex items-center space-x-2 text-sm text-red-500 hover:text-red-600" 
                     onClick={handleLogout}
                   >
                     <LogOut className="h-4 w-4" />
@@ -226,7 +226,7 @@ const Navbar: React.FC = () => {
             <Button 
               variant="ghost"
               size="icon"
-              className="lg:hidden focus:outline-none bg-[#0E3A5C]/40 rounded-full hover:bg-[#0E3A5C]/60 transition-colors"
+              className="lg:hidden focus:outline-none bg-[#270033]/50 rounded-full hover:bg-[#270033]/70 transition-colors"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               <Menu className="h-5 w-5" />
@@ -235,7 +235,7 @@ const Navbar: React.FC = () => {
         ) : (
           <div className="hidden lg:block">
             <Link to="/auth">
-              <Button className="bg-gradient-to-r from-[#0078D7] to-[#00A5E0] hover:from-[#0078D7]/90 hover:to-[#00A5E0]/90 text-white shadow-md hover:shadow-lg transition-all">
+              <Button className="bg-gradient-to-r from-[#7d5af1] to-[#ff59b2] hover:from-[#7d5af1]/90 hover:to-[#ff59b2]/90 text-white shadow-md hover:shadow-lg transition-all rounded-xl">
                 Sign In
               </Button>
             </Link>
@@ -245,20 +245,20 @@ const Navbar: React.FC = () => {
 
       {/* Mobile menu */}
       {mobileMenuOpen && user && (
-        <div className="lg:hidden bg-[#0A2540]/95 border-t border-[#0E3A5C] py-4 px-4 backdrop-blur-md space-y-3 shadow-xl animate-in slide-in-from-top-5 duration-300">
+        <div className="lg:hidden bg-gradient-to-b from-[#16001E] to-[#270033] border-t border-[#7d5af1]/20 py-4 px-4 backdrop-blur-md space-y-3 shadow-xl animate-in slide-in-from-top-5 duration-300">
           <div className="relative mb-4">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#ff59b2]/70 h-4 w-4" />
             <Input 
               type="text" 
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
               placeholder="Search frameworks..." 
-              className="pl-10 py-2 rounded-xl text-sm text-white pr-8 focus:ring-1 focus:ring-[#00A5E0] w-full bg-[#0E3A5C]/80 border-0"
+              className="pl-10 py-2 rounded-xl text-sm text-white pr-8 focus:ring-1 focus:ring-[#ff59b2] w-full bg-[#36005A]/50 border-0"
             />
             {searchValue && (
               <button 
                 onClick={() => setSearchValue('')}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#ff59b2]/70 hover:text-[#ff59b2]"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
@@ -267,66 +267,66 @@ const Navbar: React.FC = () => {
           
           <div className="grid grid-cols-2 gap-2">
             <Link to="/" onClick={() => setMobileMenuOpen(false)}>
-              <div className={`flex flex-col items-center justify-center p-3 rounded-xl ${location === '/' ? 'bg-gradient-to-br from-[#00A5E0]/20 to-[#00A5E0]/5 text-[#00A5E0]' : 'text-white hover:bg-[#0A2540]/60'} transition-colors`}>
+              <div className={`flex flex-col items-center justify-center p-3 rounded-xl ${location === '/' ? 'bg-gradient-to-br from-[#7d5af1]/20 to-[#7d5af1]/5 text-[#7d5af1]' : 'text-white hover:bg-[#36005A]/50'} transition-colors`}>
                 <BookOpen className="h-5 w-5 mb-1" />
                 <span className="font-medium text-sm">Frameworks</span>
               </div>
             </Link>
             <Link to="/learning-path" onClick={() => setMobileMenuOpen(false)}>
-              <div className={`flex flex-col items-center justify-center p-3 rounded-xl ${location === '/learning-path' ? 'bg-gradient-to-br from-[#C5F2FF]/20 to-[#C5F2FF]/5 text-[#C5F2FF]' : 'text-white hover:bg-[#0A2540]/60'} transition-colors`}>
+              <div className={`flex flex-col items-center justify-center p-3 rounded-xl ${location === '/learning-path' ? 'bg-gradient-to-br from-[#ff59b2]/20 to-[#ff59b2]/5 text-[#ff59b2]' : 'text-white hover:bg-[#36005A]/50'} transition-colors`}>
                 <BarChart className="h-5 w-5 mb-1" />
                 <span className="font-medium text-sm">Learning Path</span>
               </div>
             </Link>
             <Link to="/ai-assistant" onClick={() => setMobileMenuOpen(false)}>
-              <div className={`flex flex-col items-center justify-center p-3 rounded-xl ${location === '/ai-assistant' ? 'bg-gradient-to-br from-[#0078D7]/20 to-[#0078D7]/5 text-[#0078D7]' : 'text-white hover:bg-[#0A2540]/60'} transition-colors`}>
+              <div className={`flex flex-col items-center justify-center p-3 rounded-xl ${location === '/ai-assistant' ? 'bg-gradient-to-br from-[#7d5af1]/20 to-[#7d5af1]/5 text-[#7d5af1]' : 'text-white hover:bg-[#36005A]/50'} transition-colors`}>
                 <Lightbulb className="h-5 w-5 mb-1" />
                 <span className="font-medium text-sm">AI Assistant</span>
               </div>
             </Link>
             <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)}>
-              <div className={`flex flex-col items-center justify-center p-3 rounded-xl ${location === '/dashboard' ? 'bg-gradient-to-br from-[#89CFF0]/20 to-[#89CFF0]/5 text-[#89CFF0]' : 'text-white hover:bg-[#0A2540]/60'} transition-colors`}>
+              <div className={`flex flex-col items-center justify-center p-3 rounded-xl ${location === '/dashboard' ? 'bg-gradient-to-br from-[#ff59b2]/20 to-[#ff59b2]/5 text-[#ff59b2]' : 'text-white hover:bg-[#36005A]/50'} transition-colors`}>
                 <LayoutDashboard className="h-5 w-5 mb-1" />
                 <span className="font-medium text-sm">Dashboard</span>
               </div>
             </Link>
             <Link to="/exercises" onClick={() => setMobileMenuOpen(false)}>
-              <div className={`flex flex-col items-center justify-center p-3 rounded-xl ${location.startsWith('/exercises') ? 'bg-gradient-to-br from-[#B3E0FF]/20 to-[#B3E0FF]/5 text-[#B3E0FF]' : 'text-white hover:bg-[#0A2540]/60'} transition-colors`}>
+              <div className={`flex flex-col items-center justify-center p-3 rounded-xl ${location.startsWith('/exercises') ? 'bg-gradient-to-br from-[#7d5af1]/20 to-[#7d5af1]/5 text-[#7d5af1]' : 'text-white hover:bg-[#36005A]/50'} transition-colors`}>
                 <Dumbbell className="h-5 w-5 mb-1" />
                 <span className="font-medium text-sm">Practice</span>
               </div>
             </Link>
             <Link to="/founder" onClick={() => setMobileMenuOpen(false)}>
-              <div className={`flex flex-col items-center justify-center p-3 rounded-xl ${location === '/founder' ? 'bg-gradient-to-br from-[#7CB9E8]/20 to-[#7CB9E8]/5 text-[#7CB9E8]' : 'text-white hover:bg-[#0A2540]/60'} transition-colors`}>
+              <div className={`flex flex-col items-center justify-center p-3 rounded-xl ${location === '/founder' ? 'bg-gradient-to-br from-[#ff59b2]/20 to-[#ff59b2]/5 text-[#ff59b2]' : 'text-white hover:bg-[#36005A]/50'} transition-colors`}>
                 <Briefcase className="h-5 w-5 mb-1" />
                 <span className="font-medium text-sm">Founder</span>
               </div>
             </Link>
             <Link to="/profile" onClick={() => setMobileMenuOpen(false)}>
-              <div className={`flex flex-col items-center justify-center p-3 rounded-xl ${location === '/profile' ? 'bg-gradient-to-br from-[#B6D0E2]/20 to-[#B6D0E2]/5 text-[#B6D0E2]' : 'text-white hover:bg-[#0A2540]/60'} transition-colors`}>
+              <div className={`flex flex-col items-center justify-center p-3 rounded-xl ${location === '/profile' ? 'bg-gradient-to-br from-[#7d5af1]/20 to-[#7d5af1]/5 text-[#7d5af1]' : 'text-white hover:bg-[#36005A]/50'} transition-colors`}>
                 <User className="h-5 w-5 mb-1" />
                 <span className="font-medium text-sm">Profile</span>
               </div>
             </Link>
             <Link to="/settings" onClick={() => setMobileMenuOpen(false)}>
-              <div className={`flex flex-col items-center justify-center p-3 rounded-xl ${location === '/settings' ? 'bg-gradient-to-br from-[#84C0ED]/20 to-[#84C0ED]/5 text-[#84C0ED]' : 'text-white hover:bg-[#0A2540]/60'} transition-colors`}>
+              <div className={`flex flex-col items-center justify-center p-3 rounded-xl ${location === '/settings' ? 'bg-gradient-to-br from-[#ff59b2]/20 to-[#ff59b2]/5 text-[#ff59b2]' : 'text-white hover:bg-[#36005A]/50'} transition-colors`}>
                 <Settings className="h-5 w-5 mb-1" />
                 <span className="font-medium text-sm">Settings</span>
               </div>
             </Link>
             {isAdmin && (
               <Link to="/scorm-admin" onClick={() => setMobileMenuOpen(false)}>
-                <div className={`flex flex-col items-center justify-center p-3 rounded-xl ${location === '/scorm-admin' ? 'bg-gradient-to-br from-[#81D4FA]/20 to-[#81D4FA]/5 text-[#81D4FA]' : 'text-white hover:bg-[#0A2540]/60'} transition-colors`}>
+                <div className={`flex flex-col items-center justify-center p-3 rounded-xl ${location === '/scorm-admin' ? 'bg-gradient-to-br from-[#7d5af1]/20 to-[#7d5af1]/5 text-[#7d5af1]' : 'text-white hover:bg-[#36005A]/50'} transition-colors`}>
                   <FileCode className="h-5 w-5 mb-1" />
                   <span className="font-medium text-sm">Admin</span>
                 </div>
               </Link>
             )}
           </div>
-          <div className="pt-3 border-t border-[#0E3A5C]/50 flex justify-center">
+          <div className="pt-3 border-t border-[#7d5af1]/20 flex justify-center">
             <Button 
               variant="ghost" 
-              className="text-red-400 hover:text-red-300 hover:bg-[#0E3A5C]"
+              className="text-red-400 hover:text-red-300 hover:bg-[#36005A]/70"
               onClick={() => {
                 handleLogout();
                 setMobileMenuOpen(false);
