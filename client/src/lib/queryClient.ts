@@ -79,14 +79,24 @@ export const getQueryFn: <T>(options: {
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      queryFn: getQueryFn({ on401: "throw" }),
+      queryFn: getQueryFn({ on401: "returnNull" }), // Changed from "throw" to "returnNull" to prevent unhandled rejections
       refetchInterval: false,
       refetchOnWindowFocus: false,
       staleTime: Infinity,
       retry: false,
+      // Add error handling to prevent unhandled promise rejections
+      onError: (err) => {
+        console.error("Query error:", err);
+        // The error is now considered "handled" and won't trigger unhandledrejection
+      }
     },
     mutations: {
       retry: false,
+      // Add error handling to prevent unhandled promise rejections
+      onError: (err) => {
+        console.error("Mutation error:", err);
+        // The error is now considered "handled" and won't trigger unhandledrejection
+      }
     },
   },
 });
