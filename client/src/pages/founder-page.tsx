@@ -31,7 +31,7 @@ const FounderPage: React.FC = () => {
               />
               
               <div className="mt-4 sm:mt-0 sm:ml-6 text-center sm:text-left">
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 font-header">Manas Kumar Mahanandia</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 font-header">Manas Kumar</h1>
                 <p className="text-primary-600 font-medium text-lg">Founder, Question Pro AI</p>
                 
                 <div className="mt-3 flex gap-2 justify-center sm:justify-start">
@@ -69,7 +69,7 @@ const FounderPage: React.FC = () => {
                 <h2 className="text-xl font-semibold mb-4 font-header text-primary">About Manas</h2>
                 <div className="prose prose-sm sm:prose max-w-none text-gray-700">
                   <p>
-                    Manas Kumar Mahanandia is an award-winning Career Coach, L&D Specialist, and Entrepreneur, 
+                    Manas Kumar is an award-winning Career Coach, L&D Specialist, and Entrepreneur, 
                     dedicated to strategic questioning and innovation. As the founder of Question Pro AI App, 
                     he helps professionals master effective questioning for business success.
                   </p>
