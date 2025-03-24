@@ -75,6 +75,7 @@ export interface IStorage {
   getExerciseSubmissionsByExercise(exerciseId: number): Promise<ExerciseSubmission[]>;
   createExerciseSubmission(submission: InsertExerciseSubmission): Promise<ExerciseSubmission>;
   updateExerciseSubmission(id: number, submissionData: Partial<ExerciseSubmission>): Promise<ExerciseSubmission | undefined>;
+  deleteExerciseSubmission(id: number): Promise<void>;
 }
 
 // In-memory storage implementation
@@ -499,6 +500,10 @@ export class MemStorage implements IStorage {
     const updatedSubmission = { ...existingSubmission, ...submissionData };
     this.exerciseSubmissions.set(id, updatedSubmission);
     return updatedSubmission;
+  }
+  
+  async deleteExerciseSubmission(id: number): Promise<void> {
+    this.exerciseSubmissions.delete(id);
   }
   
   // Seed initial framework and module data
