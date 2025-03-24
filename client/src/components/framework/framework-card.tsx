@@ -79,8 +79,8 @@ const FrameworkCard: React.FC<FrameworkCardProps> = ({
   };
   
   return (
-    <div className="framework-card rounded-xl overflow-hidden bg-white group hover:shadow-xl transition-all duration-300 border border-slate-100 hover:border-primary/20">
-      <div className="relative h-44 overflow-hidden">
+    <div className="framework-card rounded-xl overflow-hidden bg-white group hover:shadow-xl transition-all duration-300 border border-slate-100 hover:border-primary/20 touch-manipulation">
+      <div className="relative h-32 sm:h-44 overflow-hidden">
         {imageUrl ? (
           <>
             <div className={`absolute inset-0 bg-gradient-to-br ${getGradient(id)} opacity-80 z-10`}></div>
@@ -95,44 +95,44 @@ const FrameworkCard: React.FC<FrameworkCardProps> = ({
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             />
             <div className="absolute inset-0 z-20 flex items-center justify-center">
-              <h3 className="text-2xl font-bold text-white drop-shadow-md px-4 text-center transition-transform duration-300 transform group-hover:scale-105">{name}</h3>
+              <h3 className="text-xl sm:text-2xl font-bold text-white drop-shadow-md px-4 text-center transition-transform duration-300 transform group-hover:scale-105">{name}</h3>
             </div>
           </>
         ) : (
           <div className={`w-full h-full flex items-center justify-center bg-gradient-to-br ${getGradient(id)}`}>
-            <h3 className="text-2xl font-bold text-white drop-shadow-md px-4 text-center">{name}</h3>
+            <h3 className="text-xl sm:text-2xl font-bold text-white drop-shadow-md px-4 text-center">{name}</h3>
           </div>
         )}
-        <div className="absolute top-3 right-3 z-30">
+        <div className="absolute top-2 right-2 sm:top-3 sm:right-3 z-30">
           {getStatusBadge()}
         </div>
       </div>
       
-      <div className="p-6">
-        <p className="text-gray-700 mb-4 line-clamp-3 text-sm leading-relaxed">{description}</p>
+      <div className="p-3 sm:p-6">
+        <p className="text-gray-700 mb-3 line-clamp-2 sm:line-clamp-3 text-sm leading-relaxed">{description}</p>
         
-        <div className="mt-4 grid grid-cols-2 gap-3 mb-5">
-          <div className="flex items-center bg-slate-50 p-2 rounded-lg">
-            <Clock className="h-4 w-4 text-primary mr-2" /> 
-            <span className="text-sm text-gray-700">{duration} min</span>
+        <div className="mt-2 sm:mt-4 grid grid-cols-2 gap-2 sm:gap-3 mb-3 sm:mb-5">
+          <div className="flex items-center bg-slate-50 p-1.5 sm:p-2 rounded-lg">
+            <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-primary mr-1 sm:mr-2" /> 
+            <span className="text-xs sm:text-sm text-gray-700">{duration} min</span>
           </div>
-          <div className="flex items-center bg-slate-50 p-2 rounded-lg">
-            <GraduationCap className="h-4 w-4 text-primary mr-2" /> 
-            <span className="text-sm text-gray-700 capitalize">{level}</span>
+          <div className="flex items-center bg-slate-50 p-1.5 sm:p-2 rounded-lg">
+            <GraduationCap className="h-3 w-3 sm:h-4 sm:w-4 text-primary mr-1 sm:mr-2" /> 
+            <span className="text-xs sm:text-sm text-gray-700 capitalize">{level}</span>
           </div>
-          <div className="flex items-center bg-slate-50 p-2 rounded-lg">
-            <BookOpen className="h-4 w-4 text-primary mr-2" /> 
-            <span className="text-sm text-gray-700">{totalModules} Modules</span>
+          <div className="flex items-center bg-slate-50 p-1.5 sm:p-2 rounded-lg">
+            <BookOpen className="h-3 w-3 sm:h-4 sm:w-4 text-primary mr-1 sm:mr-2" /> 
+            <span className="text-xs sm:text-sm text-gray-700">{totalModules} Modules</span>
           </div>
-          <div className="flex items-center bg-slate-50 p-2 rounded-lg">
-            <Award className="h-4 w-4 text-primary mr-2" /> 
-            <span className="text-sm text-gray-700">Certificate</span>
+          <div className="flex items-center bg-slate-50 p-1.5 sm:p-2 rounded-lg">
+            <Award className="h-3 w-3 sm:h-4 sm:w-4 text-primary mr-1 sm:mr-2" /> 
+            <span className="text-xs sm:text-sm text-gray-700">Certificate</span>
           </div>
         </div>
         
         {/* Progress indicator */}
-        <div className="relative pt-1 mb-6">
-          <div className="flex items-center justify-between mb-2">
+        <div className="relative pt-1 mb-4 sm:mb-6">
+          <div className="flex items-center justify-between mb-1 sm:mb-2">
             <div>
               <span className="text-xs font-semibold inline-block text-primary">
                 Progress
@@ -144,30 +144,30 @@ const FrameworkCard: React.FC<FrameworkCardProps> = ({
               </span>
             </div>
           </div>
-          <div className="overflow-hidden h-2 text-xs flex rounded-full bg-gray-100">
+          <div className="overflow-hidden h-1.5 sm:h-2 text-xs flex rounded-full bg-gray-100">
             <div
               style={{ width: `${getProgressPercentage()}%` }}
               className="animate-progress shadow-inner flex flex-col text-center whitespace-nowrap text-white justify-center bg-gradient-to-r from-[#0078D7] via-[#0095D0] to-[#00A5E0]"
             ></div>
           </div>
-          <div className="flex justify-between mt-2 text-xs text-gray-500">
+          <div className="flex justify-between mt-1 sm:mt-2 text-xs text-gray-500">
             <span>{completedModules} completed</span>
             <span>{totalModules} total</span>
           </div>
         </div>
       </div>
       
-      <div className="px-6 py-4 flex flex-col sm:flex-row gap-3 border-t border-slate-100">
+      <div className="px-3 sm:px-6 py-2 sm:py-4 flex flex-col sm:flex-row gap-2 sm:gap-3 border-t border-slate-100">
         <Link to={`/quizzes/${id}`} className="flex-1">
-          <Button variant="outline" className="w-full border-[#0078D7]/50 text-[#0078D7] hover:bg-[#F0F7FF] hover:border-[#0078D7] transition-all duration-300">
+          <Button variant="outline" className="w-full text-xs sm:text-sm h-8 sm:h-10 border-[#0078D7]/50 text-[#0078D7] hover:bg-[#F0F7FF] hover:border-[#0078D7] transition-all duration-300">
             View Quizzes
           </Button>
         </Link>
         
         <Link to={`/frameworks/${id}`} className="flex-1">
-          <Button className="w-full group bg-gradient-to-r from-[#0078D7] to-[#00A5E0] hover:from-[#0064B5] hover:to-[#0095D0] shadow-md hover:shadow-lg transition-all duration-300">
+          <Button className="w-full text-xs sm:text-sm h-8 sm:h-10 group bg-gradient-to-r from-[#0078D7] to-[#00A5E0] hover:from-[#0064B5] hover:to-[#0095D0] shadow-md hover:shadow-lg transition-all duration-300">
             {getLinkText()}
-            <ArrowRight className="ml-1.5 h-4 w-4 transition-transform group-hover:translate-x-1" />
+            <ArrowRight className="ml-1 sm:ml-1.5 h-3 w-3 sm:h-4 sm:w-4 transition-transform group-hover:translate-x-1" />
           </Button>
         </Link>
       </div>

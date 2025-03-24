@@ -114,12 +114,12 @@ const FrameworkGrid: React.FC = () => {
     <>
       {groupedFrameworks['completed']?.length > 0 && (
         <>
-          <h2 className="text-xl font-semibold mb-4 text-primary">Completed Frameworks</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <h2 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-4 text-primary">Completed Frameworks</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 mb-5 sm:mb-8">
             {groupedFrameworks['completed'].map((framework) => {
               const { status, completedModules, totalModules } = getFrameworkProgress(framework.id);
               return (
-                <div key={framework.id} onClick={() => handleFrameworkClick(framework.id)} className="cursor-pointer">
+                <div key={framework.id} onClick={() => handleFrameworkClick(framework.id)} className="cursor-pointer touch-manipulation">
                   <FrameworkCard 
                     framework={framework}
                     modules={createEmptyModules(totalModules)}
@@ -135,12 +135,12 @@ const FrameworkGrid: React.FC = () => {
 
       {groupedFrameworks['in_progress']?.length > 0 && (
         <>
-          <h2 className="text-xl font-semibold mb-4 text-primary">In Progress</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <h2 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-4 text-primary">In Progress</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 mb-5 sm:mb-8">
             {groupedFrameworks['in_progress'].map((framework) => {
               const { status, completedModules, totalModules } = getFrameworkProgress(framework.id);
               return (
-                <div key={framework.id} onClick={() => handleFrameworkClick(framework.id)} className="cursor-pointer">
+                <div key={framework.id} onClick={() => handleFrameworkClick(framework.id)} className="cursor-pointer touch-manipulation">
                   <FrameworkCard 
                     framework={framework}
                     modules={createEmptyModules(totalModules)}
@@ -156,12 +156,12 @@ const FrameworkGrid: React.FC = () => {
 
       {groupedFrameworks['not_started']?.length > 0 && (
         <>
-          <h2 className="text-xl font-semibold mb-4 text-primary">Available Frameworks</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <h2 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-4 text-primary">Available Frameworks</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
             {groupedFrameworks['not_started'].map((framework) => {
               const { status, completedModules, totalModules } = getFrameworkProgress(framework.id);
               return (
-                <div key={framework.id} onClick={() => handleFrameworkClick(framework.id)} className="cursor-pointer">
+                <div key={framework.id} onClick={() => handleFrameworkClick(framework.id)} className="cursor-pointer touch-manipulation">
                   <FrameworkCard 
                     framework={framework}
                     modules={createEmptyModules(totalModules)}
