@@ -622,7 +622,8 @@ export class MemStorage implements IStorage {
       level: "Beginner",
       duration: 30,
       status: "not_started",
-      case_studies: null
+      case_studies: null,
+      imageUrl: null
     };
     this.frameworks.set(swotId, swot);
     
@@ -635,7 +636,8 @@ export class MemStorage implements IStorage {
       level: "Advanced",
       duration: 75,
       status: "not_started",
-      case_studies: null
+      case_studies: null,
+      imageUrl: null
     };
     this.frameworks.set(firstPrinciplesId, firstPrinciples);
     
@@ -648,7 +650,8 @@ export class MemStorage implements IStorage {
       level: "Intermediate",
       duration: 50,
       status: "not_started",
-      case_studies: null
+      case_studies: null,
+      imageUrl: null
     };
     this.frameworks.set(portersFiveForcesId, portersFiveForces);
     
@@ -661,7 +664,8 @@ export class MemStorage implements IStorage {
       level: "Intermediate",
       duration: 40,
       status: "not_started",
-      case_studies: null
+      case_studies: null,
+      imageUrl: null
     };
     this.frameworks.set(jobsToBeDoneId, jobsToBeDone);
     
@@ -674,7 +678,8 @@ export class MemStorage implements IStorage {
       level: "Advanced",
       duration: 60,
       status: "not_started",
-      case_studies: null
+      case_studies: null,
+      imageUrl: null
     };
     this.frameworks.set(blueOceanId, blueOcean);
     
@@ -687,7 +692,8 @@ export class MemStorage implements IStorage {
       level: "Intermediate",
       duration: 35,
       status: "not_started",
-      case_studies: null
+      case_studies: null,
+      imageUrl: null
     };
     this.frameworks.set(scamperId, scamper);
     
@@ -700,7 +706,8 @@ export class MemStorage implements IStorage {
       level: "Intermediate",
       duration: 45,
       status: "not_started",
-      case_studies: null
+      case_studies: null,
+      imageUrl: null
     };
     this.frameworks.set(problemTreeId, problemTree);
     
@@ -713,7 +720,8 @@ export class MemStorage implements IStorage {
       level: "Beginner",
       duration: 25,
       status: "not_started",
-      case_studies: null
+      case_studies: null,
+      imageUrl: null
     };
     this.frameworks.set(paretoId, pareto);
     
