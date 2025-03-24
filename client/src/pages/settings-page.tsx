@@ -192,19 +192,19 @@ const SettingsPage: React.FC = () => {
 
   return (
     <MainLayout>
-      <div className="container mx-auto py-10 px-4 max-w-5xl">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold font-header text-primary">Account Settings</h1>
-          <p className="text-gray-600 mt-2">
+      <div className="container mx-auto py-6 sm:py-8 md:py-10 px-2 sm:px-4 max-w-5xl">
+        <div className="mb-5 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold font-header text-primary">Account Settings</h1>
+          <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">
             Manage your account settings and preferences
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
           {/* Settings sidebar */}
           <div className="lg:col-span-1">
             <Card className="border-0 shadow-md bg-white sticky top-6">
-              <CardContent className="pt-6">
+              <CardContent className="pt-4 sm:pt-6 px-3 sm:px-4">
                 <nav className="space-y-1">
                   <a href="#security" className="flex items-center px-3 py-2 text-sm font-medium rounded-md bg-gray-50 text-primary">
                     <Shield className="mr-3 h-5 w-5 text-primary/70" />
@@ -235,48 +235,48 @@ const SettingsPage: React.FC = () => {
           <div className="lg:col-span-3 space-y-8">
             {/* Security Settings */}
             <Card className="border-0 shadow-md bg-white" id="security">
-              <CardHeader>
+              <CardHeader className="px-4 sm:px-6">
                 <div className="flex items-center">
                   <Shield className="h-5 w-5 text-primary mr-2" />
-                  <CardTitle>Security Settings</CardTitle>
+                  <CardTitle className="text-base sm:text-lg">Security Settings</CardTitle>
                 </div>
-                <CardDescription>
+                <CardDescription className="text-xs sm:text-sm">
                   Manage your account security and authentication
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <form className="space-y-6" onSubmit={handlePasswordSubmit}>
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Change Password</h3>
+              <CardContent className="px-4 sm:px-6">
+                <form className="space-y-4 sm:space-y-6" onSubmit={handlePasswordSubmit}>
+                  <div className="space-y-3 sm:space-y-4">
+                    <h3 className="text-base sm:text-lg font-medium">Change Password</h3>
                     
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="currentPassword">Current Password</Label>
+                    <div className="space-y-3 sm:space-y-4">
+                      <div className="space-y-1 sm:space-y-2">
+                        <Label htmlFor="currentPassword" className="text-sm">Current Password</Label>
                         <div className="relative">
-                          <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                          <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-3 w-3 sm:h-4 sm:w-4" />
                           <Input 
                             id="currentPassword" 
                             type="password" 
                             value={currentPassword}
                             onChange={(e) => setCurrentPassword(e.target.value)}
-                            placeholder="Enter your current password" 
-                            className="pl-10 border-gray-200"
+                            placeholder="Enter current password" 
+                            className="pl-8 sm:pl-10 border-gray-200 text-sm h-9 sm:h-10"
                             required
                           />
                         </div>
                       </div>
                       
-                      <div className="space-y-2">
-                        <Label htmlFor="newPassword">New Password</Label>
+                      <div className="space-y-1 sm:space-y-2">
+                        <Label htmlFor="newPassword" className="text-sm">New Password</Label>
                         <div className="relative">
-                          <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                          <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-3 w-3 sm:h-4 sm:w-4" />
                           <Input 
                             id="newPassword" 
                             type="password" 
                             value={newPassword}
                             onChange={(e) => setNewPassword(e.target.value)}
                             placeholder="Enter new password" 
-                            className="pl-10 border-gray-200"
+                            className="pl-8 sm:pl-10 border-gray-200 text-sm h-9 sm:h-10"
                             required
                             minLength={6}
                           />
@@ -286,28 +286,28 @@ const SettingsPage: React.FC = () => {
                         </p>
                       </div>
                       
-                      <div className="space-y-2">
-                        <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                      <div className="space-y-1 sm:space-y-2">
+                        <Label htmlFor="confirmPassword" className="text-sm">Confirm New Password</Label>
                         <div className="relative">
-                          <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                          <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-3 w-3 sm:h-4 sm:w-4" />
                           <Input 
                             id="confirmPassword" 
                             type="password" 
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             placeholder="Confirm new password" 
-                            className="pl-10 border-gray-200"
+                            className="pl-8 sm:pl-10 border-gray-200 text-sm h-9 sm:h-10"
                             required
                           />
                         </div>
                       </div>
                     </div>
                     
-                    <div className="flex justify-end">
+                    <div className="flex justify-end pt-2">
                       <Button 
                         type="button" 
                         variant="outline" 
-                        className="mr-2"
+                        className="mr-2 h-8 sm:h-10 text-xs sm:text-sm px-2 sm:px-4"
                         onClick={() => {
                           setCurrentPassword('');
                           setNewPassword('');
@@ -319,6 +319,7 @@ const SettingsPage: React.FC = () => {
                       <Button 
                         type="submit"
                         disabled={passwordMutation.isPending}
+                        className="h-8 sm:h-10 text-xs sm:text-sm px-2 sm:px-4"
                       >
                         {passwordMutation.isPending ? 'Updating...' : 'Update Password'}
                       </Button>
@@ -337,26 +338,26 @@ const SettingsPage: React.FC = () => {
             
             {/* API Key Settings */}
             <Card className="border-0 shadow-md bg-white" id="api-keys">
-              <CardHeader>
+              <CardHeader className="px-4 sm:px-6">
                 <div className="flex items-center">
                   <Key className="h-5 w-5 text-primary mr-2" />
-                  <CardTitle>API Integrations</CardTitle>
+                  <CardTitle className="text-base sm:text-lg">API Integrations</CardTitle>
                 </div>
-                <CardDescription>
+                <CardDescription className="text-xs sm:text-sm">
                   Manage your API keys for AI integration
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <form className="space-y-6" onSubmit={handleAiSettingsSubmit}>
-                  <div className="space-y-4">
-                    <div className="bg-blue-50 border border-blue-200 rounded-md p-4 mb-6">
+              <CardContent className="px-4 sm:px-6">
+                <form className="space-y-4 sm:space-y-6" onSubmit={handleAiSettingsSubmit}>
+                  <div className="space-y-3 sm:space-y-4">
+                    <div className="bg-blue-50 border border-blue-200 rounded-md p-3 sm:p-4 mb-4 sm:mb-6">
                       <div className="flex">
                         <div className="flex-shrink-0">
-                          <svg className="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                          <svg className="h-4 w-4 sm:h-5 sm:w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                             <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                           </svg>
                         </div>
-                        <div className="ml-3 text-sm text-blue-700">
+                        <div className="ml-3 text-xs sm:text-sm text-blue-700">
                           <p>
                             To use AI features, you'll need to provide your own API key from OpenAI or Google. 
                             Your API key is stored securely and used only for your requests.
@@ -365,38 +366,39 @@ const SettingsPage: React.FC = () => {
                       </div>
                     </div>
                     
-                    <div className="space-y-2">
-                      <Label htmlFor="aiProvider">AI Provider</Label>
+                    <div className="space-y-1 sm:space-y-2">
+                      <Label htmlFor="aiProvider" className="text-sm">AI Provider</Label>
                       <select 
                         id="aiProvider"
                         value={aiProvider}
                         onChange={(e) => setAiProvider(e.target.value)}
-                        className="w-full h-10 px-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary"
+                        className="w-full h-9 sm:h-10 px-3 py-1 sm:py-2 text-xs sm:text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary"
                       >
                         <option value="openai">OpenAI (ChatGPT)</option>
                         <option value="google">Google (Gemini)</option>
                       </select>
                     </div>
                     
-                    <div className="space-y-2">
-                      <Label htmlFor="apiKey">API Key</Label>
+                    <div className="space-y-1 sm:space-y-2">
+                      <Label htmlFor="apiKey" className="text-sm">API Key</Label>
                       <Input 
                         id="apiKey" 
                         type="password"
                         value={apiKey}
                         onChange={(e) => setApiKey(e.target.value)}
                         placeholder={`Enter your ${aiProvider === 'openai' ? 'OpenAI' : 'Google'} API key`}
-                        className="border-gray-200"
+                        className="border-gray-200 text-sm h-9 sm:h-10"
                       />
                       <p className="text-xs text-gray-500">
                         Your API key is stored securely and never shared. All AI requests are made directly from your browser.
                       </p>
                     </div>
 
-                    <div className="flex justify-end">
+                    <div className="flex justify-end pt-2">
                       <Button 
                         disabled={updateAiSettingsMutation.isPending} 
                         type="submit"
+                        className="h-8 sm:h-10 text-xs sm:text-sm px-2 sm:px-4"
                       >
                         {updateAiSettingsMutation.isPending ? 'Saving...' : 'Save API Settings'}
                       </Button>
@@ -408,31 +410,31 @@ const SettingsPage: React.FC = () => {
             
             {/* Account Settings */}
             <Card className="border-0 shadow-md bg-white" id="advanced">
-              <CardHeader>
+              <CardHeader className="px-4 sm:px-6">
                 <div className="flex items-center">
                   <Settings className="h-5 w-5 text-primary mr-2" />
-                  <CardTitle>Advanced Settings</CardTitle>
+                  <CardTitle className="text-base sm:text-lg">Advanced Settings</CardTitle>
                 </div>
-                <CardDescription>
+                <CardDescription className="text-xs sm:text-sm">
                   Manage advanced account settings
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-6">
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Data Management</h3>
+              <CardContent className="px-4 sm:px-6">
+                <div className="space-y-4 sm:space-y-6">
+                  <div className="space-y-3 sm:space-y-4">
+                    <h3 className="text-base sm:text-lg font-medium">Data Management</h3>
                     
                     <DataExport />
                     
                     <Separator />
                     
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0">
                       <div>
-                        <h4 className="font-medium">Delete Account</h4>
-                        <p className="text-sm text-gray-500">Permanently delete your account and all associated data</p>
+                        <h4 className="font-medium text-sm sm:text-base">Delete Account</h4>
+                        <p className="text-xs sm:text-sm text-gray-500">Permanently delete your account and all associated data</p>
                       </div>
-                      <Button variant="destructive">
-                        <AlertTriangle className="mr-2 h-4 w-4" />
+                      <Button variant="destructive" className="h-8 sm:h-10 text-xs sm:text-sm">
+                        <AlertTriangle className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                         Delete Account
                       </Button>
                     </div>
