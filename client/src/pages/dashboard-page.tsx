@@ -96,7 +96,7 @@ const DashboardPage = () => {
 
   return (
     <MainLayout>
-      <div className="container mx-auto p-6">
+      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6">
         {isLoading ? (
           <div className="flex flex-col space-y-8 animate-pulse">
             <div className="h-20 bg-slate-100 rounded-lg"></div>
@@ -223,18 +223,18 @@ const DashboardPage = () => {
 
           {/* Tabs section */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-            <TabsList className="bg-[#F0F8FF] dark:bg-[#0A2540]/10">
-              <TabsTrigger value="progress" className="data-[state=active]:bg-white dark:data-[state=active]:bg-[#0078D7]/10 data-[state=active]:text-[#0078D7] dark:data-[state=active]:text-[#0078D7]">
-                <BookCheck className="h-4 w-4 mr-2" />
-                Framework Progress
+            <TabsList className="bg-[#F0F8FF] dark:bg-[#0A2540]/10 overflow-x-auto w-full flex-nowrap whitespace-nowrap">
+              <TabsTrigger value="progress" className="data-[state=active]:bg-white dark:data-[state=active]:bg-[#0078D7]/10 data-[state=active]:text-[#0078D7] dark:data-[state=active]:text-[#0078D7] flex-shrink-0">
+                <BookCheck className="h-4 w-4 mr-2 sm:inline-block" />
+                <span className="sm:inline">Progress</span>
               </TabsTrigger>
-              <TabsTrigger value="quizzes" className="data-[state=active]:bg-white dark:data-[state=active]:bg-[#0078D7]/10 data-[state=active]:text-[#0078D7] dark:data-[state=active]:text-[#0078D7]">
-                <BarChart2 className="h-4 w-4 mr-2" />
-                Quiz Performance
+              <TabsTrigger value="quizzes" className="data-[state=active]:bg-white dark:data-[state=active]:bg-[#0078D7]/10 data-[state=active]:text-[#0078D7] dark:data-[state=active]:text-[#0078D7] flex-shrink-0">
+                <BarChart2 className="h-4 w-4 mr-2 sm:inline-block" />
+                <span className="sm:inline">Quizzes</span>
               </TabsTrigger>
-              <TabsTrigger value="recommendations" className="data-[state=active]:bg-white dark:data-[state=active]:bg-[#0078D7]/10 data-[state=active]:text-[#0078D7] dark:data-[state=active]:text-[#0078D7]">
-                <Lightbulb className="h-4 w-4 mr-2" />
-                Recommendations
+              <TabsTrigger value="recommendations" className="data-[state=active]:bg-white dark:data-[state=active]:bg-[#0078D7]/10 data-[state=active]:text-[#0078D7] dark:data-[state=active]:text-[#0078D7] flex-shrink-0">
+                <Lightbulb className="h-4 w-4 mr-2 sm:inline-block" />
+                <span className="sm:inline">Recommend</span>
               </TabsTrigger>
             </TabsList>
 
@@ -276,13 +276,13 @@ const DashboardPage = () => {
                             <CardDescription>{framework?.description}</CardDescription>
                           </CardHeader>
                           <CardContent>
-                            <div className="flex justify-between items-center">
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                               <div className="text-sm text-gray-600">
                                 {progress.completedModules || 0} of {progress.totalModules} modules complete
                               </div>
-                              <Link to={`/frameworks/${framework?.id}`}>
-                                <Button variant="outline" size="sm" className="flex items-center">
-                                  Continue Learning <ChevronRight className="ml-1 h-4 w-4" />
+                              <Link to={`/frameworks/${framework?.id}`} className="w-full sm:w-auto">
+                                <Button variant="outline" size="sm" className="flex items-center w-full sm:w-auto justify-center sm:justify-start">
+                                  <span className="sm:inline">Continue</span><span className="hidden sm:inline"> Learning</span> <ChevronRight className="ml-1 h-4 w-4" />
                                 </Button>
                               </Link>
                             </div>
