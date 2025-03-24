@@ -386,6 +386,13 @@ export class PostgresStorage implements IStorage {
     return results[0];
   }
   
+  async deleteExerciseSubmission(id: number): Promise<void> {
+    await db
+      .delete(exerciseSubmissions)
+      .where(eq(exerciseSubmissions.id, id))
+      .execute();
+  }
+  
   // Seed data for frameworks and modules
   private async seedFrameworks() {
     try {

@@ -2057,6 +2057,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
       next(error);
     }
   });
+  
+  // Delete exercise submission
+  app.delete("/api/exercise-submissions/:id", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+      
+      const submissionId = parseInt(req.params.id);
+      
+      // Verify the submission exists and belongs to the user
+      const submission = await storage.getExerciseSubmission(submissionId);
+      if (!submission) {
+        return res.status(404).send("Submission not found");
+      }
+      
+      if (submission.userId !== req.user.id) {
+        return res.status(403).send("Forbidden: This submission belongs to another user");
+      }
+      
+      // Delete the submission
+      await storage.deleteExerciseSubmission(submissionId);
+      
+      // Invalidate related caches
+      invalidateCache(CACHE_KEYS.USER_EXERCISE_SUBMISSIONS(req.user.id));
+      invalidateCachesByPattern(`exercise:*:submissions`);
+      
+      res.status(200).send({ success: true });
+    } catch (error) {
+      next(error);
+    }
+  });
 
   // Submit a solution for an exercise
   app.post("/api/exercises/:exerciseId/submit", async (req, res, next) => {
