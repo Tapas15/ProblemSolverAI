@@ -57,7 +57,7 @@ const FounderPage: React.FC = () => {
               <div className="mt-4 sm:mt-0 sm:ml-auto flex items-center gap-2">
                 <Badge className="bg-amber-100 text-amber-800 px-3 py-1">
                   <Award className="mr-1 h-4 w-4" />
-                  Award-winning Career Coach
+                  Award-winning Business & Career Coach
                 </Badge>
               </div>
             </div>
@@ -69,7 +69,7 @@ const FounderPage: React.FC = () => {
                 <h2 className="text-xl font-semibold mb-4 font-header text-primary">About Manas</h2>
                 <div className="prose prose-sm sm:prose max-w-none text-gray-700">
                   <p>
-                    Manas Kumar is an award-winning Career Coach, L&D Specialist, and Entrepreneur, 
+                    Manas Kumar is an award-winning Business & Career Coach, L&D Specialist, and Entrepreneur, 
                     dedicated to strategic questioning and innovation. As the founder of Question Pro AI App, 
                     he helps professionals master effective questioning for business success.
                   </p>
@@ -121,7 +121,7 @@ const FounderPage: React.FC = () => {
                       <div className="h-5 w-5 rounded-full bg-secondary/20 flex items-center justify-center mt-0.5 mr-2">
                         <span className="text-secondary text-xs font-bold">✓</span>
                       </div>
-                      <span className="text-sm">Career Coach & L&D Specialist</span>
+                      <span className="text-sm">Business & Career Coach</span>
                     </li>
                     <li className="flex items-start">
                       <div className="h-5 w-5 rounded-full bg-secondary/20 flex items-center justify-center mt-0.5 mr-2">
