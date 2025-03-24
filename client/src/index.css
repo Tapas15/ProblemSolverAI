@@ -2,103 +2,103 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
 @layer base {
   :root {
-    --background: 270 30% 98%; /* #F7F5FD */
-    --foreground: 260 20% 18%; /* #2D2A3A */
+    --background: 210 50% 98%; /* #F0F8FF - Faded light blue */
+    --foreground: 210 50% 15%; /* #0A2540 - Deep navy */
     
     --card: 0 0% 100%;
-    --card-foreground: 260 20% 18%;
+    --card-foreground: 210 50% 15%;
     
     --popover: 0 0% 100%;
-    --popover-foreground: 260 20% 18%;
+    --popover-foreground: 210 50% 15%;
     
-    --primary: 265 60% 54%; /* #5D3FD3 - Rich Purple */
+    --primary: 210 100% 42%; /* #0078D7 - Microsoft blue */
     --primary-foreground: 0 0% 100%;
     
-    --secondary: 340 95% 60%; /* #FF2975 - Vibrant Pink */
+    --secondary: 199 98% 48%; /* #00A5E0 - Sky blue */
     --secondary-foreground: 0 0% 100%;
     
-    --accent: 40 100% 50%; /* #FFA500 */
-    --accent-foreground: 222 47% 15%;
+    --accent: 196 100% 86%; /* #C5F2FF - Light soft blue */
+    --accent-foreground: 210 50% 15%;
     
-    --muted: 210 25% 95%;
-    --muted-foreground: 215 20% 45%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 210 40% 40%;
     
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
     
-    --border: 215 20% 90%;
-    --input: 215 20% 90%;
-    --ring: 197 100% 40%; /* #0091C7 */
+    --border: 210 40% 90%;
+    --input: 210 40% 90%;
+    --ring: 210 100% 42%; 
     
     --radius: 0.75rem;
     
     /* Chart colors */
-    --chart-1: 197 100% 40%;
-    --chart-2: 40 100% 50%;
-    --chart-3: 222 47% 15%;
-    --chart-4: 152 69% 35%;
-    --chart-5: 345 83% 45%;
+    --chart-1: 210 100% 42%; /* Main blue */
+    --chart-2: 199 98% 48%; /* Sky blue */
+    --chart-3: 196 100% 86%; /* Light blue */
+    --chart-4: 185 96% 40%; /* Teal */
+    --chart-5: 220 70% 50%; /* Royal blue */
     
     /* Sidebar colors */
-    --sidebar-background: 222 47% 15%;
+    --sidebar-background: 210 50% 15%; /* Deep navy */
     --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 197 100% 40%;
+    --sidebar-primary: 210 100% 42%; /* Main blue */
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 40 100% 50%;
-    --sidebar-accent-foreground: 222 47% 15%;
-    --sidebar-border: 222 30% 25%;
-    --sidebar-ring: 197 100% 40%;
+    --sidebar-accent: 196 100% 86%; /* Light blue */
+    --sidebar-accent-foreground: 210 50% 15%;
+    --sidebar-border: 210 50% 25%;
+    --sidebar-ring: 210 100% 42%;
   }
  
   .dark {
-    --background: 222 47% 7%;
+    --background: 210 50% 8%; /* Deep dark blue */
     --foreground: 0 0% 100%;
     
-    --card: 222 47% 10%;
+    --card: 210 50% 12%;
     --card-foreground: 0 0% 100%;
     
-    --popover: 222 47% 10%;
+    --popover: 210 50% 12%;
     --popover-foreground: 0 0% 100%;
     
-    --primary: 197 100% 40%;
+    --primary: 210 100% 50%; /* Brighter blue in dark mode */
     --primary-foreground: 0 0% 100%;
     
-    --secondary: 222 47% 15%;
+    --secondary: 199 98% 55%; /* Brighter sky blue in dark mode */
     --secondary-foreground: 0 0% 100%;
     
-    --accent: 40 100% 50%;
-    --accent-foreground: 0 0% 0%;
+    --accent: 196 95% 20%; /* Dark faded blue */
+    --accent-foreground: 0 0% 100%;
     
-    --muted: 222 47% 15%;
-    --muted-foreground: 210 20% 80%;
+    --muted: 210 50% 20%;
+    --muted-foreground: 210 40% 80%;
     
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
     
-    --border: 222 30% 25%;
-    --input: 222 30% 25%;
-    --ring: 197 100% 40%;
+    --border: 210 50% 20%;
+    --input: 210 50% 20%;
+    --ring: 210 100% 50%;
     
     /* Chart colors */
-    --chart-1: 197 100% 40%;
-    --chart-2: 40 100% 50%;
-    --chart-3: 210 20% 80%;
-    --chart-4: 152 69% 45%;
-    --chart-5: 345 83% 65%;
+    --chart-1: 210 100% 50%; /* Main blue */
+    --chart-2: 199 98% 55%; /* Sky blue */
+    --chart-3: 196 85% 70%; /* Light blue */
+    --chart-4: 185 96% 45%; /* Teal */
+    --chart-5: 220 70% 60%; /* Royal blue */
     
-    /* Sidebar colors - keep same as light to maintain consistency */
-    --sidebar-background: 222 47% 15%;
+    /* Sidebar colors */
+    --sidebar-background: 210 50% 15%; /* Deep navy */
     --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 197 100% 40%;
+    --sidebar-primary: 210 100% 50%; /* Main blue */
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 40 100% 50%;
-    --sidebar-accent-foreground: 222 47% 15%;
-    --sidebar-border: 222 30% 25%;
-    --sidebar-ring: 197 100% 40%;
+    --sidebar-accent: 196 100% 70%; /* Light blue */
+    --sidebar-accent-foreground: 210 50% 15%;
+    --sidebar-border: 210 50% 25%;
+    --sidebar-ring: 210 100% 50%;
   }
 }
 
@@ -149,17 +149,52 @@
   font-family: 'Roboto Mono', monospace;
 }
 
-/* Framework card hover effect */
+/* Framework card hover effect with blue theme */
 .framework-card {
   transition: all 0.3s ease-in-out;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 4px 12px -2px rgba(7, 89, 173, 0.08), 0 3px 6px -3px rgba(7, 89, 173, 0.05);
+  border: 1px solid rgba(200, 224, 246, 0.8);
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.framework-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(0, 120, 215, 0.03) 0%, rgba(197, 242, 255, 0.1) 100%);
+  z-index: -1;
+  transition: all 0.4s ease;
 }
 
 .framework-card:hover {
-  box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  transform: translateY(-3px);
-  border-color: rgba(226, 232, 240, 0.5);
+  box-shadow: 0 15px 28px -5px rgba(7, 89, 173, 0.12), 0 10px 16px -5px rgba(7, 89, 173, 0.08);
+  transform: translateY(-3px) scale(1.01);
+  border-color: rgba(0, 120, 215, 0.2);
+}
+
+.framework-card:hover::before {
+  background: linear-gradient(135deg, rgba(0, 120, 215, 0.07) 0%, rgba(197, 242, 255, 0.2) 100%);
+}
+
+/* Blue accent for framework cards */
+.framework-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 0;
+  background: linear-gradient(to bottom, #0078D7, #00A5E0);
+  transition: height 0.4s ease;
+}
+
+.framework-card:hover::after {
+  height: 100%;
 }
 
 /* Progress bar animation */
@@ -173,21 +208,64 @@
   animation: progress 1.2s cubic-bezier(0.26, 0.86, 0.44, 0.985);
 }
 
-/* Button styling */
+/* Button styling with blue gradient */
 .btn-primary {
-  @apply bg-secondary text-white transition-all duration-300 font-medium px-6 py-2.5 rounded-lg shadow-md hover:shadow-lg;
+  @apply text-white transition-all duration-300 font-medium px-6 py-2.5 rounded-lg shadow-md hover:shadow-lg;
+  background: linear-gradient(90deg, #0078D7 0%, #00A5E0 100%);
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.btn-primary::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #00A5E0 0%, #0078D7 100%);
+  transition: left 0.3s ease;
+  z-index: -1;
 }
 
 .btn-primary:hover {
-  @apply bg-secondary/90 transform -translate-y-0.5;
+  transform: translateY(-2px);
+}
+
+.btn-primary:hover::before {
+  left: 0;
 }
 
 .btn-secondary {
-  @apply border-2 border-secondary text-secondary bg-transparent transition-all duration-300 font-medium px-6 py-2.5 rounded-lg;
+  @apply border-2 text-primary bg-transparent transition-all duration-300 font-medium px-6 py-2.5 rounded-lg;
+  border-color: rgba(0, 120, 215, 0.6);
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.btn-secondary::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(0, 120, 215, 0.05) 0%, rgba(0, 165, 224, 0.1) 100%);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+  z-index: -1;
 }
 
 .btn-secondary:hover {
-  @apply bg-secondary/10 transform -translate-y-0.5;
+  @apply border-primary;
+  transform: translateY(-2px);
+}
+
+.btn-secondary:hover::before {
+  transform: scaleX(1);
 }
 
 /* Custom scrollbar */
@@ -255,9 +333,51 @@ input, textarea, select {
   @apply border-2 border-gray-200 focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all duration-300;
 }
 
-/* Navigation styling */
+/* Navigation styling with blue accents */
 nav {
-  @apply shadow-md bg-white border-b border-gray-100;
+  @apply shadow-md bg-white border-b border-blue-100;
+  position: relative;
+}
+
+nav::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    rgba(0, 120, 215, 0.1) 0%, 
+    rgba(0, 120, 215, 0.5) 25%, 
+    rgba(0, 165, 224, 0.5) 75%, 
+    rgba(0, 165, 224, 0.1) 100%
+  );
+}
+
+/* Navigation menu accent */
+.nav-link {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  bottom: -3px;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #0078D7, #00A5E0);
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.nav-link:hover::after {
+  width: 80%;
+}
+
+.nav-link.active::after {
+  width: 100%;
 }
 
 /* Card transitions */
@@ -265,7 +385,81 @@ nav {
   @apply transition-all duration-300 ease-in-out;
 }
 
-/* Glass effect */
+/* Glass effect with blue theme */
 .glass-effect {
-  @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-lg;
+  @apply backdrop-blur-md border shadow-lg;
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(0, 120, 215, 0.15);
+  box-shadow: 0 8px 32px rgba(7, 89, 173, 0.1);
+}
+
+/* Blue accented cards */
+.blue-card {
+  @apply rounded-xl overflow-hidden;
+  position: relative;
+  background: white;
+  box-shadow: 0 6px 16px -8px rgba(7, 89, 173, 0.08);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  transition: all 0.3s ease;
+}
+
+.blue-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, #0078D7, #00A5E0);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.4s ease;
+}
+
+.blue-card:hover {
+  box-shadow: 0 12px 24px -6px rgba(7, 89, 173, 0.12);
+  transform: translateY(-3px);
+}
+
+.blue-card:hover::before {
+  transform: scaleX(1);
+}
+
+/* Faded blue backgrounds and accents */
+.bg-blue-gradient {
+  background: linear-gradient(135deg, #F0F8FF 0%, #E6F3FF 100%);
+}
+
+.bg-blue-gradient-dark {
+  background: linear-gradient(135deg, #0A2540 0%, #0E3A5C 100%);
+}
+
+.border-blue-fade {
+  border-color: rgba(0, 120, 215, 0.15);
+}
+
+/* Form field with blue accents */
+.form-field-blue {
+  @apply border rounded-md p-2 w-full;
+  border-color: rgba(0, 120, 215, 0.3);
+  transition: all 0.3s ease;
+}
+
+.form-field-blue:focus {
+  @apply outline-none;
+  border-color: rgba(0, 120, 215, 0.8);
+  box-shadow: 0 0 0 3px rgba(0, 120, 215, 0.15);
+}
+
+/* Blue progress bars */
+.blue-progress {
+  @apply rounded-full overflow-hidden;
+  height: 6px;
+  background: rgba(0, 120, 215, 0.1);
+}
+
+.blue-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #0078D7, #00A5E0);
+  transition: width 0.5s ease;
 }
