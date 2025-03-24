@@ -20,15 +20,6 @@ const FounderPage: React.FC = () => {
     <MainLayout>
       <div className="bg-gray-50 py-8">
         <div className="container max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-8">
-            <Link to="/">
-              <Button variant="ghost" size="sm" className="flex items-center text-primary">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Dashboard
-              </Button>
-            </Link>
-          </div>
-        
           <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
             <div className="bg-gradient-to-r from-primary/10 to-secondary/10 h-32 sm:h-48"></div>
             
