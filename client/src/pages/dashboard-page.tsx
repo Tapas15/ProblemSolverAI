@@ -16,6 +16,7 @@ import { Link } from 'wouter';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import MainLayout from '@/components/layout/main-layout';
 
 const DashboardPage = () => {
   const { user } = useAuth();
@@ -94,16 +95,17 @@ const DashboardPage = () => {
   };
 
   return (
-    <div className="container mx-auto p-6">
-      {isLoading ? (
-        <div className="flex flex-col space-y-8 animate-pulse">
-          <div className="h-20 bg-slate-100 rounded-lg"></div>
-          <div className="h-64 bg-slate-100 rounded-lg"></div>
-          <div className="h-40 bg-slate-100 rounded-lg"></div>
-        </div>
-      ) : (
-        <div className="flex flex-col space-y-8">
-          {/* Learner Profile Header */}
+    <MainLayout>
+      <div className="container mx-auto p-6">
+        {isLoading ? (
+          <div className="flex flex-col space-y-8 animate-pulse">
+            <div className="h-20 bg-slate-100 rounded-lg"></div>
+            <div className="h-64 bg-slate-100 rounded-lg"></div>
+            <div className="h-40 bg-slate-100 rounded-lg"></div>
+          </div>
+        ) : (
+          <div className="flex flex-col space-y-8">
+            {/* Learner Profile Header */}
           <div className="bg-gradient-to-r from-[#0A2540] via-[#0E3A5C] to-[#0078D7] rounded-xl overflow-hidden shadow-lg">
             <div className="p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center gap-6">
               <div className="relative">
@@ -460,7 +462,8 @@ const DashboardPage = () => {
           </Tabs>
         </div>
       )}
-    </div>
+      </div>
+    </MainLayout>
   );
 };
 

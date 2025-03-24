@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "wouter";
 import { ChevronRight } from "lucide-react";
+import MainLayout from "@/components/layout/main-layout";
 
 export default function ExerciseFrameworksPage() {
   // Fetch all frameworks
@@ -19,32 +20,36 @@ export default function ExerciseFrameworksPage() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="container mx-auto py-8">
-        <Skeleton className="h-12 w-2/3 mb-6" />
-        <Skeleton className="h-6 w-full mb-8" />
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <Skeleton key={i} className="h-64 w-full rounded-lg" />
-          ))}
+      <MainLayout>
+        <div className="container mx-auto py-8">
+          <Skeleton className="h-12 w-2/3 mb-6" />
+          <Skeleton className="h-6 w-full mb-8" />
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <Skeleton key={i} className="h-64 w-full rounded-lg" />
+            ))}
+          </div>
         </div>
-      </div>
+      </MainLayout>
     );
   }
 
   return (
-    <div className="container mx-auto py-8">
-      <h1 className="text-3xl font-bold mb-4">Practice Exercises</h1>
-      <p className="text-lg text-muted-foreground mb-8">
-        Apply business frameworks to real-world scenarios and practice your problem-solving skills.
-      </p>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {frameworks?.map((framework) => (
-          <FrameworkCard key={framework.id} framework={framework} />
-        ))}
+    <MainLayout>
+      <div className="container mx-auto py-8">
+        <h1 className="text-3xl font-bold mb-4">Practice Exercises</h1>
+        <p className="text-lg text-muted-foreground mb-8">
+          Apply business frameworks to real-world scenarios and practice your problem-solving skills.
+        </p>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {frameworks?.map((framework) => (
+            <FrameworkCard key={framework.id} framework={framework} />
+          ))}
+        </div>
       </div>
-    </div>
+    </MainLayout>
   );
 }
 

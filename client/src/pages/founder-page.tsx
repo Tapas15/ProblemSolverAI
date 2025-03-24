@@ -5,6 +5,7 @@ import { ArrowLeft, Award, Globe, Briefcase, BookOpen, Menu, ChevronDown, Upload
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import MainLayout from '@/components/layout/main-layout';
 import { 
   Dialog,
   DialogContent,
