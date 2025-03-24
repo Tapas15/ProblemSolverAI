@@ -6,7 +6,8 @@ import { z } from "zod";
 import { 
   insertAiConversationSchema, AiConversation,
   insertQuizSchema, insertQuizAttemptSchema,
-  insertXapiStatementSchema, insertLrsConfigurationSchema
+  insertXapiStatementSchema, insertLrsConfigurationSchema,
+  XapiStatement
 } from "@shared/schema";
 import OpenAI from "openai";
 import { xapiService } from "./services/xapi-service";
