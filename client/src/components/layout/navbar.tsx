@@ -62,9 +62,9 @@ const Navbar: React.FC = () => {
       }`}
     >
       {/* Top accent bar with blue gradient */}
-      <div className="h-1 w-full bg-gradient-to-r from-[#0078D7] via-[#00A5E0] to-[#C5F2FF]"></div>
+      <div className="h-0.5 w-full bg-gradient-to-r from-[#0078D7] via-[#00A5E0] to-[#C5F2FF]"></div>
       
-      <div className="container mx-auto px-4 md:px-6 py-3 flex justify-between items-center">
+      <div className="container mx-auto px-4 md:px-6 py-2 flex justify-between items-center">
         <div className="flex items-center">
           <Link to="/">
             <div className="font-bold text-2xl font-header tracking-tight flex items-center relative group">
@@ -80,51 +80,51 @@ const Navbar: React.FC = () => {
             </div>
           </Link>
 
-          <div className="hidden lg:flex space-x-6 ml-16">
+          <div className="hidden lg:flex space-x-4 ml-12">
             <Link to="/">
-              <div className={`py-2 flex items-center space-x-1.5 group ${location.startsWith('/frameworks') || location === '/' ? 'text-[#00A5E0]' : 'text-white hover:text-[#00A5E0]'} transition-colors`}>
-                <BookOpen className={`h-4 w-4 ${location.startsWith('/frameworks') || location === '/' ? 'text-[#00A5E0]' : 'text-white group-hover:text-[#00A5E0]'} transition-colors`} />
-                <span className={`${location.startsWith('/frameworks') || location === '/' ? 'border-b-2 border-[#00A5E0]' : 'border-b-2 border-transparent group-hover:border-[#00A5E0]/50'} transition-all pb-0.5`}>
+              <div className={`py-1 flex items-center space-x-1 group ${location.startsWith('/frameworks') || location === '/' ? 'text-[#00A5E0]' : 'text-white hover:text-[#00A5E0]'} transition-colors`}>
+                <BookOpen className={`h-3.5 w-3.5 ${location.startsWith('/frameworks') || location === '/' ? 'text-[#00A5E0]' : 'text-white group-hover:text-[#00A5E0]'} transition-colors`} />
+                <span className={`text-sm ${location.startsWith('/frameworks') || location === '/' ? 'border-b border-[#00A5E0]' : 'border-b border-transparent group-hover:border-[#00A5E0]/50'} transition-all pb-0.5`}>
                   Frameworks
                 </span>
               </div>
             </Link>
             <Link to="/learning-path">
-              <div className={`py-2 flex items-center space-x-1.5 group ${location.startsWith('/learning-path') ? 'text-[#C5F2FF]' : 'text-white hover:text-[#C5F2FF]'} transition-colors`}>
-                <BarChart className={`h-4 w-4 ${location.startsWith('/learning-path') ? 'text-[#C5F2FF]' : 'text-white group-hover:text-[#C5F2FF]'} transition-colors`} />
-                <span className={`${location.startsWith('/learning-path') ? 'border-b-2 border-[#C5F2FF]' : 'border-b-2 border-transparent group-hover:border-[#C5F2FF]/50'} transition-all pb-0.5`}>
-                  Learning Path
+              <div className={`py-1 flex items-center space-x-1 group ${location.startsWith('/learning-path') ? 'text-[#C5F2FF]' : 'text-white hover:text-[#C5F2FF]'} transition-colors`}>
+                <BarChart className={`h-3.5 w-3.5 ${location.startsWith('/learning-path') ? 'text-[#C5F2FF]' : 'text-white group-hover:text-[#C5F2FF]'} transition-colors`} />
+                <span className={`text-sm ${location.startsWith('/learning-path') ? 'border-b border-[#C5F2FF]' : 'border-b border-transparent group-hover:border-[#C5F2FF]/50'} transition-all pb-0.5`}>
+                  Learning
                 </span>
               </div>
             </Link>
             <Link to="/ai-assistant">
-              <div className={`py-2 flex items-center space-x-1.5 group ${location === '/ai-assistant' ? 'text-[#0078D7]' : 'text-white hover:text-[#0078D7]'} transition-colors`}>
-                <Lightbulb className={`h-4 w-4 ${location === '/ai-assistant' ? 'text-[#0078D7]' : 'text-white group-hover:text-[#0078D7]'} transition-colors`} />
-                <span className={`${location === '/ai-assistant' ? 'border-b-2 border-[#0078D7]' : 'border-b-2 border-transparent group-hover:border-[#0078D7]/50'} transition-all pb-0.5`}>
+              <div className={`py-1 flex items-center space-x-1 group ${location === '/ai-assistant' ? 'text-[#0078D7]' : 'text-white hover:text-[#0078D7]'} transition-colors`}>
+                <Lightbulb className={`h-3.5 w-3.5 ${location === '/ai-assistant' ? 'text-[#0078D7]' : 'text-white group-hover:text-[#0078D7]'} transition-colors`} />
+                <span className={`text-sm ${location === '/ai-assistant' ? 'border-b border-[#0078D7]' : 'border-b border-transparent group-hover:border-[#0078D7]/50'} transition-all pb-0.5`}>
                   AI Assistant
                 </span>
               </div>
             </Link>
             <Link to="/dashboard">
-              <div className={`py-2 flex items-center space-x-1.5 group ${location === '/dashboard' ? 'text-[#89CFF0]' : 'text-white hover:text-[#89CFF0]'} transition-colors`}>
-                <LayoutDashboard className={`h-4 w-4 ${location === '/dashboard' ? 'text-[#89CFF0]' : 'text-white group-hover:text-[#89CFF0]'} transition-colors`} />
-                <span className={`${location === '/dashboard' ? 'border-b-2 border-[#89CFF0]' : 'border-b-2 border-transparent group-hover:border-[#89CFF0]/50'} transition-all pb-0.5`}>
+              <div className={`py-1 flex items-center space-x-1 group ${location === '/dashboard' ? 'text-[#89CFF0]' : 'text-white hover:text-[#89CFF0]'} transition-colors`}>
+                <LayoutDashboard className={`h-3.5 w-3.5 ${location === '/dashboard' ? 'text-[#89CFF0]' : 'text-white group-hover:text-[#89CFF0]'} transition-colors`} />
+                <span className={`text-sm ${location === '/dashboard' ? 'border-b border-[#89CFF0]' : 'border-b border-transparent group-hover:border-[#89CFF0]/50'} transition-all pb-0.5`}>
                   Dashboard
                 </span>
               </div>
             </Link>
             <Link to="/exercises">
-              <div className={`py-2 flex items-center space-x-1.5 group ${location.startsWith('/exercises') || location.startsWith('/exercise/') ? 'text-[#B3E0FF]' : 'text-white hover:text-[#B3E0FF]'} transition-colors`}>
-                <Dumbbell className={`h-4 w-4 ${location.startsWith('/exercises') || location.startsWith('/exercise/') ? 'text-[#B3E0FF]' : 'text-white group-hover:text-[#B3E0FF]'} transition-colors`} />
-                <span className={`${location.startsWith('/exercises') || location.startsWith('/exercise/') ? 'border-b-2 border-[#B3E0FF]' : 'border-b-2 border-transparent group-hover:border-[#B3E0FF]/50'} transition-all pb-0.5`}>
+              <div className={`py-1 flex items-center space-x-1 group ${location.startsWith('/exercises') || location.startsWith('/exercise/') ? 'text-[#B3E0FF]' : 'text-white hover:text-[#B3E0FF]'} transition-colors`}>
+                <Dumbbell className={`h-3.5 w-3.5 ${location.startsWith('/exercises') || location.startsWith('/exercise/') ? 'text-[#B3E0FF]' : 'text-white group-hover:text-[#B3E0FF]'} transition-colors`} />
+                <span className={`text-sm ${location.startsWith('/exercises') || location.startsWith('/exercise/') ? 'border-b border-[#B3E0FF]' : 'border-b border-transparent group-hover:border-[#B3E0FF]/50'} transition-all pb-0.5`}>
                   Practice
                 </span>
               </div>
             </Link>
             <Link to="/founder">
-              <div className={`py-2 flex items-center space-x-1.5 group ${location === '/founder' ? 'text-[#7CB9E8]' : 'text-white hover:text-[#7CB9E8]'} transition-colors`}>
-                <Briefcase className={`h-4 w-4 ${location === '/founder' ? 'text-[#7CB9E8]' : 'text-white group-hover:text-[#7CB9E8]'} transition-colors`} />
-                <span className={`${location === '/founder' ? 'border-b-2 border-[#7CB9E8]' : 'border-b-2 border-transparent group-hover:border-[#7CB9E8]/50'} transition-all pb-0.5`}>
+              <div className={`py-1 flex items-center space-x-1 group ${location === '/founder' ? 'text-[#7CB9E8]' : 'text-white hover:text-[#7CB9E8]'} transition-colors`}>
+                <Briefcase className={`h-3.5 w-3.5 ${location === '/founder' ? 'text-[#7CB9E8]' : 'text-white group-hover:text-[#7CB9E8]'} transition-colors`} />
+                <span className={`text-sm ${location === '/founder' ? 'border-b border-[#7CB9E8]' : 'border-b border-transparent group-hover:border-[#7CB9E8]/50'} transition-all pb-0.5`}>
                   Founder
                 </span>
               </div>
