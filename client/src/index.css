@@ -157,6 +157,45 @@
   .card {
     @apply bg-white shadow-md hover:shadow-lg transition-all duration-300 rounded-xl border border-slate-100;
   }
+  
+  /* Blue theme toggle switch - without using @apply with peer */
+  .blue-toggle {
+    background-color: #e5e7eb; /* gray-200 */
+    border-radius: 9999px; /* rounded-full */
+    position: relative;
+    transition: all 0.3s;
+  }
+  
+  /* Handle the checked state separately */
+  input:checked + .blue-toggle {
+    background-color: #0078D7;
+  }
+  
+  /* Handle the focus state separately */
+  input:focus + .blue-toggle {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 120, 215, 0.2);
+  }
+  
+  /* Create the toggle circle */
+  .blue-toggle::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    background-color: white;
+    border: 1px solid #d1d5db; /* gray-300 */
+    border-radius: 9999px;
+    height: 1.25rem; /* h-5 */
+    width: 1.25rem; /* w-5 */
+    transition: all 0.3s;
+  }
+  
+  /* Move the toggle circle when checked */
+  input:checked + .blue-toggle::after {
+    transform: translateX(100%);
+    border-color: white;
+  }
 
   .btn-primary {
     @apply bg-primary text-white hover:bg-primary/90 shadow-sm;

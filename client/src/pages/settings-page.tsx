@@ -475,7 +475,7 @@ const SettingsPage: React.FC = () => {
                               allowAnalytics: e.target.checked
                             })}
                           />
-                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-secondary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+                          <div className="blue-toggle w-11 h-6"></div>
                         </label>
                       </div>
                       
@@ -496,7 +496,7 @@ const SettingsPage: React.FC = () => {
                               publicProfile: e.target.checked
                             })}
                           />
-                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-secondary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+                          <div className="blue-toggle w-11 h-6"></div>
                         </label>
                       </div>
                       
@@ -517,7 +517,7 @@ const SettingsPage: React.FC = () => {
                               allowPersonalization: e.target.checked
                             })}
                           />
-                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-secondary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+                          <div className="blue-toggle w-11 h-6"></div>
                         </label>
                       </div>
                     </div>
@@ -572,7 +572,7 @@ const SettingsPage: React.FC = () => {
                               learningReminders: e.target.checked
                             })}
                           />
-                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-secondary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+                          <div className="blue-toggle w-11 h-6"></div>
                         </label>
                       </div>
                       
@@ -593,7 +593,7 @@ const SettingsPage: React.FC = () => {
                               frameworkUpdates: e.target.checked
                             })}
                           />
-                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-secondary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+                          <div className="blue-toggle w-11 h-6"></div>
                         </label>
                       </div>
                       
@@ -614,7 +614,7 @@ const SettingsPage: React.FC = () => {
                               quizResults: e.target.checked
                             })}
                           />
-                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-secondary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+                          <div className="blue-toggle w-11 h-6"></div>
                         </label>
                       </div>
                       
@@ -635,7 +635,7 @@ const SettingsPage: React.FC = () => {
                               productUpdates: e.target.checked
                             })}
                           />
-                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-secondary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+                          <div className="blue-toggle w-11 h-6"></div>
                         </label>
                       </div>
                     </div>
