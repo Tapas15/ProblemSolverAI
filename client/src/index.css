@@ -416,8 +416,8 @@
 
 .module-content h2 {
   @apply text-xl font-semibold mb-4 mt-8 pb-2;
-  color: #0078D7;
-  border-bottom: 2px solid rgba(0, 120, 215, 0.15);
+  color: #4a6bbd;
+  border-bottom: 2px solid rgba(74, 107, 189, 0.15);
   padding-left: 0.5rem;
   position: relative;
 }
@@ -429,12 +429,12 @@
   top: 0.25rem;
   bottom: 0.5rem;
   width: 3px;
-  background: linear-gradient(to bottom, #0078D7, #00A5E0);
+  background: linear-gradient(to bottom, #4a6bbd, #6952d4);
   border-radius: 3px;
 }
 
 .module-content h3 {
-  @apply text-lg font-medium mb-3 mt-6 text-[#0E3A5C];
+  @apply text-lg font-medium mb-3 mt-6 text-[#131334];
   padding-left: 0.5rem;
   position: relative;
 }
@@ -446,7 +446,7 @@
   top: 0.25rem;
   bottom: 0.25rem;
   width: 2px;
-  background: #00A5E0;
+  background: #6952d4;
   border-radius: 2px;
   opacity: 0.7;
 }
@@ -479,15 +479,15 @@
 }
 
 .module-content strong {
-  @apply font-semibold text-[#0A2540];
+  @apply font-semibold text-[#131334];
 }
 
 .module-content a {
-  @apply text-[#0078D7] underline decoration-[#0078D7]/30 underline-offset-2 hover:decoration-[#0078D7] transition-all;
+  @apply text-[#4a6bbd] underline decoration-[#4a6bbd]/30 underline-offset-2 hover:decoration-[#6952d4] transition-all;
 }
 
 .module-content blockquote {
-  @apply italic pl-4 border-l-4 border-[#00A5E0]/30 my-6 text-gray-600 bg-blue-50/50 py-2 pr-4 rounded-r-md;
+  @apply italic pl-4 border-l-4 border-[#6952d4]/30 my-6 text-gray-600 bg-indigo-50/50 py-2 pr-4 rounded-r-md;
 }
 
 .module-content pre {
@@ -495,7 +495,7 @@
 }
 
 .module-content code {
-  @apply text-[#0078D7] text-sm px-1.5 py-0.5 rounded-md bg-blue-50 border border-blue-100;
+  @apply text-[#4a6bbd] text-sm px-1.5 py-0.5 rounded-md bg-indigo-50 border border-indigo-100;
   font-family: 'Roboto Mono', monospace;
 }
 
@@ -510,7 +510,7 @@
 
 .module-content img:hover {
   transform: scale(1.01);
-  box-shadow: 0 8px 30px rgba(0, 120, 215, 0.12);
+  box-shadow: 0 8px 30px rgba(74, 107, 189, 0.12);
 }
 
 .module-content table {
@@ -518,7 +518,7 @@
 }
 
 .module-content th {
-  @apply bg-[#0078D7]/10 text-[#0A2540] font-semibold p-3 border border-blue-100 text-left;
+  @apply bg-[#4a6bbd]/10 text-[#131334] font-semibold p-3 border border-indigo-100 text-left;
 }
 
 .module-content td {
@@ -530,12 +530,12 @@
 }
 
 .module-content tr:hover {
-  @apply bg-blue-50/50;
+  @apply bg-indigo-50/50;
 }
 
-/* Enhanced input field styling */
+/* Enhanced input field styling with blue-violet accents */
 input, textarea, select {
-  @apply border-2 border-gray-200 focus:border-[#00A5E0] focus:ring-2 focus:ring-[#0078D7]/10 transition-all duration-300 rounded-lg;
+  @apply border-2 border-gray-200 focus:border-[#6952d4] focus:ring-2 focus:ring-[#4a6bbd]/10 transition-all duration-300 rounded-lg;
   background-color: white;
 }
 
@@ -543,28 +543,28 @@ input:hover, textarea:hover, select:hover {
   @apply border-gray-300;
 }
 
-/* Modern form field with blue accents */
+/* Modern form field with blue-violet accents */
 .form-field-blue {
   @apply border-2 rounded-lg p-3 w-full bg-white;
-  border-color: rgba(0, 120, 215, 0.25);
+  border-color: rgba(74, 107, 189, 0.25);
   transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  box-shadow: 0 2px 4px rgba(0, 120, 215, 0.03);
+  box-shadow: 0 2px 4px rgba(74, 107, 189, 0.03);
 }
 
 .form-field-blue:hover {
-  border-color: rgba(0, 120, 215, 0.4);
-  box-shadow: 0 3px 8px rgba(0, 120, 215, 0.06);
+  border-color: rgba(74, 107, 189, 0.4);
+  box-shadow: 0 3px 8px rgba(74, 107, 189, 0.06);
 }
 
 .form-field-blue:focus {
   @apply outline-none;
-  border-color: rgba(0, 120, 215, 0.8);
-  box-shadow: 0 0 0 3px rgba(0, 120, 215, 0.15), 0 3px 10px rgba(0, 120, 215, 0.05);
+  border-color: rgba(74, 107, 189, 0.8);
+  box-shadow: 0 0 0 3px rgba(74, 107, 189, 0.15), 0 3px 10px rgba(74, 107, 189, 0.05);
 }
 
-/* Form label styling */
+/* Form label styling with blue-violet accent */
 .form-label {
-  @apply block mb-2 font-medium text-sm text-[#0A2540];
+  @apply block mb-2 font-medium text-sm text-[#131334];
   position: relative;
   padding-left: 0.5rem;
 }
@@ -576,15 +576,15 @@ input:hover, textarea:hover, select:hover {
   top: 0.15rem;
   bottom: 0.15rem;
   width: 2px;
-  background: linear-gradient(to bottom, #0078D7, #00A5E0);
+  background: linear-gradient(to bottom, #4a6bbd, #6952d4);
   border-radius: 2px;
   opacity: 0.6;
 }
 
-/* Form container with blue accents */
+/* Form container with blue-violet accents */
 .form-container {
   @apply p-6 rounded-xl bg-white shadow-md border border-gray-100 relative overflow-hidden;
-  background: linear-gradient(to bottom right, white, #F8FCFF);
+  background: linear-gradient(to bottom right, white, #F7F8FF);
 }
 
 .form-container::before {
@@ -594,10 +594,10 @@ input:hover, textarea:hover, select:hover {
   left: 0;
   width: 100%;
   height: 3px;
-  background: linear-gradient(to right, #0078D7, #00A5E0);
+  background: linear-gradient(to right, #4a6bbd, #6952d4);
 }
 
-/* Floating label input effect */
+/* Floating label input effect with blue-violet theme */
 .floating-label {
   position: relative;
 }
@@ -611,7 +611,7 @@ input:hover, textarea:hover, select:hover {
 
 .floating-label input:focus,
 .floating-label textarea:focus {
-  @apply border-[#00A5E0] ring-2 ring-[#0078D7]/10;
+  @apply border-[#6952d4] ring-2 ring-[#4a6bbd]/10;
   outline: none;
 }
 
@@ -629,12 +629,12 @@ input:hover, textarea:hover, select:hover {
 .floating-label textarea:focus ~ label,
 .floating-label textarea:not(:placeholder-shown) ~ label {
   transform: translateY(-24px) scale(0.85);
-  @apply text-[#0078D7] font-medium;
+  @apply text-[#4a6bbd] font-medium;
 }
 
 .floating-label input:focus ~ label,
 .floating-label textarea:focus ~ label {
-  @apply text-[#0078D7];
+  @apply text-[#6952d4];
 }
 
 .floating-label input:focus::placeholder,
@@ -642,7 +642,7 @@ input:hover, textarea:hover, select:hover {
   color: transparent;
 }
 
-/* Custom checkbox styling */
+/* Custom checkbox styling with blue-violet theme */
 .custom-checkbox {
   @apply appearance-none h-5 w-5 border-2 border-gray-300 rounded;
   transition: all 0.2s ease;
@@ -652,11 +652,11 @@ input:hover, textarea:hover, select:hover {
 }
 
 .custom-checkbox:checked {
-  @apply bg-[#0078D7] border-[#0078D7];
+  @apply bg-[#4a6bbd] border-[#4a6bbd];
 }
 
 .custom-checkbox:hover {
-  @apply border-[#0078D7]/50;
+  @apply border-[#6952d4]/50;
 }
 
 .custom-checkbox:checked::after {
@@ -671,9 +671,9 @@ input:hover, textarea:hover, select:hover {
   transform: rotate(45deg);
 }
 
-/* Navigation styling with blue accents */
+/* Navigation styling with blue-violet accents */
 nav {
-  @apply shadow-md bg-white border-b border-blue-100;
+  @apply shadow-md bg-white border-b border-indigo-50;
   position: relative;
 }
 
@@ -685,10 +685,10 @@ nav::after {
   width: 100%;
   height: 1px;
   background: linear-gradient(90deg, 
-    rgba(0, 120, 215, 0.1) 0%, 
-    rgba(0, 120, 215, 0.5) 25%, 
-    rgba(0, 165, 224, 0.5) 75%, 
-    rgba(0, 165, 224, 0.1) 100%
+    rgba(74, 107, 189, 0.1) 0%, 
+    rgba(74, 107, 189, 0.5) 25%, 
+    rgba(105, 82, 212, 0.5) 75%, 
+    rgba(105, 82, 212, 0.1) 100%
   );
 }
 
@@ -705,7 +705,7 @@ nav::after {
   left: 50%;
   width: 0;
   height: 2px;
-  background: linear-gradient(90deg, #0078D7, #00A5E0);
+  background: linear-gradient(90deg, #4a6bbd, #6952d4);
   transition: all 0.3s ease;
   transform: translateX(-50%);
 }
@@ -723,20 +723,20 @@ nav::after {
   @apply transition-all duration-300 ease-in-out;
 }
 
-/* Glass effect with blue theme */
+/* Glass effect with blue-violet theme */
 .glass-effect {
   @apply backdrop-blur-md border shadow-lg;
   background: rgba(255, 255, 255, 0.85);
-  border-color: rgba(0, 120, 215, 0.15);
-  box-shadow: 0 8px 32px rgba(7, 89, 173, 0.1);
+  border-color: rgba(74, 107, 189, 0.15);
+  box-shadow: 0 8px 32px rgba(74, 107, 189, 0.1);
 }
 
-/* Blue accented cards */
+/* Blue-violet accented cards */
 .blue-card {
   @apply rounded-xl overflow-hidden;
   position: relative;
   background: white;
-  box-shadow: 0 6px 16px -8px rgba(7, 89, 173, 0.08);
+  box-shadow: 0 6px 16px -8px rgba(74, 107, 189, 0.08);
   border: 1px solid rgba(226, 232, 240, 0.8);
   transition: all 0.3s ease;
 }
@@ -748,14 +748,14 @@ nav::after {
   right: 0;
   width: 100%;
   height: 4px;
-  background: linear-gradient(90deg, #0078D7, #00A5E0);
+  background: linear-gradient(90deg, #4a6bbd, #6952d4);
   transform: scaleX(0);
   transform-origin: right;
   transition: transform 0.4s ease;
 }
 
 .blue-card:hover {
-  box-shadow: 0 12px 24px -6px rgba(7, 89, 173, 0.12);
+  box-shadow: 0 12px 24px -6px rgba(74, 107, 189, 0.12);
   transform: translateY(-3px);
 }
 
@@ -763,44 +763,50 @@ nav::after {
   transform: scaleX(1);
 }
 
-/* Faded blue backgrounds and accents */
+/* Faded blue-violet backgrounds and accents */
 .bg-blue-gradient {
-  background: linear-gradient(135deg, #F0F8FF 0%, #E6F3FF 100%);
+  background: linear-gradient(135deg, #F0F8FF 0%, #F0F0FF 100%);
 }
 
 .bg-blue-gradient-dark {
-  background: linear-gradient(135deg, #0A2540 0%, #0E3A5C 100%);
+  background: linear-gradient(135deg, #131334 0%, #272665 100%);
+}
+
+.bg-violet-gradient {
+  background: linear-gradient(135deg, #F5F0FF 0%, #F0E6FF 100%);
 }
 
 .border-blue-fade {
-  border-color: rgba(0, 120, 215, 0.15);
+  border-color: rgba(74, 107, 189, 0.15);
 }
 
-/* Removed duplicate - this is now defined above */
+.border-violet-fade {
+  border-color: rgba(105, 82, 212, 0.15);
+}
 
-/* Blue progress bars with enhanced styling */
+/* Blue-violet progress bars with enhanced styling */
 .blue-progress {
   @apply rounded-full overflow-hidden;
   height: 6px;
-  background: rgba(0, 120, 215, 0.1);
+  background: rgba(74, 107, 189, 0.1);
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .blue-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #0078D7, #00A5E0);
+  background: linear-gradient(90deg, #4a6bbd, #6952d4);
   transition: width 0.5s cubic-bezier(0.26, 0.86, 0.44, 0.985);
-  box-shadow: 0 1px 2px rgba(0, 120, 215, 0.2);
+  box-shadow: 0 1px 2px rgba(74, 107, 189, 0.2);
 }
 
-/* Animated loading spinner with blue theme */
+/* Animated loading spinner with blue-violet theme */
 .loading-spinner {
   display: inline-block;
   width: 30px;
   height: 30px;
-  border: 3px solid rgba(0, 120, 215, 0.1);
+  border: 3px solid rgba(74, 107, 189, 0.1);
   border-radius: 50%;
-  border-top-color: #0078D7;
+  border-top-color: #4a6bbd;
   animation: spin 1s ease-in-out infinite;
 }
 
@@ -816,20 +822,25 @@ nav::after {
   border-width: 4px;
 }
 
+.loading-spinner.violet {
+  border: 3px solid rgba(105, 82, 212, 0.1);
+  border-top-color: #6952d4;
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
   }
 }
 
-/* Animated skeleton loading state */
+/* Animated skeleton loading state with blue-violet theme */
 .skeleton {
   @apply rounded animate-pulse;
   background: linear-gradient(
     90deg,
-    rgba(0, 120, 215, 0.05) 25%,
-    rgba(0, 165, 224, 0.1) 50%,
-    rgba(0, 120, 215, 0.05) 75%
+    rgba(74, 107, 189, 0.05) 25%,
+    rgba(105, 82, 212, 0.1) 50%,
+    rgba(74, 107, 189, 0.05) 75%
   );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
@@ -844,7 +855,7 @@ nav::after {
   }
 }
 
-/* Pulsing dot loading indicator */
+/* Pulsing dot loading indicator with blue-violet theme */
 .loading-dots {
   display: inline-flex;
   align-items: center;
@@ -854,10 +865,14 @@ nav::after {
   width: 6px;
   height: 6px;
   margin: 0 2px;
-  background-color: #0078D7;
+  background-color: #4a6bbd;
   border-radius: 50%;
   display: inline-block;
   animation: dots 1.4s infinite ease-in-out both;
+}
+
+.loading-dots.violet span {
+  background-color: #6952d4;
 }
 
 /* Blue-violet gradient button */
