@@ -348,7 +348,7 @@ const DashboardPage = () => {
                               </span>
                             </div>
                             <Link to={`/quizzes/${attempt.quizId}`}>
-                              <Button variant="outline" size="sm">
+                              <Button variant="outline" size="sm" className="text-[#0078D7] hover:text-[#0078D7]/90 hover:bg-[#DCEFFF]/50 transition-all duration-300">
                                 Try Again
                               </Button>
                             </Link>

@@ -832,6 +832,21 @@ nav::after {
   animation: dots 1.4s infinite ease-in-out both;
 }
 
+/* Blue gradient button */
+.btn-blue-gradient {
+  background: linear-gradient(to right, #0078D7, #00A5E0);
+  color: white;
+  transition: all 0.3s ease;
+  border: none;
+  box-shadow: 0 2px 6px rgba(0, 120, 215, 0.2);
+}
+
+.btn-blue-gradient:hover {
+  background: linear-gradient(to right, #0064B5, #0095D0);
+  box-shadow: 0 4px 12px rgba(0, 120, 215, 0.3);
+  transform: translateY(-1px);
+}
+
 .loading-dots span:nth-child(1) {
   animation-delay: -0.32s;
 }
