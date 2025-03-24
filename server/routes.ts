@@ -287,7 +287,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Import the 2FA service
       const { twoFactorAuthService } = await import('./services/two-factor-auth-service');
       
-      if (user.twoFactorEnabled && token) {
+      if (user.twoFactorEnabled && token && user.twoFactorSecret) {
         // Verify the token
         const isValid = twoFactorAuthService.verifyToken(token, user.twoFactorSecret);
         
@@ -356,6 +356,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const updatedUser = await storage.updateUser(req.user.id, {
         twoFactorBackupCodes: JSON.stringify(updatedCodes)
       });
+      
+      if (!updatedUser) {
+        return res.status(404).json({ message: "Failed to update user" });
+      }
       
       // Return success
       const { password, ...userWithoutPassword } = updatedUser;

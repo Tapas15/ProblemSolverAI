@@ -29,7 +29,7 @@ export function DataExport() {
         title: "Data Export Complete",
         description: "Your data has been successfully exported",
       });
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Export Failed",
         description: error.message || "Failed to export data",
