@@ -2,26 +2,23 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getUserProgress, getUserQuizAttempts, getFrameworks } from '@/lib/api';
 import { Framework, UserProgress, QuizAttempt } from '@shared/schema';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   CheckCircle, Clock, Award, BookOpen, ChevronRight, BarChart2, 
-  Target, BookCheck, User, Brain, TrendingUp, Calendar, Medal,
-  BadgeCheck, LineChart, Flame, Zap, Calendar as CalendarIcon
+  Target, BookCheck, Brain, TrendingUp, LineChart, Flame, Zap, 
+  Trophy, Lightbulb, ArrowRightCircle, Medal
 } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
 import { Link } from 'wouter';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Separator } from '@/components/ui/separator';
 
 const DashboardPage = () => {
   const { user } = useAuth();
-  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('progress');
   
   // Fetch user progress
@@ -59,7 +56,6 @@ const DashboardPage = () => {
     if (!progressData || !frameworks || !quizAttempts) return null;
 
     const totalFrameworks = frameworks.length;
-    const startedFrameworks = progressData.length;
     const completedFrameworks = progressData.filter(p => p.status === 'completed').length;
     
     const totalModules = progressData.reduce((sum, p) => sum + p.totalModules, 0);
@@ -74,7 +70,6 @@ const DashboardPage = () => {
 
     return {
       totalFrameworks,
-      startedFrameworks,
       completedFrameworks,
       frameworkProgress: totalFrameworks > 0 ? Math.round((completedFrameworks / totalFrameworks) * 100) : 0,
       
@@ -98,293 +93,373 @@ const DashboardPage = () => {
     return frameworks?.find(f => f.id === frameworkId);
   };
 
-  const getQuizLevelColor = (level: string) => {
-    switch (level?.toLowerCase()) {
-      case 'beginner': return 'bg-green-100 text-green-800';
-      case 'intermediate': return 'bg-yellow-100 text-yellow-800';
-      case 'advanced': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
   return (
     <div className="container mx-auto p-6">
-      <div className="flex flex-col space-y-8">
-        <div>
-          <h1 className="text-3xl font-bold font-header text-primary">My Learning Dashboard</h1>
-          <p className="text-gray-600 mt-2">
-            Track your progress across frameworks, modules, and assessments
-          </p>
+      {isLoading ? (
+        <div className="flex flex-col space-y-8 animate-pulse">
+          <div className="h-20 bg-slate-100 rounded-lg"></div>
+          <div className="h-64 bg-slate-100 rounded-lg"></div>
+          <div className="h-40 bg-slate-100 rounded-lg"></div>
         </div>
+      ) : (
+        <div className="flex flex-col space-y-8">
+          {/* Learner Profile Header */}
+          <div className="bg-gradient-to-r from-[#0A2540] via-[#0E3A5C] to-[#0078D7] rounded-xl overflow-hidden shadow-lg">
+            <div className="p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center gap-6">
+              <div className="relative">
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-[#0078D7] via-[#00A5E0] to-[#C5F2FF] rounded-full opacity-75 blur-sm"></div>
+                <Avatar className="h-20 w-20 md:h-24 md:w-24 ring-4 ring-[#00A5E0]/60 shadow-xl">
+                  <AvatarImage src="" alt={user?.name} />
+                  <AvatarFallback className="bg-gradient-to-br from-[#0078D7] to-[#00A5E0] text-white text-xl font-medium">
+                    {user?.name?.substring(0, 2).toUpperCase() || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+              </div>
+              <div className="flex-1">
+                <h1 className="text-2xl md:text-3xl font-bold font-header text-white">{user?.name || 'User'}'s Learning Journey</h1>
+                <p className="text-[#C5F2FF]/80 mt-1 text-sm md:text-base">
+                  {new Date().toLocaleDateString('en-US', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                  })}
+                </p>
+                <div className="flex flex-wrap gap-2 mt-3">
+                  <Badge className="bg-[#0078D7]/20 text-[#C5F2FF] hover:bg-[#0078D7]/30 border border-[#0078D7]/50">
+                    <Brain className="w-3 h-3 mr-1" /> {stats?.completedModules || 0} Modules Completed
+                  </Badge>
+                  <Badge className="bg-[#00A5E0]/20 text-[#C5F2FF] hover:bg-[#00A5E0]/30 border border-[#00A5E0]/50">
+                    <Trophy className="w-3 h-3 mr-1" /> {stats?.passedQuizzes || 0} Quizzes Passed
+                  </Badge>
+                  <Badge className="bg-[#C5F2FF]/20 text-white hover:bg-[#C5F2FF]/30 border border-[#C5F2FF]/50">
+                    <Award className="w-3 h-3 mr-1" /> {Math.max(stats?.averageScore || 0, 0)}% Avg. Score
+                  </Badge>
+                </div>
+              </div>
+              <div className="hidden md:flex flex-col items-center justify-center bg-[#0A2540]/60 p-4 rounded-lg border border-[#0078D7]/30 backdrop-blur-sm">
+                <div className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#00A5E0] to-[#C5F2FF]">
+                  {stats?.frameworkProgress || 0}%
+                </div>
+                <div className="text-[#C5F2FF]/80 text-sm">Total Progress</div>
+              </div>
+            </div>
+          </div>
 
-        {/* Stats section */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          {isLoading ? (
-            <>
-              {[1, 2, 3, 4].map(i => (
-                <Card key={i} className="shadow-sm">
-                  <CardHeader className="pb-2">
-                    <Skeleton className="h-4 w-24" />
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <Card className="shadow-md bg-white/80 border border-blue-100">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm flex items-center">
+                  <BookCheck className="h-4 w-4 mr-2 text-blue-600" />
+                  Frameworks
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold mb-1">{stats?.completedFrameworks || 0}/{stats?.totalFrameworks || 0}</div>
+                <Progress value={stats?.frameworkProgress} className="h-2" />
+                <p className="text-xs text-gray-500 mt-2">
+                  {stats?.frameworkProgress || 0}% of frameworks completed
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-md bg-white/80 border border-blue-100">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm flex items-center">
+                  <BookOpen className="h-4 w-4 mr-2 text-blue-600" />
+                  Modules
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold mb-1">{stats?.completedModules || 0}/{stats?.totalModules || 0}</div>
+                <Progress value={stats?.moduleProgress} className="h-2" />
+                <p className="text-xs text-gray-500 mt-2">
+                  {stats?.moduleProgress || 0}% of modules completed
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-md bg-white/80 border border-blue-100">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm flex items-center">
+                  <BarChart2 className="h-4 w-4 mr-2 text-blue-600" />
+                  Quizzes
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold mb-1">{stats?.passedQuizzes || 0}/{stats?.totalQuizzes || 0}</div>
+                <Progress value={stats?.quizProgress} className="h-2" />
+                <p className="text-xs text-gray-500 mt-2">
+                  {stats?.quizProgress || 0}% of quizzes passed
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-md bg-white/80 border border-blue-100">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm flex items-center">
+                  <Target className="h-4 w-4 mr-2 text-blue-600" />
+                  Average Score
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold mb-1">{stats?.averageScore || 0}%</div>
+                <Progress value={stats?.averageScore} className="h-2" />
+                <p className="text-xs text-gray-500 mt-2">
+                  Across all quiz attempts
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Tabs section */}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+            <TabsList>
+              <TabsTrigger value="progress">
+                <BookCheck className="h-4 w-4 mr-2" />
+                Framework Progress
+              </TabsTrigger>
+              <TabsTrigger value="quizzes">
+                <BarChart2 className="h-4 w-4 mr-2" />
+                Quiz Performance
+              </TabsTrigger>
+              <TabsTrigger value="recommendations">
+                <Lightbulb className="h-4 w-4 mr-2" />
+                Recommendations
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="progress" className="space-y-4">
+              {isLoading ? (
+                <>
+                  {[1, 2, 3].map(i => (
+                    <Card key={i} className="shadow-sm">
+                      <CardHeader className="pb-2">
+                        <Skeleton className="h-6 w-40" />
+                        <Skeleton className="h-4 w-64" />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="flex justify-between items-center">
+                          <Skeleton className="h-4 w-24" />
+                          <Skeleton className="h-8 w-28" />
+                        </div>
+                        <Skeleton className="h-2 w-full mt-3" />
+                      </CardContent>
+                    </Card>
+                  ))}
+                </>
+              ) : (
+                <>
+                  {progressData && progressData.length > 0 ? (
+                    progressData.map((progress: UserProgress) => {
+                      const framework = getFrameworkDetails(progress.frameworkId);
+                      return (
+                        <Card key={progress.id} className="shadow-sm hover:shadow-md transition-shadow duration-300">
+                          <CardHeader className="pb-2">
+                            <div className="flex justify-between">
+                              <CardTitle>{framework?.name}</CardTitle>
+                              <Badge variant={progress.status === 'completed' ? 'default' : 
+                                progress.status === 'in_progress' ? 'secondary' : 'outline'}>
+                                {progress.status === 'completed' ? 'Completed' : 
+                                 progress.status === 'in_progress' ? 'In Progress' : 'Not Started'}
+                              </Badge>
+                            </div>
+                            <CardDescription>{framework?.description}</CardDescription>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="flex justify-between items-center">
+                              <div className="text-sm text-gray-600">
+                                {progress.completedModules || 0} of {progress.totalModules} modules complete
+                              </div>
+                              <Link to={`/frameworks/${framework?.id}`}>
+                                <Button variant="outline" size="sm" className="flex items-center">
+                                  Continue Learning <ChevronRight className="ml-1 h-4 w-4" />
+                                </Button>
+                              </Link>
+                            </div>
+                            <Progress 
+                              value={progress.totalModules > 0 ? 
+                                Math.round(((progress.completedModules || 0) / progress.totalModules) * 100) : 0} 
+                              className="h-2 mt-3" 
+                            />
+                          </CardContent>
+                        </Card>
+                      );
+                    })
+                  ) : (
+                    <Card className="shadow-sm">
+                      <CardHeader>
+                        <CardTitle>No Progress Yet</CardTitle>
+                        <CardDescription>
+                          You haven't started learning any frameworks yet.
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <Link to="/">
+                          <Button>
+                            Browse Frameworks
+                          </Button>
+                        </Link>
+                      </CardContent>
+                    </Card>
+                  )}
+                </>
+              )}
+            </TabsContent>
+            
+            <TabsContent value="quizzes" className="space-y-4">
+              {isLoading ? (
+                <>
+                  {[1, 2, 3].map(i => (
+                    <Card key={i} className="shadow-sm">
+                      <CardHeader className="pb-2">
+                        <div className="flex justify-between">
+                          <Skeleton className="h-6 w-40" />
+                          <Skeleton className="h-6 w-24" />
+                        </div>
+                        <Skeleton className="h-4 w-64 mt-2" />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="flex justify-between items-center">
+                          <Skeleton className="h-4 w-24" />
+                          <Skeleton className="h-4 w-24" />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </>
+              ) : (
+                <>
+                  {quizAttempts && quizAttempts.length > 0 ? (
+                    quizAttempts.map((attempt: QuizAttempt) => {
+                      return (
+                        <Card key={attempt.id} className="shadow-sm hover:shadow-md transition-shadow duration-300">
+                          <CardHeader className="pb-2">
+                            <div className="flex justify-between">
+                              <CardTitle className="flex items-center">
+                                Quiz #{attempt.quizId}
+                                {attempt.passed ? (
+                                  <CheckCircle className="ml-2 h-5 w-5 text-green-500" />
+                                ) : null}
+                              </CardTitle>
+                              <Badge variant={attempt.passed ? 'default' : 'destructive'}>
+                                {attempt.passed ? 'Passed' : 'Failed'}
+                              </Badge>
+                            </div>
+                            <CardDescription className="flex justify-between">
+                              <span>Framework Quiz</span>
+                              {attempt.completedAt && (
+                                <span className="text-xs flex items-center">
+                                  <Clock className="mr-1 h-3 w-3" /> 
+                                  {new Date(attempt.completedAt).toLocaleDateString()}
+                                </span>
+                              )}
+                            </CardDescription>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="flex justify-between items-center">
+                              <div className="flex items-center">
+                                <Award className="mr-1 h-4 w-4 text-amber-500" />
+                                <span className="text-sm font-medium">
+                                  Score: {Math.round((attempt.score / attempt.maxScore) * 100)}%
+                                </span>
+                              </div>
+                              <Link to={`/quizzes/${attempt.quizId}`}>
+                                <Button variant="outline" size="sm">
+                                  Try Again
+                                </Button>
+                              </Link>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      );
+                    })
+                  ) : (
+                    <Card className="shadow-sm">
+                      <CardHeader>
+                        <CardTitle>No Quiz Attempts</CardTitle>
+                        <CardDescription>
+                          You haven't taken any quizzes yet.
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <Link to="/quizzes">
+                          <Button>
+                            Browse Quizzes
+                          </Button>
+                        </Link>
+                      </CardContent>
+                    </Card>
+                  )}
+                </>
+              )}
+            </TabsContent>
+            
+            <TabsContent value="recommendations" className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card className="shadow-md">
+                  <CardHeader>
+                    <CardTitle className="flex items-center text-blue-600">
+                      <Lightbulb className="h-5 w-5 mr-2" />
+                      Suggested Framework
+                    </CardTitle>
+                    <CardDescription>
+                      Based on your learning patterns
+                    </CardDescription>
                   </CardHeader>
-                  <CardContent>
-                    <Skeleton className="h-8 w-16 mb-2" />
-                    <Skeleton className="h-2 w-full" />
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center gap-4">
+                      <div className="h-16 w-16 rounded-lg bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center text-white">
+                        <BookOpen className="h-8 w-8" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-lg">Design Thinking</h3>
+                        <p className="text-sm text-muted-foreground">Perfect next step for your learning journey</p>
+                      </div>
+                    </div>
+                    
+                    <Link to="/">
+                      <Button className="w-full">
+                        Start Learning <ArrowRightCircle className="ml-2 h-4 w-4" />
+                      </Button>
+                    </Link>
                   </CardContent>
                 </Card>
-              ))}
-            </>
-          ) : (
-            <>
-              <Card className="shadow-sm hover:shadow-md transition-shadow duration-300">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-500 flex items-center">
-                    <BookCheck className="h-4 w-4 mr-2 text-primary" />
-                    Frameworks
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold mb-1">{stats?.completedFrameworks}/{stats?.totalFrameworks}</div>
-                  <Progress value={stats?.frameworkProgress} className="h-2 blue-progress" />
-                  <p className="text-xs text-gray-500 mt-2">
-                    {stats?.frameworkProgress}% of frameworks completed
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="shadow-sm hover:shadow-md transition-shadow duration-300">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-500 flex items-center">
-                    <BookOpen className="h-4 w-4 mr-2 text-primary" />
-                    Modules
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold mb-1">{stats?.completedModules}/{stats?.totalModules}</div>
-                  <Progress value={stats?.moduleProgress} className="h-2 blue-progress" />
-                  <p className="text-xs text-gray-500 mt-2">
-                    {stats?.moduleProgress}% of modules completed
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="shadow-sm hover:shadow-md transition-shadow duration-300">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-500 flex items-center">
-                    <BarChart2 className="h-4 w-4 mr-2 text-primary" />
-                    Quizzes
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold mb-1">{stats?.passedQuizzes}/{stats?.totalQuizzes}</div>
-                  <Progress value={stats?.quizProgress} className="h-2 blue-progress" />
-                  <p className="text-xs text-gray-500 mt-2">
-                    {stats?.quizProgress}% of quizzes passed
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="shadow-sm hover:shadow-md transition-shadow duration-300">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-500 flex items-center">
-                    <Target className="h-4 w-4 mr-2 text-primary" />
-                    Average Score
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold mb-1">{stats?.averageScore}%</div>
-                  <Progress value={stats?.averageScore} className="h-2 blue-progress" />
-                  <p className="text-xs text-gray-500 mt-2">
-                    Across all quiz attempts
-                  </p>
-                </CardContent>
-              </Card>
-            </>
-          )}
-        </div>
-
-        {/* Tabs section */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="progress">Framework Progress</TabsTrigger>
-            <TabsTrigger value="quizzes">Quiz Performance</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="progress" className="space-y-4">
-            {isLoading ? (
-              <>
-                {[1, 2, 3].map(i => (
-                  <Card key={i} className="shadow-sm">
-                    <CardHeader className="pb-2">
-                      <Skeleton className="h-6 w-40" />
-                      <Skeleton className="h-4 w-64" />
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex justify-between items-center">
-                        <Skeleton className="h-4 w-24" />
-                        <Skeleton className="h-8 w-28" />
+                
+                <Card className="shadow-md">
+                  <CardHeader>
+                    <CardTitle className="flex items-center text-purple-600">
+                      <Target className="h-5 w-5 mr-2" />
+                      Practice Recommendation
+                    </CardTitle>
+                    <CardDescription>
+                      Strengthen your knowledge
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center gap-4">
+                      <div className="h-16 w-16 rounded-lg bg-gradient-to-br from-purple-600 to-purple-400 flex items-center justify-center text-white">
+                        <BarChart2 className="h-8 w-8" />
                       </div>
-                      <Skeleton className="h-2 w-full mt-3" />
-                    </CardContent>
-                  </Card>
-                ))}
-              </>
-            ) : (
-              <>
-                {progressData && progressData.length > 0 ? (
-                  progressData.map((progress: UserProgress) => {
-                    const framework = getFrameworkDetails(progress.frameworkId);
-                    return (
-                      <Card key={progress.id} className="shadow-sm hover:shadow-md transition-shadow duration-300">
-                        <CardHeader className="pb-2">
-                          <div className="flex justify-between">
-                            <CardTitle>{framework?.name}</CardTitle>
-                            {progress.status === 'completed' ? (
-                              <Badge className="bg-[#DCEFFF] text-[#0078D7] border border-[#0078D7]/20">Completed</Badge>
-                            ) : progress.status === 'in_progress' ? (
-                              <Badge className="bg-[#FFF4DC] text-[#F59E0B] border border-[#F59E0B]/20">In Progress</Badge>
-                            ) : (
-                              <Badge className="bg-[#E9F0F8] text-[#64748B] border border-[#64748B]/20">Not Started</Badge>
-                            )}
-                          </div>
-                          <CardDescription>{framework?.description}</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="flex justify-between items-center">
-                            <div className="text-sm text-gray-600">
-                              {progress.completedModules || 0} of {progress.totalModules} modules complete
-                            </div>
-                            <Link to={`/frameworks/${framework?.id}`}>
-                              <Button variant="outline" size="sm" className="flex items-center text-[#0078D7] hover:text-[#0078D7]/90 hover:bg-[#DCEFFF]/50 hover:border-[#0078D7] transition-all duration-300">
-                                Continue Learning <ChevronRight className="ml-1 h-4 w-4" />
-                              </Button>
-                            </Link>
-                          </div>
-                          <Progress 
-                            value={progress.totalModules > 0 ? 
-                              Math.round(((progress.completedModules || 0) / progress.totalModules) * 100) : 0} 
-                            className="h-2 mt-3 blue-progress" 
-                          />
-                        </CardContent>
-                      </Card>
-                    );
-                  })
-                ) : (
-                  <Card className="shadow-sm">
-                    <CardHeader>
-                      <CardTitle>No Progress Yet</CardTitle>
-                      <CardDescription>
-                        You haven't started learning any frameworks yet.
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <Link to="/">
-                        <Button className="btn-blue-gradient">
-                          Browse Frameworks
-                        </Button>
-                      </Link>
-                    </CardContent>
-                  </Card>
-                )}
-              </>
-            )}
-          </TabsContent>
-          
-          <TabsContent value="quizzes" className="space-y-4">
-            {isLoading ? (
-              <>
-                {[1, 2, 3].map(i => (
-                  <Card key={i} className="shadow-sm">
-                    <CardHeader className="pb-2">
-                      <div className="flex justify-between">
-                        <Skeleton className="h-6 w-40" />
-                        <Skeleton className="h-6 w-24" />
+                      <div>
+                        <h3 className="font-semibold text-lg">Take Your First Quiz</h3>
+                        <p className="text-sm text-muted-foreground">Test your knowledge with a beginner quiz</p>
                       </div>
-                      <Skeleton className="h-4 w-64 mt-2" />
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex justify-between items-center">
-                        <Skeleton className="h-4 w-24" />
-                        <Skeleton className="h-4 w-24" />
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </>
-            ) : (
-              <>
-                {quizAttempts && quizAttempts.length > 0 ? (
-                  quizAttempts.map((attempt: QuizAttempt) => {
-                    const quizFramework = frameworks?.find(f => {
-                      const frameworkQuizzes = quizAttempts.filter(a => a.quizId === attempt.quizId);
-                      return frameworkQuizzes.length > 0;
-                    });
+                    </div>
                     
-                    return (
-                      <Card key={attempt.id} className="shadow-sm hover:shadow-md transition-shadow duration-300">
-                        <CardHeader className="pb-2">
-                          <div className="flex justify-between">
-                            <CardTitle className="flex items-center">
-                              Quiz #{attempt.quizId}
-                              {attempt.passed ? (
-                                <CheckCircle className="ml-2 h-5 w-5 text-green-500" />
-                              ) : null}
-                            </CardTitle>
-                            <Badge className={`${attempt.passed ? 
-                              'bg-[#DCFCE7] text-[#16A34A] border border-[#16A34A]/20' : 
-                              'bg-[#FEE2E2] text-[#DC2626] border border-[#DC2626]/20'}`}>
-                              {attempt.passed ? 'Passed' : 'Failed'}
-                            </Badge>
-                          </div>
-                          <CardDescription className="flex justify-between">
-                            <span>{quizFramework?.name || 'Framework Quiz'}</span>
-                            {attempt.completedAt && (
-                              <span className="text-xs flex items-center">
-                                <Clock className="mr-1 h-3 w-3" /> 
-                                {new Date(attempt.completedAt).toLocaleDateString()}
-                              </span>
-                            )}
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="flex justify-between items-center">
-                            <div className="flex items-center">
-                              <Award className="mr-1 h-4 w-4 text-amber-500" />
-                              <span className="text-sm font-medium">
-                                Score: {Math.round((attempt.score / attempt.maxScore) * 100)}%
-                              </span>
-                            </div>
-                            <Link to={`/quizzes/${attempt.quizId}`}>
-                              <Button variant="outline" size="sm" className="text-[#0078D7] hover:text-[#0078D7]/90 hover:bg-[#DCEFFF]/50 hover:border-[#0078D7] transition-all duration-300">
-                                Try Again
-                              </Button>
-                            </Link>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  })
-                ) : (
-                  <Card className="shadow-sm">
-                    <CardHeader>
-                      <CardTitle>No Quiz Attempts</CardTitle>
-                      <CardDescription>
-                        You haven't taken any quizzes yet.
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <Link to="/">
-                        <Button className="btn-blue-gradient">
-                          Browse Frameworks
-                        </Button>
-                      </Link>
-                    </CardContent>
-                  </Card>
-                )}
-              </>
-            )}
-          </TabsContent>
-        </Tabs>
-      </div>
+                    <Link to="/quizzes">
+                      <Button className="w-full">
+                        Start Quiz <ArrowRightCircle className="ml-2 h-4 w-4" />
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+      )}
     </div>
   );
 };
