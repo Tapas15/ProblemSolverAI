@@ -358,3 +358,7 @@ export async function updateExerciseSubmission(
   const res = await apiRequest("PATCH", `/api/exercise-submissions/${submissionId}`, updateData);
   return res.json();
 }
+
+export async function deleteExerciseSubmissions(exerciseId: number): Promise<void> {
+  await apiRequest("DELETE", `/api/exercises/${exerciseId}/submissions`);
+}
