@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const MobileNav: React.FC = () => {
@@ -70,6 +70,8 @@ const MobileNav: React.FC = () => {
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="p-0 w-[280px] border-r border-[#7d5af1]/20 bg-gradient-to-b from-[#16001E] to-[#270033]">
+          <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+          <SheetDescription className="sr-only">App navigation links and settings</SheetDescription>
           <div className="flex flex-col h-full">
             {/* User profile section */}
             {user && (
