@@ -6,8 +6,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
-  DropdownMenuLabel
+  DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
@@ -21,9 +20,7 @@ import {
   LogOut,
   BookOpen,
   Lightbulb,
-  BarChart,
-  CheckSquare,
-  Sparkles
+  BarChart
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
@@ -113,44 +110,6 @@ const Navbar: React.FC = () => {
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56 py-2">
-                <DropdownMenuLabel>
-                  {location.startsWith('/learning-path') ? 'Learning Path' : 'Frameworks'}
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-
-                {location.startsWith('/learning-path') ? (
-                  <>
-                    <Link to="/learning-path">
-                      <DropdownMenuItem className="py-2 px-4 hover:bg-gray-50">
-                        <BarChart className="mr-2 h-4 w-4" />
-                        <span>View Progress</span>
-                      </DropdownMenuItem>
-                    </Link>
-                    <Link to="/quiz">
-                      <DropdownMenuItem className="py-2 px-4 hover:bg-gray-50">
-                        <CheckSquare className="mr-2 h-4 w-4" />
-                        <span>Take Assessment</span>
-                      </DropdownMenuItem>
-                    </Link>
-                  </>
-                ) : (
-                  <>
-                    <Link to="/">
-                      <DropdownMenuItem className="py-2 px-4 hover:bg-gray-50">
-                        <BookOpen className="mr-2 h-4 w-4" />
-                        <span>Browse Frameworks</span>
-                      </DropdownMenuItem>
-                    </Link>
-                    <Link to="/ai-assistant">
-                      <DropdownMenuItem className="py-2 px-4 hover:bg-gray-50">
-                        <Sparkles className="mr-2 h-4 w-4" />
-                        <span>AI Assistant</span>
-                      </DropdownMenuItem>
-                    </Link>
-                  </>
-                )}
-
-                <DropdownMenuSeparator className="my-1" />
                 <Link to="/profile">
                   <DropdownMenuItem className="py-2 px-4 hover:bg-gray-50">
                     <User className="mr-2 h-4 w-4 text-primary/70" />
@@ -163,6 +122,20 @@ const Navbar: React.FC = () => {
                     <span>Account Settings</span>
                   </DropdownMenuItem>
                 </Link>
+                <Link to="/dashboard">
+                  <DropdownMenuItem className="py-2 px-4 hover:bg-gray-50">
+                    <LayoutDashboard className="mr-2 h-4 w-4 text-primary/70" />
+                    <span>My Dashboard</span>
+                  </DropdownMenuItem>
+                </Link>
+                {isAdmin && (
+                  <Link to="/scorm-admin">
+                    <DropdownMenuItem className="py-2 px-4 hover:bg-gray-50">
+                      <FileCode className="mr-2 h-4 w-4 text-primary/70" />
+                      <span>SCORM Admin</span>
+                    </DropdownMenuItem>
+                  </Link>
+                )}
                 <DropdownMenuSeparator className="my-1" />
                 <DropdownMenuItem 
                   className="py-2 px-4 text-red-600 hover:bg-red-50 hover:text-red-700 cursor-pointer" 
