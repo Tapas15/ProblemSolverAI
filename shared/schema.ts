@@ -12,6 +12,9 @@ export const users = pgTable("users", {
   apiKey: text("api_key"),
   aiProvider: text("ai_provider"),
   userPreferences: text("user_preferences"),
+  avatarUrl: text("avatar_url"),
+  phone: text("phone"),
+  bio: text("bio"),
 });
 
 export const insertUserSchema = createInsertSchema(users).pick({
@@ -22,6 +25,9 @@ export const insertUserSchema = createInsertSchema(users).pick({
   apiKey: true,
   aiProvider: true,
   userPreferences: true,
+  avatarUrl: true,
+  phone: true,
+  bio: true,
 });
 
 // Framework schema

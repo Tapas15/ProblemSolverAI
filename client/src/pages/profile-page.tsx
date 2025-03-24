@@ -113,8 +113,8 @@ const ProfilePage: React.FC = () => {
     staleTime: 60 * 1000,
   });
   
-  // Update user preferences mutation
-  const updatePreferencesMutation = useMutation({
+  // Update user preferences mutation (detailed)
+  const updateDetailedPreferencesMutation = useMutation({
     mutationFn: async (data: any) => {
       const response = await fetch('/api/user/preferences', {
         method: 'POST',
@@ -278,19 +278,11 @@ const ProfilePage: React.FC = () => {
     });
   };
   
-  const handlePersonalInfoSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Implement user personal info update
-    toast({
-      title: "Not implemented",
-      description: "User profile update functionality is coming soon.",
-      variant: "default",
-    });
-  };
+  // This function will be removed as it's duplicated below
   
   const handlePreferencesSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    updatePreferencesMutation.mutate(preferences);
+    updateDetailedPreferencesMutation.mutate(preferences);
   };
   
   const handleNotificationsSubmit = (e: React.FormEvent) => {

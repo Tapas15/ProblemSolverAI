@@ -24,6 +24,26 @@ import {
   addCacheHeaders, invalidateCachesByPattern 
 } from "./cache";
 
+// Configure multer for file uploads
+const multerStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadDir = path.join(process.cwd(), 'uploads');
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ 
+  storage: multerStorage,
+  limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
+});
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Add caching middleware
   app.use(cachingMiddleware);
