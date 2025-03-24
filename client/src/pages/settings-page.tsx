@@ -194,7 +194,7 @@ const SettingsPage: React.FC = () => {
     <MainLayout>
       <div className="container mx-auto py-6 sm:py-8 md:py-10 px-2 sm:px-4 max-w-5xl">
         <div className="mb-5 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold font-header text-primary">Account Settings</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold font-header text-[#0078D7]">Account Settings</h1>
           <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">
             Manage your account settings and preferences
           </p>
@@ -203,27 +203,27 @@ const SettingsPage: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
           {/* Settings sidebar */}
           <div className="lg:col-span-1">
-            <Card className="border-0 shadow-md bg-white sticky top-6">
+            <Card className="border-0 shadow-md bg-gradient-to-b from-[#f8faff] to-white sticky top-6">
               <CardContent className="pt-4 sm:pt-6 px-3 sm:px-4">
                 <nav className="space-y-1">
-                  <a href="#security" className="flex items-center px-3 py-2 text-sm font-medium rounded-md bg-gray-50 text-primary">
-                    <Shield className="mr-3 h-5 w-5 text-primary/70" />
+                  <a href="#security" className="flex items-center px-3 py-2 text-sm font-medium rounded-md bg-blue-50 text-[#0078D7]">
+                    <Shield className="mr-3 h-5 w-5 text-[#0078D7]/70" />
                     <span>Security</span>
                   </a>
-                  <a href="#api-keys" className="flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-primary">
-                    <Key className="mr-3 h-5 w-5 text-gray-400" />
+                  <a href="#api-keys" className="flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-blue-50/50 hover:text-[#0078D7]">
+                    <Key className="mr-3 h-5 w-5 text-gray-400 group-hover:text-[#0078D7]/70" />
                     <span>API Keys</span>
                   </a>
-                  <a href="#advanced" className="flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-primary">
-                    <Settings className="mr-3 h-5 w-5 text-gray-400" />
+                  <a href="#advanced" className="flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-blue-50/50 hover:text-[#0078D7]">
+                    <Settings className="mr-3 h-5 w-5 text-gray-400 group-hover:text-[#0078D7]/70" />
                     <span>Advanced</span>
                   </a>
-                  <a href="#privacy" className="flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-primary">
-                    <Fingerprint className="mr-3 h-5 w-5 text-gray-400" />
+                  <a href="#privacy" className="flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-blue-50/50 hover:text-[#0078D7]">
+                    <Fingerprint className="mr-3 h-5 w-5 text-gray-400 group-hover:text-[#0078D7]/70" />
                     <span>Privacy</span>
                   </a>
-                  <a href="#notifications" className="flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-primary">
-                    <Bell className="mr-3 h-5 w-5 text-gray-400" />
+                  <a href="#notifications" className="flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-blue-50/50 hover:text-[#0078D7]">
+                    <Bell className="mr-3 h-5 w-5 text-gray-400 group-hover:text-[#0078D7]/70" />
                     <span>Notifications</span>
                   </a>
                 </nav>
@@ -234,11 +234,11 @@ const SettingsPage: React.FC = () => {
           {/* Settings main content */}
           <div className="lg:col-span-3 space-y-8">
             {/* Security Settings */}
-            <Card className="border-0 shadow-md bg-white" id="security">
+            <Card className="border-0 shadow-md bg-gradient-to-b from-[#f8faff] to-white" id="security">
               <CardHeader className="px-4 sm:px-6">
                 <div className="flex items-center">
-                  <Shield className="h-5 w-5 text-primary mr-2" />
-                  <CardTitle className="text-base sm:text-lg">Security Settings</CardTitle>
+                  <Shield className="h-5 w-5 text-[#0078D7] mr-2" />
+                  <CardTitle className="text-base sm:text-lg text-[#0A2540]">Security Settings</CardTitle>
                 </div>
                 <CardDescription className="text-xs sm:text-sm">
                   Manage your account security and authentication
@@ -337,11 +337,11 @@ const SettingsPage: React.FC = () => {
             </Card>
             
             {/* API Key Settings */}
-            <Card className="border-0 shadow-md bg-white" id="api-keys">
+            <Card className="border-0 shadow-md bg-gradient-to-b from-[#f8faff] to-white" id="api-keys">
               <CardHeader className="px-4 sm:px-6">
                 <div className="flex items-center">
-                  <Key className="h-5 w-5 text-primary mr-2" />
-                  <CardTitle className="text-base sm:text-lg">API Integrations</CardTitle>
+                  <Key className="h-5 w-5 text-[#0078D7] mr-2" />
+                  <CardTitle className="text-base sm:text-lg text-[#0A2540]">API Integrations</CardTitle>
                 </div>
                 <CardDescription className="text-xs sm:text-sm">
                   Manage your API keys for AI integration
@@ -409,11 +409,11 @@ const SettingsPage: React.FC = () => {
             </Card>
             
             {/* Account Settings */}
-            <Card className="border-0 shadow-md bg-white" id="advanced">
+            <Card className="border-0 shadow-md bg-gradient-to-b from-[#f8faff] to-white" id="advanced">
               <CardHeader className="px-4 sm:px-6">
                 <div className="flex items-center">
-                  <Settings className="h-5 w-5 text-primary mr-2" />
-                  <CardTitle className="text-base sm:text-lg">Advanced Settings</CardTitle>
+                  <Settings className="h-5 w-5 text-[#0078D7] mr-2" />
+                  <CardTitle className="text-base sm:text-lg text-[#0A2540]">Advanced Settings</CardTitle>
                 </div>
                 <CardDescription className="text-xs sm:text-sm">
                   Manage advanced account settings
