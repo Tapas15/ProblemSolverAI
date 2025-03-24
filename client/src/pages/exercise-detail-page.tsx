@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRoute, useLocation, Link } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { getExercise, submitExerciseSolution, getUserExerciseSubmissions } from "@/lib/api";
@@ -8,10 +8,13 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, SendIcon, CheckCircle, Clock, BookOpen, HelpCircle, ListChecks } from "lucide-react";
+import { ArrowLeft, SendIcon, CheckCircle, Clock, BookOpen, HelpCircle, ListChecks, Users, MessageSquare } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
+import { useWebSocket, WebSocketStatus } from "@/hooks/use-websocket";
+import { Input } from "@/components/ui/input";
 
 export default function ExerciseDetailPage() {
   const [, params] = useRoute("/exercise/:exerciseId");

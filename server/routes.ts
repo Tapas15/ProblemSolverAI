@@ -11,6 +11,7 @@ import {
   insertExerciseSchema, insertExerciseSubmissionSchema,
   Exercise, ExerciseSubmission
 } from "@shared/schema";
+import { WebSocketServer, WebSocket } from 'ws';
 import OpenAI from "openai";
 import { xapiService } from "./services/xapi-service";
 import { scormService } from "./services/scorm-service";
@@ -2138,5 +2139,179 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   const httpServer = createServer(app);
+  
+  // Set up WebSocket server for real-time collaboration
+  const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
+  
+  // Store connected clients by exercise ID
+  const exerciseRooms: Record<string, Map<string, WebSocket>> = {};
+  
+  wss.on('connection', (ws) => {
+    console.log('WebSocket client connected');
+    let userId: number | null = null;
+    let exerciseId: number | null = null;
+    let username: string | null = null;
+    
+    ws.on('message', (message) => {
+      try {
+        const data = JSON.parse(message.toString());
+        
+        // Handle different message types
+        switch(data.type) {
+          case 'join':
+            // User joins an exercise collaboration room
+            userId = data.userId;
+            exerciseId = data.exerciseId;
+            username = data.username;
+            
+            // Create room if it doesn't exist
+            if (!exerciseRooms[exerciseId]) {
+              exerciseRooms[exerciseId] = new Map();
+            }
+            
+            // Add user to room
+            const clientId = `${userId}-${Date.now()}`;
+            exerciseRooms[exerciseId].set(clientId, ws);
+            
+            // Notify other users in the room
+            broadcastToRoom(exerciseId, {
+              type: 'user-joined',
+              userId,
+              username,
+              timestamp: new Date().toISOString(),
+              users: getActiveUsers(exerciseId)
+            }, ws);
+            
+            // Send join confirmation to the user
+            ws.send(JSON.stringify({
+              type: 'joined',
+              exerciseId,
+              users: getActiveUsers(exerciseId)
+            }));
+            
+            break;
+            
+          case 'leave':
+            // User leaves the exercise room
+            if (exerciseId && exerciseRooms[exerciseId]) {
+              // Find and remove the user from the room
+              for (const [clientId, client] of exerciseRooms[exerciseId].entries()) {
+                if (client === ws) {
+                  exerciseRooms[exerciseId].delete(clientId);
+                  break;
+                }
+              }
+              
+              // Notify others that user left
+              broadcastToRoom(exerciseId, {
+                type: 'user-left',
+                userId,
+                username,
+                timestamp: new Date().toISOString(),
+                users: getActiveUsers(exerciseId)
+              });
+              
+              // Clean up empty rooms
+              if (exerciseRooms[exerciseId].size === 0) {
+                delete exerciseRooms[exerciseId];
+              }
+            }
+            break;
+            
+          case 'update-solution':
+            // User updates their solution
+            if (exerciseId && exerciseRooms[exerciseId]) {
+              // Broadcast the solution update to all users in the room
+              broadcastToRoom(exerciseId, {
+                type: 'solution-updated',
+                userId,
+                username,
+                solution: data.solution,
+                timestamp: new Date().toISOString()
+              });
+            }
+            break;
+            
+          case 'comment':
+            // User adds a comment
+            if (exerciseId && exerciseRooms[exerciseId]) {
+              // Broadcast the comment to all users in the room
+              broadcastToRoom(exerciseId, {
+                type: 'new-comment',
+                userId,
+                username,
+                comment: data.comment,
+                timestamp: new Date().toISOString()
+              });
+            }
+            break;
+            
+          case 'ping':
+            // Respond to ping with pong to keep connection alive
+            ws.send(JSON.stringify({ type: 'pong', timestamp: new Date().toISOString() }));
+            break;
+        }
+      } catch (error) {
+        console.error('Error processing WebSocket message:', error);
+      }
+    });
+    
+    ws.on('close', () => {
+      console.log('WebSocket client disconnected');
+      // Handle user disconnection
+      if (exerciseId && exerciseRooms[exerciseId]) {
+        // Find and remove the user from the room
+        for (const [clientId, client] of exerciseRooms[exerciseId].entries()) {
+          if (client === ws) {
+            exerciseRooms[exerciseId].delete(clientId);
+            break;
+          }
+        }
+        
+        // Notify others that user left
+        broadcastToRoom(exerciseId, {
+          type: 'user-left',
+          userId,
+          username,
+          timestamp: new Date().toISOString(),
+          users: getActiveUsers(exerciseId)
+        });
+        
+        // Clean up empty rooms
+        if (exerciseRooms[exerciseId].size === 0) {
+          delete exerciseRooms[exerciseId];
+        }
+      }
+    });
+  });
+  
+  // Helper function to broadcast a message to all clients in an exercise room
+  function broadcastToRoom(exerciseId: number, message: any, excludeClient?: WebSocket) {
+    if (!exerciseRooms[exerciseId]) return;
+    
+    const messageStr = JSON.stringify(message);
+    
+    exerciseRooms[exerciseId].forEach((client) => {
+      if (client !== excludeClient && client.readyState === WebSocket.OPEN) {
+        client.send(messageStr);
+      }
+    });
+  }
+  
+  // Helper function to get list of active users in a room
+  function getActiveUsers(exerciseId: number): Array<{userId: number, username: string}> {
+    if (!exerciseRooms[exerciseId]) return [];
+    
+    const users = new Map<number, string>();
+    
+    exerciseRooms[exerciseId].forEach((_, clientId) => {
+      const userId = parseInt(clientId.split('-')[0], 10);
+      const username = clientId.split('-')[1] || 'Anonymous';
+      users.set(userId, username);
+    });
+    
+    return Array.from(users.entries()).map(([userId, username]) => ({ userId, username }));
+  }
+  
   return httpServer;
 }
