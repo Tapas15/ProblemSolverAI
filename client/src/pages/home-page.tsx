@@ -48,13 +48,13 @@ const HomePage: React.FC = () => {
   
   return (
     <MainLayout>
-      <div className="container mx-auto px-4 py-6 md:py-10">
+      <div className="container mx-auto px-3 sm:px-4 pt-16 pb-4 sm:pt-20 sm:pb-6 md:py-10 lg:max-w-7xl">
         {/* Page Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold font-header text-primary mb-3">
+        <div className="mb-5 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold font-header text-primary mb-2 sm:mb-3">
             Business Problem-Solving Frameworks
           </h1>
-          <p className="text-gray-600 max-w-3xl">
+          <p className="text-gray-600 max-w-3xl text-sm sm:text-base">
             Access professional frameworks to structure your thinking and enhance your problem-solving capabilities. 
             Combine with AI assistance to develop innovative solutions.
           </p>
@@ -66,10 +66,14 @@ const HomePage: React.FC = () => {
         <FrameworkTabs activeTab={activeTab} onTabChange={setActiveTab} />
         
         {/* Framework Grid */}
-        <FrameworkGrid />
+        <div className="mt-4 sm:mt-6">
+          <FrameworkGrid />
+        </div>
         
         {/* Featured AI Section */}
-        <FeaturedSection />
+        <div className="mt-6 sm:mt-8">
+          <FeaturedSection />
+        </div>
       </div>
     </MainLayout>
   );
