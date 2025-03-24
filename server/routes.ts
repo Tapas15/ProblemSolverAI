@@ -71,15 +71,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication routes
   setupAuth(app);
   
-  // API status endpoint for diagnostics
-  app.get("/api/status", (req, res) => {
-    res.json({ 
-      status: "ok", 
-      timestamp: new Date().toISOString(),
-      environment: process.env.NODE_ENV || "development"
-    });
-  });
-  
   // Upload avatar
   app.post("/api/user/avatar", upload.single('avatar'), async (req, res, next) => {
     try {

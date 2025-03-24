@@ -24,16 +24,16 @@ const FrameworkCard: React.FC<FrameworkCardProps> = ({
   // Generate a unique gradient based on framework ID for visual variety
   const getGradient = (id: number) => {
     const gradients = [
-      'from-blue-600 to-blue-400',         // Professional Blue
-      'from-sky-600 to-cyan-500',          // Sky Blue to Cyan
-      'from-indigo-600 to-blue-500',       // Indigo to Blue
-      'from-teal-600 to-emerald-500',      // Teal to Emerald
-      'from-slate-700 to-slate-500',       // Slate - Professional Dark
-      'from-blue-700 to-indigo-600',       // Deep Blue to Indigo
-      'from-emerald-600 to-teal-500',      // Emerald to Teal
-      'from-blue-600 to-sky-400',          // Blue to Sky
-      'from-slate-600 to-blue-500',        // Slate to Blue
-      'from-cyan-600 to-sky-500',          // Cyan to Sky
+      'from-purple-500 to-pink-500', // Purple to Pink
+      'from-blue-500 to-teal-400',   // Blue to Teal
+      'from-indigo-500 to-purple-500', // Indigo to Purple
+      'from-green-400 to-cyan-500',  // Green to Cyan
+      'from-pink-500 to-orange-400', // Pink to Orange
+      'from-violet-600 to-indigo-600', // Violet to Indigo
+      'from-amber-500 to-pink-500',  // Amber to Pink
+      'from-emerald-500 to-blue-500', // Emerald to Blue
+      'from-fuchsia-500 to-cyan-500', // Fuchsia to Cyan
+      'from-rose-500 to-indigo-500',  // Rose to Indigo
     ];
     return gradients[(id - 1) % gradients.length];
   };
@@ -42,19 +42,19 @@ const FrameworkCard: React.FC<FrameworkCardProps> = ({
     switch (progressStatus) {
       case 'completed':
         return (
-          <Badge className="bg-gradient-to-r from-emerald-600 to-teal-500 text-white font-medium px-3 py-1 shadow-sm">
+          <Badge className="bg-gradient-to-r from-green-500 to-emerald-600 text-white font-medium px-3 py-1 shadow-sm">
             <CheckCircle className="h-3.5 w-3.5 mr-1" /> Completed
           </Badge>
         );
       case 'in_progress':
         return (
-          <Badge className="bg-gradient-to-r from-blue-600 to-sky-500 text-white font-medium px-3 py-1 shadow-sm">
+          <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white font-medium px-3 py-1 shadow-sm">
             In Progress
           </Badge>
         );
       default:
         return (
-          <Badge className="bg-gradient-to-r from-slate-600 to-slate-500 text-white font-medium px-3 py-1 shadow-sm">
+          <Badge className="bg-gradient-to-r from-blue-500 to-violet-500 text-white font-medium px-3 py-1 shadow-sm">
             Not Started
           </Badge>
         );

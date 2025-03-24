@@ -1,31 +1,28 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
 @layer base {
   :root {
-    --background: 210 33% 98%; /* #F5F8FC */
-    --foreground: 215 25% 25%; /* #2E3A4F */
+    --background: 270 30% 98%; /* #F7F5FD */
+    --foreground: 260 20% 18%; /* #2D2A3A */
     
     --card: 0 0% 100%;
-    --card-foreground: 215 25% 25%;
+    --card-foreground: 260 20% 18%;
     
     --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 25%;
+    --popover-foreground: 260 20% 18%;
     
-    --primary: 210 100% 35%; /* #0063B1 - Professional Blue */
+    --primary: 265 60% 54%; /* #5D3FD3 - Rich Purple */
     --primary-foreground: 0 0% 100%;
     
-    --secondary: 204 70% 45%; /* #2B8DC5 - Complementary Blue */
+    --secondary: 340 95% 60%; /* #FF2975 - Vibrant Pink */
     --secondary-foreground: 0 0% 100%;
     
-    --accent: 43 96% 56%; /* #F0B429 - Subdued Gold */
-    --accent-foreground: 215 25% 25%;
+    --accent: 40 100% 50%; /* #FFA500 */
+    --accent-foreground: 222 47% 15%;
     
     --muted: 210 25% 95%;
     --muted-foreground: 215 20% 45%;
@@ -35,73 +32,73 @@
     
     --border: 215 20% 90%;
     --input: 215 20% 90%;
-    --ring: 204 70% 45%; /* #2B8DC5 */
+    --ring: 197 100% 40%; /* #0091C7 */
     
-    --radius: 0.5rem;
+    --radius: 0.75rem;
     
     /* Chart colors */
-    --chart-1: 204 70% 45%; /* Main blue */
-    --chart-2: 43 96% 56%;  /* Gold accent */
-    --chart-3: 164 75% 40%; /* Professional teal */
-    --chart-4: 200 18% 46%; /* Slate blue */
-    --chart-5: 27 96% 61%;  /* Warm orange */
+    --chart-1: 197 100% 40%;
+    --chart-2: 40 100% 50%;
+    --chart-3: 222 47% 15%;
+    --chart-4: 152 69% 35%;
+    --chart-5: 345 83% 45%;
     
     /* Sidebar colors */
-    --sidebar-background: 215 32% 27%;
+    --sidebar-background: 222 47% 15%;
     --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 204 70% 45%;
+    --sidebar-primary: 197 100% 40%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 43 96% 56%;
-    --sidebar-accent-foreground: 215 25% 25%;
-    --sidebar-border: 214 32% 32%;
-    --sidebar-ring: 204 70% 45%;
+    --sidebar-accent: 40 100% 50%;
+    --sidebar-accent-foreground: 222 47% 15%;
+    --sidebar-border: 222 30% 25%;
+    --sidebar-ring: 197 100% 40%;
   }
  
   .dark {
-    --background: 215 35% 15%; /* #1B2536 - Dark navy */
-    --foreground: 0 0% 95%;    /* #F2F2F2 */
+    --background: 222 47% 7%;
+    --foreground: 0 0% 100%;
     
-    --card: 215 35% 18%;       /* #212C3F */
-    --card-foreground: 0 0% 95%;
+    --card: 222 47% 10%;
+    --card-foreground: 0 0% 100%;
     
-    --popover: 215 35% 18%;
-    --popover-foreground: 0 0% 95%;
+    --popover: 222 47% 10%;
+    --popover-foreground: 0 0% 100%;
     
-    --primary: 210 100% 45%;   /* #0077D6 - Blue (brighter for dark mode) */
+    --primary: 197 100% 40%;
     --primary-foreground: 0 0% 100%;
     
-    --secondary: 204 70% 50%;  /* #33A0DB - Brighter blue for dark mode */
+    --secondary: 222 47% 15%;
     --secondary-foreground: 0 0% 100%;
     
-    --accent: 43 90% 50%;      /* #E6A817 - Gold (slightly dimmed) */
-    --accent-foreground: 0 0% 10%;
+    --accent: 40 100% 50%;
+    --accent-foreground: 0 0% 0%;
     
-    --muted: 215 35% 25%;      /* #2A3850 */
+    --muted: 222 47% 15%;
     --muted-foreground: 210 20% 80%;
     
-    --destructive: 0 70% 55%;  /* #D93B3B - Slightly dimmed red */
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
     
-    --border: 215 35% 25%;
-    --input: 215 35% 25%;
-    --ring: 204 70% 50%;
+    --border: 222 30% 25%;
+    --input: 222 30% 25%;
+    --ring: 197 100% 40%;
     
-    /* Chart colors - more vibrant for dark mode */
-    --chart-1: 204 80% 55%;    /* Main blue */
-    --chart-2: 43 90% 60%;     /* Gold */
-    --chart-3: 164 70% 50%;    /* Teal */
-    --chart-4: 200 70% 55%;    /* Bright blue */
-    --chart-5: 27 90% 65%;     /* Orange */
+    /* Chart colors */
+    --chart-1: 197 100% 40%;
+    --chart-2: 40 100% 50%;
+    --chart-3: 210 20% 80%;
+    --chart-4: 152 69% 45%;
+    --chart-5: 345 83% 65%;
     
-    /* Sidebar colors - adapted for dark mode */
-    --sidebar-background: 215 45% 22%;  /* #243555 - Slightly lighter than background */
+    /* Sidebar colors - keep same as light to maintain consistency */
+    --sidebar-background: 222 47% 15%;
     --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 204 80% 55%;
+    --sidebar-primary: 197 100% 40%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 43 90% 50%;
-    --sidebar-accent-foreground: 0 0% 10%;
-    --sidebar-border: 215 35% 30%;
-    --sidebar-ring: 204 70% 50%;
+    --sidebar-accent: 40 100% 50%;
+    --sidebar-accent-foreground: 222 47% 15%;
+    --sidebar-border: 222 30% 25%;
+    --sidebar-ring: 197 100% 40%;
   }
 }
 
