@@ -9,6 +9,7 @@ export const users = pgTable("users", {
   password: text("password").notNull(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
+  role: text("role").default("user"), // 'user' or 'admin'
   apiKey: text("api_key"),
   aiProvider: text("ai_provider"),
   userPreferences: text("user_preferences"),

@@ -2198,6 +2198,194 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   const httpServer = createServer(app);
   
+  // Certificate API routes
+  app.get("/api/certificates", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+      
+      const certificates = await storage.getUserCertificates(req.user.id);
+      res.json(certificates);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.get("/api/certificates/framework/:id", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+      
+      const frameworkId = parseInt(req.params.id);
+      if (isNaN(frameworkId)) {
+        return res.status(400).send("Invalid framework ID");
+      }
+      
+      const certificates = await storage.getFrameworkCertificates(frameworkId);
+      res.json(certificates);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.get("/api/certificates/:id", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+      
+      const certificateId = parseInt(req.params.id);
+      if (isNaN(certificateId)) {
+        return res.status(400).send("Invalid certificate ID");
+      }
+      
+      const certificate = await storage.getCertificate(certificateId);
+      if (!certificate) {
+        return res.status(404).send("Certificate not found");
+      }
+      
+      // Only allow users to see their own certificates unless they're admins
+      if (certificate.userId !== req.user.id && req.user.role !== "admin") {
+        return res.status(403).send("Forbidden");
+      }
+      
+      res.json(certificate);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.post("/api/certificates", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+      
+      // Only admins can create certificates
+      if (req.user.role !== "admin") {
+        return res.status(403).send("Only administrators can issue certificates");
+      }
+      
+      const certData = req.body;
+      const certificate = await storage.createCertificate(certData);
+      res.status(201).json(certificate);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.post("/api/certificates/issue/:frameworkId", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+      
+      const frameworkId = parseInt(req.params.frameworkId);
+      if (isNaN(frameworkId)) {
+        return res.status(400).send("Invalid framework ID");
+      }
+      
+      // Verify the user has completed the framework
+      const progress = await storage.getUserProgressByFramework(req.user.id, frameworkId);
+      if (!progress || progress.status !== "completed") {
+        return res.status(400).send("Framework must be completed before certificate can be issued");
+      }
+      
+      // Get framework details
+      const framework = await storage.getFramework(frameworkId);
+      if (!framework) {
+        return res.status(404).send("Framework not found");
+      }
+      
+      // Check if user already has a certificate for this framework
+      const userCerts = await storage.getUserCertificates(req.user.id);
+      const existingCert = userCerts.find(cert => cert.frameworkId === frameworkId && cert.status === "active");
+      
+      if (existingCert) {
+        return res.status(400).send("User already has an active certificate for this framework");
+      }
+      
+      // Generate certificate number (unique identifier)
+      const certNumber = `QPM-${frameworkId}-${req.user.id}-${Date.now()}`;
+      
+      // Create the certificate
+      const certData = {
+        userId: req.user.id,
+        frameworkId: frameworkId,
+        title: `${framework.name} Certificate`,
+        description: `This certifies that ${req.user.name} has successfully completed the ${framework.name} in the QuestionPro AI mobile app.`,
+        certificateNumber: certNumber,
+        status: "active",
+        achievements: JSON.stringify({
+          completedAt: new Date(),
+          framework: framework.name,
+          modules: progress.completedModules
+        })
+      };
+      
+      const certificate = await storage.createCertificate(certData);
+      res.status(201).json(certificate);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.put("/api/certificates/:id", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+      
+      // Only admins can update certificates
+      if (req.user.role !== "admin") {
+        return res.status(403).send("Only administrators can update certificates");
+      }
+      
+      const certificateId = parseInt(req.params.id);
+      if (isNaN(certificateId)) {
+        return res.status(400).send("Invalid certificate ID");
+      }
+      
+      const certificate = await storage.updateCertificate(certificateId, req.body);
+      if (!certificate) {
+        return res.status(404).send("Certificate not found");
+      }
+      
+      res.json(certificate);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+      
+      // Only admins can revoke certificates
+      if (req.user.role !== "admin") {
+        return res.status(403).send("Only administrators can revoke certificates");
+      }
+      
+      const certificateId = parseInt(req.params.id);
+      if (isNaN(certificateId)) {
+        return res.status(400).send("Invalid certificate ID");
+      }
+      
+      const certificate = await storage.revokeCertificate(certificateId);
+      if (!certificate) {
+        return res.status(404).send("Certificate not found");
+      }
+      
+      res.json(certificate);
+    } catch (error) {
+      next(error);
+    }
+  });
+  
   // Set up WebSocket server for real-time collaboration
   const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
   
