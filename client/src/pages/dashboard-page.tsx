@@ -129,7 +129,7 @@ const DashboardPage = () => {
             </>
           ) : (
             <>
-              <Card className="shadow-sm">
+              <Card className="shadow-sm hover:shadow-md transition-shadow duration-300">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm font-medium text-gray-500 flex items-center">
                     <BookCheck className="h-4 w-4 mr-2 text-primary" />
@@ -145,7 +145,7 @@ const DashboardPage = () => {
                 </CardContent>
               </Card>
 
-              <Card className="shadow-sm">
+              <Card className="shadow-sm hover:shadow-md transition-shadow duration-300">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm font-medium text-gray-500 flex items-center">
                     <BookOpen className="h-4 w-4 mr-2 text-primary" />
@@ -161,7 +161,7 @@ const DashboardPage = () => {
                 </CardContent>
               </Card>
 
-              <Card className="shadow-sm">
+              <Card className="shadow-sm hover:shadow-md transition-shadow duration-300">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm font-medium text-gray-500 flex items-center">
                     <BarChart2 className="h-4 w-4 mr-2 text-primary" />
@@ -177,7 +177,7 @@ const DashboardPage = () => {
                 </CardContent>
               </Card>
 
-              <Card className="shadow-sm">
+              <Card className="shadow-sm hover:shadow-md transition-shadow duration-300">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm font-medium text-gray-500 flex items-center">
                     <Target className="h-4 w-4 mr-2 text-primary" />
@@ -228,7 +228,7 @@ const DashboardPage = () => {
                   progressData.map((progress: UserProgress) => {
                     const framework = getFrameworkDetails(progress.frameworkId);
                     return (
-                      <Card key={progress.id} className="shadow-sm">
+                      <Card key={progress.id} className="shadow-sm hover:shadow-md transition-shadow duration-300">
                         <CardHeader className="pb-2">
                           <div className="flex justify-between">
                             <CardTitle>{framework?.name}</CardTitle>
@@ -237,7 +237,7 @@ const DashboardPage = () => {
                             ) : progress.status === 'in_progress' ? (
                               <Badge className="bg-[#FFF4DC] text-[#F59E0B] border border-[#F59E0B]/20">In Progress</Badge>
                             ) : (
-                              <Badge className="bg-blue-100 text-blue-800">Not Started</Badge>
+                              <Badge className="bg-[#E9F0F8] text-[#64748B] border border-[#64748B]/20">Not Started</Badge>
                             )}
                           </div>
                           <CardDescription>{framework?.description}</CardDescription>
@@ -248,7 +248,7 @@ const DashboardPage = () => {
                               {progress.completedModules || 0} of {progress.totalModules} modules complete
                             </div>
                             <Link to={`/frameworks/${framework?.id}`}>
-                              <Button variant="outline" size="sm" className="flex items-center">
+                              <Button variant="outline" size="sm" className="flex items-center text-[#0078D7] hover:text-[#0078D7]/90 hover:bg-[#DCEFFF]/50 transition-all duration-300">
                                 Continue Learning <ChevronRight className="ml-1 h-4 w-4" />
                               </Button>
                             </Link>
@@ -314,7 +314,7 @@ const DashboardPage = () => {
                     });
                     
                     return (
-                      <Card key={attempt.id} className="shadow-sm">
+                      <Card key={attempt.id} className="shadow-sm hover:shadow-md transition-shadow duration-300">
                         <CardHeader className="pb-2">
                           <div className="flex justify-between">
                             <CardTitle className="flex items-center">
@@ -324,8 +324,8 @@ const DashboardPage = () => {
                               ) : null}
                             </CardTitle>
                             <Badge className={`${attempt.passed ? 
-                              'bg-green-100 text-green-800' : 
-                              'bg-red-100 text-red-800'}`}>
+                              'bg-[#DCFCE7] text-[#16A34A] border border-[#16A34A]/20' : 
+                              'bg-[#FEE2E2] text-[#DC2626] border border-[#DC2626]/20'}`}>
                               {attempt.passed ? 'Passed' : 'Failed'}
                             </Badge>
                           </div>
