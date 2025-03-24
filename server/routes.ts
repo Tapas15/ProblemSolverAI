@@ -34,6 +34,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication routes
   setupAuth(app);
   
+  // Upload avatar
+  app.post("/api/user/avatar", upload.single('avatar'), async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
+      const avatarUrl = `/uploads/${req.file.filename}`;
+      const updatedUser = await storage.updateUser(req.user.id, { avatarUrl });
+
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json({ avatarUrl });
+    } catch (error) {
+      next(error);
+    }
+  });
+
   // Update user profile
   app.patch("/api/user/profile", async (req, res, next) => {
     try {

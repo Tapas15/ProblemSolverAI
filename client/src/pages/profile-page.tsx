@@ -330,7 +330,43 @@ const ProfilePage: React.FC = () => {
                   <h2 className="text-xl font-bold text-primary mb-1">{user.name}</h2>
                   <p className="text-sm text-gray-500 mb-4">{user.email}</p>
                   
-                  <Button variant="outline" className="mb-4 w-full">
+                  <input
+                    type="file"
+                    id="avatar-upload"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+
+                      const formData = new FormData();
+                      formData.append('avatar', file);
+
+                      try {
+                        const response = await fetch('/api/user/avatar', {
+                          method: 'POST',
+                          body: formData,
+                        });
+                        
+                        if (!response.ok) throw new Error('Upload failed');
+                        
+                        const data = await response.json();
+                        // Refresh the page or update the avatar URL
+                        window.location.reload();
+                      } catch (error) {
+                        toast({
+                          title: "Error",
+                          description: "Failed to upload avatar",
+                          variant: "destructive"
+                        });
+                      }
+                    }}
+                  />
+                  <Button 
+                    variant="outline" 
+                    className="mb-4 w-full"
+                    onClick={() => document.getElementById('avatar-upload')?.click()}
+                  >
                     Change Avatar
                   </Button>
                 </div>
