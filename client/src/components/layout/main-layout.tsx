@@ -10,7 +10,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      <div className="flex-1">{children}</div>
+      {/* Add padding top to account for the fixed navbar */}
+      <div className="flex-1 pt-16">{children}</div>
       <Footer />
     </div>
   );
