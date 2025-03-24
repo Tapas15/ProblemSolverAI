@@ -134,7 +134,8 @@
   }
   
   body {
-    @apply font-sans antialiased bg-background text-foreground tracking-tight;
+    @apply antialiased bg-background text-foreground tracking-tight;
+    font-family: 'Outfit', sans-serif;
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -422,7 +423,7 @@
 /* Enhanced Module content styling */
 .module-content {
   @apply leading-relaxed text-gray-700 mx-auto max-w-4xl;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Outfit', sans-serif;
 }
 
 .module-content h2 {
@@ -507,7 +508,7 @@
 
 .module-content code {
   @apply text-[#4a6bbd] text-sm px-1.5 py-0.5 rounded-md bg-indigo-50 border border-indigo-100;
-  font-family: 'Roboto Mono', monospace;
+  font-family: 'Space Grotesk', monospace;
 }
 
 .module-content pre code {
