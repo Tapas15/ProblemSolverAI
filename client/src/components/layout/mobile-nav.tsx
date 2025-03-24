@@ -39,14 +39,14 @@ const MobileNav: React.FC = () => {
     <Link to={to} onClick={() => setIsOpen(false)}>
       <div className={`flex items-center space-x-3 p-3 rounded-xl ${
         isActive 
-          ? 'bg-gradient-to-r from-[#7d5af1]/20 to-[#ff59b2]/20 text-white' 
-          : 'text-white/80 hover:bg-[#36005A]/30 hover:text-white'
+          ? 'bg-gradient-to-r from-[#3b82f6]/20 to-[#60a5fa]/20 text-white' 
+          : 'text-white/80 hover:bg-[#1a4482]/30 hover:text-white'
       } transition-all`}>
-        <div className={`${isActive ? 'text-[#ff59b2]' : ''}`}>
+        <div className={`${isActive ? 'text-[#60a5fa]' : ''}`}>
           {icon}
         </div>
         <span className="font-medium">{label}</span>
-        {isActive && <div className="ml-auto h-full w-1 rounded-full bg-gradient-to-b from-[#9545ff] to-[#ff59b2]"></div>}
+        {isActive && <div className="ml-auto h-full w-1 rounded-full bg-gradient-to-b from-[#3b82f6] to-[#60a5fa]"></div>}
       </div>
     </Link>
   );

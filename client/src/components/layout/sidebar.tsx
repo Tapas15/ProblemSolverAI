@@ -48,17 +48,17 @@ const Sidebar: React.FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
     <Link to={to}>
       <div className={cn(
         "flex items-center space-x-3 py-3 px-4 rounded-xl transition-all duration-200",
-        isActive ? "bg-[#36005A]/50 text-[#ff59b2]" : "text-white/80 hover:bg-[#36005A]/30 hover:text-white"
+        isActive ? "bg-[#1a4482]/50 text-[#60a5fa]" : "text-white/80 hover:bg-[#1a4482]/30 hover:text-white"
       )}>
         <div className={cn(
           "flex-shrink-0",
-          isActive && "text-[#ff59b2]"
+          isActive && "text-[#60a5fa]"
         )}>
           {icon}
         </div>
         {!isCollapsed && <span className="text-sm font-medium truncate">{label}</span>}
         {isActive && !isCollapsed && (
-          <div className="ml-auto w-1.5 h-6 rounded-full bg-gradient-to-b from-[#9545ff] to-[#ff59b2]"></div>
+          <div className="ml-auto w-1.5 h-6 rounded-full bg-gradient-to-b from-[#3b82f6] to-[#60a5fa]"></div>
         )}
       </div>
     </Link>
