@@ -93,7 +93,7 @@ export default function QuizPage() {
           onClick={() => navigate("/")}
         >
           <ChevronLeft className="mr-2 h-4 w-4" />
-          Back
+          Back to Frameworks
         </Button>
         <div>
           <h1 className="text-3xl font-bold">{framework?.name} Quizzes</h1>

@@ -314,7 +314,7 @@ export default function TakeQuizPage() {
             <CardFooter className="flex justify-between">
               <Button variant="outline" onClick={() => navigate(`/quizzes/${frameworkId}`)}>
                 <ChevronLeft className="mr-2 h-4 w-4" />
-                Back to quizzes
+                Back to {frameworkIdNum ? `${quiz?.frameworkName || 'Framework'}` : ''} Quizzes
               </Button>
               <Button onClick={() => navigate("/")}>
                 Go to Dashboard
