@@ -1,20 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRoute, useLocation, Link } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { getExercise, submitExerciseSolution, getUserExerciseSubmissions } from "@/lib/api";
 import { queryClient } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, SendIcon, CheckCircle, Clock, BookOpen, HelpCircle, ListChecks, Users, MessageSquare } from "lucide-react";
+import { ArrowLeft, SendIcon, CheckCircle, Clock, BookOpen, HelpCircle, ListChecks, RefreshCw } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
-import { useWebSocket, WebSocketStatus } from "@/hooks/use-websocket";
-import { Input } from "@/components/ui/input";
 
 export default function ExerciseDetailPage() {
   const [, params] = useRoute("/exercise/:exerciseId");
@@ -46,55 +44,23 @@ export default function ExerciseDetailPage() {
   );
 
   // Check if user has already submitted a solution
-  const hasSubmitted = exerciseSubmissions && exerciseSubmissions.length > 0;
+  const hasSubmitted = exerciseSubmissions && exerciseSubmissions.length > 0 && !practiceMode;
   const latestSubmission = hasSubmitted ? exerciseSubmissions[0] : null;
-  
-  // Connect to WebSocket for real-time collaboration if user is logged in
-  const { status: wsStatus, messages, activeUsers, updateSolution, addComment } = useWebSocket(
-    exerciseId || 0,
-    user?.id || 0,
-    user?.username || 'Anonymous',
-    {
-      onOpen: () => {
-        toast({
-          title: "Collaboration active",
-          description: "You are now connected to the collaboration server."
-        });
-      },
-      onClose: () => {
-        toast({
-          title: "Collaboration ended",
-          description: "You have been disconnected from the collaboration server."
-        });
-      }
-    }
-  );
-  
-  // Handle when a user is typing their solution
-  useEffect(() => {
-    if (!isSolutionUpdated && solution && !hasSubmitted) {
-      // Debounce to avoid sending too many updates
-      const timeout = setTimeout(() => {
-        updateSolution(solution);
-        setIsSolutionUpdated(true);
-        
-        // Reset flag after some time
-        setTimeout(() => {
-          setIsSolutionUpdated(false);
-        }, 3000);
-      }, 1000);
-      
-      return () => clearTimeout(timeout);
-    }
-  }, [solution, updateSolution, hasSubmitted, isSolutionUpdated]);
-  
-  // Handle posting a comment
-  const handleCommentSubmit = () => {
-    if (!comment.trim()) return;
-    
-    const success = addComment(comment);
-    if (success) {
-      setComment("");
+
+  // Handle practice mode toggle
+  const togglePracticeMode = () => {
+    setPracticeMode(!practiceMode);
+    if (!practiceMode) {
+      setSolution("");
+      toast({
+        title: "Practice Mode Enabled",
+        description: "You can now practice this exercise again. Your solution won't be saved.",
+      });
+    } else {
+      toast({
+        title: "Practice Mode Disabled",
+        description: "Your previous submission is now visible.",
+      });
     }
   };
 
@@ -108,6 +74,7 @@ export default function ExerciseDetailPage() {
         description: "Your solution has been submitted successfully.",
       });
       queryClient.invalidateQueries({ queryKey: [`/api/exercises/${exerciseId}/submissions/user`] });
+      setPracticeMode(false);
       setActiveTab("solution");
     },
     onError: (error: Error) => {
@@ -195,54 +162,21 @@ export default function ExerciseDetailPage() {
         </div>
       </div>
 
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center space-x-4 w-full">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1">
-            <TabsList className="grid grid-cols-5 mb-8">
-              <TabsTrigger value="description" className="flex items-center">
-                <BookOpen className="mr-2 h-4 w-4" /> Description
-              </TabsTrigger>
-              <TabsTrigger value="steps" className="flex items-center">
-                <ListChecks className="mr-2 h-4 w-4" /> Steps
-              </TabsTrigger>
-              <TabsTrigger value="solution" className="flex items-center">
-                <CheckCircle className="mr-2 h-4 w-4" /> Your Solution
-              </TabsTrigger>
-              <TabsTrigger value="help" className="flex items-center">
-                <HelpCircle className="mr-2 h-4 w-4" /> Help
-              </TabsTrigger>
-              <TabsTrigger value="collaborate" className="flex items-center">
-                <Users className="mr-2 h-4 w-4" /> Collaborate
-                {activeUsers.length > 1 && (
-                  <Badge variant="secondary" className="ml-2">
-                    {activeUsers.length}
-                  </Badge>
-                )}
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-
-          {/* Connection status indicator */}
-          <div className="flex items-center">
-            <div className={`w-2 h-2 rounded-full mr-2 ${
-              wsStatus === 'open' 
-                ? 'bg-green-500' 
-                : wsStatus === 'connecting' 
-                  ? 'bg-yellow-500 animate-pulse' 
-                  : 'bg-red-500'
-            }`} />
-            <span className="text-sm text-muted-foreground">
-              {wsStatus === 'open' 
-                ? 'Connected' 
-                : wsStatus === 'connecting' 
-                  ? 'Connecting...' 
-                  : 'Disconnected'}
-            </span>
-          </div>
-        </div>
-      </div>
-
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid grid-cols-4 mb-8">
+          <TabsTrigger value="description" className="flex items-center">
+            <BookOpen className="mr-2 h-4 w-4" /> Description
+          </TabsTrigger>
+          <TabsTrigger value="steps" className="flex items-center">
+            <ListChecks className="mr-2 h-4 w-4" /> Steps
+          </TabsTrigger>
+          <TabsTrigger value="solution" className="flex items-center">
+            <CheckCircle className="mr-2 h-4 w-4" /> Your Solution
+          </TabsTrigger>
+          <TabsTrigger value="help" className="flex items-center">
+            <HelpCircle className="mr-2 h-4 w-4" /> Help
+          </TabsTrigger>
+        </TabsList>
 
         <TabsContent value="description">
           <Card>
@@ -290,9 +224,25 @@ export default function ExerciseDetailPage() {
         <TabsContent value="solution">
           <Card>
             <CardHeader>
-              <CardTitle>Your Solution</CardTitle>
+              <CardTitle className="flex justify-between items-center">
+                <span>Your Solution</span>
+                {hasSubmitted && (
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={togglePracticeMode}
+                    className="flex items-center"
+                  >
+                    <RefreshCw className="mr-2 h-4 w-4" />
+                    Practice Again
+                  </Button>
+                )}
+              </CardTitle>
               <CardDescription>
-                Submit your solution to the exercise
+                {practiceMode 
+                  ? "Practice mode - your solution won't be saved" 
+                  : "Submit your solution to the exercise"
+                }
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -325,7 +275,7 @@ export default function ExerciseDetailPage() {
                       <div className="mt-6 flex items-center">
                         <span className="text-lg font-medium mr-2">Score:</span>
                         <Badge variant="outline" className="text-lg">
-                          {latestSubmission.score}/10
+                          {latestSubmission?.score}/10
                         </Badge>
                       </div>
                     )}
@@ -333,6 +283,16 @@ export default function ExerciseDetailPage() {
                 </div>
               ) : (
                 <div className="space-y-4">
+                  {practiceMode && exerciseSubmissions && exerciseSubmissions.length > 0 && (
+                    <Alert className="mb-4">
+                      <RefreshCw className="h-4 w-4 mr-2" />
+                      <AlertTitle>Practice Mode Active</AlertTitle> 
+                      <AlertDescription>
+                        You're now in practice mode. Your solution won't be saved or submitted.
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                  
                   <p className="text-sm text-muted-foreground mb-4">
                     Enter your solution below. Be thorough and apply the framework principles.
                   </p>
@@ -346,7 +306,7 @@ export default function ExerciseDetailPage() {
                   
                   <Button 
                     onClick={handleSubmit}
-                    disabled={submitMutation.isPending}
+                    disabled={submitMutation.isPending || practiceMode}
                     className="w-full"
                   >
                     {submitMutation.isPending ? (
@@ -357,6 +317,18 @@ export default function ExerciseDetailPage() {
                       </>
                     )}
                   </Button>
+                  
+                  {practiceMode && (
+                    <div className="flex justify-center pt-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={togglePracticeMode}
+                      >
+                        Exit Practice Mode
+                      </Button>
+                    </div>
+                  )}
                 </div>
               )}
             </CardContent>
@@ -392,115 +364,6 @@ export default function ExerciseDetailPage() {
                     </ul>
                   </div>
                 )}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="collaborate">
-          <Card>
-            <CardHeader>
-              <CardTitle>Real-time Collaboration</CardTitle>
-              <CardDescription>
-                Work on this exercise with your peers in real-time
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Active users panel */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold mb-2">Active Users ({activeUsers.length})</h3>
-                  <div className="border rounded p-4 min-h-[200px] bg-muted/30">
-                    {activeUsers.length > 0 ? (
-                      <ul className="space-y-2">
-                        {activeUsers.map((user, index) => (
-                          <li key={index} className="flex items-center p-2 rounded hover:bg-muted">
-                            <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center mr-3">
-                              {user.username.charAt(0).toUpperCase()}
-                            </div>
-                            <span>{user.username}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p className="text-muted-foreground text-sm text-center pt-6">
-                        No active users
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Activity feed panel */}
-                <div className="space-y-4 md:col-span-2">
-                  <h3 className="text-lg font-semibold mb-2">Activity Feed</h3>
-                  <div className="border rounded p-4 h-[300px] overflow-y-auto bg-muted/30">
-                    {messages.length > 0 ? (
-                      <div className="space-y-4">
-                        {messages.map((msg, index) => (
-                          <div key={index} className="flex flex-col space-y-1 px-3 py-2 rounded bg-muted/50">
-                            <div className="flex items-center">
-                              <span className="font-medium mr-2">{msg.username}</span>
-                              <span className="text-xs text-muted-foreground">
-                                {new Date(msg.timestamp).toLocaleTimeString()}
-                              </span>
-                            </div>
-                            
-                            {msg.type === 'user-joined' && (
-                              <p className="text-green-600 dark:text-green-400 text-sm">
-                                User joined the collaboration
-                              </p>
-                            )}
-                            
-                            {msg.type === 'user-left' && (
-                              <p className="text-orange-600 dark:text-orange-400 text-sm">
-                                User left the collaboration
-                              </p>
-                            )}
-                            
-                            {msg.type === 'solution-updated' && (
-                              <p className="text-blue-600 dark:text-blue-400 text-sm">
-                                Updated their solution
-                              </p>
-                            )}
-                            
-                            {msg.type === 'new-comment' && (
-                              <div className="mt-1 text-sm bg-background p-2 rounded">
-                                {msg.comment}
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-muted-foreground text-sm text-center pt-6">
-                        No activity yet
-                      </p>
-                    )}
-                  </div>
-                  
-                  {/* Comment input */}
-                  <div className="flex space-x-2">
-                    <Input
-                      placeholder="Type a comment..."
-                      value={comment}
-                      onChange={(e) => setComment(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && !e.shiftKey) {
-                          e.preventDefault();
-                          handleCommentSubmit();
-                        }
-                      }}
-                    />
-                    <Button 
-                      onClick={handleCommentSubmit}
-                      disabled={!comment.trim()}
-                      size="sm"
-                    >
-                      <MessageSquare className="h-4 w-4 mr-2" />
-                      Send
-                    </Button>
-                  </div>
-                </div>
               </div>
             </CardContent>
           </Card>
