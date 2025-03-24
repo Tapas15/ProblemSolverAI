@@ -682,11 +682,12 @@ input:hover, textarea:hover, select:hover {
   transform: rotate(45deg);
 }
 
-/* Navigation styling with light background and blue-violet accents */
+/* Navigation styling with futuristic neon effect */
 nav {
-  @apply shadow-md bg-gradient-to-r from-indigo-50/70 via-blue-50/70 to-violet-50/70 border-b border-indigo-100/50;
+  @apply shadow-lg bg-gradient-to-r from-[#16001E]/90 via-[#270033]/90 to-[#36005A]/90 border-b;
   position: relative;
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(8px);
+  border-color: rgba(125, 90, 241, 0.2);
 }
 
 nav::after {
@@ -695,19 +696,24 @@ nav::after {
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 1px;
+  height: 2px;
   background: linear-gradient(90deg, 
-    rgba(74, 107, 189, 0.1) 0%, 
-    rgba(74, 107, 189, 0.4) 25%, 
-    rgba(105, 82, 212, 0.4) 75%, 
-    rgba(105, 82, 212, 0.1) 100%
+    rgba(125, 90, 241, 0.05) 0%, 
+    rgba(125, 90, 241, 0.6) 30%, 
+    rgba(255, 89, 178, 0.8) 70%, 
+    rgba(255, 89, 178, 0.05) 100%
   );
+  box-shadow: 
+    0 0 10px rgba(125, 90, 241, 0.5),
+    0 0 20px rgba(125, 90, 241, 0.3),
+    0 0 30px rgba(125, 90, 241, 0.1);
 }
 
-/* Navigation menu accent */
+/* Navigation menu accent with neon glow */
 .nav-link {
   position: relative;
   transition: all 0.3s ease;
+  @apply text-white/80 hover:text-white;
 }
 
 .nav-link::after {
@@ -717,17 +723,27 @@ nav::after {
   left: 50%;
   width: 0;
   height: 2px;
-  background: linear-gradient(90deg, #4a6bbd, #6952d4);
+  background: linear-gradient(90deg, #7d5af1, #ff59b2);
   transition: all 0.3s ease;
   transform: translateX(-50%);
+  box-shadow: 
+    0 0 5px rgba(125, 90, 241, 0.7),
+    0 0 8px rgba(125, 90, 241, 0.5);
+  opacity: 0;
 }
 
 .nav-link:hover::after {
   width: 80%;
+  opacity: 1;
+}
+
+.nav-link.active {
+  @apply text-white;
 }
 
 .nav-link.active::after {
   width: 100%;
+  opacity: 1;
 }
 
 /* Card transitions */

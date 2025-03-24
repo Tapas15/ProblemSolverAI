@@ -57,74 +57,74 @@ const Navbar: React.FC = () => {
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
       isScrolled 
-        ? 'bg-[#0A2540]/95 backdrop-blur-md shadow-lg' 
-        : 'bg-gradient-to-r from-[#0A2540] via-[#0A2540] to-[#0E3A5C]'
+        ? 'shadow-lg' 
+        : ''
       }`}
     >
-      {/* Top accent bar with blue gradient */}
-      <div className="h-0.5 w-full bg-gradient-to-r from-[#0078D7] via-[#00A5E0] to-[#C5F2FF]"></div>
+      {/* Neon accent bar at top */}
+      <div className="h-0.5 w-full bg-gradient-to-r from-[#7d5af1]/10 via-[#ff59b2] to-[#7d5af1]/10"></div>
       
       <div className="container mx-auto px-4 md:px-6 py-2 flex justify-between items-center">
         <div className="flex items-center">
           <Link to="/">
             <div className="font-bold text-2xl font-header tracking-tight flex items-center relative group">
-              <div className="absolute -inset-1 bg-gradient-to-r from-[#0078D7] via-[#00A5E0] to-[#C5F2FF] opacity-0 group-hover:opacity-100 blur-lg transition-all duration-700 rounded-full"></div>
+              <div className="absolute -inset-1 bg-gradient-to-r from-[#7d5af1] via-[#ff59b2] to-[#7d5af1] opacity-0 group-hover:opacity-100 blur-lg transition-all duration-700 rounded-full"></div>
               <div className="relative">
-                <span className="text-[#C5F2FF]">Question</span>
+                <span className="text-[#ff59b2]">Question</span>
                 <span className="text-white">Pro</span>
-                <span className="text-[#00A5E0] ml-1 relative">
+                <span className="text-[#7d5af1] ml-1 relative">
                   AI
-                  <Sparkles className="absolute -top-1 -right-4 h-3 w-3 text-[#C5F2FF] animate-pulse" />
+                  <Sparkles className="absolute -top-1 -right-4 h-3 w-3 text-[#ff59b2] animate-pulse" />
                 </span>
               </div>
             </div>
           </Link>
 
-          <div className="hidden lg:flex space-x-4 ml-12">
+          <div className="hidden lg:flex space-x-5 ml-12">
             <Link to="/">
-              <div className={`py-1 flex items-center space-x-1 group ${location.startsWith('/frameworks') || location === '/' ? 'text-[#00A5E0]' : 'text-white hover:text-[#00A5E0]'} transition-colors`}>
-                <BookOpen className={`h-3.5 w-3.5 ${location.startsWith('/frameworks') || location === '/' ? 'text-[#00A5E0]' : 'text-white group-hover:text-[#00A5E0]'} transition-colors`} />
-                <span className={`text-sm ${location.startsWith('/frameworks') || location === '/' ? 'border-b border-[#00A5E0]' : 'border-b border-transparent group-hover:border-[#00A5E0]/50'} transition-all pb-0.5`}>
+              <div className={`py-1 flex items-center space-x-1 group nav-link ${location.startsWith('/frameworks') || location === '/' ? 'active' : ''}`}>
+                <BookOpen className="h-3.5 w-3.5" />
+                <span className="text-sm pb-0.5">
                   Frameworks
                 </span>
               </div>
             </Link>
             <Link to="/learning-path">
-              <div className={`py-1 flex items-center space-x-1 group ${location.startsWith('/learning-path') ? 'text-[#C5F2FF]' : 'text-white hover:text-[#C5F2FF]'} transition-colors`}>
-                <BarChart className={`h-3.5 w-3.5 ${location.startsWith('/learning-path') ? 'text-[#C5F2FF]' : 'text-white group-hover:text-[#C5F2FF]'} transition-colors`} />
-                <span className={`text-sm ${location.startsWith('/learning-path') ? 'border-b border-[#C5F2FF]' : 'border-b border-transparent group-hover:border-[#C5F2FF]/50'} transition-all pb-0.5`}>
+              <div className={`py-1 flex items-center space-x-1 group nav-link ${location.startsWith('/learning-path') ? 'active' : ''}`}>
+                <BarChart className="h-3.5 w-3.5" />
+                <span className="text-sm pb-0.5">
                   Learning
                 </span>
               </div>
             </Link>
             <Link to="/ai-assistant">
-              <div className={`py-1 flex items-center space-x-1 group ${location === '/ai-assistant' ? 'text-[#0078D7]' : 'text-white hover:text-[#0078D7]'} transition-colors`}>
-                <Lightbulb className={`h-3.5 w-3.5 ${location === '/ai-assistant' ? 'text-[#0078D7]' : 'text-white group-hover:text-[#0078D7]'} transition-colors`} />
-                <span className={`text-sm ${location === '/ai-assistant' ? 'border-b border-[#0078D7]' : 'border-b border-transparent group-hover:border-[#0078D7]/50'} transition-all pb-0.5`}>
+              <div className={`py-1 flex items-center space-x-1 group nav-link ${location === '/ai-assistant' ? 'active' : ''}`}>
+                <Lightbulb className="h-3.5 w-3.5" />
+                <span className="text-sm pb-0.5">
                   AI Assistant
                 </span>
               </div>
             </Link>
             <Link to="/dashboard">
-              <div className={`py-1 flex items-center space-x-1 group ${location === '/dashboard' ? 'text-[#89CFF0]' : 'text-white hover:text-[#89CFF0]'} transition-colors`}>
-                <LayoutDashboard className={`h-3.5 w-3.5 ${location === '/dashboard' ? 'text-[#89CFF0]' : 'text-white group-hover:text-[#89CFF0]'} transition-colors`} />
-                <span className={`text-sm ${location === '/dashboard' ? 'border-b border-[#89CFF0]' : 'border-b border-transparent group-hover:border-[#89CFF0]/50'} transition-all pb-0.5`}>
+              <div className={`py-1 flex items-center space-x-1 group nav-link ${location === '/dashboard' ? 'active' : ''}`}>
+                <LayoutDashboard className="h-3.5 w-3.5" />
+                <span className="text-sm pb-0.5">
                   Dashboard
                 </span>
               </div>
             </Link>
             <Link to="/exercises">
-              <div className={`py-1 flex items-center space-x-1 group ${location.startsWith('/exercises') || location.startsWith('/exercise/') ? 'text-[#B3E0FF]' : 'text-white hover:text-[#B3E0FF]'} transition-colors`}>
-                <Dumbbell className={`h-3.5 w-3.5 ${location.startsWith('/exercises') || location.startsWith('/exercise/') ? 'text-[#B3E0FF]' : 'text-white group-hover:text-[#B3E0FF]'} transition-colors`} />
-                <span className={`text-sm ${location.startsWith('/exercises') || location.startsWith('/exercise/') ? 'border-b border-[#B3E0FF]' : 'border-b border-transparent group-hover:border-[#B3E0FF]/50'} transition-all pb-0.5`}>
+              <div className={`py-1 flex items-center space-x-1 group nav-link ${location.startsWith('/exercises') || location.startsWith('/exercise/') ? 'active' : ''}`}>
+                <Dumbbell className="h-3.5 w-3.5" />
+                <span className="text-sm pb-0.5">
                   Practice
                 </span>
               </div>
             </Link>
             <Link to="/founder">
-              <div className={`py-1 flex items-center space-x-1 group ${location === '/founder' ? 'text-[#7CB9E8]' : 'text-white hover:text-[#7CB9E8]'} transition-colors`}>
-                <Briefcase className={`h-3.5 w-3.5 ${location === '/founder' ? 'text-[#7CB9E8]' : 'text-white group-hover:text-[#7CB9E8]'} transition-colors`} />
-                <span className={`text-sm ${location === '/founder' ? 'border-b border-[#7CB9E8]' : 'border-b border-transparent group-hover:border-[#7CB9E8]/50'} transition-all pb-0.5`}>
+              <div className={`py-1 flex items-center space-x-1 group nav-link ${location === '/founder' ? 'active' : ''}`}>
+                <Briefcase className="h-3.5 w-3.5" />
+                <span className="text-sm pb-0.5">
                   Founder
                 </span>
               </div>
