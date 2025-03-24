@@ -1,18 +1,39 @@
 import { useState } from "react";
 import { useRoute, useLocation, Link } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { getExercise, submitExerciseSolution, getUserExerciseSubmissions } from "@/lib/api";
+import { getExercise, submitExerciseSolution, getUserExerciseSubmissions, deleteExerciseSubmission } from "@/lib/api";
 import { queryClient } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, SendIcon, CheckCircle, Clock, BookOpen, HelpCircle, ListChecks, RefreshCw } from "lucide-react";
+import { 
+  ArrowLeft, 
+  SendIcon, 
+  CheckCircle, 
+  Clock, 
+  BookOpen, 
+  HelpCircle, 
+  ListChecks, 
+  RefreshCw, 
+  Trash2 
+} from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function ExerciseDetailPage() {
   const [, params] = useRoute("/exercise/:exerciseId");
@@ -23,6 +44,7 @@ export default function ExerciseDetailPage() {
   const [activeTab, setActiveTab] = useState("description");
   const { user } = useAuth();
   const [practiceMode, setPracticeMode] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   // Fetch exercise
   const { data: exercise, isLoading: exerciseLoading } = useQuery({
@@ -86,6 +108,35 @@ export default function ExerciseDetailPage() {
       });
     },
   });
+
+  // Delete submission mutation
+  const deleteMutation = useMutation({
+    mutationFn: (submissionId: number) => deleteExerciseSubmission(submissionId),
+    onSuccess: () => {
+      toast({
+        title: "Submission deleted",
+        description: "Your solution has been deleted successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: [`/api/exercises/${exerciseId}/submissions/user`] });
+      setPracticeMode(false);
+      setIsDeleteDialogOpen(false);
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Deletion failed",
+        description: error.message,
+        variant: "destructive",
+      });
+      setIsDeleteDialogOpen(false);
+    },
+  });
+
+  // Handle submission deletion
+  const handleDeleteSubmission = () => {
+    if (latestSubmission?.id) {
+      deleteMutation.mutate(latestSubmission.id);
+    }
+  };
 
   // Handle submission
   const handleSubmit = () => {
@@ -233,15 +284,48 @@ export default function ExerciseDetailPage() {
               <CardTitle className="flex justify-between items-center">
                 <span>Your Solution</span>
                 {hasSubmission && (
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={togglePracticeMode}
-                    className="flex items-center"
-                  >
-                    <RefreshCw className="mr-2 h-4 w-4" />
-                    {practiceMode ? "View My Submission" : "Practice Again"}
-                  </Button>
+                  <div className="flex gap-2">
+                    <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                      <AlertDialogTrigger asChild>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          className="flex items-center text-red-600 dark:text-red-400"
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Delete
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Submission</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to delete your submission? This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction 
+                            onClick={handleDeleteSubmission}
+                            disabled={deleteMutation.isPending}
+                            className="bg-red-600 hover:bg-red-700 text-white"
+                          >
+                            {deleteMutation.isPending ? "Deleting..." : "Delete"}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                    
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={togglePracticeMode}
+                      className="flex items-center"
+                    >
+                      <RefreshCw className="mr-2 h-4 w-4" />
+                      {practiceMode ? "View My Submission" : "Practice Again"}
+                    </Button>
+                  </div>
                 )}
               </CardTitle>
               <CardDescription>
