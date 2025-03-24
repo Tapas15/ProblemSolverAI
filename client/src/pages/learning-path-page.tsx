@@ -1,19 +1,25 @@
-import { useEffect } from 'react';
-import { useLocation } from 'wouter';
+import React from 'react';
+import MainLayout from '@/components/layout/main-layout';
+import LearningPathView from '@/components/learning-path/learning-path-view';
 
-// This is a placeholder component that redirects to the Frameworks page
-// In a future enhancement, this could be a dedicated learning path page
 export default function LearningPathPage() {
-  const [, setLocation] = useLocation();
-  
-  useEffect(() => {
-    // Redirect to the frameworks page since they're currently showing the same content
-    setLocation('/');
-  }, [setLocation]);
-  
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <p className="text-lg text-gray-700">Redirecting to Frameworks...</p>
-    </div>
+    <MainLayout>
+      <div className="container mx-auto px-4 py-6 md:py-10">
+        {/* Page Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold font-header text-primary mb-3">
+            Personalized Learning Path
+          </h1>
+          <p className="text-gray-600 max-w-3xl">
+            Follow this guided learning journey to systematically improve your problem-solving skills. 
+            We've organized the frameworks in a sequence optimized for learning progression.
+          </p>
+        </div>
+        
+        {/* Learning Path View */}
+        <LearningPathView />
+      </div>
+    </MainLayout>
   );
 }
