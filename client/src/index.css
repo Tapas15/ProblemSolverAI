@@ -2,21 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
 @layer base {
   :root {
-    --background: 210 40% 98%; /* #F4F7FB */
-    --foreground: 222 20% 18%; /* #242A36 */
+    --background: 270 30% 98%; /* #F7F5FD */
+    --foreground: 260 20% 18%; /* #2D2A3A */
     
     --card: 0 0% 100%;
-    --card-foreground: 222 20% 18%;
+    --card-foreground: 260 20% 18%;
     
     --popover: 0 0% 100%;
-    --popover-foreground: 222 20% 18%;
+    --popover-foreground: 260 20% 18%;
     
-    --primary: 222 47% 15%; /* #0A2540 */
+    --primary: 265 60% 54%; /* #5D3FD3 - Rich Purple */
     --primary-foreground: 0 0% 100%;
     
-    --secondary: 197 100% 40%; /* #0091C7 */
+    --secondary: 340 95% 60%; /* #FF2975 - Vibrant Pink */
     --secondary-foreground: 0 0% 100%;
     
     --accent: 40 100% 50%; /* #FFA500 */
