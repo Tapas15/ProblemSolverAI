@@ -169,7 +169,7 @@ const AuthPage: React.FC = () => {
                             <Input 
                               type="password" 
                               placeholder="Enter your password" 
-                              className="pl-10 py-6 h-11 rounded-lg border-gray-200 focus:border-secondary" 
+                              className="pl-10 py-6 h-11 rounded-lg border-gray-200 focus:border-[#3b82f6]" 
                               {...field} 
                             />
                           </div>
@@ -240,7 +240,7 @@ const AuthPage: React.FC = () => {
                             <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                             <Input 
                               placeholder="John Doe" 
-                              className="pl-10 py-5 h-11 rounded-lg border-gray-200 focus:border-secondary"
+                              className="pl-10 py-5 h-11 rounded-lg border-gray-200 focus:border-[#3b82f6]"
                               {...field} 
                             />
                           </div>
@@ -261,7 +261,7 @@ const AuthPage: React.FC = () => {
                             <UserPlus className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                             <Input 
                               placeholder="johndoe" 
-                              className="pl-10 py-5 h-11 rounded-lg border-gray-200 focus:border-secondary"
+                              className="pl-10 py-5 h-11 rounded-lg border-gray-200 focus:border-[#3b82f6]"
                               {...field} 
                             />
                           </div>
@@ -283,7 +283,7 @@ const AuthPage: React.FC = () => {
                             <Input 
                               type="email" 
                               placeholder="john.doe@example.com" 
-                              className="pl-10 py-5 h-11 rounded-lg border-gray-200 focus:border-secondary"
+                              className="pl-10 py-5 h-11 rounded-lg border-gray-200 focus:border-[#3b82f6]"
                               {...field} 
                             />
                           </div>
@@ -306,7 +306,7 @@ const AuthPage: React.FC = () => {
                               <Input 
                                 type="password" 
                                 placeholder="Create a password" 
-                                className="pl-10 py-5 h-11 rounded-lg border-gray-200 focus:border-secondary"
+                                className="pl-10 py-5 h-11 rounded-lg border-gray-200 focus:border-[#3b82f6]"
                                 {...field} 
                               />
                             </div>
@@ -328,7 +328,7 @@ const AuthPage: React.FC = () => {
                               <Input 
                                 type="password" 
                                 placeholder="Confirm password" 
-                                className="pl-10 py-5 h-11 rounded-lg border-gray-200 focus:border-secondary"
+                                className="pl-10 py-5 h-11 rounded-lg border-gray-200 focus:border-[#3b82f6]"
                                 {...field} 
                               />
                             </div>
