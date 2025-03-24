@@ -73,7 +73,7 @@ const Sidebar: React.FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
       <div className="flex flex-col h-full">
         {/* Logo and collapse button */}
         <div className={cn(
-          "flex items-center h-16 px-4 border-b border-[#7d5af1]/10",
+          "flex items-center h-16 px-4 border-b border-[#3b82f6]/10",
           isCollapsed ? "justify-center" : "justify-between"
         )}>
           {!isCollapsed && (
@@ -98,10 +98,10 @@ const Sidebar: React.FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
             variant="ghost" 
             size="icon" 
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="h-8 w-8 rounded-full hover:bg-[#36005A]/50"
+            className="h-8 w-8 rounded-full hover:bg-[#1a4482]/50"
           >
             <ChevronRight className={cn(
-              "h-4 w-4 text-[#9545ff]",
+              "h-4 w-4 text-[#3b82f6]",
               isCollapsed && "rotate-180"
             )} />
           </Button>
@@ -110,7 +110,7 @@ const Sidebar: React.FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
         {/* Profile section */}
         {user && (
           <div className={cn(
-            "flex items-center p-4 border-b border-[#7d5af1]/10",
+            "flex items-center p-4 border-b border-[#3b82f6]/10",
             isCollapsed ? "justify-center" : "justify-between"
           )}>
             {!isCollapsed ? (
@@ -132,11 +132,11 @@ const Sidebar: React.FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
                     <ChevronDown className="ml-2 h-4 w-4 text-white/50" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-[220px] mt-1 py-2 rounded-xl border border-[#7d5af1]/20 shadow-xl bg-[#16001E] backdrop-blur-sm">
+                <DropdownMenuContent align="start" className="w-[220px] mt-1 py-2 rounded-xl border border-[#3b82f6]/20 shadow-xl bg-[#0f2544] backdrop-blur-sm">
                   <div className="p-2">
                     <Link to="/profile">
-                      <DropdownMenuItem className="py-2 px-3 rounded-lg cursor-pointer hover:bg-[#36005A]/50 flex items-center space-x-2 text-sm text-white">
-                        <User className="h-4 w-4 text-[#9545ff]" />
+                      <DropdownMenuItem className="py-2 px-3 rounded-lg cursor-pointer hover:bg-[#1a4482]/50 flex items-center space-x-2 text-sm text-white">
+                        <User className="h-4 w-4 text-[#3b82f6]" />
                         <span>Profile</span>
                       </DropdownMenuItem>
                     </Link>
@@ -184,18 +184,18 @@ const Sidebar: React.FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
         {/* Search bar */}
         <div className={cn("px-4 pt-4", isCollapsed && "hidden")}>
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#ff59b2]/70 h-4 w-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#60a5fa]/70 h-4 w-4" />
             <Input 
               type="text" 
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
               placeholder="Search..." 
-              className="pl-10 py-2 rounded-xl text-sm text-white pr-8 focus:ring-1 focus:ring-[#ff59b2] w-full bg-[#36005A]/30 border-0"
+              className="pl-10 py-2 rounded-xl text-sm text-white pr-8 focus:ring-1 focus:ring-[#3b82f6] w-full bg-[#1a4482]/30 border-0"
             />
             {searchValue && (
               <button 
                 onClick={() => setSearchValue('')}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#ff59b2]/70 hover:text-[#ff59b2]"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#60a5fa]/70 hover:text-[#60a5fa]"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
@@ -250,7 +250,7 @@ const Sidebar: React.FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
         </div>
 
         {/* Bottom section */}
-        <div className="p-4 border-t border-[#7d5af1]/10">
+        <div className="p-4 border-t border-[#3b82f6]/10">
           {!user ? (
             <Link to="/auth">
               <Button className={cn(
