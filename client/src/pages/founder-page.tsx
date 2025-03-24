@@ -1,10 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'wouter';
 import { SiLinkedin, SiInstagram } from 'react-icons/si';
-import { ArrowLeft, Award, Globe, Briefcase, BookOpen, Menu, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Award, Globe, Briefcase, BookOpen, Menu, ChevronDown, Upload } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { 
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 const FounderPage: React.FC = () => {
   return (
