@@ -15,6 +15,9 @@ export const users = pgTable("users", {
   avatarUrl: text("avatar_url"),
   phone: text("phone"),
   bio: text("bio"),
+  twoFactorEnabled: boolean("two_factor_enabled").default(false),
+  twoFactorSecret: text("two_factor_secret"),
+  twoFactorBackupCodes: text("two_factor_backup_codes"),
 });
 
 export const insertUserSchema = createInsertSchema(users).pick({
@@ -28,6 +31,9 @@ export const insertUserSchema = createInsertSchema(users).pick({
   avatarUrl: true,
   phone: true,
   bio: true,
+  twoFactorEnabled: true,
+  twoFactorSecret: true,
+  twoFactorBackupCodes: true,
 });
 
 // Framework schema
