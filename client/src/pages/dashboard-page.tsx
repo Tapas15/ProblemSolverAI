@@ -447,8 +447,8 @@ const DashboardPage = () => {
                   </CardHeader>
                   <CardContent className="space-y-4 px-3 pb-3 sm:p-6">
                     <div className="flex items-center gap-4">
-                      <div className="h-16 w-16 rounded-lg bg-gradient-to-br from-blue-500 to-blue-300 flex items-center justify-center text-white">
-                        <BarChart2 className="h-8 w-8" />
+                      <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-lg bg-gradient-to-br from-blue-500 to-blue-300 flex items-center justify-center text-white">
+                        <BarChart2 className="h-6 w-6 sm:h-8 sm:w-8" />
                       </div>
                       <div>
                         <h3 className="font-semibold text-base sm:text-lg">Take Your First Quiz</h3>
