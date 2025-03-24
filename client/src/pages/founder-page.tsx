@@ -36,7 +36,7 @@ const FounderPage: React.FC = () => {
                 
                 <div className="mt-3 flex gap-2 justify-center sm:justify-start">
                   <a 
-                    href="https://www.linkedin.com/in/manaskumarmahanandia/" 
+                    href="https://www.linkedin.com/in/drmanaskumar" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="text-blue-600 hover:text-blue-700 transition-colors"
@@ -44,7 +44,7 @@ const FounderPage: React.FC = () => {
                     <SiLinkedin className="h-6 w-6" />
                   </a>
                   <a 
-                    href="https://www.instagram.com/manas_mahanandia/" 
+                    href="https://www.instagram.com/official_manaskumar" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="text-pink-600 hover:text-pink-700 transition-colors"
@@ -164,7 +164,7 @@ const FounderPage: React.FC = () => {
                     
                     <div className="pt-2">
                       <a 
-                        href="https://www.linkedin.com/in/manaskumarmahanandia/" 
+                        href="https://www.linkedin.com/in/drmanaskumar" 
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
@@ -175,7 +175,7 @@ const FounderPage: React.FC = () => {
                     </div>
                     <div>
                       <a 
-                        href="https://www.instagram.com/manas_mahanandia/" 
+                        href="https://www.instagram.com/official_manaskumar" 
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
