@@ -132,7 +132,7 @@ const Sidebar: React.FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
                     <ChevronDown className="ml-2 h-4 w-4 text-white/50" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-[220px] mt-1 py-2 rounded-xl border border-[#3b82f6]/20 shadow-xl bg-[#0f2544] backdrop-blur-sm">
+                <DropdownMenuContent align="start" className="w-[220px] mt-1 py-2 rounded-xl border border-[#3b82f6]/20 shadow-xl bg-[#0f172a] backdrop-blur-sm">
                   <div className="p-2">
                     <Link to="/profile">
                       <DropdownMenuItem className="py-2 px-3 rounded-lg cursor-pointer hover:bg-[#1a4482]/50 flex items-center space-x-2 text-sm text-white">
@@ -141,27 +141,27 @@ const Sidebar: React.FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
                       </DropdownMenuItem>
                     </Link>
                     <Link to="/settings">
-                      <DropdownMenuItem className="py-2 px-3 rounded-lg cursor-pointer hover:bg-[#36005A]/50 flex items-center space-x-2 text-sm text-white">
-                        <Settings className="h-4 w-4 text-[#9545ff]" />
+                      <DropdownMenuItem className="py-2 px-3 rounded-lg cursor-pointer hover:bg-[#1a4482]/50 flex items-center space-x-2 text-sm text-white">
+                        <Settings className="h-4 w-4 text-[#3b82f6]" />
                         <span>Settings</span>
                       </DropdownMenuItem>
                     </Link>
                     {isAdmin && (
                       <Link to="/scorm-admin">
-                        <DropdownMenuItem className="py-2 px-3 rounded-lg cursor-pointer hover:bg-[#36005A]/50 flex items-center space-x-2 text-sm text-white">
-                          <FileCode className="h-4 w-4 text-[#9545ff]" />
+                        <DropdownMenuItem className="py-2 px-3 rounded-lg cursor-pointer hover:bg-[#1a4482]/50 flex items-center space-x-2 text-sm text-white">
+                          <FileCode className="h-4 w-4 text-[#3b82f6]" />
                           <span>Admin Panel</span>
-                          <Badge className="ml-2 bg-[#ff59b2]/10 text-[#ff59b2] hover:bg-[#ff59b2]/20 px-1.5 py-0 text-[10px]">
+                          <Badge className="ml-2 bg-[#60a5fa]/10 text-[#60a5fa] hover:bg-[#60a5fa]/20 px-1.5 py-0 text-[10px]">
                             Admin
                           </Badge>
                         </DropdownMenuItem>
                       </Link>
                     )}
                   </div>
-                  <DropdownMenuSeparator className="my-1 bg-[#7d5af1]/10" />
+                  <DropdownMenuSeparator className="my-1 bg-[#3b82f6]/10" />
                   <div className="p-2">
                     <DropdownMenuItem 
-                      className="py-2 px-3 rounded-lg cursor-pointer hover:bg-[#36005A]/50 flex items-center space-x-2 text-sm text-red-400 hover:text-red-300" 
+                      className="py-2 px-3 rounded-lg cursor-pointer hover:bg-[#1a4482]/50 flex items-center space-x-2 text-sm text-red-400 hover:text-red-300" 
                       onClick={handleLogout}
                     >
                       <LogOut className="h-4 w-4" />
@@ -254,7 +254,7 @@ const Sidebar: React.FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
           {!user ? (
             <Link to="/auth">
               <Button className={cn(
-                "w-full bg-gradient-to-r from-[#9545ff] to-[#ff59b2] hover:from-[#9545ff]/90 hover:to-[#ff59b2]/90 text-white shadow-md hover:shadow-lg transition-all rounded-xl",
+                "w-full bg-gradient-to-r from-[#3b82f6] to-[#60a5fa] hover:from-[#3b82f6]/90 hover:to-[#60a5fa]/90 text-white shadow-md hover:shadow-lg transition-all rounded-xl",
                 isCollapsed && "aspect-square p-0"
               )}>
                 {isCollapsed ? <User className="h-5 w-5" /> : "Sign In"}
@@ -264,7 +264,7 @@ const Sidebar: React.FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
             <Button
               variant="ghost"
               size="icon"
-              className="w-full aspect-square rounded-xl text-red-400 hover:text-red-300 hover:bg-[#36005A]/50"
+              className="w-full aspect-square rounded-xl text-red-400 hover:text-red-300 hover:bg-[#1a4482]/50"
               onClick={handleLogout}
             >
               <LogOut className="h-5 w-5" />
