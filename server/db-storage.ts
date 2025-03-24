@@ -1,10 +1,11 @@
-import { users, frameworks, modules, userProgress, aiConversations, quizzes, quizAttempts, exercises, exerciseSubmissions } from "@shared/schema";
+import { users, frameworks, modules, userProgress, aiConversations, quizzes, quizAttempts, exercises, exerciseSubmissions, certificates } from "@shared/schema";
 import { eq, and, desc } from "drizzle-orm";
 import type { 
   User, InsertUser, Framework, InsertFramework, Module, InsertModule, 
   UserProgress, InsertUserProgress, AiConversation, InsertAiConversation,
   Quiz, InsertQuiz, QuizAttempt, InsertQuizAttempt,
-  Exercise, InsertExercise, ExerciseSubmission, InsertExerciseSubmission
+  Exercise, InsertExercise, ExerciseSubmission, InsertExerciseSubmission,
+  Certificate, InsertCertificate
 } from "@shared/schema";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
@@ -391,6 +392,61 @@ export class PostgresStorage implements IStorage {
       .delete(exerciseSubmissions)
       .where(eq(exerciseSubmissions.id, id))
       .execute();
+  }
+  
+  // Certificate methods
+  async getCertificate(id: number): Promise<Certificate | undefined> {
+    const results = await db.select().from(certificates).where(eq(certificates.id, id)).execute();
+    return results[0];
+  }
+
+  async getUserCertificates(userId: number): Promise<Certificate[]> {
+    return await db
+      .select()
+      .from(certificates)
+      .where(eq(certificates.userId, userId))
+      .orderBy(desc(certificates.issueDate))
+      .execute();
+  }
+
+  async getFrameworkCertificates(frameworkId: number): Promise<Certificate[]> {
+    return await db
+      .select()
+      .from(certificates)
+      .where(eq(certificates.frameworkId, frameworkId))
+      .execute();
+  }
+
+  async createCertificate(certificate: InsertCertificate): Promise<Certificate> {
+    const results = await db
+      .insert(certificates)
+      .values({
+        ...certificate,
+        issueDate: new Date()
+      })
+      .returning()
+      .execute();
+    return results[0];
+  }
+
+  async updateCertificate(id: number, certificateData: Partial<Certificate>): Promise<Certificate | undefined> {
+    const results = await db
+      .update(certificates)
+      .set(certificateData)
+      .where(eq(certificates.id, id))
+      .returning()
+      .execute();
+    return results[0];
+  }
+
+  async revokeCertificate(id: number): Promise<Certificate | undefined> {
+    const results = await db
+      .update(certificates)
+      .set({ status: "revoked" })
+      .where(eq(certificates.id, id))
+      .returning()
+      .execute();
+    return results[0];
   }
   
   // Seed data for frameworks and modules
