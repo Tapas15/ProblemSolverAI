@@ -42,7 +42,7 @@ const FounderPage: React.FC = () => {
                 <div className="flex flex-col sm:flex-row items-center sm:items-end">
                   <div>
                     <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Dr. Manas Kumar</h1>
-                    <p className="text-sm sm:text-base text-gray-600 mt-1">Founder & CEO - QuestionPro AI App & Expert Insights</p>
+                    <p className="text-sm sm:text-base text-gray-600 mt-1">Founder of QuestionPro AI</p>
                     <div className="flex items-center justify-center sm:justify-start mt-2 space-x-2">
                       <Badge variant="outline" className="bg-primary/5 text-xs">Business Strategy</Badge>
                       <Badge variant="outline" className="bg-primary/5 text-xs">Career Development</Badge>
@@ -87,7 +87,7 @@ const FounderPage: React.FC = () => {
                           <span className="text-primary text-xs">✓</span>
                         </div>
                         <div>
-                          <span className="font-medium text-gray-900">Founder & CEO</span> - QuestionPro AI App & Expert Insights
+                          <span className="font-medium text-gray-900">Founder</span> - QuestionPro AI
                         </div>
                       </li>
                       <li className="flex items-start">
@@ -125,7 +125,7 @@ const FounderPage: React.FC = () => {
                     <Separator className="my-3" />
                     <p className="mt-3 text-gray-700">
                       I've dedicated my career to developing and refining strategic frameworks that make complex business
-                      challenges manageable. The frameworks featured in QuestionPro AI App represent the culmination of this work,
+                      challenges manageable. The frameworks featured in QuestionPro AI represent the culmination of this work,
                       providing structured approaches to common business problems faced by modern professionals.
                     </p>
                     <p className="mt-4 text-gray-700">
