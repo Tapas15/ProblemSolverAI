@@ -4,19 +4,19 @@ import { storage } from './server/storage.js';
 // Function to seed all content
 async function seedAllContent() {
   console.log('Starting to seed content...');
-  
+
   try {
     // Add content to modules
     await seedModuleContent();
-    
+
     // Add quiz data
     await seedQuizData();
-    
+
     // Add case studies
     await seedCaseStudies();
-    
+
     console.log('Content seeding complete!');
-    
+
   } catch (error) {
     console.error('Error seeding content:', error);
   }
@@ -25,7 +25,7 @@ async function seedAllContent() {
 // Module content for all frameworks
 async function seedModuleContent() {
   console.log('Seeding module content...');
-  
+
   const moduleContent = [
     // MECE Framework modules (ID: 1)
     {
@@ -56,13 +56,13 @@ async function seedModuleContent() {
       keyTakeaways: "• MECE creates clear, logical communication structure\n• Helps avoid redundancy and ensures completeness\n• Makes complex information more accessible to audiences\n• Particularly valuable in consulting and executive communications\n• Enhances credibility by demonstrating structured thinking",
       order: 3
     },
-    
+
     // Design Thinking modules (ID: 2)
     {
       frameworkId: 2,
       name: "Design Thinking Fundamentals",
       description: "Introduction to the design thinking methodology and mindset.",
-      content: "<h2>What is Design Thinking?</h2><p>Design Thinking is a human-centered approach to innovation that draws from the designer's toolkit to integrate the needs of people, the possibilities of technology, and the requirements for business success. It's a methodology that promotes creative problem-solving with a focus on the user.</p><h2>Core Principles</h2><p>Design Thinking is built on several key principles:</p><ul><li>Human-centered: Empathizing with the users</li><li>Collaborative: Bringing diverse perspectives together</li><li>Experimental: Testing and refining solutions</li><li>Optimistic: Believing that better solutions are possible</li></ul>",
+      content: "<h2>What is Design Thinking?</h2><p>Design Thinking is a human-centered approach to innovation that draws from the designer's toolkit to integrate the needs of people, the possibilities of technology, and the requirements for business success.</p><div class='mb-4'><img src='/images/frameworks/design-thinking-process.png' alt='Design Thinking Process' class='w-full rounded-lg shadow-md'/></div><div class='video-container my-4'><iframe src='https://www.youtube.com/embed/design-thinking-intro' title='Design Thinking Overview' class='w-full h-64 rounded-lg'></iframe></div>",
       examples: "Example 1: IDEO Shopping Cart Project\nIDEO, a leading design firm, reimagined the shopping cart using design thinking. They observed shoppers, identified pain points, brainstormed solutions, prototyped new designs, and tested them with real users. The result was an innovative cart that addressed key user needs while being feasible to manufacture.\n\nExample 2: Airbnb Transformation\nAirbnb used design thinking to transform their struggling platform. By empathizing with hosts, they discovered that low-quality property photos were hindering bookings. Their solution was simple but effective: professional photography services for hosts. This user-centered approach helped drive their growth significantly.",
       keyTakeaways: "• Design thinking puts human needs at the center of product/service development\n• Combines creative and analytical approaches to problem-solving\n• Emphasizes rapid prototyping and iterative improvement\n• Encourages diverse perspectives and cross-functional collaboration\n• Can be applied to virtually any industry or challenge",
       order: 1
@@ -85,13 +85,13 @@ async function seedModuleContent() {
       keyTakeaways: "• The Define phase transforms research into actionable problem statements\n• Focus on needs and insights, not solutions\n• Good problem statements provide constraints that spark creativity\n• Reframe problems to avoid obvious or unimaginative solutions\n• POV statements should be user-centered, not technology or business-centered",
       order: 3
     },
-    
+
     // SWOT Analysis modules (ID: 3)
     {
       frameworkId: 3,
       name: "SWOT Fundamentals",
       description: "Learn the basics of SWOT analysis and when to use it.",
-      content: "<h2>Understanding SWOT Analysis</h2><p>SWOT Analysis is a strategic planning technique used to help identify Strengths, Weaknesses, Opportunities, and Threats related to business competition or project planning. SWOT provides a straightforward framework that encourages strategic thinking through identifying internal and external factors that may impact success.</p><h2>The Four Components</h2><ul><li><strong>Strengths:</strong> Internal attributes and resources that support achieving objectives</li><li><strong>Weaknesses:</strong> Internal attributes and resources that hinder achieving objectives</li><li><strong>Opportunities:</strong> External factors that could be leveraged for benefit</li><li><strong>Threats:</strong> External factors that could compromise success</li></ul><h2>When to Use SWOT</h2><p>SWOT analysis is most valuable when:</p><ul><li>Exploring new initiatives or ventures</li><li>Making decisions about business strategy</li><li>Identifying areas for improvement</li><li>Adjusting and refining plans mid-course</li><li>Understanding how you compare to competitors</li></ul>",
+      content: "<h2>Understanding SWOT Analysis</h2><p>SWOT Analysis is a strategic planning technique used to help identify Strengths, Weaknesses, Opportunities, and Threats related to business competition or project planning. SWOT provides a straightforward framework that encourages strategic thinking through identifying internal and external factors that may impact success.</p><div class='mb-4'><img src='/images/frameworks/swot-matrix.png' alt='SWOT Analysis Matrix' class='w-full rounded-lg shadow-md'/></div><div class='video-container my-4'><iframe src='https://www.youtube.com/embed/swot-analysis-guide' title='SWOT Analysis Guide' class='w-full h-64 rounded-lg'></iframe></div>",
       examples: "Example: Tesla SWOT\nStrengths: Brand recognition, innovative technology, first-mover advantage in premium EVs, vertical integration\nWeaknesses: Production challenges, high costs, limited service centers, reliance on government incentives\nOpportunities: Growing EV market, expansion to energy storage, autonomous driving technology, international expansion\nThreats: Increasing competition from traditional automakers, potential battery material shortages, regulatory changes, economic downturns affecting luxury purchases",
       keyTakeaways: "• SWOT provides a structured way to evaluate internal and external factors\n• Internal factors are Strengths and Weaknesses (things you can control)\n• External factors are Opportunities and Threats (things you can't control)\n• Effective SWOT analyses are specific and honest, not generic\n• SWOT is a starting point for strategy, not the complete answer\n• Simple framework that can be applied to almost any decision context",
       order: 1
@@ -115,18 +115,18 @@ async function seedModuleContent() {
       order: 3
     }
   ];
-  
+
   // Loop through each module template and add or update content
   for (const module of moduleContent) {
     try {
       // Fetch existing modules for this framework
       const modules = await storage.getModulesByFrameworkId(module.frameworkId);
-      
+
       // Find a matching module by name or order
       const existingModule = modules.find(m => 
         m.name === module.name || m.order === module.order
       );
-      
+
       if (existingModule) {
         // Update existing module
         console.log(`Updating module: ${module.name}`);
@@ -153,14 +153,14 @@ async function seedModuleContent() {
       console.error(`Error processing module ${module.name}:`, error);
     }
   }
-  
+
   console.log('Module content seeding completed.');
 }
 
 // Quiz data for all frameworks
 async function seedQuizData() {
   console.log('Seeding quiz data...');
-  
+
   const quizTemplates = [
     // MECE Framework (ID: 1)
     {
@@ -292,7 +292,7 @@ async function seedQuizData() {
         }
       ])
     },
-    
+
     // Design Thinking (ID: 2)
     {
       frameworkId: 2,
@@ -368,7 +368,7 @@ async function seedQuizData() {
         }
       ])
     },
-    
+
     // SWOT Analysis (ID: 3)
     {
       frameworkId: 3,
@@ -445,18 +445,18 @@ async function seedQuizData() {
       ])
     }
   ];
-  
+
   // Loop through each quiz template and add or update
   for (const quiz of quizTemplates) {
     try {
       // Check if quiz already exists for this framework and level
       const quizzes = await storage.getQuizzesByFramework(quiz.frameworkId, quiz.level);
-      
+
       if (quizzes.length > 0) {
         // Update existing quiz
         const existingQuiz = quizzes[0];
         console.log(`Updating ${quiz.level} quiz for framework ID ${quiz.frameworkId}`);
-        
+
         await storage.updateQuiz(existingQuiz.id, {
           title: quiz.title,
           description: quiz.description,
@@ -468,7 +468,7 @@ async function seedQuizData() {
       } else {
         // Create new quiz
         console.log(`Creating ${quiz.level} quiz for framework ID ${quiz.frameworkId}`);
-        
+
         await storage.createQuiz({
           frameworkId: quiz.frameworkId,
           title: quiz.title,
@@ -484,14 +484,14 @@ async function seedQuizData() {
       console.error(`Error processing ${quiz.level} quiz for framework ${quiz.frameworkId}:`, error);
     }
   }
-  
+
   console.log('Quiz data seeding completed.');
 }
 
 // Case studies for frameworks
 async function seedCaseStudies() {
   console.log('Seeding case studies...');
-  
+
   const caseStudies = [
     {
       frameworkId: 1, // MECE Framework
@@ -506,15 +506,15 @@ async function seedCaseStudies() {
       caseStudy: "Tesla's Strategic Expansion\n\nTesla used SWOT analysis when deciding to expand into the energy storage market with Powerwall. Strengths included battery technology expertise and brand recognition. Weaknesses included manufacturing constraints and cash flow challenges. Opportunities included growing renewable energy adoption and utility partnerships. Threats included established competitors and regulatory uncertainty. The analysis helped Tesla time their market entry and position their products to leverage their strengths while mitigating weaknesses."
     }
   ];
-  
+
   // Add case studies to frameworks
   for (const item of caseStudies) {
     try {
       const framework = await storage.getFramework(item.frameworkId);
-      
+
       if (framework) {
         console.log(`Adding case study to framework: ${framework.name}`);
-        
+
         await storage.updateFramework(item.frameworkId, {
           case_studies: item.caseStudy
         });
@@ -523,7 +523,7 @@ async function seedCaseStudies() {
       console.error(`Error adding case study to framework ${item.frameworkId}:`, error);
     }
   }
-  
+
   console.log('Case studies seeding completed.');
 }
 
