@@ -106,10 +106,10 @@ const DashboardPage = () => {
         ) : (
           <div className="flex flex-col space-y-8">
             {/* Learner Profile Header */}
-          <div className="bg-gradient-to-r from-[#0A2540] via-[#0E3A5C] to-[#0078D7] rounded-xl overflow-hidden shadow-lg">
+          <div className="bg-gradient-to-r from-[#0057B8] via-[#0078D7] to-[#0096F6] rounded-xl overflow-hidden shadow-lg">
             <div className="p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center gap-6">
               <div className="relative">
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-[#0078D7] via-[#00A5E0] to-[#C5F2FF] rounded-full opacity-75 blur-sm"></div>
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-[#0096F6] via-[#00A5E0] to-[#C5F2FF] rounded-full opacity-75 blur-sm"></div>
                 <Avatar className="h-20 w-20 md:h-24 md:w-24 ring-4 ring-[#00A5E0]/60 shadow-xl">
                   <AvatarImage src="" alt={user?.name} />
                   <AvatarFallback className="bg-gradient-to-br from-[#0078D7] to-[#00A5E0] text-white text-xl font-medium">
@@ -119,7 +119,7 @@ const DashboardPage = () => {
               </div>
               <div className="flex-1">
                 <h1 className="text-2xl md:text-3xl font-bold font-header text-white">{user?.name || 'User'}'s Learning Journey</h1>
-                <p className="text-[#C5F2FF]/80 mt-1 text-sm md:text-base">
+                <p className="text-[#C5F2FF]/90 mt-1 text-sm md:text-base">
                   {new Date().toLocaleDateString('en-US', { 
                     weekday: 'long', 
                     year: 'numeric', 
@@ -128,86 +128,92 @@ const DashboardPage = () => {
                   })}
                 </p>
                 <div className="flex flex-wrap gap-2 mt-3">
-                  <Badge className="bg-[#0078D7]/20 text-[#C5F2FF] hover:bg-[#0078D7]/30 border border-[#0078D7]/50">
+                  <Badge className="bg-[#0078D7]/30 text-white hover:bg-[#0078D7]/40 border border-[#0078D7]/50">
                     <Brain className="w-3 h-3 mr-1" /> {stats?.completedModules || 0} Modules Completed
                   </Badge>
-                  <Badge className="bg-[#00A5E0]/20 text-[#C5F2FF] hover:bg-[#00A5E0]/30 border border-[#00A5E0]/50">
+                  <Badge className="bg-[#00A5E0]/30 text-white hover:bg-[#00A5E0]/40 border border-[#00A5E0]/50">
                     <Trophy className="w-3 h-3 mr-1" /> {stats?.passedQuizzes || 0} Quizzes Passed
                   </Badge>
-                  <Badge className="bg-[#C5F2FF]/20 text-white hover:bg-[#C5F2FF]/30 border border-[#C5F2FF]/50">
+                  <Badge className="bg-[#C5F2FF]/30 text-white hover:bg-[#C5F2FF]/40 border border-[#C5F2FF]/50">
                     <Award className="w-3 h-3 mr-1" /> {Math.max(stats?.averageScore || 0, 0)}% Avg. Score
                   </Badge>
                 </div>
               </div>
-              <div className="hidden md:flex flex-col items-center justify-center bg-[#0A2540]/60 p-4 rounded-lg border border-[#0078D7]/30 backdrop-blur-sm">
+              <div className="flex md:hidden w-full mt-2 p-3 bg-[#0057B8]/60 rounded-lg border border-[#0078D7]/30 backdrop-blur-sm justify-center">
+                <div className="text-3xl font-bold text-white mr-2">
+                  {stats?.frameworkProgress || 0}%
+                </div>
+                <div className="text-[#C5F2FF]/90 text-sm self-end mb-1">Total Progress</div>
+              </div>
+              <div className="hidden md:flex flex-col items-center justify-center bg-[#0057B8]/60 p-4 rounded-lg border border-[#0078D7]/30 backdrop-blur-sm">
                 <div className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#00A5E0] to-[#C5F2FF]">
                   {stats?.frameworkProgress || 0}%
                 </div>
-                <div className="text-[#C5F2FF]/80 text-sm">Total Progress</div>
+                <div className="text-[#C5F2FF]/90 text-sm">Total Progress</div>
               </div>
             </div>
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card className="shadow-md bg-white/80 border border-blue-100">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <Card className="shadow-md bg-gradient-to-b from-white to-[#F7FAFF] border border-[#E0F0FF]">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm flex items-center">
-                  <BookCheck className="h-4 w-4 mr-2 text-blue-600" />
+                  <BookCheck className="h-4 w-4 mr-2 text-[#0078D7]" />
                   Frameworks
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold mb-1">{stats?.completedFrameworks || 0}/{stats?.totalFrameworks || 0}</div>
-                <Progress value={stats?.frameworkProgress} className="h-2" />
+                <div className="text-2xl font-bold mb-1 text-[#0A2540]">{stats?.completedFrameworks || 0}/{stats?.totalFrameworks || 0}</div>
+                <Progress value={stats?.frameworkProgress} className="h-2 bg-[#E0F0FF]" />
                 <p className="text-xs text-gray-500 mt-2">
                   {stats?.frameworkProgress || 0}% of frameworks completed
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="shadow-md bg-white/80 border border-blue-100">
+            <Card className="shadow-md bg-gradient-to-b from-white to-[#F7FAFF] border border-[#E0F0FF]">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm flex items-center">
-                  <BookOpen className="h-4 w-4 mr-2 text-blue-600" />
+                  <BookOpen className="h-4 w-4 mr-2 text-[#00A5E0]" />
                   Modules
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold mb-1">{stats?.completedModules || 0}/{stats?.totalModules || 0}</div>
-                <Progress value={stats?.moduleProgress} className="h-2" />
+                <div className="text-2xl font-bold mb-1 text-[#0A2540]">{stats?.completedModules || 0}/{stats?.totalModules || 0}</div>
+                <Progress value={stats?.moduleProgress} className="h-2 bg-[#E0F0FF]" />
                 <p className="text-xs text-gray-500 mt-2">
                   {stats?.moduleProgress || 0}% of modules completed
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="shadow-md bg-white/80 border border-blue-100">
+            <Card className="shadow-md bg-gradient-to-b from-white to-[#F7FAFF] border border-[#E0F0FF]">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm flex items-center">
-                  <BarChart2 className="h-4 w-4 mr-2 text-blue-600" />
+                  <BarChart2 className="h-4 w-4 mr-2 text-[#0096F6]" />
                   Quizzes
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold mb-1">{stats?.passedQuizzes || 0}/{stats?.totalQuizzes || 0}</div>
-                <Progress value={stats?.quizProgress} className="h-2" />
+                <div className="text-2xl font-bold mb-1 text-[#0A2540]">{stats?.passedQuizzes || 0}/{stats?.totalQuizzes || 0}</div>
+                <Progress value={stats?.quizProgress} className="h-2 bg-[#E0F0FF]" />
                 <p className="text-xs text-gray-500 mt-2">
                   {stats?.quizProgress || 0}% of quizzes passed
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="shadow-md bg-white/80 border border-blue-100">
+            <Card className="shadow-md bg-gradient-to-b from-white to-[#F7FAFF] border border-[#E0F0FF]">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm flex items-center">
-                  <Target className="h-4 w-4 mr-2 text-blue-600" />
+                  <Target className="h-4 w-4 mr-2 text-[#00B1F5]" />
                   Average Score
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold mb-1">{stats?.averageScore || 0}%</div>
-                <Progress value={stats?.averageScore} className="h-2" />
+                <div className="text-2xl font-bold mb-1 text-[#0A2540]">{stats?.averageScore || 0}%</div>
+                <Progress value={stats?.averageScore} className="h-2 bg-[#E0F0FF]" />
                 <p className="text-xs text-gray-500 mt-2">
                   Across all quiz attempts
                 </p>
@@ -217,16 +223,16 @@ const DashboardPage = () => {
 
           {/* Tabs section */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-            <TabsList>
-              <TabsTrigger value="progress">
+            <TabsList className="bg-[#F0F8FF] dark:bg-[#0A2540]/10">
+              <TabsTrigger value="progress" className="data-[state=active]:bg-white dark:data-[state=active]:bg-[#0078D7]/10 data-[state=active]:text-[#0078D7] dark:data-[state=active]:text-[#0078D7]">
                 <BookCheck className="h-4 w-4 mr-2" />
                 Framework Progress
               </TabsTrigger>
-              <TabsTrigger value="quizzes">
+              <TabsTrigger value="quizzes" className="data-[state=active]:bg-white dark:data-[state=active]:bg-[#0078D7]/10 data-[state=active]:text-[#0078D7] dark:data-[state=active]:text-[#0078D7]">
                 <BarChart2 className="h-4 w-4 mr-2" />
                 Quiz Performance
               </TabsTrigger>
-              <TabsTrigger value="recommendations">
+              <TabsTrigger value="recommendations" className="data-[state=active]:bg-white dark:data-[state=active]:bg-[#0078D7]/10 data-[state=active]:text-[#0078D7] dark:data-[state=active]:text-[#0078D7]">
                 <Lightbulb className="h-4 w-4 mr-2" />
                 Recommendations
               </TabsTrigger>
@@ -431,7 +437,7 @@ const DashboardPage = () => {
                 
                 <Card className="shadow-md">
                   <CardHeader>
-                    <CardTitle className="flex items-center text-purple-600">
+                    <CardTitle className="flex items-center text-blue-600">
                       <Target className="h-5 w-5 mr-2" />
                       Practice Recommendation
                     </CardTitle>
@@ -441,7 +447,7 @@ const DashboardPage = () => {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="flex items-center gap-4">
-                      <div className="h-16 w-16 rounded-lg bg-gradient-to-br from-purple-600 to-purple-400 flex items-center justify-center text-white">
+                      <div className="h-16 w-16 rounded-lg bg-gradient-to-br from-blue-500 to-blue-300 flex items-center justify-center text-white">
                         <BarChart2 className="h-8 w-8" />
                       </div>
                       <div>
