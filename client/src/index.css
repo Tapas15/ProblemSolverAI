@@ -223,7 +223,7 @@
   left: 0;
   width: 5px;
   height: 0;
-  background: linear-gradient(to bottom, #2563eb, #4f92fa);
+  background: linear-gradient(to bottom, #7d5af1, #ff59b2);
   transition: height 0.5s cubic-bezier(0.19, 1, 0.22, 1);
   box-shadow: 0 0 20px rgba(125, 90, 241, 0.5);
 }
