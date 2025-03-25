@@ -48,6 +48,17 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
       setExpandedModule(null);
     } else {
       setExpandedModule(moduleId);
+      
+      // Scroll to the selected module
+      setTimeout(() => {
+        const moduleElement = document.getElementById(`module-${moduleId}`);
+        if (moduleElement) {
+          moduleElement.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start'
+          });
+        }
+      }, 100);
     }
   };
   
@@ -147,6 +158,18 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
             // Set timeout to let the current module completion animation/styling finish
             setTimeout(() => {
               setExpandedModule(nextModule.id);
+              
+              // Wait for the DOM to update, then scroll to the next module
+              setTimeout(() => {
+                const nextModuleElement = document.getElementById(`module-${nextModule.id}`);
+                if (nextModuleElement) {
+                  // Smooth scroll to the next module
+                  nextModuleElement.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start'
+                  });
+                }
+              }, 100);
             }, 300);
           } else {
             // This was the last module

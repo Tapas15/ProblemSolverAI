@@ -1278,3 +1278,10 @@ nav::after {
 .module-completed h4 {
   color: #15803d !important; /* green-700 */
 }
+
+/* Active module styling for better visibility */
+.module-active {
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5) !important;
+  transform: translateY(-1px) !important;
+  transition: all 0.3s ease !important;
+}
