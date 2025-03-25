@@ -13,16 +13,7 @@ import {
   Award, 
   BookMarked,
   BarChart,
-  Zap,
-  Network,
-  Boxes,
-  Layers,
-  Target,
-  Compass,
-  Workflow,
-  ScanSearch,
-  TreePine,
-  Gauge
+  Zap
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'wouter';
@@ -31,46 +22,6 @@ import { Framework, UserProgress } from '@shared/schema';
 import { Progress } from '@/components/ui/progress';
 import { isNativePlatform } from '@/lib/capacitor';
 import FrameworkMiniCard from '@/components/framework/framework-mini-card';
-
-// Function to generate a dynamic gradient based on framework ID
-function getFrameworkGradient(id: number): string {
-  // Collection of beautiful gradients
-  const gradients = [
-    'linear-gradient(135deg, #667eea, #764ba2)', // Blue-purple
-    'linear-gradient(135deg, #6a11cb, #2575fc)', // Deep blue-purple
-    'linear-gradient(135deg, #f093fb, #f5576c)', // Pink-red
-    'linear-gradient(135deg, #ff9a9e, #fad0c4)', // Soft pink
-    'linear-gradient(135deg, #fbc2eb, #a6c1ee)', // Lavender
-    'linear-gradient(135deg, #a1c4fd, #c2e9fb)', // Light blue
-    'linear-gradient(135deg, #84fab0, #8fd3f4)', // Teal-blue
-    'linear-gradient(135deg, #fdcbf1, #e6dee9)', // Soft pink
-    'linear-gradient(135deg, #d4fc79, #96e6a1)', // Green
-    'linear-gradient(135deg, #ffcb8c, #ff8b8d)'  // Orange-pink
-  ];
-  
-  // Use modulo to cycle through gradients based on ID
-  return gradients[id % gradients.length];
-}
-
-// Function to get an appropriate icon based on framework name
-function getFrameworkIcon(name: string, id: number): JSX.Element {
-  // Get an icon based on the framework name or fall back to a default
-  const iconMap: Record<string, JSX.Element> = {
-    'MECE': <Boxes className="h-8 w-8 text-white drop-shadow-lg" />,
-    'Design Thinking': <Lightbulb className="h-8 w-8 text-white drop-shadow-lg" />,
-    'SWOT Analysis': <Layers className="h-8 w-8 text-white drop-shadow-lg" />,
-    'First Principles Thinking': <TreePine className="h-8 w-8 text-white drop-shadow-lg" />,
-    'Porter\'s Five Forces': <Network className="h-8 w-8 text-white drop-shadow-lg" />,
-    'Jobs-To-Be-Done': <Target className="h-8 w-8 text-white drop-shadow-lg" />,
-    'Blue Ocean Strategy': <Compass className="h-8 w-8 text-white drop-shadow-lg" />,
-    'SCAMPER': <Workflow className="h-8 w-8 text-white drop-shadow-lg" />,
-    'Problem-Tree Analysis': <ScanSearch className="h-8 w-8 text-white drop-shadow-lg" />,
-    'Pareto Principle': <Gauge className="h-8 w-8 text-white drop-shadow-lg" />
-  };
-  
-  // Try to find an exact match, or use a fallback based on ID
-  return iconMap[name] || iconMap[Object.keys(iconMap)[id % Object.keys(iconMap).length]] || <BookOpen className="h-8 w-8 text-white drop-shadow-lg" />;
-}
 
 const HomePage: React.FC = () => {
   const { user } = useAuth();
@@ -267,41 +218,10 @@ const HomePage: React.FC = () => {
                 <Link key={framework.id} to={`/frameworks/${framework.id}`}>
                   <Card className="native-card touch-feedback overflow-hidden">
                     <CardContent className="p-3">
-                      <div className="flex items-start space-x-3">
-                        {framework.image_url ? (
-                          <img 
-                            src={framework.image_url} 
-                            alt={framework.name} 
-                            className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
-                          />
-                        ) : (
-                          <div className="w-16 h-16 rounded-lg bg-gradient-to-r from-[#3b82f6]/10 to-[#60a5fa]/10 flex items-center justify-center flex-shrink-0">
-                            <BookOpen className="h-8 w-8 text-[#3b82f6]/60" />
-                          </div>
-                        )}
-                        
-                        <div className="flex-1">
-                          <div className="flex justify-between">
-                            <h3 className="font-medium text-[#0f172a] text-sm line-clamp-1">{framework.name}</h3>
-                            <Badge variant="outline" className={`badge-${framework.level === 'Beginner' ? 'blue' : framework.level === 'Intermediate' ? 'purple' : 'orange'} text-xs`}>
-                              {framework.level}
-                            </Badge>
-                          </div>
-                          
-                          <p className="text-xs text-[#64748b] line-clamp-1 mt-0.5">{framework.description}</p>
-                          
-                          <div className="mt-2 space-y-1">
-                            <div className="flex justify-between items-center text-xs text-[#64748b]">
-                              <div className="flex items-center">
-                                <Clock className="h-3 w-3 mr-1" />
-                                <span>{`${framework.duration} min`}</span>
-                              </div>
-                              <span>{Math.round(getFrameworkProgress(framework.id))}% Complete</span>
-                            </div>
-                            <Progress value={getFrameworkProgress(framework.id)} className="h-1.5 animate-progress" />
-                          </div>
-                        </div>
-                      </div>
+                      <FrameworkMiniCard 
+                        framework={framework} 
+                        progressPercent={getFrameworkProgress(framework.id)} 
+                      />
                     </CardContent>
                   </Card>
                 </Link>
@@ -344,41 +264,10 @@ const HomePage: React.FC = () => {
                 <Link key={framework.id} to={`/frameworks/${framework.id}`}>
                   <Card className="native-card touch-feedback overflow-hidden">
                     <CardContent className="p-3">
-                      <div className="flex items-start space-x-3">
-                        {framework.image_url ? (
-                          <img 
-                            src={framework.image_url} 
-                            alt={framework.name} 
-                            className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
-                          />
-                        ) : (
-                          <div className="w-16 h-16 rounded-lg bg-gradient-to-r from-[#3b82f6]/10 to-[#60a5fa]/10 flex items-center justify-center flex-shrink-0">
-                            <BookOpen className="h-8 w-8 text-[#3b82f6]/60" />
-                          </div>
-                        )}
-                        
-                        <div className="flex-1">
-                          <div className="flex justify-between">
-                            <h3 className="font-medium text-[#0f172a] text-sm line-clamp-1">{framework.name}</h3>
-                            <Badge variant="outline" className={`badge-${framework.level === 'Beginner' ? 'blue' : framework.level === 'Intermediate' ? 'purple' : 'orange'} text-xs`}>
-                              {framework.level}
-                            </Badge>
-                          </div>
-                          
-                          <p className="text-xs text-[#64748b] line-clamp-1 mt-0.5">{framework.description}</p>
-                          
-                          <div className="mt-2 space-y-1">
-                            <div className="flex justify-between items-center text-xs text-[#64748b]">
-                              <div className="flex items-center">
-                                <Clock className="h-3 w-3 mr-1" />
-                                <span>{`${framework.duration} min`}</span>
-                              </div>
-                              <span>{Math.round(getFrameworkProgress(framework.id))}% Complete</span>
-                            </div>
-                            <Progress value={getFrameworkProgress(framework.id)} className="h-1.5 animate-progress" />
-                          </div>
-                        </div>
-                      </div>
+                      <FrameworkMiniCard 
+                        framework={framework} 
+                        progressPercent={getFrameworkProgress(framework.id)} 
+                      />
                     </CardContent>
                   </Card>
                 </Link>
@@ -395,13 +284,13 @@ const HomePage: React.FC = () => {
             ) : filteredFrameworks.length === 0 ? (
               <div className="native-empty-state">
                 <div className="native-empty-state-icon">
-                  <Award className="h-6 w-6" />
+                  <Lightbulb className="h-6 w-6" />
                 </div>
-                <p className="native-empty-state-title">No recommendations yet</p>
-                <p className="native-empty-state-description">Complete more frameworks to receive personalized recommendations</p>
+                <p className="native-empty-state-title">No recommendations</p>
+                <p className="native-empty-state-description">You've started or completed all available frameworks</p>
                 <Link to="/frameworks">
                   <Button variant="outline" size="sm" className="mt-4">
-                    Browse Frameworks
+                    Browse All Frameworks
                   </Button>
                 </Link>
               </div>
@@ -410,44 +299,10 @@ const HomePage: React.FC = () => {
                 <Link key={framework.id} to={`/frameworks/${framework.id}`}>
                   <Card className="native-card touch-feedback overflow-hidden">
                     <CardContent className="p-3">
-                      <div className="flex items-start space-x-3">
-                        {framework.image_url ? (
-                          <img 
-                            src={framework.image_url} 
-                            alt={framework.name} 
-                            className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
-                          />
-                        ) : (
-                          <div className="w-16 h-16 rounded-lg bg-gradient-to-r from-[#3b82f6]/10 to-[#60a5fa]/10 flex items-center justify-center flex-shrink-0">
-                            <BookOpen className="h-8 w-8 text-[#3b82f6]/60" />
-                          </div>
-                        )}
-                        
-                        <div className="flex-1">
-                          <div className="flex justify-between">
-                            <h3 className="font-medium text-[#0f172a] text-sm line-clamp-1">{framework.name}</h3>
-                            <Badge variant="outline" className={`badge-${framework.level === 'Beginner' ? 'blue' : framework.level === 'Intermediate' ? 'purple' : 'orange'} text-xs`}>
-                              {framework.level}
-                            </Badge>
-                          </div>
-                          
-                          <p className="text-xs text-[#64748b] line-clamp-1 mt-0.5">{framework.description}</p>
-                          
-                          <div className="mt-2 space-y-1">
-                            <div className="flex justify-between items-center text-xs text-[#64748b]">
-                              <div className="flex items-center">
-                                <Clock className="h-3 w-3 mr-1" />
-                                <span>{`${framework.duration} min`}</span>
-                              </div>
-                              <span>Ready to start</span>
-                            </div>
-                            <Button variant="outline" size="sm" className="w-full text-xs mt-1 h-7">
-                              Start Learning
-                              <ArrowRight className="ml-1 h-3 w-3" />
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
+                      <FrameworkMiniCard 
+                        framework={framework} 
+                        progressPercent={getFrameworkProgress(framework.id)} 
+                      />
                     </CardContent>
                   </Card>
                 </Link>
