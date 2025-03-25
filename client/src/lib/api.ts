@@ -308,6 +308,14 @@ export async function use2FABackupCode(backupCode: string): Promise<{
   return await res.json();
 }
 
+export async function clearQuizAttempts(): Promise<{ 
+  success: boolean; 
+  message: string; 
+}> {
+  const res = await apiRequest('DELETE', '/api/quiz-attempts/user/clear');
+  return await res.json();
+}
+
 export async function generateNew2FABackupCodes(token: string): Promise<{ 
   message: string; 
   backupCodes: string[]; 

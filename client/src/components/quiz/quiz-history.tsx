@@ -25,11 +25,25 @@ import {
   Calendar,
   Clock,
   AlertCircle,
-  Award
+  Award,
+  Trash2
 } from "lucide-react";
 import type { QuizAttempt } from "@shared/schema";
 import { formatDistanceToNow } from "date-fns";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useToast } from "@/hooks/use-toast";
+import { clearQuizAttempts } from "@/lib/api";
 
 type QuizHistoryProps = {
   attempts: QuizAttempt[];
@@ -40,9 +54,41 @@ type QuizHistoryProps = {
 
 export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts = 3 }: QuizHistoryProps) {
   const [expandedAttempt, setExpandedAttempt] = useState<number | null>(null);
+  const [isClearing, setIsClearing] = useState(false);
+  const { toast } = useToast();
   
   // Make sure attempts is always an array, even if it's null or undefined
   const safeAttempts = Array.isArray(attempts) ? attempts : [];
+  
+  // Function to clear all quiz attempts
+  const handleClearAllAttempts = async () => {
+    try {
+      setIsClearing(true);
+      const result = await clearQuizAttempts();
+      
+      if (result.success) {
+        toast({
+          title: "Quiz attempts cleared",
+          description: "All your quiz attempts have been cleared successfully. You can now start fresh!",
+          variant: "default",
+        });
+        
+        // Force page reload to refresh the data
+        window.location.reload();
+      } else {
+        throw new Error("Failed to clear quiz attempts");
+      }
+    } catch (error) {
+      console.error("Error clearing quiz attempts:", error);
+      toast({
+        title: "Error",
+        description: "There was a problem clearing your quiz attempts. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsClearing(false);
+    }
+  };
   
   // Filter attempts for this quiz if quizId is provided
   const filteredAttempts = quizId 

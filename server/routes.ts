@@ -1411,6 +1411,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Endpoint to clear all quiz attempts for the authenticated user
+  app.delete("/api/quiz-attempts/user/clear", async (req, res, next) => {
+    if (!req.isAuthenticated()) {
+      return res.sendStatus(401);
+    }
+    
+    try {
+      const userId = req.user!.id;
+      console.log(`Request to clear all quiz attempts for user ID: ${userId}`);
+      
+      await storage.clearUserQuizAttempts(userId);
+      
+      // Invalidate related caches
+      invalidateCache(CACHE_KEYS.USER_QUIZ_ATTEMPTS(userId));
+      
+      console.log(`Successfully cleared all quiz attempts for user ID: ${userId}`);
+      res.status(200).json({ 
+        success: true,
+        message: "All quiz attempts have been cleared successfully" 
+      });
+    } catch (error) {
+      console.error("Error clearing quiz attempts:", error);
+      next(error);
+    }
+  });
+  
   // xAPI routes
   app.post("/api/xapi/statements", async (req, res, next) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
