@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useQuery, useQueryClient, useQueries } from '@tanstack/react-query';
 import { getUserProgress, getUserQuizAttempts, getFrameworks, getAllModulesByFramework, getQuizzesByFramework } from '@/lib/api';
-import { Framework, UserProgress, QuizAttempt, Module } from '@shared/schema';
+import { Framework, UserProgress, QuizAttempt, Module, Quiz } from '@shared/schema';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -215,6 +215,45 @@ const DashboardPage = () => {
           {/* Back button removed as requested */}
           <h1 className="mobile-h1 text-[#0f172a]">Dashboard</h1>
         </div>
+        
+        {/* Refresh button */}
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="rounded-full w-9 h-9 bg-blue-50 text-blue-600 hover:bg-blue-100 transition-all touch-feedback"
+          onClick={() => {
+            // Show loading toast
+            toast({
+              title: "Refreshing dashboard...",
+              description: "Fetching latest data",
+            });
+            
+            // Refresh all data
+            queryClient.invalidateQueries({ queryKey: ['/api/user/progress'] });
+            queryClient.invalidateQueries({ queryKey: ['/api/frameworks'] });
+            queryClient.invalidateQueries({ queryKey: ['/api/quiz-attempts/user'] });
+            queryClient.invalidateQueries({ queryKey: ['/api/all-modules-by-framework'] });
+            
+            // Refresh framework-specific quiz data
+            frameworkIds.forEach((frameworkId: number) => {
+              queryClient.invalidateQueries({ 
+                queryKey: ['/api/quizzes/framework', frameworkId] 
+              });
+            });
+            
+            // Let the user know when refresh is complete
+            setTimeout(() => {
+              toast({
+                title: "Dashboard refreshed",
+                description: "Latest data loaded successfully",
+                variant: "default",
+              });
+            }, 1000);
+          }}
+          aria-label="Refresh data"
+        >
+          <RefreshCw className="h-5 w-5" />
+        </Button>
       </div>
 
       {isLoading ? (
