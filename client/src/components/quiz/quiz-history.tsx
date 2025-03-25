@@ -36,10 +36,13 @@ type QuizHistoryProps = {
 export default function QuizHistory({ attempts, quizId, frameworkId }: QuizHistoryProps) {
   const [expandedAttempt, setExpandedAttempt] = useState<number | null>(null);
   
+  // Make sure attempts is always an array, even if it's null or undefined
+  const safeAttempts = Array.isArray(attempts) ? attempts : [];
+  
   // Filter attempts for this quiz if quizId is provided
   const filteredAttempts = quizId 
-    ? attempts.filter(attempt => attempt.quizId === quizId)
-    : attempts;
+    ? safeAttempts.filter(attempt => attempt.quizId === quizId)
+    : safeAttempts;
   
   // Sort attempts by completion date, newest first
   const sortedAttempts = [...filteredAttempts].sort((a, b) => {

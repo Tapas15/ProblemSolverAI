@@ -1272,19 +1272,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user!.id;
       
-      // Check cache first
-      const cacheKey = CACHE_KEYS.USER_QUIZ_ATTEMPTS(userId);
-      const cachedData = getCachedData(cacheKey);
-      if (cachedData) {
-        return res.json(cachedData);
-      }
-      
+      // For quiz attempts, always fetch fresh data to ensure real-time updates
+      // This ensures that newly submitted quiz attempts are always visible
       const attempts = await storage.getUserQuizAttempts(userId);
       
-      // Cache the attempts data
-      cacheData(cacheKey, attempts);
+      // Set cache control headers to prevent browser caching
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+      res.setHeader('Surrogate-Control', 'no-store');
+      
+      // Return the attempts without caching
       res.json(attempts);
     } catch (error) {
+      console.error('Error fetching quiz attempts:', error);
       next(error);
     }
   });

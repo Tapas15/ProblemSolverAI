@@ -42,15 +42,25 @@ const DashboardPage = () => {
     staleTime: 60 * 1000,
   });
 
-  // Fetch quiz attempts
+  // Fetch quiz attempts with shorter stale time and refetching enabled
   const {
     data: quizAttempts,
-    isLoading: isQuizAttemptsLoading
+    isLoading: isQuizAttemptsLoading,
+    refetch: refetchQuizAttempts
   } = useQuery({
     queryKey: ['/api/quiz-attempts/user'],
     queryFn: getUserQuizAttempts,
-    staleTime: 60 * 1000,
+    staleTime: 0, // Always fetch fresh data
+    refetchOnMount: true, // Refetch when component mounts
+    refetchOnWindowFocus: true, // Refetch when window gets focus
   });
+  
+  // Refetch quiz attempts on tab change to ensure data is fresh
+  useEffect(() => {
+    if (activeTab === 'quizzes') {
+      refetchQuizAttempts();
+    }
+  }, [activeTab, refetchQuizAttempts]);
   
   // Fetch all modules by framework
   const {
