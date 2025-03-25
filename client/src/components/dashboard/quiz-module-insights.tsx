@@ -7,11 +7,28 @@ import { Button } from '@/components/ui/button';
 import { ChevronRight, BarChart2, Award, BookOpen, Book, CheckCircle, AlertTriangle } from 'lucide-react';
 import { useLocation } from 'wouter';
 
+interface QuizAttemptWithMetadata extends QuizAttempt {
+  frameworkId?: number;
+  moduleId?: number;
+}
+
 interface QuizModuleInsightsProps {
-  quizAttempts: QuizAttempt[];
+  quizAttempts: QuizAttemptWithMetadata[];
   frameworks: Framework[];
   userProgress: UserProgress[];
   allModulesByFramework: Record<number, Module[]>;
+}
+
+// Define the insight type for type safety
+interface FrameworkInsight {
+  frameworkId: number;
+  framework: Framework;
+  recentAttempts: QuizAttemptWithMetadata[];
+  avgScore: number;
+  moduleCompletion: number;
+  needsAttention: boolean;
+  excellentProgress: boolean;
+  progress: UserProgress;
 }
 
 export function QuizModuleInsights({ 
@@ -23,14 +40,15 @@ export function QuizModuleInsights({
   const [, setLocation] = useLocation();
 
   // Group quiz attempts by framework
-  const attemptsByFramework: Record<number, QuizAttempt[]> = {};
+  const attemptsByFramework: Record<number, QuizAttemptWithMetadata[]> = {};
   
   quizAttempts.forEach(attempt => {
+    // We're using the extended interface that allows optional frameworkId/moduleId
     const quiz = attempt.quizId;
     const framework = frameworks.find(f => 
-      f.id === attempt.frameworkId || 
+      f.id === (attempt as QuizAttemptWithMetadata).frameworkId || 
       // Try to find framework if frameworkId is not directly on the attempt
-      allModulesByFramework[f.id]?.some(m => m.id === attempt.moduleId)
+      allModulesByFramework[f.id]?.some(m => m.id === (attempt as QuizAttemptWithMetadata).moduleId)
     );
     
     if (framework) {
@@ -42,48 +60,50 @@ export function QuizModuleInsights({
   });
 
   // Calculate insights for each framework
-  const frameworkInsights = Object.keys(attemptsByFramework).map(frameworkIdStr => {
-    const frameworkId = parseInt(frameworkIdStr);
-    const framework = frameworks.find(f => f.id === frameworkId);
-    const attempts = attemptsByFramework[frameworkId];
-    const progress = userProgress.find(p => p.frameworkId === frameworkId);
-    
-    if (!framework || !attempts.length || !progress) {
-      return null;
-    }
-    
-    // Get recent attempts
-    const recentAttempts = [...attempts].sort((a, b) => {
-      const dateA = a.completedAt ? new Date(a.completedAt).getTime() : 0;
-      const dateB = b.completedAt ? new Date(b.completedAt).getTime() : 0;
-      return dateB - dateA; // Sort by most recent first
-    }).slice(0, 3); // Get most recent 3
-    
-    // Calculate average score for this framework
-    const avgScore = Math.round(
-      attempts.reduce((sum, a) => sum + (a.score / a.maxScore * 100), 0) / attempts.length
-    );
-    
-    // Calculate module completion percentage
-    const moduleCompletion = progress.totalModules > 0 
-      ? Math.round((progress.completedModules || 0) / progress.totalModules * 100)
-      : 0;
-    
-    // Determine if this needs attention based on quiz scores vs. module completion
-    const needsAttention = avgScore < 70 && moduleCompletion > 50;
-    const excellentProgress = avgScore > 85 && moduleCompletion > 75;
-    
-    return {
-      frameworkId,
-      framework,
-      recentAttempts,
-      avgScore,
-      moduleCompletion,
-      needsAttention,
-      excellentProgress,
-      progress
-    };
-  }).filter(Boolean);
+  const frameworkInsights: FrameworkInsight[] = Object.keys(attemptsByFramework)
+    .map(frameworkIdStr => {
+      const frameworkId = parseInt(frameworkIdStr);
+      const framework = frameworks.find(f => f.id === frameworkId);
+      const attempts = attemptsByFramework[frameworkId];
+      const progress = userProgress.find(p => p.frameworkId === frameworkId);
+      
+      if (!framework || !attempts.length || !progress) {
+        return null;
+      }
+      
+      // Get recent attempts
+      const recentAttempts = [...attempts].sort((a, b) => {
+        const dateA = a.completedAt ? new Date(a.completedAt).getTime() : 0;
+        const dateB = b.completedAt ? new Date(b.completedAt).getTime() : 0;
+        return dateB - dateA; // Sort by most recent first
+      }).slice(0, 3); // Get most recent 3
+      
+      // Calculate average score for this framework
+      const avgScore = Math.round(
+        attempts.reduce((sum, a) => sum + (a.score / a.maxScore * 100), 0) / attempts.length
+      );
+      
+      // Calculate module completion percentage
+      const moduleCompletion = progress.totalModules > 0 
+        ? Math.round((progress.completedModules || 0) / progress.totalModules * 100)
+        : 0;
+      
+      // Determine if this needs attention based on quiz scores vs. module completion
+      const needsAttention = avgScore < 70 && moduleCompletion > 50;
+      const excellentProgress = avgScore > 85 && moduleCompletion > 75;
+      
+      return {
+        frameworkId,
+        framework,
+        recentAttempts,
+        avgScore,
+        moduleCompletion,
+        needsAttention,
+        excellentProgress,
+        progress
+      };
+    })
+    .filter((insight): insight is FrameworkInsight => insight !== null);
 
   if (!frameworkInsights.length) {
     return null;

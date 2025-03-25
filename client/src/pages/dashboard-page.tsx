@@ -50,10 +50,13 @@ const DashboardPage = () => {
   const {
     data: quizzes,
     isLoading: isQuizzesLoading,
+    refetch: refetchQuizzes
   } = useQuery({
     queryKey: ['/api/quizzes/framework/0'],
     queryFn: () => getQuizzesByFramework(0), // 0 means all frameworks
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 0, // Always fetch fresh data
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
 
   // Fetch quiz attempts with shorter stale time and refetching enabled
@@ -69,12 +72,13 @@ const DashboardPage = () => {
     refetchOnWindowFocus: true, // Refetch when window gets focus
   });
   
-  // Refetch quiz attempts on tab change to ensure data is fresh
+  // Refetch quiz attempts and quizzes on tab change to ensure data is fresh
   useEffect(() => {
     if (activeTab === 'quizzes') {
       refetchQuizAttempts();
+      refetchQuizzes();
     }
-  }, [activeTab, refetchQuizAttempts]);
+  }, [activeTab, refetchQuizAttempts, refetchQuizzes]);
   
   // Fetch all modules by framework
   const {
@@ -83,16 +87,6 @@ const DashboardPage = () => {
   } = useQuery({
     queryKey: ['/api/all-modules-by-framework'],
     queryFn: getAllModulesByFramework,
-    staleTime: 60 * 1000,
-  });
-  
-  // Fetch all quizzes (for quiz attempt navigation)
-  const {
-    data: quizzes,
-    isLoading: isQuizzesLoading
-  } = useQuery({
-    queryKey: ['/api/quizzes'],
-    queryFn: () => getQuizzesByFramework(0), // 0 means fetch all quizzes
     staleTime: 60 * 1000,
   });
 
@@ -390,16 +384,29 @@ const DashboardPage = () => {
                                 size="sm" 
                                 className="native-button-secondary mt-1 text-xs py-2 h-8"
                                 onClick={() => {
+                                  // Check if quizzes data is loaded
+                                  if (!quizzes || quizzes.length === 0) {
+                                    // If quiz data isn't available, refetch it
+                                    toast({
+                                      title: "Loading quiz data...",
+                                      description: "Please try again in a moment.",
+                                    });
+                                    refetchQuizzes();
+                                    return;
+                                  }
+                                  
                                   // Locate the framework id for this quiz using related data
-                                  const quiz = quizzes?.find(q => q.id === attempt.quizId);
-                                  if (quiz) {
+                                  const quiz = quizzes.find(q => q.id === attempt.quizId);
+                                  if (quiz && quiz.frameworkId) {
                                     setLocation(`/quizzes/${quiz.frameworkId}/${attempt.quizId}`);
                                   } else {
                                     toast({
-                                      title: "Error",
-                                      description: "Could not find quiz details. Please try again.",
+                                      title: "Quiz not found",
+                                      description: "Please refresh the page and try again.",
                                       variant: "destructive"
                                     });
+                                    // Force a refresh of quiz data
+                                    refetchQuizzes();
                                   }
                                 }}
                               >
