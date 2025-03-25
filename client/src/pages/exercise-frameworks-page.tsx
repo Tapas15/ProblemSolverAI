@@ -7,8 +7,61 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "wouter";
-import { ChevronRight } from "lucide-react";
+import { 
+  ChevronRight, 
+  BookOpen,
+  Network,
+  Boxes,
+  Layers,
+  Target,
+  Compass,
+  Lightbulb,
+  Workflow,
+  ScanSearch,
+  TreePine,
+  Gauge
+} from "lucide-react";
 import MainLayout from "@/components/layout/main-layout";
+
+// Function to generate a dynamic gradient based on framework ID
+function getFrameworkGradient(id: number): string {
+  // Collection of beautiful gradients
+  const gradients = [
+    'linear-gradient(135deg, #667eea, #764ba2)', // Blue-purple
+    'linear-gradient(135deg, #6a11cb, #2575fc)', // Deep blue-purple
+    'linear-gradient(135deg, #f093fb, #f5576c)', // Pink-red
+    'linear-gradient(135deg, #ff9a9e, #fad0c4)', // Soft pink
+    'linear-gradient(135deg, #fbc2eb, #a6c1ee)', // Lavender
+    'linear-gradient(135deg, #a1c4fd, #c2e9fb)', // Light blue
+    'linear-gradient(135deg, #84fab0, #8fd3f4)', // Teal-blue
+    'linear-gradient(135deg, #fdcbf1, #e6dee9)', // Soft pink
+    'linear-gradient(135deg, #d4fc79, #96e6a1)', // Green
+    'linear-gradient(135deg, #ffcb8c, #ff8b8d)'  // Orange-pink
+  ];
+  
+  // Use modulo to cycle through gradients based on ID
+  return gradients[id % gradients.length];
+}
+
+// Function to get an appropriate icon based on framework name
+function getFrameworkIcon(name: string, id: number): JSX.Element {
+  // Get an icon based on the framework name or fall back to a default
+  const iconMap: Record<string, JSX.Element> = {
+    'MECE': <Boxes className="h-12 w-12 text-white drop-shadow-lg" />,
+    'Design Thinking': <Lightbulb className="h-12 w-12 text-white drop-shadow-lg" />,
+    'SWOT Analysis': <Layers className="h-12 w-12 text-white drop-shadow-lg" />,
+    'First Principles Thinking': <TreePine className="h-12 w-12 text-white drop-shadow-lg" />,
+    'Porter\'s Five Forces': <Network className="h-12 w-12 text-white drop-shadow-lg" />,
+    'Jobs-To-Be-Done': <Target className="h-12 w-12 text-white drop-shadow-lg" />,
+    'Blue Ocean Strategy': <Compass className="h-12 w-12 text-white drop-shadow-lg" />,
+    'SCAMPER': <Workflow className="h-12 w-12 text-white drop-shadow-lg" />,
+    'Problem-Tree Analysis': <ScanSearch className="h-12 w-12 text-white drop-shadow-lg" />,
+    'Pareto Principle': <Gauge className="h-12 w-12 text-white drop-shadow-lg" />
+  };
+  
+  // Try to find an exact match, or use a fallback based on ID
+  return iconMap[name] || iconMap[Object.keys(iconMap)[id % Object.keys(iconMap).length]] || <BookOpen className="h-12 w-12 text-white drop-shadow-lg" />;
+}
 
 export default function ExerciseFrameworksPage() {
   // Fetch all frameworks
@@ -76,20 +129,50 @@ function FrameworkCard({ framework }: FrameworkCardProps) {
   };
 
   return (
-    <Card className="h-full flex flex-col hover:shadow-md transition-shadow duration-200 border-t-4 hover:border-t-4" style={{ borderTopColor: `var(--${framework.id % 2 === 0 ? 'accent' : 'secondary'})` }}>
-      {framework.image_url && (
-        <div className="h-40 overflow-hidden rounded-t-lg">
-          <img 
-            src={framework.image_url} 
-            alt={framework.name} 
-            className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-          />
+    <Card className="framework-card h-full flex flex-col hover:shadow-lg transition-all duration-300">
+      {/* Visual header area with dynamic gradient and icon */}
+      <div className="h-48 relative rounded-t-lg overflow-hidden">
+        {/* Dynamic gradient background */}
+        <div 
+          className="absolute inset-0 transition-all duration-700 ease-in-out" 
+          style={{
+            background: getFrameworkGradient(framework.id),
+          }}
+        />
+        
+        {/* Floating abstract shapes */}
+        <div className="absolute inset-0 overflow-hidden">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div 
+              key={i}
+              className="absolute rounded-full mix-blend-overlay animate-float"
+              style={{
+                width: `${40 + (framework.id * 5 + i * 15) % 60}px`,
+                height: `${40 + (framework.id * 5 + i * 15) % 60}px`,
+                background: `rgba(255, 255, 255, ${0.4 - i * 0.1})`,
+                left: `${(framework.id * 13 + i * 30) % 80}%`,
+                top: `${(framework.id * 17 + i * 25) % 80}%`,
+                animationDelay: `${i * 0.5}s`,
+                animationDuration: `${4 + i}s`
+              }}
+            />
+          ))}
         </div>
-      )}
+        
+        {/* Framework icon */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          {getFrameworkIcon(framework.name, framework.id)}
+        </div>
+        
+        {/* Shine effect */}
+        <div className="shine"></div>
+      </div>
+      
       <CardHeader className="pb-2">
-        <CardTitle className="text-xl">{framework.name}</CardTitle>
+        <CardTitle className="text-xl font-semibold">{framework.name}</CardTitle>
         <CardDescription className="line-clamp-2">{framework.description.substring(0, 100)}...</CardDescription>
       </CardHeader>
+      
       <CardContent className="flex-grow">
         <Badge className={`mb-4 ${getFrameworkColor(framework.id)}`}>
           Exercises Available
@@ -98,9 +181,10 @@ function FrameworkCard({ framework }: FrameworkCardProps) {
           Practical scenarios to apply {framework.name} principles to real business challenges
         </p>
       </CardContent>
+      
       <CardFooter>
         <Link href={`/exercises/${framework.id}`}>
-          <Button className="w-full group">
+          <Button className="w-full group bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700">
             View Exercises
             <ChevronRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
           </Button>
