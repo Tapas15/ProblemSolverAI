@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useQuery, useQueryClient, useQueries } from '@tanstack/react-query';
 import { getUserProgress, getUserQuizAttempts, getFrameworks, getAllModulesByFramework, getQuizzesByFramework } from '@/lib/api';
 import { Framework, UserProgress, QuizAttempt, Module } from '@shared/schema';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -46,20 +46,8 @@ const DashboardPage = () => {
     staleTime: 60 * 1000,
   });
 
-  // Fetch all quizzes for all frameworks - needed for "Try Again" button to work properly
-  const {
-    data: quizzes,
-    isLoading: isQuizzesLoading,
-    refetch: refetchQuizzes
-  } = useQuery({
-    queryKey: ['/api/quizzes/framework/0'],
-    queryFn: () => getQuizzesByFramework(0), // 0 means all frameworks
-    staleTime: 0, // Always fetch fresh data
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
-  });
-
-  // Fetch quiz attempts with shorter stale time and refetching enabled
+  // Fetch frameworks first, then fetch quizzes for each framework with attempts
+  // This ensures we have all the necessary data for the dashboard
   const {
     data: quizAttempts,
     isLoading: isQuizAttemptsLoading,
@@ -71,6 +59,63 @@ const DashboardPage = () => {
     refetchOnMount: true, // Refetch when component mounts
     refetchOnWindowFocus: true, // Refetch when window gets focus
   });
+  
+  // For each quiz attempt, fetch the quiz data from all frameworks
+  // This will ensure we have quiz details for the "Try Again" button
+  const frameworkIds = useMemo(() => {
+    // Get all framework IDs from the frameworks data
+    if (!frameworks) return [];
+    return frameworks.map(f => f.id);
+  }, [frameworks]);
+  
+  // Fetch quizzes for each framework
+  const quizzesQueries = useQueries({
+    queries: frameworkIds.map((frameworkId: number) => ({
+      queryKey: ['/api/quizzes/framework', frameworkId],
+      queryFn: () => getQuizzesByFramework(frameworkId),
+      staleTime: 0,
+      refetchOnMount: true,
+      refetchOnWindowFocus: true
+    }))
+  });
+  
+  // Combine all quizzes from different frameworks into a single array
+  const quizzes = useMemo(() => {
+    return quizzesQueries
+      .filter(query => query.data)
+      .flatMap(query => query.data || []);
+  }, [quizzesQueries]);
+  
+  const isQuizzesLoading = quizzesQueries.some(query => query.isLoading);
+  
+  // Function to refetch all quizzes
+  const refetchQuizzes = useCallback(() => {
+    quizzesQueries.forEach(query => query.refetch());
+  }, [quizzesQueries]);
+  
+  // Process quiz attempts to get unique latest attempts per quiz
+  const uniqueQuizAttempts = useMemo(() => {
+    if (!quizAttempts) return [];
+    
+    // Group attempts by quiz ID
+    const attemptsByQuiz: Record<number, QuizAttempt[]> = {};
+    quizAttempts.forEach(attempt => {
+      if (!attemptsByQuiz[attempt.quizId]) {
+        attemptsByQuiz[attempt.quizId] = [];
+      }
+      attemptsByQuiz[attempt.quizId].push(attempt);
+    });
+    
+    // Get the most recent attempt for each quiz
+    return Object.values(attemptsByQuiz).map(attempts => {
+      // Sort by completion date, most recent first
+      return attempts.sort((a, b) => {
+        const dateA = a.completedAt ? new Date(a.completedAt).getTime() : 0;
+        const dateB = b.completedAt ? new Date(b.completedAt).getTime() : 0;
+        return dateB - dateA;
+      })[0]; // Take the first (most recent) attempt
+    });
+  }, [quizAttempts]);
   
   // Refetch quiz attempts and quizzes on tab change to ensure data is fresh
   useEffect(() => {
