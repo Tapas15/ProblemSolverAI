@@ -41,7 +41,9 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
   const [isAiLoading, setIsAiLoading] = useState(false);
   // Use local state for modules to ensure UI updates immediately
   const [localModules, setLocalModules] = useState<Module[]>(modules);
-  
+  const [activeTab, setActiveTab] = useState<string>('overview');
+  const [caseStudiesOpen, setCaseStudiesOpen] = useState(false); // Added case studies state
+
   // Keep localModules in sync with modules prop
   useEffect(() => {
     setLocalModules(modules);
@@ -49,13 +51,13 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  
+
   const toggleModule = (moduleId: number) => {
     if (expandedModule === moduleId) {
       setExpandedModule(null);
     } else {
       setExpandedModule(moduleId);
-      
+
       // Scroll to the selected module
       setTimeout(() => {
         const moduleElement = document.getElementById(`module-${moduleId}`);
@@ -68,7 +70,7 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
       }, 100);
     }
   };
-  
+
   const completeModuleMutation = useMutation({
     mutationFn: ({ moduleId, completed, moduleName }: { moduleId: number; completed: boolean; moduleName?: string }) => 
       // Use enhanced tracking version for module completion
@@ -77,10 +79,10 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
       // Invalidate all relevant queries to ensure UI updates correctly
       queryClient.invalidateQueries({ queryKey: ['/api/user/progress'] });
       queryClient.invalidateQueries({ queryKey: ['/api/all-modules-by-framework'] });
-      
+
       if (framework) {
         queryClient.invalidateQueries({ queryKey: [`/api/frameworks/${framework.id}/modules`] });
-        
+
         // Force module update in the local state for immediate UI update
         if (updatedModule && modules) {
           // Update modules state directly for immediate UI response
@@ -89,7 +91,7 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
               m.id === updatedModule.id ? {...m, completed: updatedModule.completed} : m
             )
           );
-          
+
           // Apply visual changes directly to DOM for immediate feedback
           window.setTimeout(() => {
             const moduleElement = document.getElementById(`module-${updatedModule.id}`);
@@ -97,52 +99,52 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
               // Update the module element's appearance
               if (updatedModule.completed) {
                 moduleElement.classList.add('module-completed');
-                
+
                 // Update header section
                 const headerSection = moduleElement.querySelector('.bg-gray-50');
                 if (headerSection) {
                   headerSection.className = headerSection.className.replace('bg-gray-50', 'bg-green-50');
                 }
-                
+
                 // Update module number badge
                 const badge = moduleElement.querySelector('.bg-gray-300');
                 if (badge) {
                   badge.className = badge.className.replace('bg-gray-300', 'bg-green-500');
                 }
-                
+
                 // Update the module title
                 const title = moduleElement.querySelector('h4');
                 if (title && !title.className.includes('text-green-700')) {
                   title.className += ' text-green-700';
                 }
-                
+
                 // Update the border
                 moduleElement.className = moduleElement.className.replace('border-gray-200', 'border-green-300');
               } else {
                 moduleElement.classList.remove('module-completed');
-                
+
                 // Revert all green styling
                 const headerSection = moduleElement.querySelector('.bg-green-50');
                 if (headerSection) {
                   headerSection.className = headerSection.className.replace('bg-green-50', 'bg-gray-50');
                 }
-                
+
                 const badge = moduleElement.querySelector('.bg-green-500');
                 if (badge) {
                   badge.className = badge.className.replace('bg-green-500', 'bg-gray-300');
                 }
-                
+
                 const title = moduleElement.querySelector('.text-green-700');
                 if (title) {
                   title.className = title.className.replace('text-green-700', '');
                 }
-                
+
                 moduleElement.className = moduleElement.className.replace('border-green-300', 'border-gray-200');
               }
             }
           }, 50);
         }
-        
+
         // Track module completion with xAPI if the module was completed
         if (updatedModule.completed) {
           // Track additional xAPI event
@@ -154,11 +156,11 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
             console.error("Error tracking module completion:", error);
             // Continue even if tracking fails
           });
-          
+
           // Check if all modules are completed to track framework completion
           const allModules = localModules || [];
           const completedModulesCount = allModules.filter(m => m.completed || m.id === updatedModule.id).length;
-          
+
           if (completedModulesCount === allModules.length) {
             trackFrameworkCompletion(
               framework.id,
@@ -181,7 +183,7 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
       });
     }
   });
-  
+
   const handleModuleStatusChange = (moduleId: number, completed: boolean, moduleName?: string) => {
     completeModuleMutation.mutate({ 
       moduleId, 
@@ -192,22 +194,22 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
         if (completed) {
           // Find the index of current module - use localModules for consistency
           const currentModuleIndex = localModules.findIndex(m => m.id === moduleId);
-          
+
           // If there's a next module, expand it
           if (currentModuleIndex >= 0 && currentModuleIndex < localModules.length - 1) {
             const nextModule = localModules[currentModuleIndex + 1];
-            
+
             // Show toast notification about success and navigating to next module
             toast({
               title: `Module completed!`,
               description: `Moving to next module: "${nextModule.name}"`,
               variant: "default",
             });
-            
+
             // Set timeout to let the current module completion animation/styling finish
             setTimeout(() => {
               setExpandedModule(nextModule.id);
-              
+
               // Wait for the DOM to update, then scroll to the next module
               setTimeout(() => {
                 const nextModuleElement = document.getElementById(`module-${nextModule.id}`);
@@ -232,10 +234,10 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
       }
     });
   };
-  
+
   const handleAiQuestion = async () => {
     if (!aiQuestion.trim()) return;
-    
+
     if (!user?.apiKey) {
       toast({
         title: "AI Integration Not Set Up",
@@ -244,7 +246,7 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
       });
       return;
     }
-    
+
     setIsAiLoading(true);
     try {
       const response = await askAi(aiQuestion, framework?.id);
@@ -259,9 +261,9 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
       setIsAiLoading(false);
     }
   };
-  
+
   if (!isOpen) return null;
-  
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center overflow-y-auto">
       <div className="bg-white w-full md:w-4/5 md:mx-auto md:my-8 md:rounded-lg overflow-hidden flex flex-col shadow-xl max-h-[90vh]">
@@ -273,7 +275,7 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
             <X />
           </button>
         </div>
-        
+
         <div className="flex-1 overflow-y-auto p-6">
           <div className="max-w-4xl mx-auto">
             {/* Header section */}
@@ -314,19 +316,19 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
                         ) : (
                           <Badge className="bg-blue-100 text-blue-800 mr-3">Not Started</Badge>
                         )}
-                        
+
                         <span className="flex items-center text-xs text-gray-500 mr-3">
                           <Clock className="mr-1 h-3 w-3" /> {framework?.duration} min
                         </span>
-                        
+
                         <span className="flex items-center text-xs text-gray-500">
                           <GraduationCap className="mr-1 h-3 w-3" /> {framework?.level}
                         </span>
                       </div>
-                      
+
                       <p className="text-gray-700">{framework?.description}</p>
                     </div>
-                    
+
                     {framework && (
                       <Link to={`/quizzes/${framework.id}`}>
                         <Button variant="outline" className="ml-4 border-[#9545ff]/60 text-[#9545ff] hover:bg-[#9545ff]/5">
@@ -339,11 +341,11 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
                 </>
               )}
             </div>
-            
+
             {/* Modules section */}
             <div className="mb-8">
               <h3 className="text-lg font-semibold font-header text-primary mb-4">Learning Modules</h3>
-              
+
               {isLoading ? (
                 <div className="space-y-4">
                   {[1, 2, 3].map((idx) => (
@@ -384,7 +386,7 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
                           </button>
                         </div>
                       </div>
-                      
+
                       {expandedModule === module.id && (
                         <div className="p-4">
                           <div className="mb-4 rounded-lg overflow-hidden bg-gray-100">
@@ -406,13 +408,13 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
                             )}
                           </div>
                           <p className="text-sm text-gray-600 mb-3">{module.description}</p>
-                          
+
                           <div className="flex flex-wrap gap-2 mb-4">
                             <Badge className="bg-gray-100 text-gray-800">{framework?.level}</Badge>
                             <Badge className="bg-gray-100 text-gray-800">Concepts</Badge>
                             <Badge className="bg-gray-100 text-gray-800">Theory</Badge>
                           </div>
-                          
+
                           {module.scormPath && (
                             <div className="mt-4 mb-5">
                               <div className="flex items-center gap-2 mb-2">
@@ -422,13 +424,13 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
                               <ScormViewer moduleName={module.name} scormPath={module.scormPath} />
                             </div>
                           )}
-                          
+
                           {module.content && !module.scormPath && (
                             <div className="mt-4 mb-5">
                               <div className="module-content" dangerouslySetInnerHTML={{ __html: module.content }} />
                             </div>
                           )}
-                          
+
                           {module.examples && (
                             <div className="mt-4 mb-5">
                               <h5 className="text-md font-semibold text-primary mb-2">Examples</h5>
@@ -437,7 +439,7 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
                               </div>
                             </div>
                           )}
-                          
+
                           {module.keyTakeaways && (
                             <div className="mt-4 mb-5">
                               <h5 className="text-md font-semibold text-primary mb-2">Key Takeaways</h5>
@@ -446,7 +448,7 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
                               </div>
                             </div>
                           )}
-                          
+
                           {/* SCORM Package Upload (admin only) */}
                           {user && user.username === 'admin' && (
                             <div className="mt-6 mb-4 border-t border-gray-200 pt-4">
@@ -459,7 +461,7 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
                                   if (framework) {
                                     queryClient.invalidateQueries({ queryKey: [`/api/frameworks/${framework.id}/modules`] });
                                   }
-                                  
+
                                   toast({
                                     title: "SCORM Package Uploaded",
                                     description: "SCORM package has been successfully uploaded and linked to this module.",
@@ -468,7 +470,7 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
                               />
                             </div>
                           )}
-                          
+
                           <div className="flex justify-end items-center mt-4">
                             <Button
                               variant={module.completed ? "outline" : "default"}
@@ -503,15 +505,15 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
                 </div>
               )}
             </div>
-            
+
             {/* Practical Application section */}
             {!isLoading && framework && (
               <div className="mb-8">
                 <h3 className="text-lg font-semibold font-header text-primary mb-4">Practical Application</h3>
-                
+
                 <div className="bg-gray-50 border border-gray-200 rounded-lg p-5">
                   <h4 className="font-medium mb-3">Steps to Apply the {framework.name}</h4>
-                  
+
                   <ol className="text-gray-700 space-y-4 ml-5 list-decimal">
                     <li>
                       <p className="font-medium">Define the problem clearly</p>
@@ -537,30 +539,30 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
                 </div>
               </div>
             )}
-            
+
             {/* Case Studies section */}
             {!isLoading && framework && (
               <div className="mb-8">
                 <h3 className="text-lg font-semibold font-header text-primary mb-4">Case Studies</h3>
-                
-                {framework.case_studies ? (
-                  <div className="border border-gray-200 rounded-lg overflow-hidden">
+                <div className="border border-gray-200 rounded-lg overflow-hidden">
+                  <div className="p-4 flex justify-between items-center cursor-pointer" onClick={() => setCaseStudiesOpen(!caseStudiesOpen)}>
+                    <h4 className="font-medium">Case Studies</h4>
+                    <button>
+                      {caseStudiesOpen ? <ChevronUp/> : <ChevronDown />}
+                    </button>
+                  </div>
+                  {caseStudiesOpen && (
                     <div className="p-4">
                       <div className="prose prose-sm max-w-none">
                         <div dangerouslySetInnerHTML={{ __html: framework.case_studies }} />
                       </div>
                     </div>
-                  </div>
-                ) : (
-                  <div className="border border-gray-200 rounded-lg overflow-hidden">
-                    <div className="p-4 text-center py-8">
-                      <p className="text-gray-500">Case studies for this framework will be available soon.</p>
-                    </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             )}
-            
+
+
             {/* AI Assistant section */}
             <div className="bg-[#9545ff]/5 border border-[#9545ff]/10 rounded-lg p-5">
               <h3 className="text-lg font-semibold font-header text-primary mb-3">
@@ -569,7 +571,7 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
               <p className="text-gray-600 mb-4">
                 Ask specific questions about applying the {framework?.name || ''} framework to your unique business challenges.
               </p>
-              
+
               <Textarea 
                 rows={3} 
                 placeholder={`Example: How can I use ${framework?.name || 'this framework'} to analyze our declining customer retention?`}
@@ -577,7 +579,7 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
                 value={aiQuestion}
                 onChange={(e) => setAiQuestion(e.target.value)}
               />
-              
+
               {aiResponse && (
                 <div className="mt-4 bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
                   <p className="text-sm font-medium text-gray-500 mb-2">AI response:</p>
@@ -586,7 +588,7 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
                   </div>
                 </div>
               )}
-              
+
               <div className="mt-3 flex justify-end">
                 <Button 
                   className="bg-gradient-to-r from-[#9545ff] to-[#ff59b2] hover:from-[#9545ff]/90 hover:to-[#ff59b2]/90 text-white font-medium"
