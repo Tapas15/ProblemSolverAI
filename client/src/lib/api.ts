@@ -1,4 +1,4 @@
-import { Framework, Module, UserProgress, AiConversation, Quiz, QuizAttempt, Exercise, ExerciseSubmission } from "@shared/schema";
+import { Framework, Module, UserProgress, AiConversation, Quiz, QuizAttempt, Exercise, ExerciseSubmission, Certificate } from "@shared/schema";
 import { apiRequest, queryClient } from "./queryClient";
 import learningTracking from "./learning-tracking";
 
@@ -444,4 +444,199 @@ export async function deleteExerciseSubmission(submissionId: number): Promise<vo
 export async function updateUserPreferences(preferencesData: UserPreferencesData): Promise<{ message: string; user: any }> {
   const res = await apiRequest("POST", "/api/user/preferences", preferencesData);
   return res.json();
+}
+
+// Certificate API functions
+export async function getUserCertificates(): Promise<Certificate[]> {
+  const res = await apiRequest("GET", "/api/certificates");
+  return res.json();
+}
+
+export async function getFrameworkCertificates(frameworkId: number): Promise<Certificate[]> {
+  const res = await apiRequest("GET", `/api/certificates/framework/${frameworkId}`);
+  return res.json();
+}
+
+export async function getCertificate(id: number): Promise<Certificate> {
+  const res = await apiRequest("GET", `/api/certificates/${id}`);
+  return res.json();
+}
+
+export async function issueFrameworkCertificate(frameworkId: number): Promise<Certificate> {
+  const res = await apiRequest("POST", `/api/certificates/issue/${frameworkId}`);
+  return res.json();
+}
+
+// Achievement and reward system
+export interface Achievement {
+  id: string;
+  title: string;
+  description: string;
+  iconUrl: string;
+  earnedDate?: Date;
+  progress?: number;
+  requiredProgress?: number;
+  isEarned: boolean;
+}
+
+export async function getUserAchievements(): Promise<Achievement[]> {
+  // This would typically come from the server, but for now we'll generate achievements
+  // based on the user's progress data
+  try {
+    const progress = await getUserProgress();
+    const frameworks = await getFrameworks();
+    const quizAttempts = await getUserQuizAttempts();
+    const certificates = await getUserCertificates();
+    
+    // Base achievements that everyone starts with
+    const achievements: Achievement[] = [
+      {
+        id: 'first_login',
+        title: 'First Steps',
+        description: 'Logged into the platform for the first time',
+        iconUrl: 'https://img.icons8.com/ios-glyphs/100/000000/login-rounded.png',
+        earnedDate: new Date(),
+        isEarned: true
+      }
+    ];
+    
+    // Framework-based achievements
+    if (frameworks && frameworks.length > 0) {
+      // Started frameworks
+      const startedFrameworks = progress.filter(p => p.status !== 'not_started');
+      if (startedFrameworks.length > 0) {
+        achievements.push({
+          id: 'framework_starter',
+          title: 'Framework Explorer',
+          description: 'Started learning your first framework',
+          iconUrl: 'https://img.icons8.com/ios-glyphs/100/000000/compass.png',
+          earnedDate: new Date(),
+          isEarned: true
+        });
+      }
+      
+      // Completed frameworks achievements
+      const completedFrameworks = progress.filter(p => p.status === 'completed');
+      const completedCount = completedFrameworks.length;
+      
+      if (completedCount > 0) {
+        achievements.push({
+          id: 'first_framework',
+          title: 'Framework Master',
+          description: 'Completed your first framework',
+          iconUrl: 'https://img.icons8.com/ios-glyphs/100/000000/diploma.png',
+          earnedDate: new Date(),
+          isEarned: true
+        });
+      }
+      
+      if (completedCount >= 3) {
+        achievements.push({
+          id: 'framework_enthusiast',
+          title: 'Framework Enthusiast',
+          description: 'Completed at least 3 frameworks',
+          iconUrl: 'https://img.icons8.com/ios-glyphs/100/000000/prize.png',
+          earnedDate: new Date(),
+          isEarned: true
+        });
+      }
+      
+      if (completedCount >= 5) {
+        achievements.push({
+          id: 'framework_expert',
+          title: 'Framework Expert',
+          description: 'Completed at least 5 frameworks',
+          iconUrl: 'https://img.icons8.com/ios-glyphs/100/000000/medal.png',
+          earnedDate: new Date(),
+          isEarned: true
+        });
+      }
+      
+      if (completedCount >= frameworks.length) {
+        achievements.push({
+          id: 'framework_guru',
+          title: 'Framework Guru',
+          description: 'Completed all available frameworks',
+          iconUrl: 'https://img.icons8.com/ios-glyphs/100/000000/trophy.png',
+          earnedDate: new Date(),
+          isEarned: true
+        });
+      }
+      
+      // Progress achievement
+      achievements.push({
+        id: 'learning_progress',
+        title: 'Learning Journey',
+        description: 'Track your overall learning progress',
+        iconUrl: 'https://img.icons8.com/ios-glyphs/100/000000/graduation-cap.png',
+        progress: completedCount,
+        requiredProgress: frameworks.length,
+        isEarned: completedCount > 0
+      });
+    }
+    
+    // Quiz-based achievements
+    if (quizAttempts && quizAttempts.length > 0) {
+      achievements.push({
+        id: 'quiz_taker',
+        title: 'Quiz Enthusiast',
+        description: 'Completed your first quiz',
+        iconUrl: 'https://img.icons8.com/ios-glyphs/100/000000/inspect-code.png',
+        earnedDate: new Date(),
+        isEarned: true
+      });
+      
+      const passedQuizzes = quizAttempts.filter(a => a.passed);
+      if (passedQuizzes.length >= 5) {
+        achievements.push({
+          id: 'quiz_master',
+          title: 'Quiz Master',
+          description: 'Passed at least 5 quizzes',
+          iconUrl: 'https://img.icons8.com/ios-glyphs/100/000000/test-passed.png',
+          earnedDate: new Date(),
+          isEarned: true
+        });
+      }
+      
+      const perfectScores = quizAttempts.filter(a => a.score === a.maxScore);
+      if (perfectScores.length > 0) {
+        achievements.push({
+          id: 'perfect_score',
+          title: 'Perfect Score',
+          description: 'Achieved a perfect score on a quiz',
+          iconUrl: 'https://img.icons8.com/ios-glyphs/100/000000/good-quality.png',
+          earnedDate: new Date(),
+          isEarned: true
+        });
+      }
+    }
+    
+    // Certificate-based achievements
+    if (certificates && certificates.length > 0) {
+      achievements.push({
+        id: 'first_certificate',
+        title: 'Certified Professional',
+        description: 'Earned your first certificate',
+        iconUrl: 'https://img.icons8.com/ios-glyphs/100/000000/certificate.png',
+        earnedDate: new Date(),
+        isEarned: true
+      });
+      
+      if (certificates.length >= 3) {
+        achievements.push({
+          id: 'certified_expert',
+          title: 'Certified Expert',
+          description: 'Earned at least 3 certificates',
+          iconUrl: 'https://img.icons8.com/ios-glyphs/100/000000/diploma.png',
+          earnedDate: new Date(),
+          isEarned: true
+        });
+      }
+    }
+    
+    return achievements;
+  } catch (error) {
+    console.error("Error generating achievements:", error);
+    return [];
+  }
 }
