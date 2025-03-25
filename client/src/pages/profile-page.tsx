@@ -20,37 +20,64 @@ const ProfilePage: React.FC = () => {
   
   // Update profile mutation
   const updateProfileMutation = useMutation({
-    mutationFn: (data: any) => fetch('/api/user/profile', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    }).then(res => res.json()),
+    mutationFn: async (data: any) => {
+      const response = await fetch('/api/user/profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update profile');
+      }
+      
+      return response.json();
+    },
     onSuccess: () => {
       toast({
-        title: "Success",
-        description: "Profile updated successfully",
+        title: "Profile updated",
+        description: "Your profile information has been updated successfully",
       });
+      queryClient.invalidateQueries({ queryKey: ['/api/user'] });
     },
-    onError: () => {
+    onError: (error: Error) => {
       toast({
-        title: "Error",
-        description: "Failed to update profile",
+        title: "Update failed",
+        description: error.message || "Failed to update profile information",
         variant: "destructive"
       });
     }
   });
 
-  // Update preferences mutation  
+  // Update preferences mutation - deprecated, using updateDetailedPreferencesMutation instead
   const updatePreferencesMutation = useMutation({
-    mutationFn: (data: any) => fetch('/api/user/preferences', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    }).then(res => res.json()),
+    mutationFn: async (data: any) => {
+      const response = await fetch('/api/user/preferences', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update preferences');
+      }
+      
+      return response.json();
+    },
     onSuccess: () => {
       toast({
-        title: "Success",
-        description: "Preferences updated successfully",
+        title: "Preferences updated",
+        description: "Your preferences have been updated successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/user'] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
       });
     }
   });

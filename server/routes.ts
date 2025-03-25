@@ -146,7 +146,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update user profile
+  // Legacy PATCH endpoint for backward compatibility
   app.patch("/api/user/profile", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+
+      const updateSchema = z.object({
+        name: z.string().optional(),
+        username: z.string().optional(),
+        email: z.string().email().optional(),
+        phone: z.string().optional(),
+        bio: z.string().optional()
+      });
+
+      const validatedData = updateSchema.parse(req.body);
+      const updatedUser = await storage.updateUser(req.user.id, validatedData);
+
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const { password, ...userWithoutPassword } = updatedUser;
+      res.status(200).json(userWithoutPassword);
+    } catch (error) {
+      next(error);
+    }
+  });
+  
+  // New POST endpoint for profile updates
+  app.post("/api/user/profile", async (req, res, next) => {
     try {
       if (!req.isAuthenticated() || !req.user) {
         return res.status(401).send("Unauthorized");
@@ -576,8 +606,73 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Update user notification settings
+  // Update user notification settings - Legacy PATCH endpoint
   app.patch("/api/user/notifications", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+      
+      const updateSchema = z.object({
+        learningReminders: z.boolean().optional(),
+        frameworkUpdates: z.boolean().optional(),
+        quizResults: z.boolean().optional(),
+        productUpdates: z.boolean().optional(),
+        emailFrequency: z.enum(['immediately', 'daily', 'weekly', 'none']).optional()
+      });
+      
+      const validatedData = updateSchema.parse(req.body);
+      
+      // Store notification settings in userPreferences field as JSON
+      let userPreferences = {};
+      
+      // Get existing preferences if they exist
+      if (req.user.userPreferences) {
+        try {
+          userPreferences = typeof req.user.userPreferences === 'string' 
+            ? JSON.parse(req.user.userPreferences) 
+            : req.user.userPreferences;
+        } catch (e) {
+          console.error("Failed to parse user preferences:", e);
+        }
+      }
+      
+      // Update preferences with new values
+      const updatedPreferences = {
+        ...userPreferences,
+        notifications: {
+          ...((userPreferences as any)?.notifications || {}),
+          ...validatedData
+        }
+      };
+      
+      // Update user with new preferences
+      const updatedUser = await storage.updateUser(req.user.id, { 
+        userPreferences: JSON.stringify(updatedPreferences) 
+      });
+      
+      if (!updatedUser) {
+        return res.status(404).send("User not found");
+      }
+      
+      // Remove password from response
+      const { password, ...userWithoutPassword } = updatedUser;
+      
+      // Update user in session
+      req.login(updatedUser, (err) => {
+        if (err) return next(err);
+        res.status(200).json({ 
+          message: "Notification settings updated successfully",
+          user: userWithoutPassword
+        });
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
+  
+  // New POST endpoint for notification settings
+  app.post("/api/user/notifications", async (req, res, next) => {
     try {
       if (!req.isAuthenticated() || !req.user) {
         return res.status(401).send("Unauthorized");
