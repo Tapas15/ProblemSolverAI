@@ -10,11 +10,7 @@ const AiAssistantPage: React.FC = () => {
       {/* Mobile App Header */}
       <div className="flex items-center justify-between px-4 pt-2 pb-4">
         <div className="flex items-center">
-          <Link to="/">
-            <Button variant="ghost" size="icon" className="mr-2">
-              <ArrowLeft className="h-5 w-5 text-[#0f172a]" />
-            </Button>
-          </Link>
+          {/* Back button removed as requested */}
           <h1 className="mobile-h1 text-[#0f172a]">AI Assistant</h1>
         </div>
       </div>

@@ -34,14 +34,7 @@ export default function FrameworksPage() {
     <div className="native-scroll pb-8">
       {/* Page Header */}
       <div className="flex items-center mb-4 py-2">
-        <Button 
-          variant="ghost" 
-          size="icon"
-          className="mr-2 h-9 w-9 rounded-full text-[#3b82f6]" 
-          onClick={() => navigate('/')}
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
+        {/* Back button removed as requested */}
         <h1 className="mobile-h1 text-[#0f172a]">Frameworks</h1>
       </div>
 
