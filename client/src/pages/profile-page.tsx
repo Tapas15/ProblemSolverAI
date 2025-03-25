@@ -19,7 +19,8 @@ import {
   Save,
   Briefcase,
   MapPin,
-  Calendar
+  Calendar,
+  Star
 } from 'lucide-react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { queryClient, apiRequest } from '@/lib/queryClient';
@@ -491,29 +492,128 @@ const ProfilePage: React.FC = () => {
           </CardContent>
         </Card>
         
-        {/* Achievements Section */}
-        <Card className="border border-[#e2e8f0] shadow-sm mb-6">
-          <CardHeader className="p-4 pb-2">
-            <CardTitle className="text-lg flex items-center">
-              <Award className="h-5 w-5 text-[#3b82f6] mr-2" />
-              Achievements
+        {/* Achievements Dashboard Section */}
+        <Card className="border border-[#e2e8f0] shadow-sm mb-6 overflow-hidden">
+          <div className="bg-gradient-to-r from-[#1e3a8a] to-[#3b82f6] p-4">
+            <CardTitle className="text-lg flex items-center text-white">
+              <Award className="h-5 w-5 text-white mr-2" />
+              Achievement Dashboard
             </CardTitle>
-          </CardHeader>
+            <p className="text-blue-100 text-sm mt-1">Track your learning progress</p>
+          </div>
+          
           <CardContent className="p-4">
             {achievements.length > 0 ? (
-              <div className="flex flex-wrap gap-2">
-                {achievements.map((achievement, index) => (
-                  <div key={index} className="bg-blue-50 border border-blue-100 rounded-lg p-3 flex-1 min-w-[130px]">
-                    <Badge variant="secondary" className="bg-blue-100 text-blue-800 mb-2">
-                      {achievement.title}
-                    </Badge>
-                    <p className="text-sm text-gray-600">{achievement.description}</p>
+              <>
+                {/* Achievement Stats */}
+                <div className="grid grid-cols-3 gap-3 mb-4">
+                  <div className="bg-blue-50 rounded-xl p-3 text-center">
+                    <div className="text-blue-600 text-xl font-bold">
+                      {userProgress?.filter((p: any) => p.status === 'completed').length || 0}
+                    </div>
+                    <div className="text-blue-700 text-xs">
+                      Frameworks
+                    </div>
                   </div>
-                ))}
-              </div>
+                  
+                  <div className="bg-blue-50 rounded-xl p-3 text-center">
+                    <div className="text-blue-600 text-xl font-bold">
+                      {userProgress?.reduce((sum: number, p: any) => sum + (p.completedModules || 0), 0) || 0}
+                    </div>
+                    <div className="text-blue-700 text-xs">
+                      Modules
+                    </div>
+                  </div>
+                  
+                  <div className="bg-blue-50 rounded-xl p-3 text-center">
+                    <div className="text-blue-600 text-xl font-bold">
+                      {quizAttempts?.filter((a: any) => a.passed).length || 0}
+                    </div>
+                    <div className="text-blue-700 text-xs">
+                      Quizzes
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Achievement Badges */}
+                <div className="space-y-3 mb-4">
+                  {achievements.map((achievement, index) => (
+                    <div key={index} className="bg-gradient-to-r from-white to-blue-50 border border-blue-100 rounded-lg p-3 flex items-center">
+                      <div className="bg-blue-500 p-2 rounded-full mr-3">
+                        {achievement.title === 'Quiz Master' && (
+                          <Award className="h-5 w-5 text-white" />
+                        )}
+                        {achievement.title === 'Framework Expert' && (
+                          <Briefcase className="h-5 w-5 text-white" />
+                        )}
+                        {achievement.title === 'Perfect Score' && (
+                          <Star className="h-5 w-5 text-white" />
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between">
+                          <h3 className="font-semibold text-blue-800">{achievement.title}</h3>
+                          <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                            Level {index + 1}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-gray-600">{achievement.description}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Overall Progress */}
+                <div className="mt-4">
+                  <div className="flex justify-between mb-1 items-center">
+                    <span className="text-sm font-medium text-blue-800">Overall Progress</span>
+                    <span className="text-sm font-medium text-blue-800">
+                      {Math.round((
+                        (userProgress?.reduce((sum: number, p: any) => sum + (p.completedModules || 0), 0) || 0) / 
+                        (userProgress?.reduce((sum: number, p: any) => sum + p.totalModules, 0) || 1) * 100
+                      )}%
+                    </span>
+                  </div>
+                  <div className="w-full bg-blue-100 rounded-full h-2.5">
+                    <div 
+                      className="bg-gradient-to-r from-blue-600 to-indigo-500 h-2.5 rounded-full" 
+                      style={{ 
+                        width: `${Math.round((
+                          (userProgress?.reduce((sum: number, p: any) => sum + (p.completedModules || 0), 0) || 0) / 
+                          (userProgress?.reduce((sum: number, p: any) => sum + p.totalModules, 0) || 1) * 100
+                        )}%` 
+                      }}
+                    ></div>
+                  </div>
+                </div>
+                
+                {/* Coming Soon Achievements */}
+                <div className="mt-6">
+                  <h3 className="text-sm font-medium text-gray-700 mb-2">Coming Soon</h3>
+                  <div className="flex flex-wrap gap-2">
+                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 flex-1 min-w-[130px] opacity-70">
+                      <Badge variant="secondary" className="bg-gray-100 text-gray-600 mb-2">
+                        Master Thinker
+                      </Badge>
+                      <p className="text-sm text-gray-500">Complete all frameworks</p>
+                    </div>
+                  </div>
+                </div>
+              </>
             ) : (
-              <div className="text-center py-4">
-                <p className="text-gray-500 text-sm">Complete quizzes and modules to earn achievements</p>
+              <div className="text-center py-8">
+                <div className="bg-blue-50 inline-flex rounded-full p-4 mb-4">
+                  <Award className="h-8 w-8 text-blue-400" />
+                </div>
+                <h3 className="text-lg font-medium text-gray-700">No Achievements Yet</h3>
+                <p className="text-gray-500 text-sm mt-2">Complete quizzes and modules to earn achievements</p>
+                <Button 
+                  variant="outline" 
+                  className="mt-4 text-blue-500 border-blue-200"
+                  onClick={() => window.location.href = "/frameworks"}
+                >
+                  Explore Frameworks
+                </Button>
               </div>
             )}
           </CardContent>
