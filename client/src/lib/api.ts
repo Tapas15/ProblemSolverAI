@@ -2,6 +2,16 @@ import { Framework, Module, UserProgress, AiConversation, Quiz, QuizAttempt, Exe
 import { apiRequest, queryClient } from "./queryClient";
 import learningTracking from "./learning-tracking";
 
+// Interface for User Preferences data
+export interface UserPreferencesData {
+  display?: {
+    learningStyle?: 'visual' | 'auditory' | 'kinesthetic' | 'reading';
+    theme?: 'light' | 'dark' | 'system';
+    fontSize?: 'small' | 'medium' | 'large';
+  };
+  // Add other preference categories as needed
+};
+
 // Interface for SCORM package metadata
 export interface ScormPackage {
   name: string;
@@ -396,4 +406,10 @@ export async function updateExerciseSubmission(
 
 export async function deleteExerciseSubmission(submissionId: number): Promise<void> {
   await apiRequest("DELETE", `/api/exercise-submissions/${submissionId}`);
+}
+
+// User preferences API function
+export async function updateUserPreferences(preferencesData: UserPreferencesData): Promise<{ message: string; user: any }> {
+  const res = await apiRequest("PATCH", "/api/user/preferences", preferencesData);
+  return res.json();
 }

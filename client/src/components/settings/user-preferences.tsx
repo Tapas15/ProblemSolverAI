@@ -141,12 +141,12 @@ export function UserPreferences() {
           </div>
         </div>
         
-        <div className="flex justify-between items-center mt-6">
+        <div className="flex flex-col sm:flex-row sm:justify-between items-center gap-3 mt-6 w-full">
           <Button 
             type="button" 
             variant="outline" 
             onClick={handleResetDefaults}
-            className="mr-2"
+            className="w-full sm:w-auto"
           >
             Reset to Defaults
           </Button>
@@ -154,7 +154,7 @@ export function UserPreferences() {
             type="button"
             onClick={handleSavePreferences}
             disabled={preferenceMutation.isPending}
-            className="bg-[#0A2540] hover:bg-[#1a4482]"
+            className="bg-[#0A2540] hover:bg-[#1a4482] w-full sm:w-auto"
           >
             {preferenceMutation.isPending ? 'Saving...' : 'Save Preferences'}
           </Button>
