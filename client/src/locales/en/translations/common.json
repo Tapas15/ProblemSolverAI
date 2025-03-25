@@ -1,168 +1,169 @@
 {
   "app": {
-    "title": "Question Pro AI",
-    "tagline": "Enhance your problem-solving skills with powerful business frameworks"
+    "name": "QuestionPro AI",
+    "tagline": "Enhance your problem-solving skills"
   },
   "navigation": {
     "home": "Home",
-    "dashboard": "Dashboard",
     "frameworks": "Frameworks",
     "exercises": "Exercises",
-    "quizzes": "Quizzes",
+    "ai_assistant": "AI Assistant",
+    "dashboard": "Dashboard",
     "profile": "Profile",
     "settings": "Settings",
-    "logout": "Logout",
-    "backToHome": "Back to Home"
-  },
-  "frameworks": {
-    "mece": {
-      "title": "MECE Framework",
-      "description": "A method of organizing information that ensures issues are Mutually Exclusive (ME) and Collectively Exhaustive (CE)",
-      "concepts": "Mutually Exclusive, Collectively Exhaustive, Logical Grouping, Structured Analysis",
-      "applications": "Problem breakdown, Root cause analysis, Complete analysis"
-    },
-    "designThinking": {
-      "title": "Design Thinking",
-      "description": "A human-centered approach to innovation that draws from the designer's toolkit to integrate the needs of people, the possibilities of technology, and the requirements for business success",
-      "concepts": "Empathize, Define, Ideate, Prototype, Test",
-      "applications": "Product design, Service design, User experience optimization"
-    },
-    "swot": {
-      "title": "SWOT Analysis",
-      "description": "A strategic planning technique used to help identify strengths, weaknesses, opportunities, and threats related to business competition or project planning",
-      "concepts": "Strengths, Weaknesses, Opportunities, Threats",
-      "applications": "Strategic planning, Competitive analysis, Market positioning"
-    },
-    "portersFiveForces": {
-      "title": "Porter's Five Forces",
-      "description": "A framework for analyzing a company's competitive environment, helping to determine the competitive intensity and market attractiveness",
-      "concepts": "Competition, New entrants, Substitutes, Supplier power, Buyer power",
-      "applications": "Industry analysis, Strategic positioning, Market entry decisions"
-    },
-    "firstPrinciples": {
-      "title": "First Principles Thinking",
-      "description": "The practice of breaking down complex problems into basic elements and then reassembling them from the ground up",
-      "concepts": "Fundamental truths, Basic assumptions, Reasoning from scratch",
-      "applications": "Innovation, Problem-solving, Strategic thinking, Decision-making"
-    },
-    "blueOcean": {
-      "title": "Blue Ocean Strategy",
-      "description": "A business theory that suggests companies are better off searching for ways to gain uncontested market space rather than competing in existing markets",
-      "concepts": "Value innovation, Uncontested market space, Market creation",
-      "applications": "Market strategy, Product differentiation, Business model innovation"
-    },
-    "scamper": {
-      "title": "SCAMPER",
-      "description": "A creative thinking technique that helps generate new ideas by considering changes to existing products or services",
-      "concepts": "Substitute, Combine, Adapt, Modify, Put to other uses, Eliminate, Reverse",
-      "applications": "Product development, Process improvement, Creative problem-solving"
-    },
-    "problemTree": {
-      "title": "Problem-Tree Analysis",
-      "description": "A visual method for analyzing problems by mapping out cause and effect relationships around an issue",
-      "concepts": "Core problem, Root causes, Effects, Causal relationships",
-      "applications": "Development planning, Project design, Social interventions"
-    },
-    "pareto": {
-      "title": "Pareto Principle",
-      "description": "The principle that roughly 80% of effects come from 20% of causes",
-      "concepts": "80/20 rule, Vital few, Trivial many",
-      "applications": "Time management, Resource allocation, Quality control, Customer service"
-    },
-    "jobsToBeDone": {
-      "title": "Jobs-To-Be-Done",
-      "description": "A framework for understanding customer needs by focusing on the 'job' they are trying to accomplish",
-      "concepts": "Customer jobs, Progress-making, Functional/emotional/social dimensions",
-      "applications": "Product innovation, Marketing strategy, Customer experience design"
-    }
+    "logout": "Log Out"
   },
   "auth": {
-    "login": "Login",
+    "login": "Log In",
     "register": "Register",
-    "email": "Email",
-    "password": "Password",
-    "confirmPassword": "Confirm Password",
-    "forgotPassword": "Forgot Password?",
     "username": "Username",
+    "password": "Password",
+    "email": "Email",
     "name": "Full Name",
-    "createAccount": "Create Account",
-    "alreadyHaveAccount": "Already have an account?",
-    "dontHaveAccount": "Don't have an account?",
-    "loginSuccess": "Login successful",
-    "loginError": "Login failed",
-    "registerSuccess": "Registration successful",
-    "registerError": "Registration failed"
+    "forgot_password": "Forgot Password?",
+    "already_have_account": "Already have an account?",
+    "need_account": "Need an account?"
   },
-  "settings": {
-    "title": "Settings",
-    "account": "Account Settings",
-    "language": "Language",
-    "languageSettings": "Language Settings",
-    "applicationLanguage": "Application Language",
-    "changeLanguage": "Change the language for all app content",
-    "security": "Security",
-    "privacy": "Privacy",
-    "notifications": "Notifications",
-    "advancedSettings": "Advanced Settings",
-    "apiIntegrations": "API Integrations",
-    "dataManagement": "Data Management",
-    "deleteAccount": "Delete Account",
-    "deleteAccountDesc": "Permanently delete your account and all associated data",
-    "twoFactor": "Two-Factor Authentication",
-    "changePassword": "Change Password",
-    "currentPassword": "Current Password",
-    "newPassword": "New Password",
-    "confirmPassword": "Confirm New Password",
-    "updatePassword": "Update Password",
-    "cancel": "Cancel",
+  "frameworks": {
+    "title": "Business Frameworks",
+    "subtitle": "Select a framework to explore",
+    "learn_more": "Learn More",
+    "start": "Start Learning",
+    "continue": "Continue Learning",
+    "completed": "Completed",
+    "level": {
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced"
+    }
+  },
+  "modules": {
+    "next": "Next Module",
+    "previous": "Previous Module",
+    "complete": "Mark as Complete",
+    "completed": "Completed",
+    "key_takeaways": "Key Takeaways",
+    "examples": "Examples",
+    "resources": "Resources"
+  },
+  "quizzes": {
+    "title": "Quiz",
+    "start": "Start Quiz",
+    "next": "Next Question",
+    "previous": "Previous Question",
+    "submit": "Submit Quiz",
+    "results": "Results",
+    "try_again": "Try Again",
+    "correct": "Correct",
+    "incorrect": "Incorrect",
+    "score": "Score",
+    "passing_score": "Passing Score",
+    "time_limit": "Time Limit",
+    "time_minutes": "{{count}} minutes",
+    "question": "Question {{current}} of {{total}}"
+  },
+  "exercises": {
+    "title": "Exercises",
+    "difficulty": "Difficulty",
+    "estimated_time": "Estimated Time",
+    "solution": "Solution",
+    "submit": "Submit Solution",
+    "scenario": "Scenario",
+    "steps": "Steps",
+    "resources": "Resources",
+    "sample_solution": "Sample Solution"
+  },
+  "profile": {
+    "personal_info": "Personal Information",
+    "business_info": "Business Information",
+    "achievements": "Achievements",
+    "progress": "Progress",
+    "overall_progress": "Overall Progress",
+    "coming_soon": "Coming Soon",
+    "no_achievements": "No Achievements Yet",
+    "complete_to_earn": "Complete quizzes and modules to earn achievements",
+    "explore_frameworks": "Explore Frameworks",
+    "company": "Company",
+    "location": "Location",
+    "website": "Website",
+    "member_since": "Member Since",
+    "bio": "Bio",
+    "phone": "Phone",
+    "no_info_added": "No {{field}} added",
+    "edit": "Edit",
     "save": "Save",
     "saving": "Saving..."
   },
-  "dashboard": {
-    "yourProgress": "Your Progress",
-    "yourFrameworks": "Your Frameworks",
-    "startLearning": "Start Learning",
-    "continueFramework": "Continue",
-    "completedModules": "Completed Modules",
-    "recentActivity": "Recent Activity",
-    "recentQuizzes": "Recent Quizzes",
-    "viewAll": "View All",
-    "tryAgain": "Try Again",
-    "refreshData": "Refresh",
-    "clearAttempts": "Clear Attempts"
+  "settings": {
+    "title": "Settings",
+    "appearance": "Appearance",
+    "dark_mode": "Dark Mode",
+    "light_mode": "Light Mode",
+    "system": "System",
+    "notifications": "Notifications",
+    "learning_reminders": "Learning Reminders",
+    "achievement_alerts": "Achievement Alerts",
+    "quiz_reminders": "Quiz Reminders",
+    "language": "Language",
+    "security": "Security",
+    "change_password": "Change Password",
+    "current_password": "Current Password",
+    "new_password": "New Password",
+    "confirm_password": "Confirm Password",
+    "save": "Save Changes",
+    "ai_settings": "AI Settings",
+    "api_key": "API Key",
+    "provider": "AI Provider"
   },
-  "profile": {
-    "title": "Profile",
-    "editProfile": "Edit Profile",
-    "achievements": "Achievements",
-    "certificates": "Certificates",
-    "activity": "Activity",
-    "skills": "Skills",
-    "contactInfo": "Contact Information",
-    "personalInfo": "Personal Information",
-    "saveChanges": "Save Changes",
-    "cancelChanges": "Cancel"
+  "dashboard": {
+    "welcome": "Welcome back, {{name}}",
+    "your_progress": "Your Progress",
+    "frameworks_completed": "Frameworks Completed",
+    "modules_completed": "Modules Completed",
+    "quizzes_passed": "Quizzes Passed",
+    "continue_learning": "Continue Learning",
+    "recent_activity": "Recent Activity",
+    "view_all": "View All",
+    "no_recent_activity": "No recent activity",
+    "frameworks_in_progress": "Frameworks in Progress",
+    "start_exploring": "Start Exploring Frameworks"
+  },
+  "ai_assistant": {
+    "title": "AI Assistant",
+    "placeholder": "Ask me anything about business frameworks...",
+    "send": "Send",
+    "history": "Chat History",
+    "new_chat": "New Chat",
+    "clear_history": "Clear History",
+    "thinking": "Thinking...",
+    "error": "Sorry, there was an error processing your request"
   },
   "common": {
     "loading": "Loading...",
     "error": "An error occurred",
-    "retry": "Retry",
-    "success": "Success",
-    "failed": "Failed",
-    "next": "Next",
-    "previous": "Previous",
-    "submit": "Submit",
-    "save": "Save",
+    "success": "Success!",
     "cancel": "Cancel",
+    "save": "Save",
     "delete": "Delete",
     "edit": "Edit",
-    "view": "View",
-    "search": "Search",
-    "filter": "Filter",
-    "sort": "Sort",
-    "all": "All",
-    "none": "None",
+    "back": "Back",
+    "next": "Next",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "search": "Search",
+    "show_more": "Show More",
+    "show_less": "Show Less",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "refresh": "Refresh",
+    "version": "Version {{version}}"
+  },
+  "languages": {
+    "en": "English",
+    "es": "Spanish",
+    "fr": "French",
+    "de": "German",
+    "zh": "Chinese",
+    "hi": "Hindi"
   }
 }

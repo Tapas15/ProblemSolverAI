@@ -1,168 +1,169 @@
 {
   "app": {
-    "title": "Question Pro AI",
-    "tagline": "Mejora tus habilidades de resolución de problemas con potentes marcos de negocio"
+    "name": "QuestionPro AI",
+    "tagline": "Mejora tus habilidades de resolución de problemas"
   },
   "navigation": {
     "home": "Inicio",
-    "dashboard": "Panel",
     "frameworks": "Marcos",
     "exercises": "Ejercicios",
-    "quizzes": "Cuestionarios",
+    "ai_assistant": "Asistente IA",
+    "dashboard": "Panel",
     "profile": "Perfil",
     "settings": "Ajustes",
-    "logout": "Cerrar sesión",
-    "backToHome": "Volver al inicio"
-  },
-  "frameworks": {
-    "mece": {
-      "title": "Marco MECE",
-      "description": "Un método de organización de información que asegura que los problemas sean Mutuamente Excluyentes (ME) y Colectivamente Exhaustivos (CE)",
-      "concepts": "Mutuamente Excluyente, Colectivamente Exhaustivo, Agrupación Lógica, Análisis Estructurado",
-      "applications": "Desglose de problemas, Análisis de causa raíz, Análisis completo"
-    },
-    "designThinking": {
-      "title": "Design Thinking",
-      "description": "Un enfoque centrado en el ser humano para la innovación que utiliza herramientas del diseñador para integrar las necesidades de las personas, las posibilidades de la tecnología y los requisitos para el éxito empresarial",
-      "concepts": "Empatizar, Definir, Idear, Prototipar, Probar",
-      "applications": "Diseño de productos, Diseño de servicios, Optimización de experiencia de usuario"
-    },
-    "swot": {
-      "title": "Análisis DAFO",
-      "description": "Una técnica de planificación estratégica utilizada para identificar fortalezas, debilidades, oportunidades y amenazas relacionadas con la competencia empresarial o la planificación de proyectos",
-      "concepts": "Fortalezas, Debilidades, Oportunidades, Amenazas",
-      "applications": "Planificación estratégica, Análisis competitivo, Posicionamiento de mercado"
-    },
-    "portersFiveForces": {
-      "title": "Cinco Fuerzas de Porter",
-      "description": "Un marco para analizar el entorno competitivo de una empresa, ayudando a determinar la intensidad competitiva y el atractivo del mercado",
-      "concepts": "Competencia, Nuevos entrantes, Sustitutos, Poder del proveedor, Poder del comprador",
-      "applications": "Análisis de industria, Posicionamiento estratégico, Decisiones de entrada al mercado"
-    },
-    "firstPrinciples": {
-      "title": "Pensamiento de Primeros Principios",
-      "description": "La práctica de descomponer problemas complejos en elementos básicos y luego reensamblarlos desde cero",
-      "concepts": "Verdades fundamentales, Suposiciones básicas, Razonamiento desde cero",
-      "applications": "Innovación, Resolución de problemas, Pensamiento estratégico, Toma de decisiones"
-    },
-    "blueOcean": {
-      "title": "Estrategia del Océano Azul",
-      "description": "Una teoría empresarial que sugiere que las empresas están mejor buscando formas de ganar espacio de mercado no disputado en lugar de competir en mercados existentes",
-      "concepts": "Innovación de valor, Espacio de mercado no disputado, Creación de mercado",
-      "applications": "Estrategia de mercado, Diferenciación de producto, Innovación de modelo de negocio"
-    },
-    "scamper": {
-      "title": "SCAMPER",
-      "description": "Una técnica de pensamiento creativo que ayuda a generar nuevas ideas considerando cambios en productos o servicios existentes",
-      "concepts": "Sustituir, Combinar, Adaptar, Modificar, Poner otros usos, Eliminar, Revertir",
-      "applications": "Desarrollo de productos, Mejora de procesos, Resolución creativa de problemas"
-    },
-    "problemTree": {
-      "title": "Análisis de Árbol de Problemas",
-      "description": "Un método visual para analizar problemas mapeando las relaciones de causa y efecto en torno a un problema",
-      "concepts": "Problema central, Causas raíz, Efectos, Relaciones causales",
-      "applications": "Planificación de desarrollo, Diseño de proyectos, Intervenciones sociales"
-    },
-    "pareto": {
-      "title": "Principio de Pareto",
-      "description": "El principio de que aproximadamente el 80% de los efectos provienen del 20% de las causas",
-      "concepts": "Regla 80/20, Pocos vitales, Muchos triviales",
-      "applications": "Gestión del tiempo, Asignación de recursos, Control de calidad, Servicio al cliente"
-    },
-    "jobsToBeDone": {
-      "title": "Jobs-To-Be-Done",
-      "description": "Un marco para comprender las necesidades del cliente centrándose en el 'trabajo' que están tratando de realizar",
-      "concepts": "Trabajos del cliente, Progreso, Dimensiones funcionales/emocionales/sociales",
-      "applications": "Innovación de productos, Estrategia de marketing, Diseño de experiencia del cliente"
-    }
+    "logout": "Cerrar Sesión"
   },
   "auth": {
-    "login": "Iniciar sesión",
+    "login": "Iniciar Sesión",
     "register": "Registrarse",
-    "email": "Correo electrónico",
-    "password": "Contraseña",
-    "confirmPassword": "Confirmar contraseña",
-    "forgotPassword": "¿Olvidó su contraseña?",
     "username": "Nombre de usuario",
+    "password": "Contraseña",
+    "email": "Correo electrónico",
     "name": "Nombre completo",
-    "createAccount": "Crear cuenta",
-    "alreadyHaveAccount": "¿Ya tiene una cuenta?",
-    "dontHaveAccount": "¿No tiene una cuenta?",
-    "loginSuccess": "Inicio de sesión exitoso",
-    "loginError": "Error al iniciar sesión",
-    "registerSuccess": "Registro exitoso",
-    "registerError": "Error al registrarse"
+    "forgot_password": "¿Olvidaste tu contraseña?",
+    "already_have_account": "¿Ya tienes una cuenta?",
+    "need_account": "¿Necesitas una cuenta?"
   },
-  "settings": {
-    "title": "Ajustes",
-    "account": "Ajustes de cuenta",
-    "language": "Idioma",
-    "languageSettings": "Ajustes de idioma",
-    "applicationLanguage": "Idioma de la aplicación",
-    "changeLanguage": "Cambiar el idioma para todo el contenido de la aplicación",
-    "security": "Seguridad",
-    "privacy": "Privacidad",
-    "notifications": "Notificaciones",
-    "advancedSettings": "Ajustes avanzados",
-    "apiIntegrations": "Integraciones API",
-    "dataManagement": "Gestión de datos",
-    "deleteAccount": "Eliminar cuenta",
-    "deleteAccountDesc": "Eliminar permanentemente su cuenta y todos los datos asociados",
-    "twoFactor": "Autenticación de dos factores",
-    "changePassword": "Cambiar contraseña",
-    "currentPassword": "Contraseña actual",
-    "newPassword": "Nueva contraseña",
-    "confirmPassword": "Confirmar nueva contraseña",
-    "updatePassword": "Actualizar contraseña",
-    "cancel": "Cancelar",
+  "frameworks": {
+    "title": "Marcos de Negocio",
+    "subtitle": "Selecciona un marco para explorar",
+    "learn_more": "Saber Más",
+    "start": "Comenzar Aprendizaje",
+    "continue": "Continuar Aprendizaje",
+    "completed": "Completado",
+    "level": {
+      "beginner": "Principiante",
+      "intermediate": "Intermedio",
+      "advanced": "Avanzado"
+    }
+  },
+  "modules": {
+    "next": "Siguiente Módulo",
+    "previous": "Módulo Anterior",
+    "complete": "Marcar como Completado",
+    "completed": "Completado",
+    "key_takeaways": "Puntos Clave",
+    "examples": "Ejemplos",
+    "resources": "Recursos"
+  },
+  "quizzes": {
+    "title": "Cuestionario",
+    "start": "Comenzar Cuestionario",
+    "next": "Siguiente Pregunta",
+    "previous": "Pregunta Anterior",
+    "submit": "Enviar Cuestionario",
+    "results": "Resultados",
+    "try_again": "Intentar de Nuevo",
+    "correct": "Correcto",
+    "incorrect": "Incorrecto",
+    "score": "Puntuación",
+    "passing_score": "Puntuación de Aprobación",
+    "time_limit": "Límite de Tiempo",
+    "time_minutes": "{{count}} minutos",
+    "question": "Pregunta {{current}} de {{total}}"
+  },
+  "exercises": {
+    "title": "Ejercicios",
+    "difficulty": "Dificultad",
+    "estimated_time": "Tiempo Estimado",
+    "solution": "Solución",
+    "submit": "Enviar Solución",
+    "scenario": "Escenario",
+    "steps": "Pasos",
+    "resources": "Recursos",
+    "sample_solution": "Solución de Ejemplo"
+  },
+  "profile": {
+    "personal_info": "Información Personal",
+    "business_info": "Información Empresarial",
+    "achievements": "Logros",
+    "progress": "Progreso",
+    "overall_progress": "Progreso General",
+    "coming_soon": "Próximamente",
+    "no_achievements": "Sin Logros Todavía",
+    "complete_to_earn": "Completa cuestionarios y módulos para ganar logros",
+    "explore_frameworks": "Explorar Marcos",
+    "company": "Empresa",
+    "location": "Ubicación",
+    "website": "Sitio Web",
+    "member_since": "Miembro Desde",
+    "bio": "Biografía",
+    "phone": "Teléfono",
+    "no_info_added": "No se ha añadido {{field}}",
+    "edit": "Editar",
     "save": "Guardar",
     "saving": "Guardando..."
   },
-  "dashboard": {
-    "yourProgress": "Su progreso",
-    "yourFrameworks": "Sus marcos",
-    "startLearning": "Comenzar a aprender",
-    "continueFramework": "Continuar",
-    "completedModules": "Módulos completados",
-    "recentActivity": "Actividad reciente",
-    "recentQuizzes": "Cuestionarios recientes",
-    "viewAll": "Ver todo",
-    "tryAgain": "Intentar de nuevo",
-    "refreshData": "Actualizar",
-    "clearAttempts": "Borrar intentos"
+  "settings": {
+    "title": "Ajustes",
+    "appearance": "Apariencia",
+    "dark_mode": "Modo Oscuro",
+    "light_mode": "Modo Claro",
+    "system": "Sistema",
+    "notifications": "Notificaciones",
+    "learning_reminders": "Recordatorios de Aprendizaje",
+    "achievement_alerts": "Alertas de Logros",
+    "quiz_reminders": "Recordatorios de Cuestionarios",
+    "language": "Idioma",
+    "security": "Seguridad",
+    "change_password": "Cambiar Contraseña",
+    "current_password": "Contraseña Actual",
+    "new_password": "Nueva Contraseña",
+    "confirm_password": "Confirmar Contraseña",
+    "save": "Guardar Cambios",
+    "ai_settings": "Ajustes de IA",
+    "api_key": "Clave API",
+    "provider": "Proveedor de IA"
   },
-  "profile": {
-    "title": "Perfil",
-    "editProfile": "Editar perfil",
-    "achievements": "Logros",
-    "certificates": "Certificados",
-    "activity": "Actividad",
-    "skills": "Habilidades",
-    "contactInfo": "Información de contacto",
-    "personalInfo": "Información personal",
-    "saveChanges": "Guardar cambios",
-    "cancelChanges": "Cancelar cambios"
+  "dashboard": {
+    "welcome": "Bienvenido de nuevo, {{name}}",
+    "your_progress": "Tu Progreso",
+    "frameworks_completed": "Marcos Completados",
+    "modules_completed": "Módulos Completados",
+    "quizzes_passed": "Cuestionarios Aprobados",
+    "continue_learning": "Continuar Aprendizaje",
+    "recent_activity": "Actividad Reciente",
+    "view_all": "Ver Todo",
+    "no_recent_activity": "Sin actividad reciente",
+    "frameworks_in_progress": "Marcos en Progreso",
+    "start_exploring": "Comenzar a Explorar Marcos"
+  },
+  "ai_assistant": {
+    "title": "Asistente IA",
+    "placeholder": "Pregúntame cualquier cosa sobre marcos de negocio...",
+    "send": "Enviar",
+    "history": "Historial de Chat",
+    "new_chat": "Nuevo Chat",
+    "clear_history": "Borrar Historial",
+    "thinking": "Pensando...",
+    "error": "Lo siento, hubo un error al procesar tu solicitud"
   },
   "common": {
     "loading": "Cargando...",
-    "error": "Se produjo un error",
-    "retry": "Reintentar",
-    "success": "Éxito",
-    "failed": "Fallido",
-    "next": "Siguiente",
-    "previous": "Anterior",
-    "submit": "Enviar",
-    "save": "Guardar",
+    "error": "Ocurrió un error",
+    "success": "¡Éxito!",
     "cancel": "Cancelar",
+    "save": "Guardar",
     "delete": "Eliminar",
     "edit": "Editar",
-    "view": "Ver",
-    "search": "Buscar",
-    "filter": "Filtrar",
-    "sort": "Ordenar",
-    "all": "Todos",
-    "none": "Ninguno",
+    "back": "Atrás",
+    "next": "Siguiente",
     "yes": "Sí",
-    "no": "No"
+    "no": "No",
+    "search": "Buscar",
+    "show_more": "Mostrar Más",
+    "show_less": "Mostrar Menos",
+    "copy": "Copiar",
+    "copied": "¡Copiado!",
+    "refresh": "Actualizar",
+    "version": "Versión {{version}}"
+  },
+  "languages": {
+    "en": "Inglés",
+    "es": "Español",
+    "fr": "Francés",
+    "de": "Alemán",
+    "zh": "Chino",
+    "hi": "Hindi"
   }
 }

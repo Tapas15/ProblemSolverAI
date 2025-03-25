@@ -13,8 +13,6 @@ import { useMutation } from '@tanstack/react-query';
 import { updatePassword, updatePrivacySettings, updateNotificationSettings } from '@/lib/api';
 import { TwoFactorAuth } from '@/components/settings/two-factor-auth';
 import { DataExport } from '@/components/settings/data-export';
-import { LanguageSwitcher } from '@/components/common/language-switcher';
-import { useTranslation } from 'react-i18next';
 
 const SettingsPage: React.FC = () => {
   const { user, updateAiSettingsMutation } = useAuth();
@@ -424,20 +422,6 @@ const SettingsPage: React.FC = () => {
               <CardContent className="px-4 sm:px-6">
                 <div className="space-y-4 sm:space-y-6">
                   <div className="space-y-3 sm:space-y-4">
-                    <h3 className="text-base sm:text-lg font-medium">Language Settings</h3>
-                    
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0">
-                      <div>
-                        <h4 className="font-medium text-sm sm:text-base">Application Language</h4>
-                        <p className="text-xs sm:text-sm text-gray-500">Change the language for all app content</p>
-                      </div>
-                      <div className="w-full sm:w-48">
-                        <LanguageSwitcher />
-                      </div>
-                    </div>
-                    
-                    <Separator />
-                    
                     <h3 className="text-base sm:text-lg font-medium">Data Management</h3>
                     
                     <DataExport />
