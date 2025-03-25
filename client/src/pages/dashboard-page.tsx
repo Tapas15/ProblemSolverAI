@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { getUserProgress, getUserQuizAttempts, getFrameworks, getAllModulesByFramework } from '@/lib/api';
+import { getUserProgress, getUserQuizAttempts, getFrameworks, getAllModulesByFramework, getQuizzesByFramework } from '@/lib/api';
 import { Framework, UserProgress, QuizAttempt, Module } from '@shared/schema';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -401,7 +401,19 @@ const DashboardPage = () => {
                                 variant="outline" 
                                 size="sm" 
                                 className="native-button-secondary mt-1 text-xs py-2 h-8"
-                                onClick={() => setLocation(`/quizzes/${attempt.quizId}`)}
+                                onClick={() => {
+                                  // Locate the framework id for this quiz using related data
+                                  const quiz = quizzes?.find(q => q.id === attempt.quizId);
+                                  if (quiz) {
+                                    setLocation(`/quizzes/${quiz.frameworkId}/${attempt.quizId}`);
+                                  } else {
+                                    toast({
+                                      title: "Error",
+                                      description: "Could not find quiz details. Please try again.",
+                                      variant: "destructive"
+                                    });
+                                  }
+                                }}
                               >
                                 Try Again <ChevronRight className="ml-1 h-3.5 w-3.5" />
                               </Button>
