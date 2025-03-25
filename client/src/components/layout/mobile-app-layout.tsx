@@ -1,8 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { Home, BookOpen, Award, User, Settings, Menu, X } from 'lucide-react';
+import { 
+  Home, 
+  BookOpen, 
+  Award, 
+  User, 
+  Settings, 
+  Menu, 
+  X, 
+  Lightbulb, 
+  LayoutDashboard, 
+  Smartphone 
+} from 'lucide-react';
 import { Link, useLocation } from 'wouter';
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { isNativePlatform, getPlatform } from '@/lib/capacitor';
 import { useAuth } from '@/hooks/use-auth';
 import "../../styles/mobile.css";
@@ -16,6 +29,7 @@ export function MobileAppLayout({ children }: MobileAppLayoutProps) {
   const { user } = useAuth();
   const [platform, setPlatform] = useState<string>('web');
   const [showMenu, setShowMenu] = useState(false);
+  const isNative = isNativePlatform();
 
   useEffect(() => {
     setPlatform(getPlatform());
@@ -44,9 +58,28 @@ export function MobileAppLayout({ children }: MobileAppLayoutProps) {
       icon: <BookOpen className="h-5 w-5" /> 
     },
     { 
-      name: 'Exercises', 
+      name: 'Dashboard', 
+      path: '/dashboard', 
+      icon: <LayoutDashboard className="h-5 w-5" /> 
+    },
+    { 
+      name: 'Practice', 
       path: '/exercises', 
       icon: <Award className="h-5 w-5" /> 
+    },
+    { 
+      name: 'AI Assistant', 
+      path: '/ai-assistant', 
+      icon: <Lightbulb className="h-5 w-5" /> 
+    }
+  ];
+
+  const secondaryMenuItems = [
+    { 
+      name: 'Mobile Features', 
+      path: '/mobile-features', 
+      icon: <Smartphone className="h-5 w-5" />,
+      badge: isNative ? 'NATIVE' : 'WEB'
     },
     { 
       name: 'Profile', 
@@ -68,64 +101,157 @@ export function MobileAppLayout({ children }: MobileAppLayoutProps) {
 
   return (
     <div className={`capacitor-app ${platform} min-h-screen bg-background`}>
+      {/* Mobile Status Bar - only visible on native */}
+      {isNative && (
+        <div className="status-bar-placeholder" 
+          style={{ 
+            height: platform === 'ios' ? 'var(--safe-area-inset-top, 47px)' : '24px',
+            background: 'linear-gradient(to right, #0f2544, #19355f)'
+          }}
+        />
+      )}
+
       {/* Mobile Top Bar */}
-      <header className="fixed top-0 left-0 right-0 h-14 bg-white border-b z-30 flex items-center justify-between px-4">
+      <header className="sticky top-0 left-0 right-0 h-14 bg-gradient-to-r from-[#0f2544] to-[#19355f] z-30 flex items-center justify-between px-4 shadow-md">
         <Link href="/">
           <div className="flex items-center cursor-pointer">
-            <span className="font-bold text-xl text-primary">Question<span className="text-blue-600">Pro</span> AI</span>
+            <span className="font-bold text-xl text-white font-header tracking-tight">
+              <span className="text-[#3b82f6]">Question</span>
+              <span className="text-white">Pro </span>
+              <span className="text-[#60a5fa]">AI</span>
+            </span>
           </div>
         </Link>
         
-        <Sheet open={showMenu} onOpenChange={setShowMenu}>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <Menu className="h-6 w-6" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent className="w-[250px] sm:w-[300px]">
-            <div className="py-4">
-              <div className="flex items-center justify-between mb-6">
-                <span className="font-bold text-xl text-primary">Question<span className="text-blue-600">Pro</span> AI</span>
-                <Button variant="ghost" size="icon" onClick={() => setShowMenu(false)}>
-                  <X className="h-5 w-5" />
-                </Button>
-              </div>
-              <nav className="space-y-2">
-                {menuItems.map((item) => (
-                  <Link key={item.path} href={item.path}>
-                    <div
-                      className={`flex items-center p-3 rounded-md cursor-pointer ${
-                        isActive(item.path)
-                          ? "bg-primary/10 text-primary"
-                          : "hover:bg-muted"
-                      }`}
-                      onClick={() => setShowMenu(false)}
-                    >
-                      {item.icon}
-                      <span className="ml-3 font-medium">{item.name}</span>
+        <div className="flex items-center space-x-2">
+          {isNative && (
+            <Badge variant="outline" className="border-[#3b82f6]/30 text-[#60a5fa] mr-2">
+              {platform.toUpperCase()}
+            </Badge>
+          )}
+          <Sheet open={showMenu} onOpenChange={setShowMenu}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="text-white hover:bg-[#1a4482]/50">
+                <Menu className="h-6 w-6" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent className="w-[280px] sm:w-[300px] border-l border-[#3b82f6]/10 bg-gradient-to-b from-[#0f2544] to-[#19355f] text-white">
+              <div className="py-4">
+                <div className="flex items-center justify-between mb-6">
+                  <span className="font-bold text-xl font-header tracking-tight">
+                    <span className="text-[#3b82f6]">Question</span>
+                    <span className="text-white">Pro </span>
+                    <span className="text-[#60a5fa]">AI</span>
+                  </span>
+                  <Button variant="ghost" size="icon" onClick={() => setShowMenu(false)} className="text-white hover:bg-[#1a4482]/50">
+                    <X className="h-5 w-5" />
+                  </Button>
+                </div>
+
+                {/* User Profile Summary */}
+                {user && (
+                  <div className="mb-6 p-3 border border-[#3b82f6]/10 rounded-xl bg-[#1a4482]/30">
+                    <div className="flex items-center space-x-3">
+                      <Avatar className="h-10 w-10 ring-2 ring-[#60a5fa]/30 shadow-inner">
+                        <AvatarImage src="" alt={user.name} />
+                        <AvatarFallback className="bg-gradient-to-br from-[#3b82f6] to-[#60a5fa] text-white font-medium">
+                          {user.name.substring(0, 2).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-white">{user.name}</p>
+                        <p className="text-xs text-white/60">{user.email}</p>
+                      </div>
                     </div>
-                  </Link>
-                ))}
-              </nav>
-            </div>
-          </SheetContent>
-        </Sheet>
+                  </div>
+                )}
+
+                {/* Primary Navigation */}
+                <div className="mb-4">
+                  <h3 className="text-xs uppercase text-white/50 font-semibold mb-2 px-3">Main Navigation</h3>
+                  <nav className="space-y-1">
+                    {menuItems.map((item) => (
+                      <Link key={item.path} href={item.path}>
+                        <div
+                          className={`flex items-center p-3 rounded-xl cursor-pointer transition-colors ${
+                            isActive(item.path)
+                              ? "bg-[#1a4482]/50 text-[#60a5fa]"
+                              : "text-white/80 hover:bg-[#1a4482]/30 hover:text-white"
+                          }`}
+                          onClick={() => setShowMenu(false)}
+                        >
+                          <div className={isActive(item.path) ? "text-[#60a5fa]" : ""}>
+                            {item.icon}
+                          </div>
+                          <span className="ml-3 font-medium">{item.name}</span>
+                          {isActive(item.path) && (
+                            <div className="ml-auto w-1.5 h-6 rounded-full bg-gradient-to-b from-[#3b82f6] to-[#60a5fa]"></div>
+                          )}
+                        </div>
+                      </Link>
+                    ))}
+                  </nav>
+                </div>
+
+                {/* Secondary Navigation */}
+                <div className="mb-4">
+                  <h3 className="text-xs uppercase text-white/50 font-semibold mb-2 px-3">More Options</h3>
+                  <nav className="space-y-1">
+                    {secondaryMenuItems.map((item) => (
+                      <Link key={item.path} href={item.path}>
+                        <div
+                          className={`flex items-center p-3 rounded-xl cursor-pointer transition-colors ${
+                            isActive(item.path)
+                              ? "bg-[#1a4482]/50 text-[#60a5fa]"
+                              : "text-white/80 hover:bg-[#1a4482]/30 hover:text-white"
+                          }`}
+                          onClick={() => setShowMenu(false)}
+                        >
+                          <div className={isActive(item.path) ? "text-[#60a5fa]" : ""}>
+                            {item.icon}
+                          </div>
+                          <span className="ml-3 font-medium">{item.name}</span>
+                          {item.badge && (
+                            <Badge 
+                              variant="outline" 
+                              className="ml-auto text-xs py-0 px-1.5 border-[#3b82f6]/30 text-[#60a5fa]"
+                            >
+                              {item.badge}
+                            </Badge>
+                          )}
+                          {isActive(item.path) && !item.badge && (
+                            <div className="ml-auto w-1.5 h-6 rounded-full bg-gradient-to-b from-[#3b82f6] to-[#60a5fa]"></div>
+                          )}
+                        </div>
+                      </Link>
+                    ))}
+                  </nav>
+                </div>
+
+                {/* Version information */}
+                <div className="mt-auto pt-4 border-t border-[#3b82f6]/10 text-center text-xs text-white/40">
+                  <p>QuestionPro AI Mobile {isNative ? platform : 'Web'} v1.0</p>
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
       </header>
 
       {/* Main Content */}
-      <main className="pt-14 pb-16 px-4 native-scroll">
-        <div className="max-w-md mx-auto">
+      <main className="pb-16 native-scroll">
+        <div className="mobile-container mx-auto px-4">
           {children}
         </div>
       </main>
 
       {/* Mobile Tab Bar */}
-      <nav className="mobile-tab-bar bg-white border-t">
+      <nav className="mobile-tab-bar bg-gradient-to-r from-[#0f2544] to-[#19355f] border-t border-[#3b82f6]/10">
         {menuItems.slice(0, 5).map((item) => (
           <Link key={item.path} href={item.path}>
             <div
               className={`flex flex-col items-center justify-center w-full h-full ${
-                isActive(item.path) ? "text-primary" : "text-gray-500"
+                isActive(item.path) ? "text-[#60a5fa]" : "text-white/70"
               }`}
             >
               {item.icon}
