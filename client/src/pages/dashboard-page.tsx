@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   CheckCircle, Clock, Award, BookOpen, ChevronRight, BarChart2, 
   Target, BookCheck, Brain, TrendingUp, LineChart, Flame, Zap, 
-  Trophy, Lightbulb, ArrowRightCircle, Medal, ArrowLeft
+  Trophy, Lightbulb, ArrowRightCircle, Medal, ArrowLeft, RefreshCw
 } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
@@ -19,6 +19,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { LearningProgressMap } from '@/components/dashboard/learning-progress-map';
 import { QuizModuleInsights } from '@/components/dashboard/quiz-module-insights';
+import { QuizPerformanceChart } from '@/components/dashboard/quiz-performance-chart';
 
 const DashboardPage = () => {
   const { user } = useAuth();
