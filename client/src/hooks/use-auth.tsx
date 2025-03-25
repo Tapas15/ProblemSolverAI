@@ -120,8 +120,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   
   const updateAiSettingsMutation = useMutation({
     mutationFn: async (settings: AiSettings) => {
-      const res = await apiRequest("PATCH", "/api/user/ai-settings", settings);
-      return await res.json();
+      try {
+        // Try POST first (new API)
+        const res = await apiRequest("POST", "/api/user/ai-settings", settings);
+        return await res.json();
+      } catch (error) {
+        // Fall back to PATCH (legacy API) if POST fails
+        console.warn('Falling back to PATCH for AI settings');
+        const res = await apiRequest("PATCH", "/api/user/ai-settings", settings);
+        return await res.json();
+      }
     },
     onSuccess: (user: Omit<SelectUser, "password">) => {
       queryClient.setQueryData(["/api/user"], user);
