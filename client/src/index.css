@@ -1258,3 +1258,23 @@ nav::after {
     opacity: 1;
   }
 }
+
+/* Module completion styling for JS DOM manipulation */
+.module-completed {
+  border-color: #86efac !important; /* green-300 */
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+.module-completed > div:first-child {
+  background-color: #f0fdf4 !important; /* green-50 */
+}
+
+.module-completed .h-7.w-7 {
+  background-color: #22c55e !important; /* green-500 */
+  color: white !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+.module-completed h4 {
+  color: #15803d !important; /* green-700 */
+}

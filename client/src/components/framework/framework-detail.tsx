@@ -56,9 +56,32 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
       // Use enhanced tracking version for module completion
       updateModuleCompletionWithTracking(moduleId, completed),
     onSuccess: (updatedModule) => {
+      // Invalidate all relevant queries to ensure UI updates correctly
       queryClient.invalidateQueries({ queryKey: ['/api/user/progress'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/all-modules-by-framework'] });
+      
       if (framework) {
         queryClient.invalidateQueries({ queryKey: [`/api/frameworks/${framework.id}/modules`] });
+        
+        // Force module update in the local state for immediate UI update
+        if (updatedModule && modules) {
+          const updatedModules = modules.map(m => 
+            m.id === updatedModule.id ? {...m, completed: updatedModule.completed} : m
+          );
+          
+          // This will cause a re-render with the updated module state
+          // without waiting for the query to finish
+          window.setTimeout(() => {
+            const moduleElement = document.getElementById(`module-${updatedModule.id}`);
+            if (moduleElement) {
+              if (updatedModule.completed) {
+                moduleElement.classList.add('module-completed');
+              } else {
+                moduleElement.classList.remove('module-completed');
+              }
+            }
+          }, 50);
+        }
         
         // Track module completion with xAPI if the module was completed
         if (updatedModule.completed) {
@@ -69,6 +92,7 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
             updatedModule.frameworkId
           ).catch(error => {
             console.error("Error tracking module completion:", error);
+            // Continue even if tracking fails
           });
           
           // Check if all modules are completed to track framework completion
@@ -83,6 +107,7 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
               allModules.length
             ).catch(error => {
               console.error("Error tracking framework completion:", error);
+              // Continue even if tracking fails
             });
           }
         }
@@ -260,7 +285,7 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
               ) : (
                 <div className="space-y-4">
                   {modules.map((module) => (
-                    <div key={module.id} className={`border ${module.completed ? 'border-green-300 shadow-sm' : 'border-gray-200'} rounded-lg overflow-hidden`}>
+                    <div id={`module-${module.id}`} key={module.id} className={`border ${module.completed ? 'border-green-300 shadow-sm' : 'border-gray-200'} rounded-lg overflow-hidden`}>
                       <div 
                         className={`${module.completed ? 'bg-green-50' : 'bg-gray-50'} px-4 py-3 flex justify-between items-center cursor-pointer`}
                         onClick={() => toggleModule(module.id)}
