@@ -9,7 +9,8 @@ import {
   X, 
   Lightbulb, 
   LayoutDashboard, 
-  Smartphone 
+  Smartphone,
+  LogOut
 } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -26,7 +27,7 @@ interface MobileAppLayoutProps {
 
 export function MobileAppLayout({ children }: MobileAppLayoutProps) {
   const [location] = useLocation();
-  const { user } = useAuth();
+  const { user, logoutMutation } = useAuth();
   const [platform, setPlatform] = useState<string>('web');
   const [showMenu, setShowMenu] = useState(false);
   const isNative = isNativePlatform();
