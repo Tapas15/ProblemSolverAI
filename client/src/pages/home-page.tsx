@@ -30,6 +30,7 @@ import { getFrameworks, getUserProgress } from '@/lib/api';
 import { Framework, UserProgress } from '@shared/schema';
 import { Progress } from '@/components/ui/progress';
 import { isNativePlatform } from '@/lib/capacitor';
+import FrameworkMiniCard from '@/components/framework/framework-mini-card';
 
 // Function to generate a dynamic gradient based on framework ID
 function getFrameworkGradient(id: number): string {
