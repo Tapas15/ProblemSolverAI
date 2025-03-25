@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRoute, useLocation, Link } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { getExercise, submitExerciseSolution, getUserExerciseSubmissions, deleteExerciseSubmission } from "@/lib/api";
@@ -17,13 +17,16 @@ import {
   HelpCircle, 
   ListChecks, 
   RefreshCw, 
-  Trash2 
+  Trash2,
+  Brain
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import MainLayout from "@/components/layout/main-layout";
+import MobileAppLayout from "@/components/layout/mobile-app-layout";
+import { isNativePlatform } from "@/lib/capacitor";
 import { 
   AlertDialog,
   AlertDialogAction,

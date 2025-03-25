@@ -213,34 +213,41 @@ const DashboardPage = () => {
                     progressData.map((progress: UserProgress) => {
                       const framework = getFrameworkDetails(progress.frameworkId);
                       return (
-                        <Card key={progress.id} className="shadow-sm hover:shadow-md transition-shadow duration-300">
+                        <Card key={progress.id} className="native-card touch-feedback">
                           <CardHeader className="pb-2">
-                            <div className="flex justify-between">
-                              <CardTitle>{framework?.name}</CardTitle>
-                              <Badge variant={progress.status === 'completed' ? 'default' : 
-                                progress.status === 'in_progress' ? 'secondary' : 'outline'}>
+                            <div className="flex justify-between items-start">
+                              <CardTitle className="text-base text-[#0f172a]">{framework?.name}</CardTitle>
+                              <Badge className={progress.status === 'completed' ? 'badge-green' : 
+                                progress.status === 'in_progress' ? 'badge-blue' : 'badge-outline'}>
                                 {progress.status === 'completed' ? 'Completed' : 
                                  progress.status === 'in_progress' ? 'In Progress' : 'Not Started'}
                               </Badge>
                             </div>
-                            <CardDescription>{framework?.description}</CardDescription>
+                            <CardDescription className="text-xs line-clamp-2 text-[#64748b]">
+                              {framework?.description}
+                            </CardDescription>
                           </CardHeader>
-                          <CardContent>
-                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                              <div className="text-sm text-gray-600">
+                          <CardContent className="pt-0">
+                            <div className="flex flex-col gap-3">
+                              <div className="text-xs text-[#64748b]">
                                 {progress.completedModules || 0} of {progress.totalModules} modules complete
                               </div>
-                              <Link to={`/frameworks/${framework?.id}`} className="w-full sm:w-auto">
-                                <Button variant="outline" size="sm" className="flex items-center w-full sm:w-auto justify-center sm:justify-start">
-                                  <span className="sm:inline">Continue</span><span className="hidden sm:inline"> Learning</span> <ChevronRight className="ml-1 h-4 w-4" />
-                                </Button>
-                              </Link>
+                              <div>
+                                <Progress 
+                                  value={progress.totalModules > 0 ? 
+                                    Math.round(((progress.completedModules || 0) / progress.totalModules) * 100) : 0} 
+                                  className="h-2" 
+                                />
+                              </div>
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="native-button-secondary mt-1 text-xs py-2 h-8"
+                                onClick={() => setLocation(`/frameworks/${framework?.id}`)}
+                              >
+                                Continue Learning <ChevronRight className="ml-1 h-3.5 w-3.5" />
+                              </Button>
                             </div>
-                            <Progress 
-                              value={progress.totalModules > 0 ? 
-                                Math.round(((progress.completedModules || 0) / progress.totalModules) * 100) : 0} 
-                              className="h-2 mt-3" 
-                            />
                           </CardContent>
                         </Card>
                       );
@@ -292,42 +299,49 @@ const DashboardPage = () => {
                   {quizAttempts && quizAttempts.length > 0 ? (
                     quizAttempts.map((attempt: QuizAttempt) => {
                       return (
-                        <Card key={attempt.id} className="shadow-sm hover:shadow-md transition-shadow duration-300">
+                        <Card key={attempt.id} className="native-card touch-feedback overflow-hidden">
                           <CardHeader className="pb-2">
-                            <div className="flex justify-between">
-                              <CardTitle className="flex items-center">
-                                Quiz #{attempt.quizId}
-                                {attempt.passed ? (
-                                  <CheckCircle className="ml-2 h-5 w-5 text-green-500" />
-                                ) : null}
-                              </CardTitle>
-                              <Badge variant={attempt.passed ? 'default' : 'destructive'}>
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <CardTitle className="flex items-center text-base text-[#0f172a]">
+                                  Quiz #{attempt.quizId}
+                                  {attempt.passed ? (
+                                    <CheckCircle className="ml-2 h-4 w-4 text-green-500" />
+                                  ) : null}
+                                </CardTitle>
+                                <CardDescription className="text-xs text-[#64748b]">
+                                  <span>Framework Quiz</span>
+                                </CardDescription>
+                              </div>
+                              <Badge className={attempt.passed ? 'badge-green' : 'badge-red'}>
                                 {attempt.passed ? 'Passed' : 'Failed'}
                               </Badge>
                             </div>
-                            <CardDescription className="flex justify-between">
-                              <span>Framework Quiz</span>
-                              {attempt.completedAt && (
-                                <span className="text-xs flex items-center">
-                                  <Clock className="mr-1 h-3 w-3" /> 
-                                  {new Date(attempt.completedAt).toLocaleDateString()}
-                                </span>
-                              )}
-                            </CardDescription>
                           </CardHeader>
-                          <CardContent>
-                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                              <div className="flex items-center">
-                                <Award className="mr-1 h-4 w-4 text-amber-500" />
-                                <span className="text-sm font-medium">
-                                  Score: {Math.round((attempt.score / attempt.maxScore) * 100)}%
-                                </span>
+                          <CardContent className="pt-0">
+                            <div className="flex flex-col gap-3">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center">
+                                  <Award className="mr-1.5 h-3.5 w-3.5 text-amber-500" />
+                                  <span className="text-xs font-medium text-[#334155]">
+                                    Score: {Math.round((attempt.score / attempt.maxScore) * 100)}%
+                                  </span>
+                                </div>
+                                {attempt.completedAt && (
+                                  <span className="text-xs flex items-center text-[#64748b]">
+                                    <Clock className="mr-1 h-3 w-3" /> 
+                                    {new Date(attempt.completedAt).toLocaleDateString()}
+                                  </span>
+                                )}
                               </div>
-                              <Link to={`/quizzes/${attempt.quizId}`} className="w-full sm:w-auto">
-                                <Button variant="outline" size="sm" className="w-full sm:w-auto">
-                                  Try Again
-                                </Button>
-                              </Link>
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="native-button-secondary mt-1 text-xs py-2 h-8"
+                                onClick={() => setLocation(`/quizzes/${attempt.quizId}`)}
+                              >
+                                Try Again <ChevronRight className="ml-1 h-3.5 w-3.5" />
+                              </Button>
                             </div>
                           </CardContent>
                         </Card>
@@ -355,62 +369,67 @@ const DashboardPage = () => {
             </TabsContent>
             
             <TabsContent value="recommendations" className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6">
-                <Card className="shadow-md">
-                  <CardHeader className="px-3 pt-3 pb-1 sm:p-6 sm:pb-2">
-                    <CardTitle className="flex items-center text-blue-600 text-sm sm:text-base">
-                      <Lightbulb className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                      Suggested Framework
-                    </CardTitle>
-                    <CardDescription>
-                      Based on your learning patterns
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4 px-3 pb-3 sm:p-6">
-                    <div className="flex items-center gap-4">
-                      <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-lg bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center text-white">
-                        <BookOpen className="h-6 w-6 sm:h-8 sm:w-8" />
+              <div className="space-y-4">
+                <Card className="native-card touch-feedback overflow-hidden">
+                  <CardContent className="p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-[#3b82f6] to-[#60a5fa] flex items-center justify-center text-white flex-shrink-0">
+                        <Lightbulb className="h-6 w-6" />
                       </div>
-                      <div>
-                        <h3 className="font-semibold text-base sm:text-lg">Design Thinking</h3>
-                        <p className="text-xs sm:text-sm text-muted-foreground">Perfect next step for your learning journey</p>
+                      <div className="flex-1">
+                        <h3 className="text-[#0f172a] font-medium text-base">Design Thinking</h3>
+                        <p className="text-xs text-[#64748b] mt-0.5 mb-2">Perfect next step for your learning journey</p>
+                        
+                        <Button 
+                          className="native-button text-xs h-8 py-2 w-full flex items-center justify-center"
+                          onClick={() => setLocation('/')}
+                        >
+                          Start Learning <ArrowRightCircle className="ml-1.5 h-3.5 w-3.5" />
+                        </Button>
                       </div>
                     </div>
-                    
-                    <Link to="/">
-                      <Button className="w-full">
-                        Start Learning <ArrowRightCircle className="ml-2 h-4 w-4" />
-                      </Button>
-                    </Link>
                   </CardContent>
                 </Card>
                 
-                <Card className="shadow-md">
-                  <CardHeader className="px-3 pt-3 pb-1 sm:p-6 sm:pb-2">
-                    <CardTitle className="flex items-center text-blue-600 text-sm sm:text-base">
-                      <Target className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                      Practice Recommendation
-                    </CardTitle>
-                    <CardDescription>
-                      Strengthen your knowledge
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4 px-3 pb-3 sm:p-6">
-                    <div className="flex items-center gap-4">
-                      <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-lg bg-gradient-to-br from-blue-500 to-blue-300 flex items-center justify-center text-white">
-                        <BarChart2 className="h-6 w-6 sm:h-8 sm:w-8" />
+                <Card className="native-card touch-feedback overflow-hidden">
+                  <CardContent className="p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-[#3b82f6] to-[#60a5fa] flex items-center justify-center text-white flex-shrink-0">
+                        <Target className="h-6 w-6" />
                       </div>
-                      <div>
-                        <h3 className="font-semibold text-base sm:text-lg">Take Your First Quiz</h3>
-                        <p className="text-xs sm:text-sm text-muted-foreground">Test your knowledge with a beginner quiz</p>
+                      <div className="flex-1">
+                        <h3 className="text-[#0f172a] font-medium text-base">Take Your First Quiz</h3>
+                        <p className="text-xs text-[#64748b] mt-0.5 mb-2">Test your knowledge with a beginner quiz</p>
+                        
+                        <Button 
+                          className="native-button text-xs h-8 py-2 w-full flex items-center justify-center"
+                          onClick={() => setLocation('/quizzes')}
+                        >
+                          Start Quiz <ArrowRightCircle className="ml-1.5 h-3.5 w-3.5" />
+                        </Button>
                       </div>
                     </div>
-                    
-                    <Link to="/quizzes">
-                      <Button className="w-full">
-                        Start Quiz <ArrowRightCircle className="ml-2 h-4 w-4" />
-                      </Button>
-                    </Link>
+                  </CardContent>
+                </Card>
+                
+                <Card className="native-card touch-feedback overflow-hidden">
+                  <CardContent className="p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-[#3b82f6] to-[#60a5fa] flex items-center justify-center text-white flex-shrink-0">
+                        <Brain className="h-6 w-6" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-[#0f172a] font-medium text-base">Try AI Assistant</h3>
+                        <p className="text-xs text-[#64748b] mt-0.5 mb-2">Get personalized guidance on applying frameworks</p>
+                        
+                        <Button 
+                          className="native-button text-xs h-8 py-2 w-full flex items-center justify-center"
+                          onClick={() => setLocation('/ai-assistant')}
+                        >
+                          Start Chat <ArrowRightCircle className="ml-1.5 h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               </div>
