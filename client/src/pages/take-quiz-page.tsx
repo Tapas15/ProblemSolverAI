@@ -533,6 +533,7 @@ export default function TakeQuizPage() {
                     attempts={quizAttempts} 
                     quizId={quizIdNum} 
                     frameworkId={frameworkIdNum}
+                    onRefresh={refetchQuizAttempts}
                   />
                 </div>
               </CardContent>
