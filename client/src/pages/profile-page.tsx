@@ -172,8 +172,7 @@ const ProfilePage: React.FC = () => {
   const achievements = getAchievements();
 
   return (
-    <MobileAppLayout>
-      <div className="py-4 pb-24">
+    <div className="py-4 pb-24">
         {/* Profile Avatar/Upload Section */}
         <div className="mb-6 flex justify-center">
           <div className="relative">
@@ -628,8 +627,7 @@ const ProfilePage: React.FC = () => {
           <p className="mt-1">© 2025 QuestionPro AI. All rights reserved.</p>
         </div>
       </div>
-    </MobileAppLayout>
-  );
+    );
 };
 
 // Missing Globe icon from lucide-react, adding import
