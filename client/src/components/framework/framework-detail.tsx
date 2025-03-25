@@ -107,12 +107,29 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
         if (completed) {
           // Find the index of current module
           const currentModuleIndex = modules.findIndex(m => m.id === moduleId);
+          
           // If there's a next module, expand it
           if (currentModuleIndex >= 0 && currentModuleIndex < modules.length - 1) {
+            const nextModule = modules[currentModuleIndex + 1];
+            
+            // Show toast notification about success and navigating to next module
+            toast({
+              title: `Module completed!`,
+              description: `Moving to next module: "${nextModule.name}"`,
+              variant: "default",
+            });
+            
             // Set timeout to let the current module completion animation/styling finish
             setTimeout(() => {
-              setExpandedModule(modules[currentModuleIndex + 1].id);
+              setExpandedModule(nextModule.id);
             }, 300);
+          } else {
+            // This was the last module
+            toast({
+              title: "Congratulations!",
+              description: "You've completed all modules in this framework!",
+              variant: "default",
+            });
           }
         }
       }
@@ -243,20 +260,23 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
               ) : (
                 <div className="space-y-4">
                   {modules.map((module) => (
-                    <div key={module.id} className="border border-gray-200 rounded-lg overflow-hidden">
+                    <div key={module.id} className={`border ${module.completed ? 'border-green-300 shadow-sm' : 'border-gray-200'} rounded-lg overflow-hidden`}>
                       <div 
-                        className="bg-gray-50 px-4 py-3 flex justify-between items-center cursor-pointer"
+                        className={`${module.completed ? 'bg-green-50' : 'bg-gray-50'} px-4 py-3 flex justify-between items-center cursor-pointer`}
                         onClick={() => toggleModule(module.id)}
                       >
                         <div className="flex items-center">
                           <div className={`h-6 w-6 rounded-full ${
                             module.completed ? 'bg-green-500 text-white' : 'bg-gray-300 text-white'
                           } flex items-center justify-center mr-3`}>
-                            {module.completed ? <Check className="h-4 w-4" /> : <X className="h-4 w-4" />}
+                            {module.completed ? <Check className="h-4 w-4" /> : module.id}
                           </div>
-                          <h4 className="font-medium">{module.name}</h4>
+                          <h4 className={`font-medium ${module.completed ? 'text-green-700' : ''}`}>{module.name}</h4>
+                          {module.completed && (
+                            <Badge className="ml-2 bg-green-100 text-green-800 text-xs">Completed</Badge>
+                          )}
                         </div>
-                        <button className="text-gray-400 hover:text-gray-600">
+                        <button className={`${module.completed ? 'text-green-500 hover:text-green-700' : 'text-gray-400 hover:text-gray-600'}`}>
                           {expandedModule === module.id ? <ChevronUp /> : <ChevronDown />}
                         </button>
                       </div>
@@ -347,15 +367,29 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
                           
                           <div className="flex justify-end items-center mt-4">
                             <Button
-                              variant="outline"
+                              variant={module.completed ? "outline" : "default"}
                               size="sm"
-                              className={module.completed ? "text-green-600 border-green-600" : "text-[#9545ff] border-[#9545ff]/60 hover:bg-[#9545ff]/5"}
+                              className={module.completed 
+                                ? "text-green-600 border-green-600 hover:bg-green-50" 
+                                : "bg-gradient-to-r from-[#3b82f6] to-[#4f46e5] hover:from-[#3b82f6]/90 hover:to-[#4f46e5]/90 text-white"}
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleModuleStatusChange(module.id, !module.completed, module.name);
                               }}
                             >
-                              {module.completed ? "Mark as Incomplete" : "Mark as Complete"}
+                              {module.completed ? (
+                                <span className="flex items-center">
+                                  <Check className="h-4 w-4 mr-1" />
+                                  Completed
+                                </span>
+                              ) : (
+                                <span className="flex items-center">
+                                  Mark as Complete
+                                  {modules[modules.findIndex(m => m.id === module.id) + 1] && (
+                                    <ChevronDown className="h-4 w-4 ml-1" />
+                                  )}
+                                </span>
+                              )}
                             </Button>
                           </div>
                         </div>
