@@ -23,7 +23,7 @@ export class PostgresStorage implements IStorage {
       pool: pool,
       createTableIfMissing: true,
     });
-    
+
     // Initialize database
     this.initializeDatabase();
   }
@@ -51,7 +51,7 @@ export class PostgresStorage implements IStorage {
     const results = await db.select().from(users).where(eq(users.username, username)).execute();
     return results[0];
   }
-  
+
   async getUserByEmail(email: string): Promise<User | undefined> {
     const results = await db.select().from(users).where(eq(users.email, email)).execute();
     return results[0];
@@ -61,7 +61,7 @@ export class PostgresStorage implements IStorage {
     const results = await db.insert(users).values(user).returning().execute();
     return results[0];
   }
-  
+
   async updateUser(id: number, userData: Partial<User>): Promise<User | undefined> {
     const results = await db
       .update(users)
@@ -71,27 +71,27 @@ export class PostgresStorage implements IStorage {
       .execute();
     return results[0];
   }
-  
+
   // Framework methods
   async getFramework(id: number): Promise<Framework | undefined> {
     const results = await db.select().from(frameworks).where(eq(frameworks.id, id)).execute();
     return results[0];
   }
-  
+
   async getAllFrameworks(): Promise<Framework[]> {
     return await db.select().from(frameworks).execute();
   }
-  
+
   async getFrameworkByName(name: string): Promise<Framework | undefined> {
     const results = await db.select().from(frameworks).where(eq(frameworks.name, name)).execute();
     return results[0];
   }
-  
+
   async createFramework(framework: InsertFramework): Promise<Framework> {
     const results = await db.insert(frameworks).values(framework).returning().execute();
     return results[0];
   }
-  
+
   async updateFramework(id: number, frameworkData: Partial<Framework>): Promise<Framework | undefined> {
     const results = await db
       .update(frameworks)
@@ -101,13 +101,13 @@ export class PostgresStorage implements IStorage {
       .execute();
     return results[0];
   }
-  
+
   // Module methods
   async getModule(id: number): Promise<Module | undefined> {
     const results = await db.select().from(modules).where(eq(modules.id, id)).execute();
     return results[0];
   }
-  
+
   async getModulesByFrameworkId(frameworkId: number): Promise<Module[]> {
     return await db
       .select()
@@ -116,12 +116,12 @@ export class PostgresStorage implements IStorage {
       .orderBy(modules.order)
       .execute();
   }
-  
+
   async createModule(module: InsertModule): Promise<Module> {
     const results = await db.insert(modules).values(module).returning().execute();
     return results[0];
   }
-  
+
   async updateModule(id: number, moduleData: Partial<Module>): Promise<Module | undefined> {
     const results = await db
       .update(modules)
@@ -131,7 +131,7 @@ export class PostgresStorage implements IStorage {
       .execute();
     return results[0];
   }
-  
+
   // UserProgress methods
   async getUserProgress(userId: number): Promise<UserProgress[]> {
     return await db
@@ -140,7 +140,7 @@ export class PostgresStorage implements IStorage {
       .where(eq(userProgress.userId, userId))
       .execute();
   }
-  
+
   async getUserProgressByFramework(userId: number, frameworkId: number): Promise<UserProgress | undefined> {
     const results = await db
       .select()
@@ -152,7 +152,7 @@ export class PostgresStorage implements IStorage {
       .execute();
     return results[0];
   }
-  
+
   async createUserProgress(progress: InsertUserProgress): Promise<UserProgress> {
     const results = await db
       .insert(userProgress)
@@ -164,7 +164,7 @@ export class PostgresStorage implements IStorage {
       .execute();
     return results[0];
   }
-  
+
   async updateUserProgress(id: number, progressData: Partial<UserProgress>): Promise<UserProgress | undefined> {
     const results = await db
       .update(userProgress)
@@ -177,7 +177,7 @@ export class PostgresStorage implements IStorage {
       .execute();
     return results[0];
   }
-  
+
   // AI Conversation methods
   async getAiConversations(userId: number): Promise<AiConversation[]> {
     return await db
@@ -187,7 +187,7 @@ export class PostgresStorage implements IStorage {
       .orderBy(desc(aiConversations.createdAt))
       .execute();
   }
-  
+
   async createAiConversation(conversation: InsertAiConversation): Promise<AiConversation> {
     const results = await db
       .insert(aiConversations)
@@ -199,20 +199,20 @@ export class PostgresStorage implements IStorage {
       .execute();
     return results[0];
   }
-  
+
   async deleteAiConversation(id: number): Promise<void> {
     await db
       .delete(aiConversations)
       .where(eq(aiConversations.id, id))
       .execute();
   }
-  
+
   // Quiz methods
   async getQuiz(id: number): Promise<Quiz | undefined> {
     const results = await db.select().from(quizzes).where(eq(quizzes.id, id)).execute();
     return results[0];
   }
-  
+
   async getQuizzesByFramework(frameworkId: number, level?: string): Promise<Quiz[]> {
     if (level) {
       return await db
@@ -231,12 +231,12 @@ export class PostgresStorage implements IStorage {
         .execute();
     }
   }
-  
+
   async createQuiz(quiz: InsertQuiz): Promise<Quiz> {
     const results = await db.insert(quizzes).values(quiz).returning().execute();
     return results[0];
   }
-  
+
   async updateQuiz(id: number, quizData: Partial<Quiz>): Promise<Quiz | undefined> {
     const results = await db
       .update(quizzes)
@@ -246,20 +246,20 @@ export class PostgresStorage implements IStorage {
       .execute();
     return results[0];
   }
-  
+
   async deleteQuiz(id: number): Promise<void> {
     await db
       .delete(quizzes)
       .where(eq(quizzes.id, id))
       .execute();
   }
-  
+
   // Quiz Attempt methods
   async getQuizAttempt(id: number): Promise<QuizAttempt | undefined> {
     const results = await db.select().from(quizAttempts).where(eq(quizAttempts.id, id)).execute();
     return results[0];
   }
-  
+
   async getUserQuizAttempts(userId: number): Promise<QuizAttempt[]> {
     return await db
       .select()
@@ -267,7 +267,7 @@ export class PostgresStorage implements IStorage {
       .where(eq(quizAttempts.userId, userId))
       .execute();
   }
-  
+
   async getQuizAttemptsByQuiz(quizId: number): Promise<QuizAttempt[]> {
     return await db
       .select()
@@ -275,7 +275,7 @@ export class PostgresStorage implements IStorage {
       .where(eq(quizAttempts.quizId, quizId))
       .execute();
   }
-  
+
   async createQuizAttempt(attempt: InsertQuizAttempt): Promise<QuizAttempt> {
     const results = await db
       .insert(quizAttempts)
@@ -287,7 +287,7 @@ export class PostgresStorage implements IStorage {
       .execute();
     return results[0];
   }
-  
+
   async clearUserQuizAttempts(userId: number): Promise<void> {
     // Delete all quiz attempts for the specific user
     await db
@@ -394,14 +394,14 @@ export class PostgresStorage implements IStorage {
       .execute();
     return results[0];
   }
-  
+
   async deleteExerciseSubmission(id: number): Promise<void> {
     await db
       .delete(exerciseSubmissions)
       .where(eq(exerciseSubmissions.id, id))
       .execute();
   }
-  
+
   // Certificate methods
   async getCertificate(id: number): Promise<Certificate | undefined> {
     const results = await db.select().from(certificates).where(eq(certificates.id, id)).execute();
@@ -456,7 +456,7 @@ export class PostgresStorage implements IStorage {
       .execute();
     return results[0];
   }
-  
+
   // Seed data for frameworks and modules
   private async seedFrameworks() {
     try {
@@ -466,100 +466,110 @@ export class PostgresStorage implements IStorage {
         description: "Mutually Exclusive, Collectively Exhaustive approach to breaking down problems into non-overlapping components.",
         level: "Intermediate",
         duration: 45,
-        status: "not_started"
+        status: "not_started",
+        imageUrl: "https://via.placeholder.com/500x300?text=MECE+Framework"
       });
       const meceId = mece.id;
-      
+
       // Design Thinking
       const designThinking = await this.createFramework({
         name: "Design Thinking",
         description: "Human-centered approach to innovation that draws from the designer's toolkit to integrate human needs, technology, and business success.",
         level: "Advanced",
         duration: 90,
-        status: "not_started"
+        status: "not_started",
+        imageUrl: "https://via.placeholder.com/500x300?text=Design+Thinking"
       });
       const designThinkingId = designThinking.id;
-      
+
       // SWOT Analysis
       const swot = await this.createFramework({
         name: "SWOT Analysis",
         description: "Structured method to evaluate the Strengths, Weaknesses, Opportunities, and Threats involved in a project or business venture.",
         level: "Beginner",
         duration: 30,
-        status: "not_started"
+        status: "not_started",
+        imageUrl: "https://via.placeholder.com/500x300?text=SWOT+Analysis"
       });
       const swotId = swot.id;
-      
+
       // First Principles Thinking
       const firstPrinciples = await this.createFramework({
         name: "First Principles Thinking",
         description: "Breaking down complex problems into their most fundamental truths and building solutions from the ground up.",
         level: "Advanced", 
         duration: 75,
-        status: "not_started"
+        status: "not_started",
+        imageUrl: "https://via.placeholder.com/500x300?text=First+Principles"
       });
       const firstPrinciplesId = firstPrinciples.id;
-      
+
       // Porter's Five Forces
       const portersFiveForces = await this.createFramework({
         name: "Porter's Five Forces",
         description: "Framework to analyze competition intensity, attractiveness, and profitability of an industry.",
         level: "Intermediate",
         duration: 50,
-        status: "not_started"
+        status: "not_started",
+        imageUrl: "https://via.placeholder.com/500x300?text=Porter's+Five+Forces"
       });
       const portersFiveForcesId = portersFiveForces.id;
-      
+
       // Jobs-To-Be-Done
       const jobsToBeDone = await this.createFramework({
         name: "Jobs-To-Be-Done",
         description: "Framework focusing on understanding customer needs and what jobs they are trying to accomplish.",
         level: "Intermediate",
         duration: 40,
-        status: "not_started"
+        status: "not_started",
+        imageUrl: "https://via.placeholder.com/500x300?text=Jobs-To-Be-Done"
       });
       const jobsToBeDoneId = jobsToBeDone.id;
-      
+
       // Blue Ocean Strategy
       const blueOcean = await this.createFramework({
         name: "Blue Ocean Strategy",
         description: "Framework for finding uncontested market space and making competition irrelevant.",
         level: "Advanced",
         duration: 60,
-        status: "not_started"
+        status: "not_started",
+        imageUrl: "https://via.placeholder.com/500x300?text=Blue+Ocean+Strategy"
       });
       const blueOceanId = blueOcean.id;
-      
+
       // SCAMPER
       const scamper = await this.createFramework({
         name: "SCAMPER",
         description: "Technique for creative problem-solving and innovation by examining different aspects of a product or service.",
         level: "Intermediate",
         duration: 35,
-        status: "not_started"
+        status: "not_started",
+        imageUrl: "https://via.placeholder.com/500x300?text=SCAMPER"
       });
       const scamperId = scamper.id;
-      
+
       // Problem-Tree Analysis
       const problemTree = await this.createFramework({
         name: "Problem-Tree Analysis",
         description: "Visual method for analyzing problems by identifying causes and effects to find comprehensive solutions.",
         level: "Intermediate",
         duration: 45,
-        status: "not_started"
+        status: "not_started",
+        imageUrl: "https://via.placeholder.com/500x300?text=Problem-Tree+Analysis"
       });
       const problemTreeId = problemTree.id;
-      
+
       // Pareto Principle
       const pareto = await this.createFramework({
         name: "Pareto Principle",
         description: "The 80/20 rule that helps identify which inputs produce the most significant results.",
         level: "Beginner",
         duration: 25,
-        status: "not_started"
+        status: "not_started",
+        imageUrl: "https://via.placeholder.com/500x300?text=Pareto+Principle"
       });
       const paretoId = pareto.id;
-      
+
       // Add some modules to MECE framework
       await Promise.all([
         // MECE modules
@@ -604,7 +614,7 @@ export class PostgresStorage implements IStorage {
           completed: false,
           order: 5
         }),
-        
+
         // Design Thinking modules
         this.createModule({
           frameworkId: designThinkingId,
@@ -658,7 +668,7 @@ export class PostgresStorage implements IStorage {
           completed: false,
           order: 7
         }),
-        
+
         // SWOT modules
         this.createModule({
           frameworkId: swotId,
@@ -706,7 +716,7 @@ export class PostgresStorage implements IStorage {
           order: 6
         })
       ]);
-      
+
       console.log("Framework and module data seeded successfully");
     } catch (error) {
       console.error("Error seeding framework data:", error);
