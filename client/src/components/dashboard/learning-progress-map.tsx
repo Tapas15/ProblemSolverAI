@@ -14,9 +14,17 @@ interface LearningProgressMapProps {
   frameworks: Framework[];
   userProgress: UserProgress[];
   allModules?: Record<number, Module[]>;
+  allModulesByFramework?: Record<number, Module[]>;
+  onFrameworkClick?: (frameworkId: number) => void;
 }
 
-export function LearningProgressMap({ frameworks, userProgress, allModules = {} }: LearningProgressMapProps) {
+export function LearningProgressMap({ 
+  frameworks, 
+  userProgress, 
+  allModules = {}, 
+  allModulesByFramework,
+  onFrameworkClick
+}: LearningProgressMapProps) {
   const [_, setLocation] = useLocation();
 
   // Get framework progress

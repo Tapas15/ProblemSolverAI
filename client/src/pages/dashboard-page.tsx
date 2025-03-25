@@ -46,6 +46,16 @@ const DashboardPage = () => {
     staleTime: 60 * 1000,
   });
 
+  // Fetch all quizzes for all frameworks - needed for "Try Again" button to work properly
+  const {
+    data: quizzes,
+    isLoading: isQuizzesLoading,
+  } = useQuery({
+    queryKey: ['/api/quizzes/framework/0'],
+    queryFn: () => getQuizzesByFramework(0), // 0 means all frameworks
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
   // Fetch quiz attempts with shorter stale time and refetching enabled
   const {
     data: quizAttempts,
@@ -265,70 +275,35 @@ const DashboardPage = () => {
                 </>
               ) : (
                 <>
-                  {/* Learning Progress Map */}
+                  {/* Learning Progress Map - Single source of truth for courses */}
                   {allModulesByFramework && progressData && progressData.length > 0 && (
                     <Card className="native-card shadow-sm overflow-hidden">
                       <CardHeader className="pb-2">
-                        <CardTitle className="text-base text-[#0f172a]">Learning Journey</CardTitle>
-                        <CardDescription className="text-xs text-[#64748b]">
-                          Track your progress across all frameworks
-                        </CardDescription>
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <CardTitle className="text-base text-[#0f172a]">Learning Journey</CardTitle>
+                            <CardDescription className="text-xs text-[#64748b]">
+                              Track your progress across all frameworks
+                            </CardDescription>
+                          </div>
+                          <Badge variant="outline" className="text-xs">
+                            {frameworks?.length || 0} Frameworks
+                          </Badge>
+                        </div>
                       </CardHeader>
                       <CardContent className="pt-0">
                         <LearningProgressMap 
-                          allModulesByFramework={allModulesByFramework} 
+                          allModules={allModulesByFramework || {}}
                           userProgress={progressData} 
                           frameworks={frameworks || []}
-                          onFrameworkClick={(frameworkId) => setLocation(`/frameworks/${frameworkId}`)}
+                          onFrameworkClick={(frameworkId: number) => setLocation(`/frameworks/${frameworkId}`)}
                         />
                       </CardContent>
                     </Card>
                   )}
                   
-                  {progressData && progressData.length > 0 ? (
-                    progressData.map((progress: UserProgress) => {
-                      const framework = getFrameworkDetails(progress.frameworkId);
-                      return (
-                        <Card key={progress.id} className="native-card touch-feedback">
-                          <CardHeader className="pb-2">
-                            <div className="flex justify-between items-start">
-                              <CardTitle className="text-base text-[#0f172a]">{framework?.name}</CardTitle>
-                              <Badge className={progress.status === 'completed' ? 'badge-green' : 
-                                progress.status === 'in_progress' ? 'badge-blue' : 'badge-outline'}>
-                                {progress.status === 'completed' ? 'Completed' : 
-                                 progress.status === 'in_progress' ? 'In Progress' : 'Not Started'}
-                              </Badge>
-                            </div>
-                            <CardDescription className="text-xs line-clamp-2 text-[#64748b]">
-                              {framework?.description}
-                            </CardDescription>
-                          </CardHeader>
-                          <CardContent className="pt-0">
-                            <div className="flex flex-col gap-3">
-                              <div className="text-xs text-[#64748b]">
-                                {progress.completedModules || 0} of {progress.totalModules} modules complete
-                              </div>
-                              <div>
-                                <Progress 
-                                  value={progress.totalModules > 0 ? 
-                                    Math.round(((progress.completedModules || 0) / progress.totalModules) * 100) : 0} 
-                                  className="h-2" 
-                                />
-                              </div>
-                              <Button 
-                                variant="outline" 
-                                size="sm" 
-                                className="native-button-secondary mt-1 text-xs py-2 h-8"
-                                onClick={() => setLocation(`/frameworks/${framework?.id}`)}
-                              >
-                                Continue Learning <ChevronRight className="ml-1 h-3.5 w-3.5" />
-                              </Button>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      );
-                    })
-                  ) : (
+                  {/* Show this only if there's no progress data */}
+                  {(!progressData || progressData.length === 0) && (
                     <Card className="shadow-sm">
                       <CardHeader>
                         <CardTitle>No Progress Yet</CardTitle>
