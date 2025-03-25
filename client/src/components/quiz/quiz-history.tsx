@@ -26,7 +26,8 @@ import {
   Clock,
   AlertCircle,
   Award,
-  Trash2
+  Trash2,
+  RefreshCw
 } from "lucide-react";
 import type { QuizAttempt } from "@shared/schema";
 import { formatDistanceToNow } from "date-fns";
@@ -50,12 +51,40 @@ type QuizHistoryProps = {
   quizId?: number;
   frameworkId?: number;
   maxAttempts?: number;
+  onRefresh?: () => Promise<void>;
 };
 
-export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts = 3 }: QuizHistoryProps) {
+export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts = 3, onRefresh }: QuizHistoryProps) {
   const [expandedAttempt, setExpandedAttempt] = useState<number | null>(null);
   const [isClearing, setIsClearing] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const { toast } = useToast();
+  
+  // Handle refresh button click
+  const handleRefresh = async () => {
+    if (!onRefresh) return;
+    
+    try {
+      setIsRefreshing(true);
+      await onRefresh();
+      
+      toast({
+        title: "Data Refreshed",
+        description: "Your quiz history has been updated with the latest data.",
+        variant: "default",
+      });
+    } catch (error) {
+      console.error("Error refreshing quiz history:", error);
+      
+      toast({
+        title: "Refresh Failed",
+        description: "Could not update your quiz history. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
   
   const handleClearAllAttempts = async () => {
     try {
@@ -423,7 +452,19 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
       </Tabs>
       
       {!quizId && recentAttempts.length > 0 && (
-        <div className="mt-6">
+        <div className="mt-6 space-y-3">
+          {onRefresh && (
+            <Button 
+              variant="outline" 
+              className="w-full flex items-center justify-center"
+              onClick={handleRefresh}
+              disabled={isRefreshing || !onRefresh}
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+              {isRefreshing ? "Refreshing..." : "Refresh Quiz History"}
+            </Button>
+          )}
+          
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button 
