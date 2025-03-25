@@ -41,6 +41,11 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
   const [isAiLoading, setIsAiLoading] = useState(false);
   // Use local state for modules to ensure UI updates immediately
   const [localModules, setLocalModules] = useState<Module[]>(modules);
+  
+  // Keep localModules in sync with modules prop
+  useEffect(() => {
+    setLocalModules(modules);
+  }, [modules]);
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -151,7 +156,7 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
           });
           
           // Check if all modules are completed to track framework completion
-          const allModules = modules || [];
+          const allModules = localModules || [];
           const completedModulesCount = allModules.filter(m => m.completed || m.id === updatedModule.id).length;
           
           if (completedModulesCount === allModules.length) {
@@ -185,12 +190,12 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
     }, {
       onSuccess: (updatedModule) => {
         if (completed) {
-          // Find the index of current module
-          const currentModuleIndex = modules.findIndex(m => m.id === moduleId);
+          // Find the index of current module - use localModules for consistency
+          const currentModuleIndex = localModules.findIndex(m => m.id === moduleId);
           
           // If there's a next module, expand it
-          if (currentModuleIndex >= 0 && currentModuleIndex < modules.length - 1) {
-            const nextModule = modules[currentModuleIndex + 1];
+          if (currentModuleIndex >= 0 && currentModuleIndex < localModules.length - 1) {
+            const nextModule = localModules[currentModuleIndex + 1];
             
             // Show toast notification about success and navigating to next module
             toast({
@@ -484,7 +489,7 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
                               ) : (
                                 <span className="flex items-center">
                                   Mark as Complete
-                                  {modules[modules.findIndex(m => m.id === module.id) + 1] && (
+                                  {localModules[localModules.findIndex(m => m.id === module.id) + 1] && (
                                     <ChevronDown className="h-4 w-4 ml-1" />
                                   )}
                                 </span>
