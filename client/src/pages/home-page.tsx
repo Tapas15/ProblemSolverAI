@@ -26,31 +26,31 @@ const HomePage: React.FC = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('all');
   const isNative = isNativePlatform();
-  
+
   const { data: frameworks, isLoading: frameworksLoading } = useQuery({
     queryKey: ['/api/frameworks'],
     queryFn: () => getFrameworks(),
   });
-  
+
   const { data: userProgress, isLoading: progressLoading } = useQuery({
     queryKey: ['/api/user/progress'],
     queryFn: () => getUserProgress(),
   });
-  
+
   // Calculate overall progress
   const overallProgress = React.useMemo(() => {
     if (!userProgress || userProgress.length === 0) return 0;
-    
+
     const totalModules = userProgress.reduce((sum, progress) => sum + (progress.totalModules || 0), 0);
     const completedModules = userProgress.reduce((sum, progress) => sum + (progress.completedModules || 0), 0);
-    
+
     return totalModules > 0 ? Math.round((completedModules / totalModules) * 100) : 0;
   }, [userProgress]);
-  
+
   // Filter frameworks based on active tab
   const filteredFrameworks = React.useMemo(() => {
     if (!frameworks || !userProgress) return [];
-    
+
     switch (activeTab) {
       case 'completed':
         return frameworks.filter(framework => {
@@ -72,7 +72,7 @@ const HomePage: React.FC = () => {
         return frameworks;
     }
   }, [frameworks, userProgress, activeTab]);
-  
+
   // Get progress for a framework
   const getFrameworkProgress = (frameworkId: number) => {
     if (!userProgress) return 0;
@@ -80,9 +80,9 @@ const HomePage: React.FC = () => {
     if (!progress || !progress.completedModules || !progress.totalModules) return 0;
     return progress.completedModules / progress.totalModules * 100;
   };
-  
+
   const isLoading = frameworksLoading || progressLoading;
-  
+
   return (
     <div className="native-scroll pb-6">
       {/* Welcome Header */}
@@ -92,7 +92,7 @@ const HomePage: React.FC = () => {
           Continue your journey with business problem-solving frameworks
         </p>
       </div>
-      
+
       {/* Progress Overview */}
       <Card className="native-card mb-5 bg-gradient-to-r from-[#0f2544] to-[#19355f] text-white">
         <CardContent className="p-4">
@@ -103,7 +103,7 @@ const HomePage: React.FC = () => {
             </Badge>
           </div>
           <Progress value={overallProgress} className="h-1.5 bg-white/20" />
-          
+
           <div className="grid grid-cols-3 gap-2 mt-3">
             <div className="bg-white/10 rounded-lg p-2 text-center">
               <div className="text-lg font-medium">{userProgress?.filter(p => p.status === 'completed').length || 0}</div>
@@ -120,7 +120,7 @@ const HomePage: React.FC = () => {
           </div>
         </CardContent>
       </Card>
-      
+
       {/* Quick Actions */}
       <div className="native-scroll-x mb-5">
         <div className="flex space-x-3 px-1 py-1">
@@ -132,7 +132,7 @@ const HomePage: React.FC = () => {
               <span className="text-xs font-medium text-[#0f172a]">Frameworks</span>
             </div>
           </Link>
-          
+
           <Link to="/ai-assistant">
             <div className="native-card touch-feedback min-w-[110px] p-3 flex flex-col items-center justify-center text-center">
               <div className="w-9 h-9 rounded-full bg-purple-50 flex items-center justify-center mb-2">
@@ -141,7 +141,7 @@ const HomePage: React.FC = () => {
               <span className="text-xs font-medium text-[#0f172a]">AI Assistant</span>
             </div>
           </Link>
-          
+
           <Link to="/exercises">
             <div className="native-card touch-feedback min-w-[110px] p-3 flex flex-col items-center justify-center text-center">
               <div className="w-9 h-9 rounded-full bg-orange-50 flex items-center justify-center mb-2">
@@ -150,7 +150,7 @@ const HomePage: React.FC = () => {
               <span className="text-xs font-medium text-[#0f172a]">Practice</span>
             </div>
           </Link>
-          
+
           <Link to="/dashboard">
             <div className="native-card touch-feedback min-w-[110px] p-3 flex flex-col items-center justify-center text-center">
               <div className="w-9 h-9 rounded-full bg-emerald-50 flex items-center justify-center mb-2">
@@ -159,7 +159,7 @@ const HomePage: React.FC = () => {
               <span className="text-xs font-medium text-[#0f172a]">Dashboard</span>
             </div>
           </Link>
-          
+
           {isNative && (
             <Link to="/mobile-features">
               <div className="native-card touch-feedback min-w-[110px] p-3 flex flex-col items-center justify-center text-center">
@@ -172,7 +172,7 @@ const HomePage: React.FC = () => {
           )}
         </div>
       </div>
-      
+
       {/* Frameworks Tabs */}
       <div className="mb-4">
         <div className="flex items-center justify-between">
@@ -184,7 +184,7 @@ const HomePage: React.FC = () => {
             </Button>
           </Link>
         </div>
-        
+
         <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab} className="mt-2">
           <TabsList className="segmented-control w-full mb-4">
             <TabsTrigger value="all" className="segmented-control-option text-xs">
@@ -197,7 +197,7 @@ const HomePage: React.FC = () => {
               Recommended
             </TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="all" className="mt-0 space-y-3">
             {isLoading ? (
               <div className="native-empty-state">
@@ -218,18 +218,18 @@ const HomePage: React.FC = () => {
                   <Card className="native-card touch-feedback overflow-hidden">
                     <CardContent className="p-3">
                       <div className="flex items-start space-x-3">
-                        {framework.image_url ? (
-                          <img 
-                            src={framework.image_url} 
-                            alt={framework.name} 
-                            className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
-                          />
-                        ) : (
-                          <div className="w-16 h-16 rounded-lg bg-gradient-to-r from-[#3b82f6]/10 to-[#60a5fa]/10 flex items-center justify-center flex-shrink-0">
-                            <BookOpen className="h-8 w-8 text-[#3b82f6]/60" />
-                          </div>
-                        )}
-                        
+                        <div className={`w-16 h-16 rounded-lg flex items-center justify-center bg-gradient-to-br ${
+                          framework.level === 'Beginner' ? 'from-blue-50 to-blue-100' :
+                          framework.level === 'Intermediate' ? 'from-purple-50 to-purple-100' :
+                          'from-orange-50 to-orange-100'
+                        } flex-shrink-0`}>
+                          <BookOpen className={`h-8 w-8 ${
+                            framework.level === 'Beginner' ? 'text-blue-500' :
+                            framework.level === 'Intermediate' ? 'text-purple-500' :
+                            'text-orange-500'
+                          }`} />
+                        </div>
+
                         <div className="flex-1">
                           <div className="flex justify-between">
                             <h3 className="font-medium text-[#0f172a] text-sm line-clamp-1">{framework.name}</h3>
@@ -237,9 +237,9 @@ const HomePage: React.FC = () => {
                               {framework.level}
                             </Badge>
                           </div>
-                          
+
                           <p className="text-xs text-[#64748b] line-clamp-1 mt-0.5">{framework.description}</p>
-                          
+
                           <div className="mt-2 space-y-1">
                             <div className="flex justify-between items-center text-xs text-[#64748b]">
                               <div className="flex items-center">
@@ -257,7 +257,7 @@ const HomePage: React.FC = () => {
                 </Link>
               ))
             )}
-            
+
             {!isLoading && filteredFrameworks.length > 3 && (
               <div className="text-center pt-2">
                 <Link to="/frameworks">
@@ -269,7 +269,7 @@ const HomePage: React.FC = () => {
               </div>
             )}
           </TabsContent>
-          
+
           <TabsContent value="in_progress" className="mt-0 space-y-3">
             {isLoading ? (
               <div className="native-empty-state">
@@ -295,18 +295,18 @@ const HomePage: React.FC = () => {
                   <Card className="native-card touch-feedback overflow-hidden">
                     <CardContent className="p-3">
                       <div className="flex items-start space-x-3">
-                        {framework.image_url ? (
-                          <img 
-                            src={framework.image_url} 
-                            alt={framework.name} 
-                            className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
-                          />
-                        ) : (
-                          <div className="w-16 h-16 rounded-lg bg-gradient-to-r from-[#3b82f6]/10 to-[#60a5fa]/10 flex items-center justify-center flex-shrink-0">
-                            <BookOpen className="h-8 w-8 text-[#3b82f6]/60" />
-                          </div>
-                        )}
-                        
+                        <div className={`w-16 h-16 rounded-lg flex items-center justify-center bg-gradient-to-br ${
+                          framework.level === 'Beginner' ? 'from-blue-50 to-blue-100' :
+                          framework.level === 'Intermediate' ? 'from-purple-50 to-purple-100' :
+                          'from-orange-50 to-orange-100'
+                        } flex-shrink-0`}>
+                          <BookOpen className={`h-8 w-8 ${
+                            framework.level === 'Beginner' ? 'text-blue-500' :
+                            framework.level === 'Intermediate' ? 'text-purple-500' :
+                            'text-orange-500'
+                          }`} />
+                        </div>
+
                         <div className="flex-1">
                           <div className="flex justify-between">
                             <h3 className="font-medium text-[#0f172a] text-sm line-clamp-1">{framework.name}</h3>
@@ -314,9 +314,9 @@ const HomePage: React.FC = () => {
                               {framework.level}
                             </Badge>
                           </div>
-                          
+
                           <p className="text-xs text-[#64748b] line-clamp-1 mt-0.5">{framework.description}</p>
-                          
+
                           <div className="mt-2 space-y-1">
                             <div className="flex justify-between items-center text-xs text-[#64748b]">
                               <div className="flex items-center">
@@ -335,7 +335,7 @@ const HomePage: React.FC = () => {
               ))
             )}
           </TabsContent>
-          
+
           <TabsContent value="recommended" className="mt-0 space-y-3">
             {isLoading ? (
               <div className="native-empty-state">
@@ -361,18 +361,18 @@ const HomePage: React.FC = () => {
                   <Card className="native-card touch-feedback overflow-hidden">
                     <CardContent className="p-3">
                       <div className="flex items-start space-x-3">
-                        {framework.image_url ? (
-                          <img 
-                            src={framework.image_url} 
-                            alt={framework.name} 
-                            className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
-                          />
-                        ) : (
-                          <div className="w-16 h-16 rounded-lg bg-gradient-to-r from-[#3b82f6]/10 to-[#60a5fa]/10 flex items-center justify-center flex-shrink-0">
-                            <BookOpen className="h-8 w-8 text-[#3b82f6]/60" />
-                          </div>
-                        )}
-                        
+                        <div className={`w-16 h-16 rounded-lg flex items-center justify-center bg-gradient-to-br ${
+                          framework.level === 'Beginner' ? 'from-blue-50 to-blue-100' :
+                          framework.level === 'Intermediate' ? 'from-purple-50 to-purple-100' :
+                          'from-orange-50 to-orange-100'
+                        } flex-shrink-0`}>
+                          <BookOpen className={`h-8 w-8 ${
+                            framework.level === 'Beginner' ? 'text-blue-500' :
+                            framework.level === 'Intermediate' ? 'text-purple-500' :
+                            'text-orange-500'
+                          }`} />
+                        </div>
+
                         <div className="flex-1">
                           <div className="flex justify-between">
                             <h3 className="font-medium text-[#0f172a] text-sm line-clamp-1">{framework.name}</h3>
@@ -380,9 +380,9 @@ const HomePage: React.FC = () => {
                               {framework.level}
                             </Badge>
                           </div>
-                          
+
                           <p className="text-xs text-[#64748b] line-clamp-1 mt-0.5">{framework.description}</p>
-                          
+
                           <div className="mt-2 space-y-1">
                             <div className="flex justify-between items-center text-xs text-[#64748b]">
                               <div className="flex items-center">
