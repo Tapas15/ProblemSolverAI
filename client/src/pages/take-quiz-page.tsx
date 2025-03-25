@@ -179,7 +179,7 @@ export default function TakeQuizPage() {
       toast({
         title: "Quiz processing",
         description: "Your answers are being processed. Some data may not be saved correctly.",
-        variant: "warning"
+        variant: "destructive"
       });
     }
   });
