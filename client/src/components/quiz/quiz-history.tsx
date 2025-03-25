@@ -57,38 +57,35 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
   const [isClearing, setIsClearing] = useState(false);
   const { toast } = useToast();
   
-  // Make sure attempts is always an array, even if it's null or undefined
-  const safeAttempts = Array.isArray(attempts) ? attempts : [];
-  
-  // Function to clear all quiz attempts
   const handleClearAllAttempts = async () => {
     try {
       setIsClearing(true);
-      const result = await clearQuizAttempts();
+      await clearQuizAttempts();
       
-      if (result.success) {
-        toast({
-          title: "Quiz attempts cleared",
-          description: "All your quiz attempts have been cleared successfully. You can now start fresh!",
-          variant: "default",
-        });
-        
-        // Force page reload to refresh the data
-        window.location.reload();
-      } else {
-        throw new Error("Failed to clear quiz attempts");
-      }
+      // Show success toast
+      toast({
+        title: "Success",
+        description: "All quiz attempts have been cleared successfully.",
+        variant: "default",
+      });
+      
+      // We need to refresh the page to show the updated state
+      window.location.reload();
     } catch (error) {
-      console.error("Error clearing quiz attempts:", error);
+      // Show error toast
       toast({
         title: "Error",
-        description: "There was a problem clearing your quiz attempts. Please try again.",
+        description: "Failed to clear quiz attempts. Please try again.",
         variant: "destructive",
       });
+      console.error("Error clearing quiz attempts:", error);
     } finally {
       setIsClearing(false);
     }
   };
+  
+  // Make sure attempts is always an array, even if it's null or undefined
+  const safeAttempts = Array.isArray(attempts) ? attempts : [];
   
   // Filter attempts for this quiz if quizId is provided
   const filteredAttempts = quizId 
