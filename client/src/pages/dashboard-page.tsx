@@ -440,18 +440,35 @@ const DashboardPage = () => {
                                     return;
                                   }
                                   
-                                  // Locate the framework id for this quiz using related data
-                                  const quiz = quizzes.find(q => q.id === attempt.quizId);
-                                  if (quiz && quiz.frameworkId) {
-                                    setLocation(`/quizzes/${quiz.frameworkId}/${attempt.quizId}`);
+                                  // Find the quiz in our loaded quizzes data
+                                  const targetQuiz = quizzes.find((q: Quiz) => q.id === attempt.quizId);
+                                  
+                                  if (targetQuiz) {
+                                    // We found the quiz, navigate to it
+                                    setLocation(`/quizzes/${targetQuiz.frameworkId}/${attempt.quizId}`);
                                   } else {
+                                    // Quiz not found in our loaded data, try fetching data for all frameworks
                                     toast({
-                                      title: "Quiz not found",
-                                      description: "Please refresh the page and try again.",
-                                      variant: "destructive"
+                                      title: "Loading quiz data...",
+                                      description: "Please wait a moment.",
                                     });
+                                    
                                     // Force a refresh of quiz data
                                     refetchQuizzes();
+                                    
+                                    // Retry after a short delay to allow data to load
+                                    setTimeout(() => {
+                                      const refreshedQuiz = quizzes.find((q: Quiz) => q.id === attempt.quizId);
+                                      if (refreshedQuiz) {
+                                        setLocation(`/quizzes/${refreshedQuiz.frameworkId}/${attempt.quizId}`);
+                                      } else {
+                                        toast({
+                                          title: "Quiz not found",
+                                          description: "Please try again later.",
+                                          variant: "destructive"
+                                        });
+                                      }
+                                    }, 1000);
                                   }
                                 }}
                               >
