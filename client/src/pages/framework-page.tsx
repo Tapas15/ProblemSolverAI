@@ -1,19 +1,20 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useParams, useLocation } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
-import { getFramework, getModules } from '@/lib/api';
+import { getFramework, getModules, getUserProgress } from '@/lib/api';
 import MainLayout from '@/components/layout/main-layout';
 import FrameworkDetail from '@/components/framework/framework-detail';
 import { FrameworkDetailSkeleton } from '@/components/ui/skeleton-loader';
 import { AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Framework } from '@shared/schema';
 
 const FrameworkPage: React.FC = () => {
-  const { id } = useParams();
+  const params = useParams();
   const [_, navigate] = useLocation();
   
   // Convert id to number
-  const frameworkId = parseInt(id);
+  const frameworkId = parseInt(params.id || '0');
   
   // Redirect if ID is invalid
   useEffect(() => {
@@ -42,8 +43,32 @@ const FrameworkPage: React.FC = () => {
     enabled: !isNaN(frameworkId),
   });
   
-  const isLoading = frameworkLoading || modulesLoading;
-  const error = frameworkError || modulesError;
+  // Fetch user progress data
+  const {
+    data: userProgress,
+    isLoading: progressLoading,
+    error: progressError
+  } = useQuery({
+    queryKey: ['/api/user/progress'],
+    queryFn: () => getUserProgress(),
+  });
+  
+  // Enhance framework with status from user progress
+  const enhancedFramework = useMemo(() => {
+    if (!framework || !userProgress) return framework;
+    
+    // Find progress for this framework
+    const progress = userProgress.find(p => p.frameworkId === framework.id);
+    
+    // Return framework with status added
+    return {
+      ...framework,
+      status: progress ? progress.status : 'not_started'
+    } as Framework & { status: string };
+  }, [framework, userProgress]);
+  
+  const isLoading = frameworkLoading || modulesLoading || progressLoading;
+  const error = frameworkError || modulesError || progressError;
   
   if (isLoading) {
     return (
@@ -97,7 +122,7 @@ const FrameworkPage: React.FC = () => {
       <FrameworkDetail 
         isOpen={true} 
         onClose={() => navigate('/')}
-        framework={framework}
+        framework={enhancedFramework}
         modules={modules}
         isLoading={false}
       />
