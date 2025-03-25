@@ -58,6 +58,7 @@ export interface IStorage {
   getUserQuizAttempts(userId: number): Promise<QuizAttempt[]>;
   getQuizAttemptsByQuiz(quizId: number): Promise<QuizAttempt[]>;
   createQuizAttempt(attempt: InsertQuizAttempt): Promise<QuizAttempt>;
+  clearUserQuizAttempts(userId: number): Promise<void>;
   
   // Session store
   sessionStore: any;
@@ -420,6 +421,21 @@ export class MemStorage implements IStorage {
     };
     this.quizAttempts.set(id, newAttempt);
     return newAttempt;
+  }
+  
+  async clearUserQuizAttempts(userId: number): Promise<void> {
+    // Find all attempts by this user
+    const attemptIds: number[] = [];
+    for (const [id, attempt] of this.quizAttempts.entries()) {
+      if (attempt.userId === userId) {
+        attemptIds.push(id);
+      }
+    }
+    
+    // Delete all found attempts
+    attemptIds.forEach(id => {
+      this.quizAttempts.delete(id);
+    });
   }
   
   // Exercise methods
