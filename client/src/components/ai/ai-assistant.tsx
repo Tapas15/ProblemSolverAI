@@ -327,6 +327,9 @@ const AiAssistant: React.FC = () => {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Configure AI Integration</DialogTitle>
+            <DialogDescription>
+              Enter your API key to connect with OpenAI services
+            </DialogDescription>
           </DialogHeader>
           
           <div className="space-y-4 py-4">
