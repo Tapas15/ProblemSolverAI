@@ -287,6 +287,14 @@ export class PostgresStorage implements IStorage {
       .execute();
     return results[0];
   }
+  
+  async clearUserQuizAttempts(userId: number): Promise<void> {
+    // Delete all quiz attempts for the specific user
+    await db
+      .delete(quizAttempts)
+      .where(eq(quizAttempts.userId, userId))
+      .execute();
+  }
 
   // Exercise methods
   async getExercise(id: number): Promise<Exercise | undefined> {
