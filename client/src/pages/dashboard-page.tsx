@@ -100,14 +100,7 @@ const DashboardPage = () => {
       {/* Mobile App Header */}
       <div className="flex items-center justify-between px-4 pt-2 pb-4">
         <div className="flex items-center">
-          <Button 
-            variant="ghost" 
-            size="icon"
-            className="mr-2 h-9 w-9 rounded-full text-[#3b82f6]" 
-            onClick={() => setLocation('/')}
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
+          {/* Back button removed as requested */}
           <h1 className="mobile-h1 text-[#0f172a]">Dashboard</h1>
         </div>
       </div>
