@@ -37,7 +37,7 @@ const FounderPage: React.FC = () => {
         <div className="bg-gradient-to-r from-[#0f2544] to-[#19355f] h-24 relative">
           <div className="absolute -bottom-12 left-4 ring-4 ring-white rounded-full">
             <Avatar className="h-24 w-24">
-              <AvatarImage src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%233b82f6' /><text x='50%' y='50%' font-size='35' font-family='Arial' fill='white' text-anchor='middle' dominant-baseline='middle'>MK</text></svg>" alt="Dr. Manas Kumar" />
+              <AvatarImage src="/images/founder.jpg" alt="Dr. Manas Kumar" />
               <AvatarFallback className="bg-gradient-to-r from-[#3b82f6] to-[#60a5fa] text-white text-xl">MK</AvatarFallback>
             </Avatar>
           </div>
