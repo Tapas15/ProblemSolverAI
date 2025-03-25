@@ -100,11 +100,14 @@ const DashboardPage = () => {
       {/* Mobile App Header */}
       <div className="flex items-center justify-between px-4 pt-2 pb-4">
         <div className="flex items-center">
-          <Link to="/">
-            <Button variant="ghost" size="icon" className="mr-2">
-              <ArrowLeft className="h-5 w-5 text-[#0f172a]" />
-            </Button>
-          </Link>
+          <Button 
+            variant="ghost" 
+            size="icon"
+            className="mr-2 h-9 w-9 rounded-full text-[#3b82f6]" 
+            onClick={() => setLocation('/')}
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
           <h1 className="mobile-h1 text-[#0f172a]">Dashboard</h1>
         </div>
       </div>
@@ -117,7 +120,7 @@ const DashboardPage = () => {
       ) : (
         <div className="space-y-6 px-4">
           {/* User Profile Card */}
-          <Card className="native-card overflow-hidden bg-gradient-to-r from-[#0057B8] to-[#0096F6] text-white">
+          <Card className="native-card overflow-hidden bg-gradient-to-r from-[#0057B8] to-[#0096F6] text-white shadow-sm border-0">
             <CardContent className="p-4">
               <div className="flex items-center gap-4">
                 <Avatar className="h-16 w-16 border-2 border-white/30">
@@ -136,7 +139,7 @@ const DashboardPage = () => {
                     })}
                   </p>
                   <div className="flex mt-1 space-x-2">
-                    <Badge className="bg-white/20 text-white border-none text-xs">
+                    <Badge className="bg-white/20 text-white border-none text-xs hover:bg-white/30">
                       {stats?.frameworkProgress || 0}% Complete
                     </Badge>
                   </div>
@@ -152,15 +155,15 @@ const DashboardPage = () => {
               </div>
 
               <div className="grid grid-cols-3 gap-2 mt-4">
-                <div className="bg-white/10 rounded-lg p-2 text-center">
+                <div className="bg-white/10 rounded-lg p-2 text-center transition touch-feedback">
                   <div className="text-lg font-medium">{stats?.completedFrameworks || 0}/{stats?.totalFrameworks || 0}</div>
                   <div className="text-xs text-white/80">Frameworks</div>
                 </div>
-                <div className="bg-white/10 rounded-lg p-2 text-center">
+                <div className="bg-white/10 rounded-lg p-2 text-center transition touch-feedback">
                   <div className="text-lg font-medium">{stats?.completedModules || 0}/{stats?.totalModules || 0}</div>
                   <div className="text-xs text-white/80">Modules</div>
                 </div>
-                <div className="bg-white/10 rounded-lg p-2 text-center">
+                <div className="bg-white/10 rounded-lg p-2 text-center transition touch-feedback">
                   <div className="text-lg font-medium">{stats?.passedQuizzes || 0}/{stats?.totalQuizzes || 0}</div>
                   <div className="text-xs text-white/80">Quizzes</div>
                 </div>

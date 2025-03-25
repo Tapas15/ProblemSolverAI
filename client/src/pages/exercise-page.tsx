@@ -6,7 +6,7 @@ import { getFramework, getFrameworkExercises } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Clock, Info, BookOpen } from "lucide-react";
+import { ArrowLeft, ArrowRight, Clock, Info, BookOpen } from "lucide-react";
 import { Link } from "wouter";
 import { Skeleton } from "@/components/ui/skeleton";
 import { isNativePlatform } from "@/lib/capacitor";
