@@ -642,7 +642,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // User preferences route for display settings
-  app.patch("/api/user/preferences", async (req, res, next) => {
+  app.post("/api/user/preferences", async (req, res, next) => {
     try {
       if (!req.isAuthenticated() || !req.user) {
         return res.status(401).send("Unauthorized");

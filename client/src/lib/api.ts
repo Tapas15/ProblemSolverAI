@@ -410,6 +410,6 @@ export async function deleteExerciseSubmission(submissionId: number): Promise<vo
 
 // User preferences API function
 export async function updateUserPreferences(preferencesData: UserPreferencesData): Promise<{ message: string; user: any }> {
-  const res = await apiRequest("PATCH", "/api/user/preferences", preferencesData);
+  const res = await apiRequest("POST", "/api/user/preferences", preferencesData);
   return res.json();
 }
