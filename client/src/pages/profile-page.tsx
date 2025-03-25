@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,7 +8,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getUserProgress } from '@/lib/api';
 import { Progress } from '@/components/ui/progress';
 import { Loader2, User, Mail, FileText, LogOut } from 'lucide-react';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { updateProfile } from '@/lib/api';
 
 export default function ProfilePage() {
@@ -17,7 +16,7 @@ export default function ProfilePage() {
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  
+
   const [formData, setFormData] = useState({
     name: user?.name || '',
     email: user?.email || '',
@@ -158,7 +157,7 @@ export default function ProfilePage() {
               </div>
               <Progress value={completedFrameworks * 10} className="h-2" />
             </div>
-            
+
             <div>
               <div className="flex justify-between mb-2">
                 <span className="text-sm font-medium">In Progress</span>
