@@ -1,9 +1,11 @@
 import NodeCache from 'node-cache';
 
-// Configure cache with standard TTL of 10 minutes and check period of 60 seconds
+// Configure cache with enhanced performance settings
 export const cache = new NodeCache({
-  stdTTL: 600, // 10 minutes in seconds
-  checkperiod: 60, // Check for expired keys every 60 seconds
+  stdTTL: 900, // 15 minutes in seconds for better performance
+  checkperiod: 120, // Check for expired keys every 2 minutes to reduce CPU overhead
+  useClones: false, // Disable cloning for better performance with large objects
+  maxKeys: 1000, // Limit maximum keys to prevent memory issues
 });
 
 // Cache keys

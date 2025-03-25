@@ -308,7 +308,7 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
               ) : (
                 <div className="space-y-4">
                   {modules.map((module) => (
-                    <div id={`module-${module.id}`} key={module.id} className={`border ${module.completed ? 'border-green-300 shadow-sm' : 'border-gray-200'} rounded-lg overflow-hidden`}>
+                    <div id={`module-${module.id}`} key={module.id} className={`border ${module.completed ? 'border-green-300 shadow-sm' : 'border-gray-200'} ${expandedModule === module.id ? 'module-active' : ''} rounded-lg overflow-hidden`}>
                       <div 
                         className={`${module.completed ? 'bg-green-50' : 'bg-gray-50'} px-4 py-3 flex justify-between items-center cursor-pointer`}
                         onClick={() => toggleModule(module.id)}

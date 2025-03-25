@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState, useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getUserProgress, getUserQuizAttempts, getFrameworks, getAllModulesByFramework } from '@/lib/api';
 import { Framework, UserProgress, QuizAttempt, Module } from '@shared/schema';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -105,6 +105,34 @@ const DashboardPage = () => {
   };
 
   const [location, setLocation] = useLocation();
+  const queryClient = useQueryClient();
+  
+  // Performance optimization
+  useEffect(() => {
+    // Prefetch frameworks data for faster framework detail access
+    queryClient.prefetchQuery({
+      queryKey: ['/api/frameworks'],
+      queryFn: getFrameworks,
+    });
+    
+    // Preload common images
+    const preloadImages = [
+      // Default framework images
+      "https://images.unsplash.com/photo-1542744094-3a31f272c490?q=80&w=500&auto=format&fit=crop"
+    ];
+    
+    preloadImages.forEach(src => {
+      const img = new Image();
+      img.src = src;
+    });
+    
+    // Add priority to the main content
+    document.body.style.contain = 'content';
+    
+    return () => {
+      document.body.style.contain = '';
+    };
+  }, [queryClient]);
   
   return (
     <div className="native-scroll pb-16">
