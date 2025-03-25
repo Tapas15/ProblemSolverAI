@@ -287,9 +287,9 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
               ) : (
                 <>
                   <div className="mb-6 rounded-lg overflow-hidden bg-gray-100">
-                    {framework?.imageUrl ? (
+                    {framework?.image_url ? (
                       <img 
-                        src={framework.imageUrl} 
+                        src={framework.image_url} 
                         alt={framework.name} 
                         className="w-full h-64 object-cover"
                         onError={(e) => {
@@ -388,9 +388,9 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
                       {expandedModule === module.id && (
                         <div className="p-4">
                           <div className="mb-4 rounded-lg overflow-hidden bg-gray-100">
-                            {module.imageUrl ? (
+                            {module.image_url ? (
                               <img 
-                                src={module.imageUrl} 
+                                src={module.image_url} 
                                 alt={module.name} 
                                 className="w-full h-48 object-cover"
                                 onError={(e) => {
