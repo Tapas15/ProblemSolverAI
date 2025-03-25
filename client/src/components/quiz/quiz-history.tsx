@@ -4,7 +4,8 @@ import {
   CardContent, 
   CardDescription, 
   CardHeader, 
-  CardTitle 
+  CardTitle,
+  CardFooter 
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -22,18 +23,22 @@ import {
   TrendingDown, 
   Minus,
   Calendar,
-  Clock
+  Clock,
+  AlertCircle,
+  Award
 } from "lucide-react";
 import type { QuizAttempt } from "@shared/schema";
 import { formatDistanceToNow } from "date-fns";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 type QuizHistoryProps = {
   attempts: QuizAttempt[];
   quizId?: number;
   frameworkId?: number;
+  maxAttempts?: number;
 };
 
-export default function QuizHistory({ attempts, quizId, frameworkId }: QuizHistoryProps) {
+export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts = 3 }: QuizHistoryProps) {
   const [expandedAttempt, setExpandedAttempt] = useState<number | null>(null);
   
   // Make sure attempts is always an array, even if it's null or undefined
@@ -43,6 +48,11 @@ export default function QuizHistory({ attempts, quizId, frameworkId }: QuizHisto
   const filteredAttempts = quizId 
     ? safeAttempts.filter(attempt => attempt.quizId === quizId)
     : safeAttempts;
+    
+  // Calculate how many attempts are remaining (if a specific quiz is selected)
+  const attemptsRemaining = quizId ? maxAttempts - filteredAttempts.length : null;
+  const hasAttemptsRemaining = attemptsRemaining !== null && attemptsRemaining > 0;
+  const hasReachedMaxAttempts = attemptsRemaining !== null && attemptsRemaining <= 0;
   
   // Sort attempts by completion date, newest first
   const sortedAttempts = [...filteredAttempts].sort((a, b) => {
@@ -133,6 +143,35 @@ export default function QuizHistory({ attempts, quizId, frameworkId }: QuizHisto
   
   return (
     <div className="space-y-4">
+      {quizId && (
+        <>
+          {hasAttemptsRemaining ? (
+            <Alert className="mb-4">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Quiz Attempts Limit</AlertTitle>
+              <AlertDescription>
+                You have {attemptsRemaining} attempt{attemptsRemaining === 1 ? '' : 's'} remaining for this quiz. 
+                Each quiz has a maximum of {maxAttempts} attempts.
+              </AlertDescription>
+            </Alert>
+          ) : (
+            <Alert className="mb-4 border-amber-200 text-amber-800 bg-amber-50">
+              <AlertCircle className="h-4 w-4 text-amber-800" />
+              <AlertTitle>Maximum Attempts Reached</AlertTitle>
+              <AlertDescription>
+                You have used all {maxAttempts} attempts for this quiz. Your highest score was {Math.max(...sortedAttempts.map(a => a.score))}%.
+                {sortedAttempts.some(a => a.passed) && (
+                  <span className="font-medium flex items-center gap-1 mt-1">
+                    <Award className="h-4 w-4 text-green-600" /> 
+                    <span className="text-green-600">Congratulations on passing this quiz!</span>
+                  </span>
+                )}
+              </AlertDescription>
+            </Alert>
+          )}
+        </>
+      )}
+      
       <Tabs defaultValue="all">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="all">All Attempts</TabsTrigger>
