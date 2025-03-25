@@ -125,15 +125,16 @@ export function MobileAppLayout({ children }: MobileAppLayoutProps) {
 
       {/* Mobile Top Bar */}
       <header className="sticky top-0 left-0 right-0 h-14 bg-gradient-to-r from-[#0f2544] to-[#19355f] z-30 flex items-center justify-between px-4 shadow-md">
-        <Link href="/">
-          <div className="flex items-center cursor-pointer">
-            <span className="font-bold text-xl text-white font-header tracking-tight">
-              <span className="text-[#3b82f6]">Question</span>
-              <span className="text-white">Pro </span>
-              <span className="text-[#60a5fa]">AI</span>
-            </span>
-          </div>
-        </Link>
+        <div 
+          className="flex items-center cursor-pointer"
+          onClick={() => handleNavigation("/")}
+        >
+          <span className="font-bold text-xl text-white font-header tracking-tight">
+            <span className="text-[#3b82f6]">Question</span>
+            <span className="text-white">Pro </span>
+            <span className="text-[#60a5fa]">AI</span>
+          </span>
+        </div>
         
         <div className="flex items-center space-x-2">
           {isNative && (
@@ -151,12 +152,20 @@ export function MobileAppLayout({ children }: MobileAppLayoutProps) {
               <h2 className="sr-only">Navigation Menu</h2>
               <div className="py-4">
                 <div className="flex items-center justify-between mb-6">
-                  <span className="font-bold text-xl font-header tracking-tight">
+                  <div
+                    className="font-bold text-xl font-header tracking-tight cursor-pointer"
+                    onClick={() => handleNavigation("/")}
+                  >
                     <span className="text-[#3b82f6]">Question</span>
                     <span className="text-white">Pro </span>
                     <span className="text-[#60a5fa]">AI</span>
-                  </span>
-                  <Button variant="ghost" size="icon" onClick={() => setShowMenu(false)} className="text-white hover:bg-[#1a4482]/50">
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    onClick={() => setTimeout(() => setShowMenu(false), 10)} 
+                    className="text-white hover:bg-[#1a4482]/50"
+                  >
                     <X className="h-5 w-5" />
                   </Button>
                 </div>
@@ -184,24 +193,23 @@ export function MobileAppLayout({ children }: MobileAppLayoutProps) {
                   <h3 className="text-xs uppercase text-white/50 font-semibold mb-2 px-3">Main Navigation</h3>
                   <nav className="space-y-1">
                     {menuItems.map((item) => (
-                      <Link key={item.path} href={item.path}>
-                        <div
-                          className={`flex items-center p-3 rounded-xl cursor-pointer transition-colors ${
-                            isActive(item.path)
-                              ? "bg-[#1a4482]/50 text-[#60a5fa]"
-                              : "text-white/80 hover:bg-[#1a4482]/30 hover:text-white"
-                          }`}
-                          onClick={() => setShowMenu(false)}
-                        >
-                          <div className={isActive(item.path) ? "text-[#60a5fa]" : ""}>
-                            {item.icon}
-                          </div>
-                          <span className="ml-3 font-medium">{item.name}</span>
-                          {isActive(item.path) && (
-                            <div className="ml-auto w-1.5 h-6 rounded-full bg-gradient-to-b from-[#3b82f6] to-[#60a5fa]"></div>
-                          )}
+                      <div
+                        key={item.path}
+                        className={`flex items-center p-3 rounded-xl cursor-pointer transition-colors nav-item ${
+                          isActive(item.path)
+                            ? "bg-[#1a4482]/50 text-[#60a5fa]" 
+                            : "text-white/80 hover:bg-[#1a4482]/30 hover:text-white"
+                        }`}
+                        onClick={() => handleNavigation(item.path)}
+                      >
+                        <div className={isActive(item.path) ? "text-[#60a5fa]" : ""}>
+                          {item.icon}
                         </div>
-                      </Link>
+                        <span className="ml-3 font-medium">{item.name}</span>
+                        {isActive(item.path) && (
+                          <div className="ml-auto w-1.5 h-6 rounded-full bg-gradient-to-b from-[#3b82f6] to-[#60a5fa]"></div>
+                        )}
+                      </div>
                     ))}
                   </nav>
                 </div>
@@ -211,32 +219,31 @@ export function MobileAppLayout({ children }: MobileAppLayoutProps) {
                   <h3 className="text-xs uppercase text-white/50 font-semibold mb-2 px-3">More Options</h3>
                   <nav className="space-y-1">
                     {secondaryMenuItems.map((item) => (
-                      <Link key={item.path} href={item.path}>
-                        <div
-                          className={`flex items-center p-3 rounded-xl cursor-pointer transition-colors ${
-                            isActive(item.path)
-                              ? "bg-[#1a4482]/50 text-[#60a5fa]"
-                              : "text-white/80 hover:bg-[#1a4482]/30 hover:text-white"
-                          }`}
-                          onClick={() => setShowMenu(false)}
-                        >
-                          <div className={isActive(item.path) ? "text-[#60a5fa]" : ""}>
-                            {item.icon}
-                          </div>
-                          <span className="ml-3 font-medium">{item.name}</span>
-                          {item.badge && (
-                            <Badge 
-                              variant="outline" 
-                              className="ml-auto text-xs py-0 px-1.5 border-[#3b82f6]/30 text-[#60a5fa]"
-                            >
-                              {item.badge}
-                            </Badge>
-                          )}
-                          {isActive(item.path) && !item.badge && (
-                            <div className="ml-auto w-1.5 h-6 rounded-full bg-gradient-to-b from-[#3b82f6] to-[#60a5fa]"></div>
-                          )}
+                      <div
+                        key={item.path}
+                        className={`flex items-center p-3 rounded-xl cursor-pointer transition-colors ${
+                          isActive(item.path)
+                            ? "bg-[#1a4482]/50 text-[#60a5fa]"
+                            : "text-white/80 hover:bg-[#1a4482]/30 hover:text-white"
+                        }`}
+                        onClick={() => handleNavigation(item.path)}
+                      >
+                        <div className={isActive(item.path) ? "text-[#60a5fa]" : ""}>
+                          {item.icon}
                         </div>
-                      </Link>
+                        <span className="ml-3 font-medium">{item.name}</span>
+                        {item.badge && (
+                          <Badge 
+                            variant="outline" 
+                            className="ml-auto text-xs py-0 px-1.5 border-[#3b82f6]/30 text-[#60a5fa]"
+                          >
+                            {item.badge}
+                          </Badge>
+                        )}
+                        {isActive(item.path) && !item.badge && (
+                          <div className="ml-auto w-1.5 h-6 rounded-full bg-gradient-to-b from-[#3b82f6] to-[#60a5fa]"></div>
+                        )}
+                      </div>
                     ))}
                   </nav>
                 </div>
@@ -261,16 +268,16 @@ export function MobileAppLayout({ children }: MobileAppLayoutProps) {
       {/* Mobile Tab Bar */}
       <nav className="mobile-tab-bar bg-gradient-to-r from-[#0f2544] to-[#19355f] border-t border-[#3b82f6]/10">
         {menuItems.slice(0, 5).map((item) => (
-          <Link key={item.path} href={item.path}>
-            <div
-              className={`flex flex-col items-center justify-center w-full h-full ${
-                isActive(item.path) ? "text-[#60a5fa]" : "text-white/70"
-              }`}
-            >
-              {item.icon}
-              <span className="text-xs mt-1">{item.name}</span>
-            </div>
-          </Link>
+          <div
+            key={item.path}
+            className={`flex flex-col items-center justify-center w-full h-full ${
+              isActive(item.path) ? "text-[#60a5fa]" : "text-white/70"
+            }`}
+            onClick={() => handleNavigation(item.path)}
+          >
+            {item.icon}
+            <span className="text-xs mt-1">{item.name}</span>
+          </div>
         ))}
       </nav>
     </div>

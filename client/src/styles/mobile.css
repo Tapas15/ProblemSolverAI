@@ -584,3 +584,55 @@ main.native-scroll {
   transform: scale(0.95);
   box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25);
 }
+
+/* Enhanced tab bar items with improved touch handling */
+.mobile-tab-bar > div {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+  cursor: pointer;
+  transition: transform 0.1s ease, opacity 0.1s ease;
+}
+
+/* Touch feedback for navigation elements */
+.mobile-tab-bar > div:active {
+  opacity: 0.8;
+  transform: scale(0.96);
+}
+
+/* Fix for navigation sliding issues */
+.capacitor-app a[href],
+.capacitor-app button,
+.capacitor-app [role="button"],
+.capacitor-app input,
+.capacitor-app label,
+.capacitor-app select,
+.capacitor-app textarea {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Enhanced touch handling for menu items */
+.nav-item {
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.1s ease, background-color 0.2s ease;
+  transform: translateZ(0);
+  will-change: transform, background-color;
+}
+
+/* Prevent scrolling issues when navigating */
+.prevent-scroll {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+}
