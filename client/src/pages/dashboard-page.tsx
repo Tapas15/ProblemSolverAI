@@ -47,7 +47,7 @@ const DashboardPage = () => {
     data: quizAttempts,
     isLoading: isQuizAttemptsLoading
   } = useQuery({
-    queryKey: ['/api/quizzes/attempts/user'],
+    queryKey: ['/api/quiz-attempts/user'],
     queryFn: getUserQuizAttempts,
     staleTime: 60 * 1000,
   });

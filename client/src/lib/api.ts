@@ -1,5 +1,5 @@
 import { Framework, Module, UserProgress, AiConversation, Quiz, QuizAttempt, Exercise, ExerciseSubmission } from "@shared/schema";
-import { apiRequest } from "./queryClient";
+import { apiRequest, queryClient } from "./queryClient";
 import learningTracking from "./learning-tracking";
 
 // Interface for SCORM package metadata
@@ -162,6 +162,9 @@ export async function submitQuizAttempt(
     if (!res.ok) {
       throw new Error(`Failed to submit quiz attempt: ${res.statusText}`);
     }
+    
+    // Invalidate the quiz attempts cache to ensure dashboard shows latest data
+    queryClient.invalidateQueries({ queryKey: ['/api/quiz-attempts/user'] });
     
     return await res.json();
   } catch (error) {
