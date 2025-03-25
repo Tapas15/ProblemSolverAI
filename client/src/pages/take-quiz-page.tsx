@@ -28,12 +28,21 @@ type Question = {
 };
 
 export default function TakeQuizPage() {
+  // React hooks must be at the top level and in the same order on every render
+  // 1. Context hooks
   const { user } = useAuth();
+  const { toast } = useToast();
+  
+  // 2. Navigation hooks
   const [, navigate] = useLocation();
   const { frameworkId, quizId } = useParams<{ frameworkId: string; quizId: string }>();
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
   
+  // 3. State management 
+  const queryClient = useQueryClient();
+  const frameworkIdNum = parseInt(frameworkId);
+  const quizIdNum = parseInt(quizId);
+  
+  // 4. Component state hooks
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<{ [key: number]: number }>({});
   const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
@@ -41,9 +50,7 @@ export default function TakeQuizPage() {
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [score, setScore] = useState(0);
   const [showAnswers, setShowAnswers] = useState(false);
-  
-  const frameworkIdNum = parseInt(frameworkId);
-  const quizIdNum = parseInt(quizId);
+  const [questions, setQuestions] = useState<Question[]>([]);
   
   // Redirect if not logged in
   useEffect(() => {
@@ -80,8 +87,6 @@ export default function TakeQuizPage() {
   });
   
   // Parse questions when quiz is loaded
-  const [questions, setQuestions] = useState<Question[]>([]);
-  
   useEffect(() => {
     if (quiz) {
       try {
@@ -124,6 +129,33 @@ export default function TakeQuizPage() {
     
     return () => clearInterval(timer);
   }, [timeRemaining, quizCompleted]);
+  
+  // Effect to refetch attempts when quiz is completed
+  useEffect(() => {
+    if (quizCompleted) {
+      // Force refetch on results page initialization
+      refetchQuizAttempts().catch(err => {
+        console.error("Error initial refetch of quiz attempts:", err);
+      });
+      
+      // Setup a recurring refetch to make sure we get the data
+      const intervalId = setInterval(() => {
+        refetchQuizAttempts().catch(err => {
+          console.error("Error refetching quiz attempts on interval:", err);
+        });
+      }, 2000); // Try every 2 seconds for 10 seconds
+      
+      // Clear interval after 10 seconds
+      const timeoutId = setTimeout(() => {
+        clearInterval(intervalId);
+      }, 10000);
+      
+      return () => {
+        clearInterval(intervalId);
+        clearTimeout(timeoutId);
+      };
+    }
+  }, [quizCompleted, refetchQuizAttempts]);
   
   // Format time remaining as mm:ss
   const formatTimeRemaining = () => {
@@ -280,6 +312,7 @@ export default function TakeQuizPage() {
     }));
   };
   
+  // Loading state
   if (isLoading) {
     return (
       <MainLayout>
@@ -290,6 +323,7 @@ export default function TakeQuizPage() {
     );
   }
   
+  // Error state
   if (error || !quiz) {
     return (
       <MainLayout>
@@ -304,34 +338,7 @@ export default function TakeQuizPage() {
     );
   }
   
-  // Move effect outside the conditional to avoid React hooks error
-  useEffect(() => {
-    if (quizCompleted) {
-      // Force refetch on results page initialization
-      refetchQuizAttempts().catch(err => {
-        console.error("Error initial refetch of quiz attempts:", err);
-      });
-      
-      // Setup a recurring refetch to make sure we get the data
-      const intervalId = setInterval(() => {
-        refetchQuizAttempts().catch(err => {
-          console.error("Error refetching quiz attempts on interval:", err);
-        });
-      }, 2000); // Try every 2 seconds for 10 seconds
-      
-      // Clear interval after 10 seconds
-      const timeoutId = setTimeout(() => {
-        clearInterval(intervalId);
-      }, 10000);
-      
-      return () => {
-        clearInterval(intervalId);
-        clearTimeout(timeoutId);
-      };
-    }
-  }, [quizCompleted, refetchQuizAttempts]);
-  
-  // Display results if quiz is completed
+  // Results view
   if (quizCompleted) {
     const passingScore = quiz.passingScore || 70;
     const passed = score >= passingScore;
@@ -420,53 +427,53 @@ export default function TakeQuizPage() {
                     <h3 className="text-lg font-semibold mb-4">Review Your Answers</h3>
                     <div className="space-y-6">
                       {questions.map((question, idx) => {
-                      const userAnswer = selectedAnswers[question.id] !== undefined ? selectedAnswers[question.id] : -1;
-                      const isCorrect = userAnswer === question.correctAnswer;
-                      
-                      return (
-                        <div key={idx} className={`p-4 rounded-lg border ${isCorrect ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`}>
-                          <div className="flex items-start gap-3">
-                            <div className={`flex-shrink-0 rounded-full p-1 ${isCorrect ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
-                              {isCorrect ? <CheckCircle2 className="h-5 w-5" /> : <XCircle className="h-5 w-5" />}
-                            </div>
-                            <div className="flex-1">
-                              <p className="font-medium mb-2">Question {idx + 1}: {question.text}</p>
-                              
-                              <div className="space-y-1 text-sm">
-                                {question.options.map((option, optIdx) => (
-                                  <div 
-                                    key={optIdx} 
-                                    className={`p-2 rounded ${
-                                      optIdx === question.correctAnswer ? 'bg-green-100 border border-green-200' : 
-                                      optIdx === userAnswer && optIdx !== question.correctAnswer ? 'bg-red-100 border border-red-200' : 
-                                      'bg-gray-50 border border-gray-200'
-                                    }`}
-                                  >
-                                    <div className="flex items-center">
-                                      {optIdx === question.correctAnswer && (
-                                        <CheckCircle2 className="h-4 w-4 text-green-600 mr-2" />
-                                      )}
-                                      {optIdx === userAnswer && optIdx !== question.correctAnswer && (
-                                        <XCircle className="h-4 w-4 text-red-600 mr-2" />
-                                      )}
-                                      {option}
-                                    </div>
-                                  </div>
-                                ))}
+                        const userAnswer = selectedAnswers[question.id] !== undefined ? selectedAnswers[question.id] : -1;
+                        const isCorrect = userAnswer === question.correctAnswer;
+                        
+                        return (
+                          <div key={idx} className={`p-4 rounded-lg border ${isCorrect ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`}>
+                            <div className="flex items-start gap-3">
+                              <div className={`flex-shrink-0 rounded-full p-1 ${isCorrect ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
+                                {isCorrect ? <CheckCircle2 className="h-5 w-5" /> : <XCircle className="h-5 w-5" />}
                               </div>
-                              
-                              {!isCorrect && (
-                                <div className="mt-2 text-sm text-green-700 bg-green-50 p-2 border border-green-100 rounded">
-                                  <span className="font-medium">Correct answer:</span> {question.options[question.correctAnswer]}
+                              <div className="flex-1">
+                                <p className="font-medium mb-2">Question {idx + 1}: {question.text}</p>
+                                
+                                <div className="space-y-1 text-sm">
+                                  {question.options.map((option, optIdx) => (
+                                    <div 
+                                      key={optIdx} 
+                                      className={`p-2 rounded ${
+                                        optIdx === question.correctAnswer ? 'bg-green-100 border border-green-200' : 
+                                        optIdx === userAnswer && optIdx !== question.correctAnswer ? 'bg-red-100 border border-red-200' : 
+                                        'bg-gray-50 border border-gray-200'
+                                      }`}
+                                    >
+                                      <div className="flex items-center">
+                                        {optIdx === question.correctAnswer && (
+                                          <CheckCircle2 className="h-4 w-4 text-green-600 mr-2" />
+                                        )}
+                                        {optIdx === userAnswer && optIdx !== question.correctAnswer && (
+                                          <XCircle className="h-4 w-4 text-red-600 mr-2" />
+                                        )}
+                                        {option}
+                                      </div>
+                                    </div>
+                                  ))}
                                 </div>
-                              )}
+                                
+                                {!isCorrect && (
+                                  <div className="mt-2 text-sm text-green-700 bg-green-50 p-2 border border-green-100 rounded">
+                                    <span className="font-medium">Correct answer:</span> {question.options[question.correctAnswer]}
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
                 )}
                 
                 {/* Quiz Performance History Section */}
@@ -497,10 +504,11 @@ export default function TakeQuizPage() {
               <CardFooter className="flex justify-between">
                 <Button variant="outline" onClick={() => navigate(`/quizzes/${frameworkId}`)}>
                   <ChevronLeft className="mr-2 h-4 w-4" />
-                  Back to Framework Quizzes
+                  Back to Quizzes
                 </Button>
-                <Button onClick={() => navigate("/")}>
-                  Go to Dashboard
+                
+                <Button variant="default" onClick={() => navigate(`/frameworks/${frameworkId}`)}>
+                  Continue Learning
                 </Button>
               </CardFooter>
             </Card>
@@ -510,74 +518,81 @@ export default function TakeQuizPage() {
     );
   }
   
-  // Quiz in progress
+  // Get current question
   const question = questions[currentQuestion];
   
-  if (!question) {
-    return (
-      <MainLayout>
-        <div className="flex flex-col items-center justify-center h-[calc(100vh-10rem)]">
-          <div className="text-destructive mb-4">Error: No questions found</div>
-          <Button variant="outline" onClick={() => navigate(`/quizzes/${frameworkId}`)}>
-            <ChevronLeft className="mr-2 h-4 w-4" />
-            Back to Framework Quizzes
-          </Button>
-        </div>
-      </MainLayout>
-    );
-  }
-  
+  // Quiz taking view
   return (
     <MainLayout>
       <div className="container mx-auto">
         <div className="max-w-2xl mx-auto">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle>{quiz.title}</CardTitle>
-                  <CardDescription>Question {currentQuestion + 1} of {questions.length}</CardDescription>
-                </div>
-                {timeRemaining !== null && (
-                  <div className="flex items-center text-muted-foreground">
-                    <Clock className="mr-2 h-4 w-4" />
-                    <span>{formatTimeRemaining()}</span>
+          {!question ? (
+            <div className="text-destructive mb-4">Error: No questions found</div>
+          ) : (
+            <Card>
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <CardTitle>{quiz.title}</CardTitle>
+                    <CardDescription>Question {currentQuestion + 1} of {questions.length}</CardDescription>
                   </div>
-                )}
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <Progress value={(currentQuestion + 1) / questions.length * 100} className="h-2" />
-              
-              <div className="font-medium text-lg">{question.text}</div>
-              
-              <RadioGroup 
-                value={selectedAnswers[question.id] !== undefined ? selectedAnswers[question.id].toString() : undefined}
-                onValueChange={(value) => handleSelectAnswer(question.id, parseInt(value))}
-              >
-                <div className="space-y-3">
-                  {question.options.map((option, index) => (
-                    <div key={index} className="flex items-center space-x-2">
-                      <RadioGroupItem value={index.toString()} id={`option-${index}`} />
-                      <Label htmlFor={`option-${index}`} className="cursor-pointer">{option}</Label>
+                  
+                  {timeRemaining !== null && (
+                    <div className="flex items-center bg-amber-50 text-amber-700 px-3 py-2 rounded-md">
+                      <Clock className="h-4 w-4 mr-2" />
+                      <span className="font-mono font-medium">{formatTimeRemaining()}</span>
                     </div>
-                  ))}
+                  )}
                 </div>
-              </RadioGroup>
-            </CardContent>
-            <CardFooter className="flex justify-between">
-              <Button 
-                variant="outline" 
-                onClick={handlePrevQuestion}
-                disabled={currentQuestion === 0}
-              >
-                Previous
-              </Button>
-              <Button onClick={handleNextQuestion}>
-                {currentQuestion < questions.length - 1 ? "Next" : "Submit"}
-              </Button>
-            </CardFooter>
-          </Card>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="mb-2">
+                  <Progress value={(currentQuestion + 1) / questions.length * 100} className="h-2" />
+                </div>
+                
+                <div className="text-lg font-medium">{question.text}</div>
+                
+                <RadioGroup 
+                  value={selectedAnswers[question.id]?.toString()} 
+                  onValueChange={(value) => handleSelectAnswer(question.id, parseInt(value))}
+                >
+                  <div className="space-y-3">
+                    {question.options.map((option, idx) => (
+                      <div key={idx} className="flex items-center space-x-2 border p-3 rounded-md hover:bg-slate-50">
+                        <RadioGroupItem value={idx.toString()} id={`q${question.id}-option-${idx}`} />
+                        <Label htmlFor={`q${question.id}-option-${idx}`} className="flex-1 cursor-pointer">{option}</Label>
+                      </div>
+                    ))}
+                  </div>
+                </RadioGroup>
+                
+                {timeRemaining !== null && timeRemaining < 30 && !quizCompleted && (
+                  <Alert className="bg-red-50 text-red-700 border-red-200">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>Time is running out!</AlertTitle>
+                    <AlertDescription>You have less than 30 seconds remaining.</AlertDescription>
+                  </Alert>
+                )}
+              </CardContent>
+              <CardFooter className="flex justify-between">
+                <Button
+                  variant="outline"
+                  onClick={handlePrevQuestion}
+                  disabled={currentQuestion === 0}
+                >
+                  Previous
+                </Button>
+                
+                <Button 
+                  variant="default" 
+                  onClick={handleNextQuestion}
+                  disabled={!selectedAnswers[question.id] && selectedAnswers[question.id] !== 0}
+                >
+                  {currentQuestion < questions.length - 1 ? "Next" : "Submit"}
+                </Button>
+              </CardFooter>
+            </Card>
+          )}
         </div>
       </div>
     </MainLayout>
