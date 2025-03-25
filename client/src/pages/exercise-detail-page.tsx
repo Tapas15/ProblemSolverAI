@@ -9,8 +9,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
-  ArrowLeft, 
-  SendIcon, 
+  ArrowLeft,
+  Send as SendIcon,
   CheckCircle, 
   Clock, 
   BookOpen, 
@@ -25,7 +25,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import MainLayout from "@/components/layout/main-layout";
-import MobileAppLayout from "@/components/layout/mobile-app-layout";
+import { MobileAppLayout } from "@/components/layout/mobile-app-layout";
 import { isNativePlatform } from "@/lib/capacitor";
 import { 
   AlertDialog,
@@ -161,105 +161,168 @@ export default function ExerciseDetailPage() {
     submitMutation.mutate({ exerciseId: exerciseId!, solution });
   };
 
+  // State for native platform detection
+  const [isNative, setIsNative] = useState(false);
+  
+  // Check if running on native platform
+  useEffect(() => {
+    setIsNative(isNativePlatform());
+  }, []);
+  
+  const Layout = isNative ? MobileAppLayout : MainLayout;
+
   if (!exerciseId) {
     return (
-      <MainLayout>
-        <div className="container mx-auto">
-          <h1 className="text-3xl font-bold mb-6">Exercise Not Found</h1>
+      <Layout>
+        <div className={isNative ? "p-4" : "container mx-auto"}>
+          <h1 className={isNative ? "text-xl font-bold mb-4" : "text-3xl font-bold mb-6"}>Exercise Not Found</h1>
           <p>The requested exercise could not be found.</p>
-          <Link href="/exercises">
-            <Button className="mt-4">
-              <ArrowLeft className="mr-2 h-4 w-4" /> Back to Exercises
-            </Button>
-          </Link>
+          <Button 
+            className="mt-4" 
+            onClick={() => setLocation("/exercises")}
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Exercises
+          </Button>
         </div>
-      </MainLayout>
+      </Layout>
     );
   }
 
   // Loading state
   if (exerciseLoading || submissionsLoading) {
     return (
-      <MainLayout>
-        <div className="container mx-auto">
-          <Skeleton className="h-12 w-2/3 mb-6" />
-          <Skeleton className="h-6 w-full mb-4" />
-          <Skeleton className="h-64 w-full rounded-lg mb-8" />
-          <Skeleton className="h-32 w-full rounded-lg" />
+      <Layout>
+        <div className={isNative ? "p-4" : "container mx-auto"}>
+          <Skeleton className="h-8 w-2/3 mb-4" />
+          <Skeleton className="h-5 w-full mb-3" />
+          <Skeleton className="h-40 w-full rounded-lg mb-4" />
+          <Skeleton className="h-24 w-full rounded-lg" />
         </div>
-      </MainLayout>
+      </Layout>
     );
   }
 
   if (!exercise) {
     return (
-      <MainLayout>
-        <div className="container mx-auto">
-          <h1 className="text-3xl font-bold mb-6">Exercise Not Found</h1>
+      <Layout>
+        <div className={isNative ? "p-4" : "container mx-auto"}>
+          <h1 className={isNative ? "text-xl font-bold mb-4" : "text-3xl font-bold mb-6"}>Exercise Not Found</h1>
           <p>The requested exercise could not be found.</p>
-          <Link href="/exercises">
-            <Button className="mt-4">
-              <ArrowLeft className="mr-2 h-4 w-4" /> Back to Exercises
-            </Button>
-          </Link>
+          <Button 
+            className="mt-4" 
+            onClick={() => setLocation("/exercises")}
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Exercises
+          </Button>
         </div>
-      </MainLayout>
+      </Layout>
     );
   }
 
   return (
-    <MainLayout>
-      <div className="container mx-auto">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-6">
-          <div className="flex items-center mb-4 lg:mb-0">
-            <Link href={`/exercises/${exercise.frameworkId}`}>
-              <Button variant="ghost" size="sm" className="mr-4">
-                <ArrowLeft className="h-4 w-4 mr-2" /> Back to Exercises
-              </Button>
-            </Link>
-            <h1 className="text-3xl font-bold">{exercise.title}</h1>
-          </div>
-          <div className="flex items-center space-x-3">
-            <Badge variant="outline" className="flex items-center">
-              <Clock className="mr-2 h-4 w-4" />
-              {exercise.estimatedTime} minutes
-            </Badge>
-            <Badge className={getDifficultyBadgeClass(exercise.difficulty)}>
-              {exercise.difficulty}
-            </Badge>
-          </div>
+    <Layout>
+      <div className={isNative ? "p-4" : "container mx-auto"}>
+        <div className={isNative ? "space-y-3 mb-4" : "flex flex-col lg:flex-row lg:items-center justify-between mb-6"}>
+          {isNative ? (
+            <>
+              <div className="flex justify-between items-start">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="px-2 h-8 -ml-2"
+                  onClick={() => setLocation(`/exercises/${exercise.frameworkId}`)}
+                >
+                  <ArrowLeft className="h-4 w-4 mr-1.5" /> 
+                  <span className="text-sm">Back</span>
+                </Button>
+                <div className="flex items-center space-x-2">
+                  <Badge variant="outline" className="flex items-center text-xs py-0 h-5">
+                    <Clock className="mr-1 h-3 w-3" />
+                    {exercise.estimatedTime}m
+                  </Badge>
+                  <Badge className={`${getDifficultyBadgeClass(exercise.difficulty)} text-xs py-0 h-5`}>
+                    {exercise.difficulty}
+                  </Badge>
+                </div>
+              </div>
+              <h1 className="text-xl font-bold leading-tight">{exercise.title}</h1>
+            </>
+          ) : (
+            <>
+              <div className="flex items-center mb-4 lg:mb-0">
+                <Link href={`/exercises/${exercise.frameworkId}`}>
+                  <Button variant="ghost" size="sm" className="mr-4">
+                    <ArrowLeft className="h-4 w-4 mr-2" /> Back to Exercises
+                  </Button>
+                </Link>
+                <h1 className="text-3xl font-bold">{exercise.title}</h1>
+              </div>
+              <div className="flex items-center space-x-3">
+                <Badge variant="outline" className="flex items-center">
+                  <Clock className="mr-2 h-4 w-4" />
+                  {exercise.estimatedTime} minutes
+                </Badge>
+                <Badge className={getDifficultyBadgeClass(exercise.difficulty)}>
+                  {exercise.difficulty}
+                </Badge>
+              </div>
+            </>
+          )}
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid grid-cols-4 mb-8">
-            <TabsTrigger value="description" className="flex items-center">
-              <BookOpen className="mr-2 h-4 w-4" /> Description
-            </TabsTrigger>
-            <TabsTrigger value="steps" className="flex items-center">
-              <ListChecks className="mr-2 h-4 w-4" /> Steps
-            </TabsTrigger>
-            <TabsTrigger value="solution" className="flex items-center">
-              <CheckCircle className="mr-2 h-4 w-4" /> Your Solution
-            </TabsTrigger>
-            <TabsTrigger value="help" className="flex items-center">
-              <HelpCircle className="mr-2 h-4 w-4" /> Help
-            </TabsTrigger>
+          <TabsList className={`grid grid-cols-4 ${isNative ? 'mb-4' : 'mb-8'}`}>
+            {isNative ? (
+              <>
+                <TabsTrigger value="description" className="flex flex-col items-center justify-center py-1 px-1 text-xs h-16">
+                  <BookOpen className="h-5 w-5 mb-1" /> 
+                  <span>Desc</span>
+                </TabsTrigger>
+                <TabsTrigger value="steps" className="flex flex-col items-center justify-center py-1 px-1 text-xs h-16">
+                  <ListChecks className="h-5 w-5 mb-1" /> 
+                  <span>Steps</span>
+                </TabsTrigger>
+                <TabsTrigger value="solution" className="flex flex-col items-center justify-center py-1 px-1 text-xs h-16">
+                  <CheckCircle className="h-5 w-5 mb-1" /> 
+                  <span>Solution</span>
+                </TabsTrigger>
+                <TabsTrigger value="help" className="flex flex-col items-center justify-center py-1 px-1 text-xs h-16">
+                  <HelpCircle className="h-5 w-5 mb-1" /> 
+                  <span>Help</span>
+                </TabsTrigger>
+              </>
+            ) : (
+              <>
+                <TabsTrigger value="description" className="flex items-center">
+                  <BookOpen className="mr-2 h-4 w-4" /> Description
+                </TabsTrigger>
+                <TabsTrigger value="steps" className="flex items-center">
+                  <ListChecks className="mr-2 h-4 w-4" /> Steps
+                </TabsTrigger>
+                <TabsTrigger value="solution" className="flex items-center">
+                  <CheckCircle className="mr-2 h-4 w-4" /> Your Solution
+                </TabsTrigger>
+                <TabsTrigger value="help" className="flex items-center">
+                  <HelpCircle className="mr-2 h-4 w-4" /> Help
+                </TabsTrigger>
+              </>
+            )}
           </TabsList>
 
           <TabsContent value="description">
-            <Card>
-              <CardHeader>
-                <CardTitle>Exercise Description</CardTitle>
+            <Card className={isNative ? "border-0 shadow-sm" : ""}>
+              <CardHeader className={isNative ? "px-3 py-3" : ""}>
+                <CardTitle className={isNative ? "text-lg" : ""}>Exercise Description</CardTitle>
                 <CardDescription>{exercise.description}</CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="prose max-w-none dark:prose-invert">
-                  <h3 className="text-xl font-semibold mb-4">Scenario</h3>
-                  <div className="mb-6 whitespace-pre-line">{exercise.scenario}</div>
+              <CardContent className={isNative ? "px-3 pb-3" : ""}>
+                <div className={`prose max-w-none dark:prose-invert ${isNative ? "text-sm" : ""}`}>
+                  <h3 className={isNative ? "text-base font-semibold mb-2" : "text-xl font-semibold mb-4"}>Scenario</h3>
+                  <div className={isNative ? "mb-4 whitespace-pre-line" : "mb-6 whitespace-pre-line"}>{exercise.scenario}</div>
                   
                   {exercise.resources && (
                     <>
-                      <h3 className="text-xl font-semibold mb-4">Resources</h3>
+                      <h3 className={isNative ? "text-base font-semibold mb-2" : "text-xl font-semibold mb-4"}>Resources</h3>
                       <div className="whitespace-pre-line">{exercise.resources}</div>
                     </>
                   )}
@@ -484,7 +547,7 @@ export default function ExerciseDetailPage() {
           </TabsContent>
         </Tabs>
       </div>
-    </MainLayout>
+    </Layout>
   );
 }
 
