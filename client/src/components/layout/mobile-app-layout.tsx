@@ -240,7 +240,7 @@ export function MobileAppLayout({ children }: MobileAppLayoutProps) {
 
       {/* Main Content */}
       <main className="pb-16 native-scroll">
-        <div className="mobile-container mx-auto px-4">
+        <div className="mobile-container mx-auto">
           {children}
         </div>
       </main>

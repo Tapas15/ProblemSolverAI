@@ -137,15 +137,24 @@ const AiAssistant: React.FC = () => {
   };
   
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-        <h2 className="text-xl font-semibold font-header text-primary mb-4">
-          AI Business Framework Assistant
-        </h2>
+    <div>
+      <div className="native-card mb-5">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="mobile-h3 text-[#0f172a]">
+            Ask a Question
+          </h3>
+          
+          <Button 
+            variant="outline" 
+            className="h-8 px-3 text-xs"
+            onClick={() => setIsAiSettingsOpen(true)}
+          >
+            Configure API
+          </Button>
+        </div>
         
-        <p className="text-gray-600 mb-4">
-          Ask specific questions about applying business frameworks to your unique challenges.
-          The AI assistant will provide tailored guidance to help you implement solutions.
+        <p className="text-[#64748b] text-sm mb-4">
+          Get tailored guidance for applying business frameworks to your unique challenges.
         </p>
         
         <Tabs defaultValue="custom" value={activeTab} onValueChange={setActiveTab} className="mb-4">
