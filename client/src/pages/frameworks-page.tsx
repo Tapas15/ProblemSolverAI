@@ -82,22 +82,10 @@ export default function FrameworksPage() {
           {frameworks?.map((framework) => (
             <Card key={framework.id} className="native-card overflow-hidden touch-feedback">
               <CardHeader className="pb-2">
-                <div className="flex items-start gap-4">
-                  <div className={`w-16 h-16 rounded-lg flex items-center justify-center bg-gradient-to-br ${
-                    framework.level === 'Beginner' ? 'from-blue-50 to-blue-100' :
-                    framework.level === 'Intermediate' ? 'from-purple-50 to-purple-100' :
-                    'from-orange-50 to-orange-100'
-                  }`}>
-                    <BookOpen className={`h-8 w-8 ${
-                      framework.level === 'Beginner' ? 'text-blue-500' :
-                      framework.level === 'Intermediate' ? 'text-purple-500' :
-                      'text-orange-500'
-                    }`} />
-                  </div>
-                  <div className="flex-1">
-                    <CardTitle className="card-title text-[#0f172a] text-lg font-medium">
-                      {framework.name}
-                    </CardTitle>
+                <div className="flex justify-between items-start">
+                  <CardTitle className="card-title text-[#0f172a] text-lg font-medium">
+                    {framework.name}
+                  </CardTitle>
                   <Badge variant="outline" className={`badge-${framework.level === 'Beginner' ? 'blue' : framework.level === 'Intermediate' ? 'purple' : 'orange'}`}>
                     {framework.level}
                   </Badge>
