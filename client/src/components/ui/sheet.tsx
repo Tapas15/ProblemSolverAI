@@ -54,26 +54,51 @@ interface SheetContentProps
 const SheetContent = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Content>,
   SheetContentProps
->(({ side = "right", className, children, ...props }, ref) => (
-  <SheetPortal>
-    <SheetOverlay />
-    <SheetPrimitive.Content
-      ref={ref}
-      className={cn(sheetVariants({ side }), className)}
-      {...props}
-    >
-      <div className="sr-only">
-        <SheetPrimitive.Title>Navigation Menu</SheetPrimitive.Title>
-        <SheetPrimitive.Description>Application navigation and settings</SheetPrimitive.Description>
-      </div>
-      {children}
-      <SheetPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
-        <X className="h-4 w-4" />
-        <span className="sr-only">Close</span>
-      </SheetPrimitive.Close>
-    </SheetPrimitive.Content>
-  </SheetPortal>
-))
+>(({ side = "right", className, children, ...props }, ref) => {
+  // Use effect to prevent body scrolling when sheet is open
+  React.useEffect(() => {
+    document.body.classList.add('prevent-scroll');
+    
+    return () => {
+      document.body.classList.remove('prevent-scroll');
+    };
+  }, []);
+  
+  return (
+    <SheetPortal>
+      <SheetOverlay 
+        // Add event handler to prevent touch events from propagating
+        onPointerDown={(e) => {
+          if (e.target === e.currentTarget) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+        }}
+      />
+      <SheetPrimitive.Content
+        ref={ref}
+        className={cn(
+          sheetVariants({ side }), 
+          "touch-none overscroll-none", 
+          className
+        )}
+        onPointerDown={(e) => e.stopPropagation()}
+        {...props}
+      >
+        <div className="sr-only">
+          <SheetPrimitive.Title>Navigation Menu</SheetPrimitive.Title>
+          <SheetPrimitive.Description>Application navigation and settings</SheetPrimitive.Description>
+        </div>
+        {children}
+        {/* We're hiding the built-in close button since we're using a custom one in the layout */}
+        <SheetPrimitive.Close className="hidden">
+          <X className="h-4 w-4" />
+          <span className="sr-only">Close</span>
+        </SheetPrimitive.Close>
+      </SheetPrimitive.Content>
+    </SheetPortal>
+  );
+})
 SheetContent.displayName = SheetPrimitive.Content.displayName
 
 const SheetHeader = ({

@@ -104,11 +104,22 @@ export function MobileAppLayout({ children }: MobileAppLayoutProps) {
     return false;
   };
   
+  // More aggressive fix for navigation sliding issues
   const handleNavigation = (path: string) => {
+    // First close the menu and prevent any interactions
+    document.body.classList.add('prevent-scroll');
     setShowMenu(false);
+    
+    // Force a slight pause before navigation to ensure menu is closed
     setTimeout(() => {
+      // Navigate using direct location update rather than router
       window.location.href = path;
-    }, 10);
+      
+      // Remove prevention after navigation starts
+      setTimeout(() => {
+        document.body.classList.remove('prevent-scroll');
+      }, 300);
+    }, 50);
   };
 
   return (
@@ -163,7 +174,13 @@ export function MobileAppLayout({ children }: MobileAppLayoutProps) {
                   <Button 
                     variant="ghost" 
                     size="icon" 
-                    onClick={() => setTimeout(() => setShowMenu(false), 10)} 
+                    onClick={() => {
+                      document.body.classList.add('prevent-scroll');
+                      setShowMenu(false);
+                      setTimeout(() => {
+                        document.body.classList.remove('prevent-scroll');
+                      }, 300);
+                    }} 
                     className="text-white hover:bg-[#1a4482]/50"
                   >
                     <X className="h-5 w-5" />

@@ -631,8 +631,31 @@ main.native-scroll {
 
 /* Prevent scrolling issues when navigating */
 .prevent-scroll {
-  overflow: hidden;
-  position: fixed;
-  width: 100%;
-  height: 100%;
+  overflow: hidden !important;
+  position: fixed !important;
+  width: 100% !important;
+  height: 100% !important;
+  touch-action: none !important;
+  -webkit-overflow-scrolling: auto !important;
+  overscroll-behavior: none !important;
+}
+
+/* Fix for sliding issues with side menu */
+[role="dialog"] {
+  touch-action: none !important;
+  -webkit-overflow-scrolling: auto !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+/* Improve menu item touch handling */
+.nav-item {
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: transparent !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  -webkit-user-drag: none !important;
+  cursor: pointer !important;
 }
