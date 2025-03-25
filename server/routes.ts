@@ -852,6 +852,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Invalidate caches for this module and related framework modules
       invalidateCache(CACHE_KEYS.MODULE(moduleId));
       invalidateCachesByPattern(`modules:framework:${module.frameworkId}`);
+      invalidateCache(CACHE_KEYS.ALL_MODULES_BY_FRAMEWORK);
       
       res.json(updatedModule);
     } catch (error) {
@@ -949,6 +950,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Invalidate caches for this module and related framework modules
       invalidateCache(CACHE_KEYS.MODULE(moduleId));
       invalidateCachesByPattern(`modules:framework:${module.frameworkId}`);
+      invalidateCache(CACHE_KEYS.ALL_MODULES_BY_FRAMEWORK);
       
       // Update user progress
       if (updatedModule) {
