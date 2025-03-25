@@ -4,7 +4,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { 
   getQuiz, 
   submitQuizAttempt,
-  trackQuizAttempt
+  trackQuizAttempt,
+  getUserQuizAttempts
 } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,10 +14,11 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Loader2, ChevronLeft, Clock, AlertCircle, CheckCircle2, XCircle } from "lucide-react";
+import { Loader2, ChevronLeft, Clock, AlertCircle, CheckCircle2, XCircle, BarChart2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import MainLayout from "@/components/layout/main-layout";
+import QuizHistory from "@/components/quiz/quiz-history";
 
 type Question = {
   id: number;
@@ -59,6 +61,15 @@ export default function TakeQuizPage() {
     queryKey: ["/api/quizzes", quizIdNum],
     queryFn: () => getQuiz(quizIdNum),
     enabled: !!quizIdNum && !isNaN(quizIdNum)
+  });
+  
+  // Get quiz attempt history
+  const {
+    data: quizAttempts = []
+  } = useQuery({
+    queryKey: ["/api/quiz-attempts/user"],
+    queryFn: () => getUserQuizAttempts(),
+    enabled: !!user
   });
   
   // Parse questions when quiz is loaded
@@ -406,6 +417,15 @@ export default function TakeQuizPage() {
                   </div>
                 </div>
                 )}
+                
+                {/* Quiz Performance History Section */}
+                <div className="mt-6">
+                  <div className="flex items-center mb-4">
+                    <BarChart2 className="h-5 w-5 mr-2 text-blue-600" />
+                    <h3 className="text-lg font-semibold">Your Performance History</h3>
+                  </div>
+                  <QuizHistory attempts={quizAttempts} quizId={quizIdNum} frameworkId={frameworkIdNum} />
+                </div>
               </CardContent>
               <CardFooter className="flex justify-between">
                 <Button variant="outline" onClick={() => navigate(`/quizzes/${frameworkId}`)}>
@@ -465,7 +485,7 @@ export default function TakeQuizPage() {
               <div className="font-medium text-lg">{question.text}</div>
               
               <RadioGroup 
-                value={selectedAnswers[question.id]?.toString()} 
+                value={selectedAnswers[question.id] !== undefined ? selectedAnswers[question.id].toString() : undefined}
                 onValueChange={(value) => handleSelectAnswer(question.id, parseInt(value))}
               >
                 <div className="space-y-3">

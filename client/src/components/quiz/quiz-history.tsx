@@ -43,7 +43,9 @@ export default function QuizHistory({ attempts, quizId, frameworkId }: QuizHisto
   
   // Sort attempts by completion date, newest first
   const sortedAttempts = [...filteredAttempts].sort((a, b) => {
-    return new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime();
+    const dateA = a.completedAt ? new Date(a.completedAt) : new Date();
+    const dateB = b.completedAt ? new Date(b.completedAt) : new Date();
+    return dateB.getTime() - dateA.getTime();
   });
   
   // Calculate performance trends
@@ -156,7 +158,7 @@ export default function QuizHistory({ attempts, quizId, frameworkId }: QuizHisto
                       <h3 className="font-medium">Quiz Attempt #{attempt.id}</h3>
                       <div className="text-sm text-gray-500 flex items-center gap-1 mt-1">
                         <Calendar className="h-3 w-3" />
-                        <span>{formatDistanceToNow(new Date(attempt.completedAt), { addSuffix: true })}</span>
+                        <span>{attempt.completedAt ? formatDistanceToNow(new Date(attempt.completedAt), { addSuffix: true }) : 'Recently'}</span>
                       </div>
                     </div>
                   </div>
@@ -190,7 +192,7 @@ export default function QuizHistory({ attempts, quizId, frameworkId }: QuizHisto
                           <div className="text-gray-500 mb-1">Time Taken</div>
                           <div className="font-medium flex items-center">
                             <Clock className="h-3.5 w-3.5 mr-1 text-gray-400" />
-                            {Math.floor(attempt.timeTaken / 60)}m {attempt.timeTaken % 60}s
+                            {attempt.timeTaken ? `${Math.floor(attempt.timeTaken / 60)}m ${attempt.timeTaken % 60}s` : 'N/A'}
                           </div>
                         </div>
                         
