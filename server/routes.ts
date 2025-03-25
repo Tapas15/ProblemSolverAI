@@ -468,6 +468,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // User settings routes
+  // POST endpoint for updating AI settings (new API)
+  app.post("/api/user/ai-settings", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+      
+      const updateSchema = z.object({
+        apiKey: z.string().optional(),
+        aiProvider: z.string().optional(),
+      });
+      
+      const validatedData = updateSchema.parse(req.body);
+      const updatedUser = await storage.updateUser(req.user.id, validatedData);
+      
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Remove password from response
+      const { password, ...userWithoutPassword } = updatedUser;
+      
+      // Update user in session
+      req.login(updatedUser, (err) => {
+        if (err) return next(err);
+        res.status(200).json(userWithoutPassword);
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // PATCH endpoint for updating AI settings (legacy API)
   app.patch("/api/user/ai-settings", async (req, res, next) => {
     try {
       if (!req.isAuthenticated() || !req.user) {
@@ -499,7 +532,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Update user password
+  // Update user password (POST endpoint - new API)
+  app.post("/api/user/password", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+      
+      const updateSchema = z.object({
+        currentPassword: z.string(),
+        newPassword: z.string().min(6, "Password must be at least 6 characters"),
+      });
+      
+      const validatedData = updateSchema.parse(req.body);
+      
+      // Get the user with password
+      const user = await storage.getUser(req.user.id);
+      
+      if (!user) {
+        return res.status(404).send("User not found");
+      }
+      
+      // Verify current password
+      const isPasswordValid = await comparePasswords(validatedData.currentPassword, user.password);
+      
+      if (!isPasswordValid) {
+        return res.status(400).json({ message: "Current password is incorrect" });
+      }
+      
+      // Hash the new password
+      const hashedPassword = await hashPassword(validatedData.newPassword);
+      
+      // Update password
+      const updatedUser = await storage.updateUser(req.user.id, { password: hashedPassword });
+      
+      if (!updatedUser) {
+        return res.status(404).send("User not found");
+      }
+      
+      res.status(200).json({ message: "Password updated successfully" });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Update user password (PATCH endpoint - legacy API)
   app.patch("/api/user/password", async (req, res, next) => {
     try {
       if (!req.isAuthenticated() || !req.user) {
@@ -543,7 +620,70 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Update user privacy settings
+  // Update user privacy settings (POST endpoint - new API)
+  app.post("/api/user/privacy", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+      
+      const updateSchema = z.object({
+        allowAnalytics: z.boolean().optional(),
+        publicProfile: z.boolean().optional(), 
+        allowPersonalization: z.boolean().optional(),
+      });
+      
+      const validatedData = updateSchema.parse(req.body);
+      
+      // Store privacy settings in userPreferences field as JSON
+      let userPreferences = {};
+      
+      // Get existing preferences if they exist
+      if (req.user.userPreferences) {
+        try {
+          userPreferences = typeof req.user.userPreferences === 'string' 
+            ? JSON.parse(req.user.userPreferences) 
+            : req.user.userPreferences;
+        } catch (e) {
+          console.error("Failed to parse user preferences:", e);
+        }
+      }
+      
+      // Update preferences with new values
+      const updatedPreferences = {
+        ...userPreferences,
+        privacy: {
+          ...((userPreferences as any)?.privacy || {}),
+          ...validatedData
+        }
+      };
+      
+      // Update user with new preferences
+      const updatedUser = await storage.updateUser(req.user.id, { 
+        userPreferences: JSON.stringify(updatedPreferences) 
+      });
+      
+      if (!updatedUser) {
+        return res.status(404).send("User not found");
+      }
+      
+      // Remove password from response
+      const { password, ...userWithoutPassword } = updatedUser;
+      
+      // Update user in session
+      req.login(updatedUser, (err) => {
+        if (err) return next(err);
+        res.status(200).json({ 
+          message: "Privacy settings updated successfully",
+          user: userWithoutPassword
+        });
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Update user privacy settings (PATCH endpoint - legacy API)
   app.patch("/api/user/privacy", async (req, res, next) => {
     try {
       if (!req.isAuthenticated() || !req.user) {
