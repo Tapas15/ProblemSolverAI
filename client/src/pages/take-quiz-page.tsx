@@ -38,6 +38,7 @@ export default function TakeQuizPage() {
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [score, setScore] = useState(0);
+  const [showAnswers, setShowAnswers] = useState(false);
   
   const frameworkIdNum = parseInt(frameworkId);
   const quizIdNum = parseInt(quizId);
@@ -327,6 +328,84 @@ export default function TakeQuizPage() {
                     <div className="font-medium">{Math.round(score / 100 * questions.length)} of {questions.length}</div>
                   </div>
                 </div>
+                
+                <Separator className="my-2" />
+                
+                {/* Toggle Button for Answers */}
+                <div className="flex justify-center mt-6">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowAnswers(!showAnswers)}
+                    className="flex items-center gap-2"
+                  >
+                    {showAnswers ? (
+                      <>
+                        <XCircle className="h-4 w-4" />
+                        Hide Answers
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle2 className="h-4 w-4" />
+                        Show Answers
+                      </>
+                    )}
+                  </Button>
+                </div>
+                
+                {/* Answer Review Section */}
+                {showAnswers && (
+                  <div className="mt-6">
+                    <h3 className="text-lg font-semibold mb-4">Review Your Answers</h3>
+                    <div className="space-y-6">
+                      {questions.map((question, idx) => {
+                      const userAnswer = selectedAnswers[question.id] !== undefined ? selectedAnswers[question.id] : -1;
+                      const isCorrect = userAnswer === question.correctAnswer;
+                      
+                      return (
+                        <div key={idx} className={`p-4 rounded-lg border ${isCorrect ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`}>
+                          <div className="flex items-start gap-3">
+                            <div className={`flex-shrink-0 rounded-full p-1 ${isCorrect ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
+                              {isCorrect ? <CheckCircle2 className="h-5 w-5" /> : <XCircle className="h-5 w-5" />}
+                            </div>
+                            <div className="flex-1">
+                              <p className="font-medium mb-2">Question {idx + 1}: {question.text}</p>
+                              
+                              <div className="space-y-1 text-sm">
+                                {question.options.map((option, optIdx) => (
+                                  <div 
+                                    key={optIdx} 
+                                    className={`p-2 rounded ${
+                                      optIdx === question.correctAnswer ? 'bg-green-100 border border-green-200' : 
+                                      optIdx === userAnswer && optIdx !== question.correctAnswer ? 'bg-red-100 border border-red-200' : 
+                                      'bg-gray-50 border border-gray-200'
+                                    }`}
+                                  >
+                                    <div className="flex items-center">
+                                      {optIdx === question.correctAnswer && (
+                                        <CheckCircle2 className="h-4 w-4 text-green-600 mr-2" />
+                                      )}
+                                      {optIdx === userAnswer && optIdx !== question.correctAnswer && (
+                                        <XCircle className="h-4 w-4 text-red-600 mr-2" />
+                                      )}
+                                      {option}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                              
+                              {!isCorrect && (
+                                <div className="mt-2 text-sm text-green-700 bg-green-50 p-2 border border-green-100 rounded">
+                                  <span className="font-medium">Correct answer:</span> {question.options[question.correctAnswer]}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+                )}
               </CardContent>
               <CardFooter className="flex justify-between">
                 <Button variant="outline" onClick={() => navigate(`/quizzes/${frameworkId}`)}>
