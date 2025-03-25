@@ -11,6 +11,7 @@ export const CACHE_KEYS = {
   FRAMEWORKS: 'frameworks',
   FRAMEWORK: (id: number) => `framework:${id}`,
   MODULES: (frameworkId: number) => `modules:framework:${frameworkId}`,
+  ALL_MODULES_BY_FRAMEWORK: 'all_modules_by_framework',
   MODULE: (id: number) => `module:${id}`,
   QUIZZES: (frameworkId: number, level?: string) => 
     level ? `quizzes:framework:${frameworkId}:level:${level}` : `quizzes:framework:${frameworkId}`,

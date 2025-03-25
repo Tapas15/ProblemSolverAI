@@ -736,6 +736,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Get all modules organized by framework ID
+  app.get("/api/all-modules-by-framework", async (req, res, next) => {
+    try {
+      // Check cache first
+      const cacheKey = CACHE_KEYS.ALL_MODULES_BY_FRAMEWORK;
+      const cachedData = getCachedData(cacheKey);
+      if (cachedData) {
+        return res.json(cachedData);
+      }
+      
+      // Get all frameworks
+      const frameworks = await storage.getAllFrameworks();
+      
+      // Create a map to hold modules by framework ID
+      const modulesByFramework: Record<number, any[]> = {};
+      
+      // For each framework, get modules and add to map
+      for (const framework of frameworks) {
+        const modules = await storage.getModulesByFrameworkId(framework.id);
+        modulesByFramework[framework.id] = modules;
+      }
+      
+      // Cache the result
+      cacheData(cacheKey, modulesByFramework);
+      res.json(modulesByFramework);
+    } catch (error) {
+      next(error);
+    }
+  });
+  
   // Get single module
   app.get("/api/modules/:id", async (req, res, next) => {
     try {
