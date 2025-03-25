@@ -42,9 +42,18 @@ const HomePage: React.FC = () => {
   const overallProgress = React.useMemo(() => {
     if (!userProgress || userProgress.length === 0) return 0;
     
-    const totalModules = userProgress.reduce((sum, progress) => sum + (progress.totalModules || 0), 0);
-    const completedModules = userProgress.reduce((sum, progress) => sum + (progress.completedModules || 0), 0);
+    // Make sure we're dealing with valid numbers for the calculation
+    const totalModules = userProgress.reduce((sum, progress) => {
+      const moduleCount = typeof progress.totalModules === 'number' ? progress.totalModules : 0;
+      return sum + moduleCount;
+    }, 0);
     
+    const completedModules = userProgress.reduce((sum, progress) => {
+      const completedCount = typeof progress.completedModules === 'number' ? progress.completedModules : 0;
+      return sum + completedCount;
+    }, 0);
+    
+    // Ensure we don't divide by zero
     return totalModules > 0 ? Math.round((completedModules / totalModules) * 100) : 0;
   }, [userProgress]);
   
@@ -78,8 +87,14 @@ const HomePage: React.FC = () => {
   const getFrameworkProgress = (frameworkId: number) => {
     if (!userProgress) return 0;
     const progress = userProgress.find(p => p.frameworkId === frameworkId);
-    if (!progress || !progress.completedModules || !progress.totalModules) return 0;
-    return progress.completedModules / progress.totalModules * 100;
+    if (!progress) return 0;
+    
+    // Make sure we have valid numbers for calculation
+    const completedModules = typeof progress.completedModules === 'number' ? progress.completedModules : 0;
+    const totalModules = typeof progress.totalModules === 'number' && progress.totalModules > 0 ? progress.totalModules : 1;
+    
+    // Calculate and return the percentage
+    return (completedModules / totalModules) * 100;
   };
   
   const isLoading = frameworksLoading || progressLoading;
