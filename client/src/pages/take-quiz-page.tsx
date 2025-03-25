@@ -63,13 +63,20 @@ export default function TakeQuizPage() {
     enabled: !!quizIdNum && !isNaN(quizIdNum)
   });
   
-  // Get quiz attempt history
+  // Get quiz attempt history with aggressive refetching
   const {
-    data: quizAttempts = []
+    data: quizAttempts = [],
+    refetch: refetchQuizAttempts
   } = useQuery({
     queryKey: ["/api/quiz-attempts/user"],
     queryFn: () => getUserQuizAttempts(),
-    enabled: !!user
+    enabled: !!user,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+    staleTime: 0, // Always consider data stale to force refetch
+    retry: 3, // Retry failed requests 3 times
+    retryDelay: (attempt) => Math.min(attempt * 1000, 5000) // Exponential backoff
   });
   
   // Parse questions when quiz is loaded
@@ -148,8 +155,18 @@ export default function TakeQuizPage() {
       data.maxScore,
       data.timeTaken
     ),
-    onSuccess: (quizAttempt) => {
+    retry: 3, // Retry submission up to 3 times
+    retryDelay: (attempt) => Math.min(attempt * 1000, 3000), // Exponential backoff with max 3 seconds
+    onSuccess: async (quizAttempt) => {
+      // Invalidate and refetch quiz attempts to ensure we have the latest data
       queryClient.invalidateQueries({ queryKey: ["/api/quiz-attempts/user"] });
+      
+      // Explicitly refetch quiz attempts data with a small delay to ensure the server has time to process
+      setTimeout(() => {
+        refetchQuizAttempts().catch(err => {
+          console.error("Error refetching quiz attempts:", err);
+        });
+      }, 500);
       
       // Track quiz attempt completion with xAPI if the quiz exists
       if (quiz) {
@@ -186,6 +203,13 @@ export default function TakeQuizPage() {
       
       // We still want to show the results, so set quizCompleted to true anyway
       setQuizCompleted(true);
+      
+      // Try to refetch quiz attempts anyway, just in case the submission actually succeeded
+      setTimeout(() => {
+        refetchQuizAttempts().catch(err => {
+          console.error("Error refetching quiz attempts after error:", err);
+        });
+      }, 1000);
       
       toast({
         title: "Quiz processing",
@@ -284,6 +308,31 @@ export default function TakeQuizPage() {
   if (quizCompleted) {
     const passingScore = quiz.passingScore || 70;
     const passed = score >= passingScore;
+    
+    // Effect to ensure we fetch the latest quiz attempts when showing results
+    useEffect(() => {
+      // Force refetch on results page initialization
+      refetchQuizAttempts().catch(err => {
+        console.error("Error initial refetch of quiz attempts:", err);
+      });
+      
+      // Setup a recurring refetch to make sure we get the data
+      const intervalId = setInterval(() => {
+        refetchQuizAttempts().catch(err => {
+          console.error("Error refetching quiz attempts on interval:", err);
+        });
+      }, 2000); // Try every 2 seconds for 10 seconds
+      
+      // Clear interval after 10 seconds
+      const timeoutId = setTimeout(() => {
+        clearInterval(intervalId);
+      }, 10000);
+      
+      return () => {
+        clearInterval(intervalId);
+        clearTimeout(timeoutId);
+      };
+    }, []);
     
     return (
       <MainLayout>
@@ -424,6 +473,22 @@ export default function TakeQuizPage() {
                     <BarChart2 className="h-5 w-5 mr-2 text-blue-600" />
                     <h3 className="text-lg font-semibold">Your Performance History</h3>
                   </div>
+                  
+                  {/* Add a manual refresh button */}
+                  <div className="mb-4 flex justify-end">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => refetchQuizAttempts()}
+                      className="text-xs flex items-center gap-1"
+                    >
+                      <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                      Refresh History
+                    </Button>
+                  </div>
+                  
                   <QuizHistory attempts={quizAttempts} quizId={quizIdNum} frameworkId={frameworkIdNum} />
                 </div>
               </CardContent>
