@@ -420,6 +420,42 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
           </Card>
         </TabsContent>
       </Tabs>
+      
+      {!quizId && sortedAttempts.length > 0 && (
+        <div className="mt-6">
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button 
+                variant="outline" 
+                className="w-full flex items-center justify-center border-red-100 text-red-600 hover:bg-red-50 hover:text-red-700"
+                disabled={isClearing}
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                {isClearing ? "Clearing..." : "Clear All Quiz Attempts"}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action will permanently delete all your quiz attempts across all frameworks
+                  and cannot be undone. This will give you a fresh start but you'll lose your
+                  progress history and performance analytics.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction 
+                  onClick={handleClearAllAttempts}
+                  className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+                >
+                  {isClearing ? "Clearing..." : "Yes, clear all attempts"}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+      )}
     </div>
   );
 }
