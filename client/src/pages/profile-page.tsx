@@ -1,142 +1,182 @@
+
 import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getUser, updateUser } from '@/lib/api';
+import { useAuth } from '@/hooks/use-auth';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { LearningProgress } from '@/components/framework/learning-progress';
-import { toast } from 'sonner';
-import { useAuth } from '@/hooks/use-auth';
-import { MobileAppLayout } from '@/components/layout/mobile-app-layout';
-import {LogOut} from 'lucide-react';
-
+import { useQuery } from '@tanstack/react-query';
+import { getUserProgress } from '@/lib/api';
+import { Progress } from '@/components/ui/progress';
+import { Loader2, User, Mail, FileText, LogOut } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
+import { updateProfile } from '@/lib/api';
 
 export default function ProfilePage() {
-  const { logoutMutation } = useAuth();
-  const queryClient = useQueryClient();
-  const { data: user } = useQuery(['user'], getUser);
+  const { user, logout } = useAuth();
+  const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  
   const [formData, setFormData] = useState({
     name: user?.name || '',
     email: user?.email || '',
     bio: user?.bio || ''
   });
 
-  const updateUserMutation = useMutation(updateUser, {
-    onSuccess: () => {
-      queryClient.invalidateQueries(['user']);
-      setIsEditing(false);
-      toast.success('Profile updated successfully');
-    },
-    onError: () => {
-      toast.error('Failed to update profile');
-    }
+  // Get learning progress
+  const { data: progress } = useQuery({
+    queryKey: ['/api/user/progress'],
+    queryFn: () => getUserProgress()
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    updateUserMutation.mutate(formData);
+  const completedFrameworks = progress?.filter(p => p.status === 'completed')?.length || 0;
+  const inProgressFrameworks = progress?.filter(p => p.status === 'in_progress')?.length || 0;
+
+  const handleSave = async () => {
+    try {
+      setIsSaving(true);
+      await updateProfile(formData);
+      toast({
+        title: "Profile updated",
+        description: "Your profile has been successfully updated."
+      });
+      setIsEditing(false);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update profile. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  if (!user) return null;
-
   return (
-    <MobileAppLayout>
-      <div className="container max-w-4xl mx-auto py-8 px-4">
-        <div className="space-y-8">
-          <Card>
-            <CardHeader>
-              <CardTitle>Profile Information</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-start gap-6">
-                <Avatar className="w-24 h-24">
-                  <AvatarImage src={user.avatarUrl} />
-                  <AvatarFallback>{user.name.substring(0, 2).toUpperCase()}</AvatarFallback>
-                </Avatar>
-
-                {isEditing ? (
-                  <form onSubmit={handleSubmit} className="flex-1 space-y-4">
-                    <Input
-                      value={formData.name}
-                      onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                      placeholder="Name"
-                    />
-                    <Input
-                      value={formData.email}
-                      onChange={e => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                      placeholder="Email"
-                      type="email"
-                    />
-                    <Textarea
-                      value={formData.bio}
-                      onChange={e => setFormData(prev => ({ ...prev, bio: e.target.value }))}
-                      placeholder="Tell us about yourself..."
-                      className="h-32"
-                    />
-                    <div className="flex gap-2">
-                      <Button type="submit">Save Changes</Button>
-                      <Button type="button" variant="outline" onClick={() => setIsEditing(false)}>
-                        Cancel
-                      </Button>
-                    </div>
-                  </form>
+    <div className="container max-w-2xl mx-auto py-6 px-4">
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <User className="h-5 w-5" /> Profile Information
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {/* Avatar */}
+            <div className="flex justify-center mb-6">
+              <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center">
+                {user?.avatarUrl ? (
+                  <img 
+                    src={user.avatarUrl} 
+                    alt={user.name} 
+                    className="w-full h-full rounded-full object-cover"
+                  />
                 ) : (
-                  <div className="flex-1 space-y-4">
-                    <div>
-                      <h3 className="font-medium">Name</h3>
-                      <p>{user.name}</p>
-                    </div>
-                    <div>
-                      <h3 className="font-medium">Email</h3>
-                      <p>{user.email}</p>
-                    </div>
-                    <div>
-                      <h3 className="font-medium">Bio</h3>
-                      <p className="text-sm text-gray-200">{user.bio || 'No bio added yet'}</p>
-                    </div>
-                    <Button onClick={() => {
-                      setFormData({ name: user.name, email: user.email, bio: user.bio || '' });
-                      setIsEditing(true);
-                    }}>
-                      Edit Profile
-                    </Button>
-                  </div>
+                  <User className="w-12 h-12 text-primary" />
                 )}
               </div>
-            </CardContent>
-          </Card>
+            </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Learning Progress</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <LearningProgress />
-            </CardContent>
-          </Card>
+            {/* Profile Fields */}
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium flex items-center gap-2">
+                  <User className="h-4 w-4" /> Name
+                </label>
+                <Input
+                  value={formData.name}
+                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                  disabled={!isEditing}
+                />
+              </div>
 
+              <div>
+                <label className="text-sm font-medium flex items-center gap-2">
+                  <Mail className="h-4 w-4" /> Email
+                </label>
+                <Input
+                  value={formData.email}
+                  onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                  disabled={!isEditing}
+                  type="email"
+                />
+              </div>
 
-          <div className="mb-6">
-            <Button 
-              variant="outline" 
-              className="w-full border-red-200 text-red-500 hover:bg-red-50 hover:text-red-600"
-              onClick={() => logoutMutation.mutate()}
-            >
-              <LogOut className="mr-2 h-4 w-4" />
-              Log Out
-            </Button>
+              <div>
+                <label className="text-sm font-medium flex items-center gap-2">
+                  <FileText className="h-4 w-4" /> Bio
+                </label>
+                <Textarea
+                  value={formData.bio}
+                  onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
+                  disabled={!isEditing}
+                  rows={4}
+                />
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex justify-end gap-2 pt-4">
+              {isEditing ? (
+                <>
+                  <Button variant="outline" onClick={() => setIsEditing(false)}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleSave} disabled={isSaving}>
+                    {isSaving ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      'Save Changes'
+                    )}
+                  </Button>
+                </>
+              ) : (
+                <Button onClick={() => setIsEditing(true)}>
+                  Edit Profile
+                </Button>
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Learning Progress */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Learning Progress</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div>
+              <div className="flex justify-between mb-2">
+                <span className="text-sm font-medium">Completed Frameworks</span>
+                <span className="text-sm text-muted-foreground">{completedFrameworks}</span>
+              </div>
+              <Progress value={completedFrameworks * 10} className="h-2" />
+            </div>
+            
+            <div>
+              <div className="flex justify-between mb-2">
+                <span className="text-sm font-medium">In Progress</span>
+                <span className="text-sm text-muted-foreground">{inProgressFrameworks}</span>
+              </div>
+              <Progress value={inProgressFrameworks * 10} className="h-2" />
+            </div>
           </div>
 
-          {/* App version */}
-          <div className="text-center text-xs text-gray-400 py-4">
-            <p>QuestionPro AI Web v1.0</p>
-            <p className="mt-1">© 2025 QuestionPro AI. All rights reserved.</p>
-          </div>
-        </div>
-      </div>
-    </MobileAppLayout>
+          <Button 
+            variant="destructive" 
+            className="mt-8 w-full"
+            onClick={logout}
+          >
+            <LogOut className="mr-2 h-4 w-4" /> Logout
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
