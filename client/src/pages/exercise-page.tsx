@@ -1,35 +1,54 @@
 import { useEffect, useState } from "react";
-import { useRoute } from "wouter";
+import { useRoute, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Exercise, Framework } from "@shared/schema";
 import { getFramework, getFrameworkExercises } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Clock, Info } from "lucide-react";
+import { ArrowLeft, Clock, Info, BookOpen } from "lucide-react";
 import { Link } from "wouter";
-import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import MainLayout from "@/components/layout/main-layout";
+import { isNativePlatform } from "@/lib/capacitor";
 
 export default function ExercisePage() {
   const [, params] = useRoute("/exercises/:frameworkId");
+  const [_, navigate] = useLocation();
   const frameworkId = params?.frameworkId ? parseInt(params.frameworkId) : undefined;
+  const isNative = isNativePlatform();
 
   // Redirect if no frameworkId
   if (!frameworkId) {
     return (
-      <MainLayout>
-        <div className="container mx-auto">
-          <h1 className="text-3xl font-bold mb-6">Exercises</h1>
-          <p>Please select a framework to view its exercises.</p>
-          <Link href="/">
-            <Button className="mt-4">
-              <ArrowLeft className="mr-2 h-4 w-4" /> Back to Home
-            </Button>
-          </Link>
+      <div className="native-scroll pb-4">
+        <div className="flex items-center mb-4 py-2">
+          <Button 
+            variant="ghost" 
+            size="icon"
+            className="mr-2 h-9 w-9 rounded-full text-[#3b82f6]" 
+            onClick={() => navigate('/')}
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <h1 className="mobile-h1 text-[#0f172a]">Exercises</h1>
         </div>
-      </MainLayout>
+        
+        <div className="native-empty-state">
+          <div className="native-empty-state-icon">
+            <BookOpen className="h-8 w-8" />
+          </div>
+          <h2 className="native-empty-state-title">Select a Framework</h2>
+          <p className="native-empty-state-description">
+            Please select a framework to view its exercises
+          </p>
+          <Button 
+            className="native-button text-sm py-2.5 flex justify-center items-center"
+            onClick={() => navigate('/exercises-frameworks')}
+          >
+            Browse Frameworks
+          </Button>
+        </div>
+      </div>
     );
   }
 
@@ -48,56 +67,68 @@ export default function ExercisePage() {
   // Loading state
   if (frameworkLoading || exercisesLoading) {
     return (
-      <MainLayout>
-        <div className="container mx-auto">
-          <Skeleton className="h-12 w-2/3 mb-6" />
-          <Skeleton className="h-6 w-full mb-4" />
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <Skeleton key={i} className="h-64 w-full rounded-lg" />
-            ))}
-          </div>
+      <div className="native-scroll pb-4">
+        <div className="flex items-center mb-4 py-2">
+          <Skeleton className="h-9 w-9 rounded-full mr-2" />
+          <Skeleton className="h-7 w-48" />
         </div>
-      </MainLayout>
+        
+        <Skeleton className="h-5 w-full mb-4" />
+        
+        <div className="space-y-4">
+          {[1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-44 w-full rounded-lg" />
+          ))}
+        </div>
+      </div>
     );
   }
 
   return (
-    <MainLayout>
-      <div className="container mx-auto">
-        <div className="flex items-center mb-6">
-          <Link href="/exercises">
-            <Button variant="ghost" size="sm" className="mr-4">
-              <ArrowLeft className="h-4 w-4 mr-2" /> Back to Frameworks
-            </Button>
-          </Link>
-          <h1 className="text-3xl font-bold">{framework?.name} Exercises</h1>
-        </div>
-        
-        <p className="text-lg text-muted-foreground mb-8">
+    <div className="native-scroll pb-8">
+      {/* Page Header */}
+      <div className="flex items-center mb-4 py-2">
+        <Button 
+          variant="ghost" 
+          size="icon"
+          className="mr-2 h-9 w-9 rounded-full text-[#3b82f6]" 
+          onClick={() => navigate('/exercises-frameworks')}
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
+        <h1 className="mobile-h1 text-[#0f172a]">{framework?.name}</h1>
+      </div>
+      
+      <div className="mb-5">
+        <p className="text-sm text-[#64748b]">
           Apply {framework?.name} to real-world business scenarios and practice your problem-solving skills.
         </p>
-        
-        <Separator className="my-8" />
-        
-        {exercises && exercises.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {exercises.map((exercise) => (
-              <ExerciseCard key={exercise.id} exercise={exercise} />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-12">
-            <Info className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-            <h3 className="text-xl font-medium mb-2">No exercises available</h3>
-            <p className="text-muted-foreground">
-              There are currently no exercises available for this framework.
-            </p>
-          </div>
-        )}
       </div>
-    </MainLayout>
+      
+      {exercises && exercises.length > 0 ? (
+        <div className="space-y-4">
+          {exercises.map((exercise) => (
+            <ExerciseCard key={exercise.id} exercise={exercise} />
+          ))}
+        </div>
+      ) : (
+        <div className="native-empty-state mt-8">
+          <div className="native-empty-state-icon">
+            <Info className="h-8 w-8" />
+          </div>
+          <h2 className="native-empty-state-title">No Exercises Available</h2>
+          <p className="native-empty-state-description">
+            There are currently no exercises available for this framework.
+          </p>
+          <Button 
+            className="native-button-secondary text-sm py-2.5 flex justify-center items-center"
+            onClick={() => navigate('/exercises-frameworks')}
+          >
+            Browse Other Frameworks
+          </Button>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -106,45 +137,58 @@ interface ExerciseCardProps {
 }
 
 function ExerciseCard({ exercise }: ExerciseCardProps) {
-  const getDifficultyColor = (difficulty: string) => {
+  const [_, navigate] = useLocation();
+  
+  const getDifficultyBadgeClass = (difficulty: string): string => {
     switch (difficulty.toLowerCase()) {
       case "beginner":
-        return "bg-green-100 text-green-800";
+        return "badge-green";
       case "intermediate":
-        return "bg-blue-100 text-blue-800";
+        return "badge-blue";
       case "advanced":
-        return "bg-purple-100 text-purple-800";
+        return "badge-purple";
       case "expert":
-        return "bg-red-100 text-red-800";
+        return "badge-red";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "badge-blue";
     }
   };
 
   return (
-    <Card className="h-full flex flex-col hover:shadow-md transition-shadow duration-200">
-      <CardHeader>
+    <Card className="native-card touch-feedback overflow-hidden">
+      <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
-          <CardTitle className="text-xl">{exercise.title}</CardTitle>
-          <Badge className={getDifficultyColor(exercise.difficulty)}>
+          <CardTitle className="card-title text-[#0f172a] text-lg font-medium">
+            {exercise.title}
+          </CardTitle>
+          <Badge variant="outline" className={getDifficultyBadgeClass(exercise.difficulty)}>
             {exercise.difficulty}
           </Badge>
         </div>
-        <CardDescription>{exercise.description}</CardDescription>
+        <CardDescription className="line-clamp-2 text-sm mt-1">
+          {exercise.description}
+        </CardDescription>
       </CardHeader>
-      <CardContent className="flex-grow">
-        <div className="flex items-center text-sm text-muted-foreground mb-4">
-          <Clock className="mr-2 h-4 w-4" />
+      
+      <CardContent className="pt-0 pb-2">
+        <div className="text-sm text-[#64748b] mb-3 line-clamp-2">
+          {exercise.scenario.substring(0, 120)}...
+        </div>
+        
+        <div className="flex items-center text-xs text-[#64748b]">
+          <Clock className="h-3 w-3 mr-1" />
           <span>Estimated time: {exercise.estimatedTime} minutes</span>
         </div>
-        <p className="text-sm line-clamp-3">
-          {exercise.scenario.substring(0, 150)}...
-        </p>
       </CardContent>
-      <CardFooter>
-        <Link href={`/exercise/${exercise.id}`}>
-          <Button className="w-full">Start Exercise</Button>
-        </Link>
+      
+      <CardFooter className="pt-0">
+        <Button 
+          className="native-button text-sm py-2.5 w-full flex justify-center items-center"
+          onClick={() => navigate(`/exercise/${exercise.id}`)}
+        >
+          Start Exercise
+          <ArrowRight className="ml-2 h-4 w-4" />
+        </Button>
       </CardFooter>
     </Card>
   );
