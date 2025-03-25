@@ -21,18 +21,36 @@ const ProfilePage: React.FC = () => {
   // Update profile mutation
   const updateProfileMutation = useMutation({
     mutationFn: async (data: any) => {
-      const response = await fetch('/api/user/profile', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to update profile');
+      try {
+        // Try POST first (new API)
+        const response = await fetch('/api/user/profile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        
+        if (!response.ok) {
+          // If POST fails, try PATCH as fallback (legacy API)
+          console.warn('Falling back to PATCH for profile update');
+          const patchResponse = await fetch('/api/user/profile', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          });
+          
+          if (!patchResponse.ok) {
+            const errorData = await patchResponse.json();
+            throw new Error(errorData.message || 'Failed to update profile');
+          }
+          
+          return patchResponse.json();
+        }
+        
+        return response.json();
+      } catch (error) {
+        console.error('Profile update error:', error);
+        throw error;
       }
-      
-      return response.json();
     },
     onSuccess: () => {
       toast({

@@ -258,13 +258,29 @@ export const scormApi = {
 
 // User settings API functions
 export async function updateAiSettings(settings: { apiKey?: string; aiProvider?: string }): Promise<any> {
-  const res = await apiRequest("PATCH", "/api/user/ai-settings", settings);
-  return res.json();
+  try {
+    // Try POST first (new API)
+    const res = await apiRequest("POST", "/api/user/ai-settings", settings);
+    return res.json();
+  } catch (error) {
+    // Fall back to PATCH (legacy API) if POST fails
+    console.warn('Falling back to PATCH for AI settings');
+    const res = await apiRequest("PATCH", "/api/user/ai-settings", settings);
+    return res.json();
+  }
 }
 
 export async function updatePassword(data: { currentPassword: string; newPassword: string }): Promise<{ message: string }> {
-  const res = await apiRequest("PATCH", "/api/user/password", data);
-  return res.json();
+  try {
+    // Try POST first (new API)
+    const res = await apiRequest("POST", "/api/user/password", data);
+    return res.json();
+  } catch (error) {
+    // Fall back to PATCH (legacy API) if POST fails
+    console.warn('Falling back to PATCH for password update');
+    const res = await apiRequest("PATCH", "/api/user/password", data);
+    return res.json();
+  }
 }
 
 export async function updatePrivacySettings(settings: { 
@@ -272,8 +288,16 @@ export async function updatePrivacySettings(settings: {
   publicProfile?: boolean;
   allowPersonalization?: boolean;
 }): Promise<{ message: string; user: any }> {
-  const res = await apiRequest("PATCH", "/api/user/privacy", settings);
-  return res.json();
+  try {
+    // Try POST first (new API)
+    const res = await apiRequest("POST", "/api/user/privacy", settings);
+    return res.json();
+  } catch (error) {
+    // Fall back to PATCH (legacy API) if POST fails
+    console.warn('Falling back to PATCH for privacy settings');
+    const res = await apiRequest("PATCH", "/api/user/privacy", settings);
+    return res.json();
+  }
 }
 
 export async function updateNotificationSettings(settings: {
@@ -283,8 +307,16 @@ export async function updateNotificationSettings(settings: {
   productUpdates?: boolean;
   emailFrequency?: 'immediately' | 'daily' | 'weekly' | 'none';
 }): Promise<{ message: string; user: any }> {
-  const res = await apiRequest("PATCH", "/api/user/notifications", settings);
-  return res.json();
+  try {
+    // Try POST first (new API)
+    const res = await apiRequest("POST", "/api/user/notifications", settings);
+    return res.json();
+  } catch (error) {
+    // Fall back to PATCH (legacy API) if POST fails
+    console.warn('Falling back to PATCH for notification settings');
+    const res = await apiRequest("PATCH", "/api/user/notifications", settings);
+    return res.json();
+  }
 }
 
 // 2FA API Functions
