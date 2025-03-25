@@ -317,6 +317,26 @@ export function MobileAppLayout({ children }: MobileAppLayoutProps) {
                   </div>
                 </div>
 
+                {/* Logout Button */}
+                <div className="px-4 mb-4">
+                  <div 
+                    className="flex items-center p-3 rounded-xl cursor-pointer transition-colors text-white/80 hover:bg-[#1a4482]/30 hover:text-white border border-[#3b82f6]/20"
+                    onClick={() => {
+                      document.body.classList.add('prevent-scroll');
+                      setShowMenu(false);
+                      setTimeout(() => {
+                        logoutMutation.mutate();
+                        setTimeout(() => {
+                          document.body.classList.remove('prevent-scroll');
+                        }, 300);
+                      }, 300);
+                    }}
+                  >
+                    <LogOut className="h-5 w-5 text-[#ff6b6b]" />
+                    <span className="ml-3 font-medium">Logout</span>
+                  </div>
+                </div>
+
                 {/* Version information */}
                 <div className="mt-auto px-4 pt-4 border-t border-[#3b82f6]/10 text-center text-xs text-white/40">
                   <p>QuestionPro AI Mobile {isNative ? platform : 'Web'} v1.0</p>
