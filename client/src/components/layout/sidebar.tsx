@@ -111,23 +111,28 @@ const Sidebar: React.FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
         {/* Profile section */}
         {user && (
           <div className={cn(
-            "flex items-center p-3 border-b border-[#3b82f6]/10",
+            "flex items-center p-4 border-b border-[#3b82f6]/10",
             isCollapsed ? "justify-center" : "justify-between"
           )}>
             {!isCollapsed ? (
-              <Link href="/profile" className="w-full">
-                <Button variant="ghost" className="relative w-full px-2 py-1.5 h-auto flex items-center justify-between bg-transparent hover:bg-white/5">
-                  <div className="flex items-center gap-2">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src={user.avatarUrl || ''} alt={user.name} />
-                      <AvatarFallback className="bg-gradient-to-br from-[#3b82f6] to-[#60a5fa] text-white">
-                        {user.name.substring(0, 2).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span className="text-sm font-medium text-white truncate">{user.name}</span>
-                  </div>
-                </Button>
-              </Link>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative w-full p-0 h-auto flex items-center justify-between bg-transparent">
+                    <div className="flex items-center space-x-3">
+                      <Avatar className="h-9 w-9 ring-2 ring-[#60a5fa]/30 shadow-inner">
+                        <AvatarImage src="" alt={user.name} />
+                        <AvatarFallback className="bg-gradient-to-br from-[#3b82f6] to-[#60a5fa] text-white font-medium">
+                          {user.name.substring(0, 2).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="text-left">
+                        <p className="text-sm font-medium text-white truncate max-w-[120px]">{user.name}</p>
+                        <p className="text-xs text-white/50 truncate max-w-[120px]">{user.email}</p>
+                      </div>
+                    </div>
+                    <ChevronDown className="ml-2 h-4 w-4 text-white/50" />
+                  </Button>
+                </DropdownMenuTrigger>
                 <DropdownMenuContent align="start" className="w-[220px] mt-1 py-2 rounded-xl border border-[#3b82f6]/20 shadow-xl bg-[#0f172a] backdrop-blur-sm">
                   <div className="p-2">
                     <Link to="/profile">
