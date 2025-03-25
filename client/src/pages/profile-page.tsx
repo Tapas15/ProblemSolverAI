@@ -172,7 +172,7 @@ const ProfilePage: React.FC = () => {
   const achievements = getAchievements();
 
   return (
-    <MobileAppLayout>
+    <div className="min-h-screen bg-background">
       <div className="py-4 px-4 pb-24">
         {/* Header with blue gradient background */}
         <div className="mb-6 relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#0f2544] to-[#19355f] p-5">
