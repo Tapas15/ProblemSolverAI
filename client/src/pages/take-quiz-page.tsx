@@ -304,13 +304,9 @@ export default function TakeQuizPage() {
     );
   }
   
-  // Display results if quiz is completed
-  if (quizCompleted) {
-    const passingScore = quiz.passingScore || 70;
-    const passed = score >= passingScore;
-    
-    // Effect to ensure we fetch the latest quiz attempts when showing results
-    useEffect(() => {
+  // Move effect outside the conditional to avoid React hooks error
+  useEffect(() => {
+    if (quizCompleted) {
       // Force refetch on results page initialization
       refetchQuizAttempts().catch(err => {
         console.error("Error initial refetch of quiz attempts:", err);
@@ -332,7 +328,13 @@ export default function TakeQuizPage() {
         clearInterval(intervalId);
         clearTimeout(timeoutId);
       };
-    }, []);
+    }
+  }, [quizCompleted, refetchQuizAttempts]);
+  
+  // Display results if quiz is completed
+  if (quizCompleted) {
+    const passingScore = quiz.passingScore || 70;
+    const passed = score >= passingScore;
     
     return (
       <MainLayout>
