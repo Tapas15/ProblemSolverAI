@@ -18,7 +18,7 @@ const FrameworkCard: React.FC<FrameworkCardProps> = ({
   progressStatus = 'not_started',
   completedModules = 0 
 }) => {
-  const { id, name, description, level, duration, imageUrl } = framework;
+  const { id, name, description, level, duration, image_url } = framework;
   const totalModules = modules.length; // Use actual module count
   
   // Generate a unique gradient based on framework ID for visual variety
@@ -81,11 +81,11 @@ const FrameworkCard: React.FC<FrameworkCardProps> = ({
   return (
     <div className="framework-card rounded-xl overflow-hidden bg-white group hover:shadow-xl transition-all duration-300 border border-slate-100 hover:border-primary/20 touch-manipulation">
       <div className="relative h-32 sm:h-44 overflow-hidden">
-        {imageUrl ? (
+        {image_url ? (
           <>
             <div className={`absolute inset-0 bg-gradient-to-br ${getGradient(id)} opacity-80 z-10`}></div>
             <img 
-              src={imageUrl} 
+              src={image_url} 
               alt={name}
               onError={(e) => {
                 // Fallback to gradient only on error
