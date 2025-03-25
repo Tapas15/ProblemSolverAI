@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { getUserProgress, getUserQuizAttempts, getFrameworks } from '@/lib/api';
-import { Framework, UserProgress, QuizAttempt } from '@shared/schema';
+import { getUserProgress, getUserQuizAttempts, getFrameworks, getAllModulesByFramework } from '@/lib/api';
+import { Framework, UserProgress, QuizAttempt, Module } from '@shared/schema';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -16,6 +16,7 @@ import { Link, useLocation } from 'wouter';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { LearningProgressMap } from '@/components/dashboard/learning-progress-map';
 
 const DashboardPage = () => {
   const { user } = useAuth();
@@ -48,6 +49,16 @@ const DashboardPage = () => {
   } = useQuery({
     queryKey: ['/api/quizzes/attempts/user'],
     queryFn: getUserQuizAttempts,
+    staleTime: 60 * 1000,
+  });
+  
+  // Fetch all modules by framework
+  const {
+    data: allModulesByFramework,
+    isLoading: isAllModulesLoading
+  } = useQuery({
+    queryKey: ['/api/all-modules-by-framework'],
+    queryFn: getAllModulesByFramework,
     staleTime: 60 * 1000,
   });
 
@@ -86,7 +97,7 @@ const DashboardPage = () => {
   };
 
   const stats = calculateStats();
-  const isLoading = isProgressLoading || isFrameworksLoading || isQuizAttemptsLoading;
+  const isLoading = isProgressLoading || isFrameworksLoading || isQuizAttemptsLoading || isAllModulesLoading;
 
   // Get framework details for a progress item
   const getFrameworkDetails = (frameworkId: number) => {
@@ -202,6 +213,26 @@ const DashboardPage = () => {
                 </>
               ) : (
                 <>
+                  {/* Learning Progress Map */}
+                  {allModulesByFramework && progressData && progressData.length > 0 && (
+                    <Card className="native-card shadow-sm overflow-hidden">
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-base text-[#0f172a]">Learning Journey</CardTitle>
+                        <CardDescription className="text-xs text-[#64748b]">
+                          Track your progress across all frameworks
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="pt-0">
+                        <LearningProgressMap 
+                          allModulesByFramework={allModulesByFramework} 
+                          userProgress={progressData} 
+                          frameworks={frameworks || []}
+                          onFrameworkClick={(frameworkId) => setLocation(`/frameworks/${frameworkId}`)}
+                        />
+                      </CardContent>
+                    </Card>
+                  )}
+                  
                   {progressData && progressData.length > 0 ? (
                     progressData.map((progress: UserProgress) => {
                       const framework = getFrameworkDetails(progress.frameworkId);
