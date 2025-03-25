@@ -91,16 +91,8 @@ export default function QuizPage() {
   
   return (
     <MainLayout>
-      <div className="container mx-auto">
-        <div className="flex items-center mb-6">
-          <Button 
-            variant="ghost" 
-            className="mr-4" 
-            onClick={() => navigate("/")}
-          >
-            <ChevronLeft className="mr-2 h-4 w-4" />
-            Back to Frameworks
-          </Button>
+      <div className="container mx-auto pt-4">
+        <div className="flex flex-col mb-6">
           <div>
             <h1 className="text-3xl font-bold">{framework?.name} Quizzes</h1>
             <p className="text-muted-foreground">

@@ -266,19 +266,25 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
                         onClick={() => toggleModule(module.id)}
                       >
                         <div className="flex items-center">
-                          <div className={`h-6 w-6 rounded-full ${
-                            module.completed ? 'bg-green-500 text-white' : 'bg-gray-300 text-white'
+                          <div className={`h-7 w-7 rounded-full ${
+                            module.completed ? 'bg-green-500 text-white shadow-sm ring-1 ring-green-200' : 'bg-gray-300 text-white'
                           } flex items-center justify-center mr-3`}>
-                            {module.completed ? <Check className="h-4 w-4" /> : module.id}
+                            <Check className={`h-4 w-4 ${module.completed ? 'opacity-100' : 'opacity-0'}`} />
+                            <span className={`absolute ${module.completed ? 'opacity-0' : 'opacity-100'}`}>{module.id}</span>
                           </div>
                           <h4 className={`font-medium ${module.completed ? 'text-green-700' : ''}`}>{module.name}</h4>
                           {module.completed && (
                             <Badge className="ml-2 bg-green-100 text-green-800 text-xs">Completed</Badge>
                           )}
                         </div>
-                        <button className={`${module.completed ? 'text-green-500 hover:text-green-700' : 'text-gray-400 hover:text-gray-600'}`}>
-                          {expandedModule === module.id ? <ChevronUp /> : <ChevronDown />}
-                        </button>
+                        <div className="flex items-center">
+                          {module.completed && (
+                            <Check className="h-5 w-5 text-green-500 mr-2" />
+                          )}
+                          <button className={`${module.completed ? 'text-green-500 hover:text-green-700' : 'text-gray-400 hover:text-gray-600'}`}>
+                            {expandedModule === module.id ? <ChevronUp /> : <ChevronDown />}
+                          </button>
+                        </div>
                       </div>
                       
                       {expandedModule === module.id && (
