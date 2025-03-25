@@ -9,6 +9,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/use-auth';
+import { CertificateFrame } from '@/components/certificate/certificate-frame';
+import { AchievementCard } from '@/components/certificate/achievement-card';
 
 export default function CertificatesPage() {
   const [activeTab, setActiveTab] = useState('certificates');
@@ -43,23 +46,16 @@ export default function CertificatesPage() {
     window.open(`/api/certificates/${id}/download`, '_blank');
   };
   
+  const { user } = useAuth();
+  
   const renderCertificates = () => {
     if (certificatesLoading) {
       return (
-        <div className="space-y-4">
-          {[1, 2, 3].map((i) => (
-            <Card key={i} className="w-full">
-              <CardHeader>
-                <Skeleton className="h-5 w-40" />
-                <Skeleton className="h-4 w-60" />
-              </CardHeader>
-              <CardContent>
-                <Skeleton className="h-28 w-full" />
-              </CardContent>
-              <CardFooter>
-                <Skeleton className="h-9 w-28" />
-              </CardFooter>
-            </Card>
+        <div className="space-y-8">
+          {[1, 2].map((i) => (
+            <div key={i} className="w-full">
+              <Skeleton className="h-64 w-full rounded-xl" />
+            </div>
           ))}
         </div>
       );
@@ -89,44 +85,36 @@ export default function CertificatesPage() {
     }
     
     return (
-      <div className="space-y-4">
+      <div className="space-y-8">
         {certificates.map((certificate) => (
-          <Card key={certificate.id} className="w-full">
-            <CardHeader>
-              <div className="flex justify-between items-start">
-                <div>
-                  <CardTitle>{certificate.title}</CardTitle>
-                  <CardDescription>
-                    Certificate #{certificate.certificateNumber}
-                  </CardDescription>
-                </div>
-                <Badge 
-                  variant={certificate.status === 'active' ? 'default' : 'destructive'}
-                  className="ml-2"
-                >
-                  {certificate.status === 'active' ? 'Active' : 'Expired'}
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center mb-4">
-                <FileText className="h-6 w-6 mr-2 text-primary" />
-                <span className="text-sm">{certificate.description}</span>
-              </div>
-              <div className="flex justify-between text-xs text-gray-500">
-                <div>Issued: {certificate.issueDate ? new Date(certificate.issueDate).toLocaleDateString() : 'Unknown'}</div>
-                {certificate.expiryDate && (
-                  <div>Expires: {new Date(certificate.expiryDate).toLocaleDateString()}</div>
-                )}
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button onClick={() => handleDownloadCertificate(certificate.id)} className="w-full">
-                <Download className="h-4 w-4 mr-2" />
-                Download Certificate
-              </Button>
-            </CardFooter>
-          </Card>
+          <div key={certificate.id} className="relative">
+            {certificate.status !== 'active' && (
+              <Badge 
+                variant={certificate.status === 'expired' ? 'destructive' : 'secondary'}
+                className="absolute top-3 right-3 z-20"
+              >
+                {certificate.status === 'expired' ? 'Expired' : 'Revoked'}
+              </Badge>
+            )}
+            
+            {/* Extract framework name from description - in a real app you'd get this from the API */}
+            {(() => {
+              const frameworkNameMatch = certificate.description.match(/the (.+?) framework/i);
+              const frameworkName = frameworkNameMatch ? frameworkNameMatch[1] : "Professional Framework";
+              
+              return (
+                <CertificateFrame
+                  title={certificate.title}
+                  userName={user?.name || ""}
+                  description={certificate.description}
+                  certificateNumber={certificate.certificateNumber}
+                  issueDate={certificate.issueDate}
+                  frameworkName={frameworkName}
+                  onDownload={() => handleDownloadCertificate(certificate.id)}
+                />
+              );
+            })()}
+          </div>
         ))}
       </div>
     );
@@ -175,70 +163,7 @@ export default function CertificatesPage() {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {achievements.map((achievement) => (
-          <div 
-            key={achievement.id}
-            className={`flex p-4 border rounded-lg ${
-              achievement.isEarned 
-                ? 'bg-primary/5 border-primary/30' 
-                : 'bg-gray-100 border-gray-200 opacity-70'
-            }`}
-          >
-            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-              {achievement.progress !== undefined ? (
-                <div className="relative h-12 w-12 flex items-center justify-center">
-                  {/* Circular progress indicator */}
-                  <svg className="absolute" width="48" height="48" viewBox="0 0 48 48">
-                    <circle 
-                      cx="24" 
-                      cy="24" 
-                      r="20" 
-                      fill="none" 
-                      stroke="#e5e7eb" 
-                      strokeWidth="4" 
-                    />
-                    <circle 
-                      cx="24" 
-                      cy="24" 
-                      r="20" 
-                      fill="none" 
-                      stroke="currentColor" 
-                      strokeWidth="4" 
-                      strokeDasharray={`${125 * (achievement.progress / (achievement.requiredProgress || 1))} 125`} 
-                      strokeDashoffset="-31.25"
-                      className="text-primary"
-                      transform="rotate(-90 24 24)"
-                    />
-                  </svg>
-                  <Award className="h-6 w-6 text-primary z-10" />
-                </div>
-              ) : achievement.isEarned ? (
-                <Award className="h-6 w-6 text-primary" />
-              ) : (
-                <Award className="h-6 w-6 text-gray-400" />
-              )}
-            </div>
-            <div className="ml-4">
-              <h3 className="font-medium text-sm">{achievement.title}</h3>
-              <p className="text-xs text-gray-600">{achievement.description}</p>
-              {achievement.progress !== undefined && (
-                <div className="mt-2">
-                  <div className="flex justify-between text-xs mb-1">
-                    <span>{achievement.progress} / {achievement.requiredProgress}</span>
-                    <span>{Math.round((achievement.progress / (achievement.requiredProgress || 1)) * 100)}%</span>
-                  </div>
-                  <Progress 
-                    value={(achievement.progress / (achievement.requiredProgress || 1)) * 100} 
-                    className="h-1.5" 
-                  />
-                </div>
-              )}
-              {achievement.earnedDate && (
-                <p className="text-xs text-gray-500 mt-1">
-                  Earned: {achievement.earnedDate ? new Date(achievement.earnedDate).toLocaleDateString() : 'Unknown'}
-                </p>
-              )}
-            </div>
-          </div>
+          <AchievementCard key={achievement.id} achievement={achievement} />
         ))}
       </div>
     );
