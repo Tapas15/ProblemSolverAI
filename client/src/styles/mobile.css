@@ -141,11 +141,13 @@ html, body {
   margin: 0;
   padding: 0;
   overflow: hidden;
+  touch-action: pan-y;
 }
 
 /* Enable scrolling within the content area */
 .native-scroll {
   overflow-y: auto;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
   height: 100%;
   max-height: calc(100vh - 130px); /* Account for header and tab bar */
   -webkit-overflow-scrolling: touch;
@@ -153,6 +155,7 @@ html, body {
   -ms-overflow-style: none; /* IE and Edge */
   padding-bottom: 20px;
   position: relative;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Main content area with proper padding for the bottom tabs */
@@ -179,6 +182,10 @@ main.native-scroll {
   align-items: center;
   justify-content: space-around;
   z-index: 1000;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  will-change: transform;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Active tab indicator animation */

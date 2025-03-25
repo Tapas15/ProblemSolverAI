@@ -103,6 +103,13 @@ export function MobileAppLayout({ children }: MobileAppLayoutProps) {
     if (path !== '/' && location.startsWith(path)) return true;
     return false;
   };
+  
+  const handleNavigation = (path: string) => {
+    setShowMenu(false);
+    setTimeout(() => {
+      window.location.href = path;
+    }, 10);
+  };
 
   return (
     <div className={`capacitor-app ${platform} min-h-screen bg-background`}>
