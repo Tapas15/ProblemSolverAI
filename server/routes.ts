@@ -2770,6 +2770,199 @@ export async function registerRoutes(app: Express): Promise<Server> {
       next(error);
     }
   });
+
+  // Download certificate
+  app.get("/api/certificates/:id/download", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+      
+      const certificateId = parseInt(req.params.id);
+      if (isNaN(certificateId)) {
+        return res.status(400).send("Invalid certificate ID");
+      }
+      
+      // Get certificate data
+      const certificate = await storage.getCertificate(certificateId);
+      if (!certificate) {
+        return res.status(404).send("Certificate not found");
+      }
+      
+      // Only allow users to download their own certificates unless they're admins
+      if (certificate.userId !== req.user.id && (!req.user.role || req.user.role !== "admin")) {
+        return res.status(403).send("Forbidden");
+      }
+      
+      // Get user information
+      const user = await storage.getUser(certificate.userId);
+      if (!user) {
+        return res.status(404).send("User not found");
+      }
+      
+      // Get framework information
+      const framework = await storage.getFramework(certificate.frameworkId);
+      if (!framework) {
+        return res.status(404).send("Framework not found");
+      }
+      
+      // Generate HTML for certificate
+      const certificateHtml = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <title>${certificate.title}</title>
+        <style>
+          body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f5f5f5;
+          }
+          .certificate {
+            width: 800px;
+            height: 600px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+          }
+          .certificate::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSg0NSkiPjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjA1KSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNwYXR0ZXJuKSIvPjwvc3ZnPg==');
+            opacity: 0.1;
+          }
+          .header {
+            margin-bottom: 20px;
+          }
+          .title {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+          }
+          .subtitle {
+            font-size: 18px;
+            margin-bottom: 30px;
+            opacity: 0.9;
+          }
+          .content {
+            margin: 30px 0;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+          }
+          .name {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+          }
+          .description {
+            font-size: 16px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+            padding: 0 40px;
+          }
+          .certificate-info {
+            margin-top: 30px;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+          }
+          .certificate-number {
+            font-style: italic;
+          }
+          .issue-date {
+            font-style: italic;
+          }
+          .badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 100px;
+            height: 100px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            transform: rotate(15deg);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+          }
+          .signature {
+            font-family: 'Brush Script MT', cursive;
+            font-size: 24px;
+            margin-top: 40px;
+          }
+          .certificate-footer {
+            margin-top: 20px;
+            font-size: 12px;
+            opacity: 0.7;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="certificate">
+          <div class="header">
+            <div class="title">Certificate of Completion</div>
+            <div class="subtitle">QuestionPro AI - Professional Learning Platform</div>
+          </div>
+          
+          <div class="content">
+            <div class="name">${user.name}</div>
+            <div class="description">
+              ${certificate.description}
+            </div>
+          </div>
+          
+          <div class="certificate-info">
+            <div class="certificate-number">Certificate #${certificate.certificateNumber}</div>
+            <div class="issue-date">Issued: ${certificate.issueDate ? new Date(certificate.issueDate).toLocaleDateString() : new Date().toLocaleDateString()}</div>
+          </div>
+          
+          <div class="badge">
+            VERIFIED
+          </div>
+          
+          <div class="signature">
+            QuestionPro AI
+          </div>
+          
+          <div class="certificate-footer">
+            This certificate verifies the completion of the ${framework.name} framework in the QuestionPro AI mobile application.
+          </div>
+        </div>
+      </body>
+      </html>
+      `;
+      
+      // Set response headers
+      res.setHeader('Content-Type', 'text/html');
+      res.setHeader('Content-Disposition', `attachment; filename="certificate-${certificate.certificateNumber}.html"`);
+      
+      // Send the HTML certificate
+      res.send(certificateHtml);
+    } catch (error) {
+      next(error);
+    }
+  });
   
   // Set up WebSocket server for real-time collaboration
   const wss = new WebSocketServer({ server: httpServer, path: '/ws' });

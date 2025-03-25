@@ -88,6 +88,11 @@ export function MobileAppLayout({ children }: MobileAppLayoutProps) {
       icon: <User className="h-5 w-5" /> 
     },
     { 
+      name: 'Certificates', 
+      path: '/certificates', 
+      icon: <Award className="h-5 w-5" /> 
+    },
+    { 
       name: 'Founder', 
       path: '/founder', 
       icon: <Award className="h-5 w-5" /> 
