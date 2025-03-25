@@ -18,7 +18,7 @@ const EMPTY_MODULE: Module = {
   quizQuestions: null,
   videoUrl: null,
   resources: null,
-  imageUrl: null,
+  image_url: null,
   completed: false,
   order: 0,
   scormPath: null,

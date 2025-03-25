@@ -97,10 +97,10 @@ export default function FrameworksPage() {
               
               <CardContent className="pb-2">
                 <div className="relative">
-                  {framework.imageUrl ? (
+                  {framework.image_url ? (
                     <div className="h-32 rounded-lg overflow-hidden mb-3">
                       <img 
-                        src={framework.imageUrl} 
+                        src={framework.image_url} 
                         alt={framework.name} 
                         className="w-full h-full object-cover"
                       />
