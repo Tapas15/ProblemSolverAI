@@ -1,21 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { MobileAppLayout } from '@/components/layout/mobile-app-layout';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
 import { 
   User, 
   Mail, 
-  Edit2, 
-  ChevronRight,
+  Edit2,
   LogOut,
-  Settings
+  Phone,
+  Award,
+  Save,
+  Briefcase,
+  MapPin,
+  Calendar
 } from 'lucide-react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { queryClient, apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { isNativePlatform } from '@/lib/capacitor';
@@ -25,6 +31,7 @@ const ProfilePage: React.FC = () => {
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [isNative, setIsNative] = useState(false);
+  const [editingSection, setEditingSection] = useState<string | null>(null);
   
   // User form state
   const [personalInfo, setPersonalInfo] = useState({
@@ -32,7 +39,29 @@ const ProfilePage: React.FC = () => {
     username: '',
     email: '',
     phone: '',
-    bio: ''
+    bio: '',
+    company: '',
+    location: '',
+    website: '',
+    joinDate: new Date().toISOString().split('T')[0]
+  });
+  
+  // Fetch quiz achievements
+  const { data: quizAttempts } = useQuery({
+    queryKey: ['/api/quiz-attempts/user'],
+    enabled: !!user
+  });
+
+  // Fetch user progress
+  const { data: userProgress } = useQuery({
+    queryKey: ['/api/user/progress'],
+    enabled: !!user
+  });
+
+  // Fetch frameworks
+  const { data: frameworks } = useQuery({
+    queryKey: ['/api/frameworks'],
+    enabled: !!user
   });
   
   // Update profile mutation
@@ -52,7 +81,7 @@ const ProfilePage: React.FC = () => {
         description: "Your profile information has been updated successfully",
       });
       queryClient.invalidateQueries({ queryKey: ['/api/user'] });
-      setIsEditing(false);
+      setEditingSection(null);
     },
     onError: (error: Error) => {
       toast({
@@ -71,7 +100,11 @@ const ProfilePage: React.FC = () => {
         username: user.username || '',
         email: user.email || '',
         phone: user.phone || '',
-        bio: user.bio || ''
+        bio: user.bio || '',
+        company: user.company || '',
+        location: user.location || '',
+        website: user.website || '',
+        joinDate: user.joinDate || new Date().toISOString().split('T')[0]
       });
     }
 
@@ -86,189 +119,403 @@ const ProfilePage: React.FC = () => {
     });
   };
   
-  const handlePersonalInfoSubmit = () => {
+  const handleSaveSection = (section: string) => {
     updateProfileMutation.mutate(personalInfo);
+  };
+
+  // Calculate achievements
+  const getAchievements = () => {
+    if (!quizAttempts || !userProgress || !frameworks) return [];
+    
+    const achievements = [];
+    
+    // Count passed quizzes
+    const passedQuizzes = quizAttempts.filter((attempt: any) => attempt.passed);
+    if (passedQuizzes.length >= 1) {
+      achievements.push({ title: 'Quiz Master', description: `Passed ${passedQuizzes.length} quizzes` });
+    }
+    
+    // Count completed frameworks
+    const completedFrameworks = userProgress.filter((progress: any) => 
+      progress.status === 'completed' && progress.completedModules === progress.totalModules
+    );
+    
+    if (completedFrameworks.length >= 1) {
+      achievements.push({ 
+        title: 'Framework Expert', 
+        description: `Completed ${completedFrameworks.length} framework${completedFrameworks.length > 1 ? 's' : ''}` 
+      });
+    }
+    
+    // Check for perfect score
+    const perfectScores = quizAttempts.filter((attempt: any) => attempt.score === attempt.maxScore);
+    if (perfectScores.length >= 1) {
+      achievements.push({ title: 'Perfect Score', description: 'Achieved 100% on a quiz' });
+    }
+    
+    return achievements;
   };
 
   if (!user) {
     return null;
   }
 
+  const achievements = getAchievements();
+
   return (
     <MobileAppLayout>
-      <div className="py-4 px-4">
+      <div className="py-4 px-4 pb-24">
         {/* Header with blue gradient background */}
         <div className="mb-6 relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#0f2544] to-[#19355f] p-5">
           <div className="absolute top-0 right-0 w-[120px] h-[120px] bg-[#3b82f6]/20 rounded-full -mt-10 -mr-10 blur-xl"></div>
           <div className="absolute bottom-0 left-0 w-[80px] h-[80px] bg-[#60a5fa]/10 rounded-full mb-[-40px] ml-[-20px] blur-xl"></div>
           
-          {isEditing ? (
-            <div className="space-y-4 relative z-10">
-              <div className="flex justify-between items-center">
-                <h1 className="text-xl font-bold text-white">Edit Profile</h1>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
+          <div className="flex items-center relative z-10">
+            <div className="relative">
+              <Avatar className="h-20 w-20 border-2 border-[#60a5fa]/30">
+                <AvatarImage src={user.avatarUrl || ''} alt={user.name} />
+                <AvatarFallback className="bg-[#3b82f6] text-white text-lg">
+                  {user.name?.substring(0, 2).toUpperCase() || 'U'}
+                </AvatarFallback>
+              </Avatar>
+              
+              <label htmlFor="avatar-upload" className="absolute bottom-0 right-0 bg-[#3b82f6] text-white p-1 rounded-full border-2 border-white cursor-pointer">
+                <Edit2 className="h-3 w-3" />
+              </label>
+              
+              <input
+                type="file"
+                id="avatar-upload"
+                accept="image/*"
+                className="hidden"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+
+                  const formData = new FormData();
+                  formData.append('avatar', file);
+
+                  try {
+                    const response = await fetch('/api/user/avatar', {
+                      method: 'POST',
+                      body: formData,
+                    });
+                    
+                    if (!response.ok) throw new Error('Upload failed');
+                    
+                    toast({
+                      title: "Avatar updated",
+                      description: "Your profile photo has been updated",
+                    });
+                    
+                    queryClient.invalidateQueries({ queryKey: ['/api/user'] });
+                  } catch (error) {
+                    toast({
+                      title: "Error",
+                      description: "Failed to upload avatar",
+                      variant: "destructive"
+                    });
+                  }
+                }}
+              />
+            </div>
+            
+            <div className="ml-4 flex-1">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-bold text-white">{user.name}</h2>
+                <Button
+                  variant="ghost"
+                  size="icon"
                   className="text-white hover:bg-white/10"
-                  onClick={() => setIsEditing(false)}
+                  onClick={() => setEditingSection('profile')}
                 >
-                  Cancel
+                  <Edit2 className="h-4 w-4" />
                 </Button>
               </div>
-              
+              <p className="text-white/70 text-sm">@{user.username}</p>
+              <p className="text-white/70 text-sm mt-1">{user.email}</p>
+            </div>
+          </div>
+        </div>
+        
+        {/* Editable Profile Section */}
+        <Card className="border border-[#e2e8f0] shadow-sm mb-6">
+          <CardHeader className="p-4 pb-0 flex justify-between items-center">
+            <CardTitle className="text-lg">Profile Information</CardTitle>
+            {editingSection !== 'profile' ? (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-[#3b82f6] hover:bg-blue-50"
+                onClick={() => setEditingSection('profile')}
+              >
+                <Edit2 className="h-4 w-4 mr-1" /> Edit
+              </Button>
+            ) : (
+              <Button 
+                variant="default" 
+                size="sm" 
+                className="bg-[#3b82f6]"
+                onClick={() => handleSaveSection('profile')}
+                disabled={updateProfileMutation.isPending}
+              >
+                <Save className="h-4 w-4 mr-1" /> 
+                {updateProfileMutation.isPending ? 'Saving...' : 'Save'}
+              </Button>
+            )}
+          </CardHeader>
+          <CardContent className="p-4">
+            {editingSection === 'profile' ? (
               <div className="space-y-3">
                 <div>
-                  <Label htmlFor="name" className="text-white/80 text-sm">Full Name</Label>
+                  <Label htmlFor="name">Full Name</Label>
                   <Input 
                     id="name" 
                     value={personalInfo.name}
                     onChange={handlePersonalInfoChange}
-                    className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
                   />
                 </div>
                 
                 <div>
-                  <Label htmlFor="username" className="text-white/80 text-sm">Username</Label>
+                  <Label htmlFor="username">Username</Label>
                   <Input 
                     id="username" 
                     value={personalInfo.username}
                     onChange={handlePersonalInfoChange}
-                    className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="email">Email</Label>
+                  <Input 
+                    id="email" 
+                    type="email"
+                    value={personalInfo.email}
+                    onChange={handlePersonalInfoChange}
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="phone">Phone</Label>
+                  <Input 
+                    id="phone" 
+                    value={personalInfo.phone || ''}
+                    onChange={handlePersonalInfoChange}
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="bio">Bio</Label>
+                  <Textarea 
+                    id="bio" 
+                    value={personalInfo.bio || ''}
+                    onChange={handlePersonalInfoChange}
+                    rows={3}
                   />
                 </div>
               </div>
-              
-              <div className="flex space-x-2 pt-2">
-                <Button
-                  className="bg-[#3b82f6] hover:bg-[#2563eb] text-white flex-1"
-                  onClick={handlePersonalInfoSubmit}
-                  disabled={updateProfileMutation.isPending}
-                >
-                  {updateProfileMutation.isPending ? 'Saving...' : 'Save Changes'}
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <div className="flex items-center relative z-10">
-              <div className="relative">
-                <Avatar className="h-20 w-20 border-2 border-[#60a5fa]/30">
-                  <AvatarImage src={user.avatarUrl || ''} alt={user.name} />
-                  <AvatarFallback className="bg-[#3b82f6] text-white text-lg">
-                    {user.name.substring(0, 2).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                
-                <input
-                  type="file"
-                  id="avatar-upload"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={async (e) => {
-                    const file = e.target.files?.[0];
-                    if (!file) return;
-
-                    const formData = new FormData();
-                    formData.append('avatar', file);
-
-                    try {
-                      const response = await fetch('/api/user/avatar', {
-                        method: 'POST',
-                        body: formData,
-                      });
-                      
-                      if (!response.ok) throw new Error('Upload failed');
-                      
-                      toast({
-                        title: "Avatar updated",
-                        description: "Your profile photo has been updated",
-                      });
-                      
-                      queryClient.invalidateQueries({ queryKey: ['/api/user'] });
-                    } catch (error) {
-                      toast({
-                        title: "Error",
-                        description: "Failed to upload avatar",
-                        variant: "destructive"
-                      });
-                    }
-                  }}
-                />
-              </div>
-              
-              <div className="ml-4 flex-1">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-bold text-white">{user.name}</h2>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-white hover:bg-white/10"
-                    onClick={() => setIsEditing(true)}
-                  >
-                    <Edit2 className="h-4 w-4" />
-                  </Button>
-                </div>
-                <p className="text-white/70 text-sm">@{user.username}</p>
-                <p className="text-white/70 text-sm mt-1">{user.email}</p>
-              </div>
-            </div>
-          )}
-        </div>
-        
-        {/* Profile Info Card */}
-        <Card className="border border-[#e2e8f0] shadow-sm mb-6">
-          <CardContent className="p-4">
-            <div className="space-y-3">
-              <div className="flex items-center">
-                <User className="h-5 w-5 text-[#3b82f6] mr-3" />
-                <div>
-                  <p className="font-medium">Username</p>
-                  <p className="text-sm text-gray-500">@{user.username}</p>
-                </div>
-              </div>
-              
-              <Separator />
-              
-              <div className="flex items-center">
-                <Mail className="h-5 w-5 text-[#3b82f6] mr-3" />
-                <div>
-                  <p className="font-medium">Email Address</p>
-                  <p className="text-sm text-gray-500">{user.email}</p>
-                </div>
-              </div>
-              
-              {user.phone && (
-                <>
-                  <Separator />
-                  <div className="flex items-center">
-                    <Mail className="h-5 w-5 text-[#3b82f6] mr-3" />
-                    <div>
-                      <p className="font-medium">Phone</p>
-                      <p className="text-sm text-gray-500">{user.phone}</p>
-                    </div>
+            ) : (
+              <div className="space-y-3">
+                <div className="flex items-center">
+                  <User className="h-5 w-5 text-[#3b82f6] mr-3" />
+                  <div>
+                    <p className="font-medium">Username</p>
+                    <p className="text-sm text-gray-500">@{user.username}</p>
                   </div>
-                </>
-              )}
-            </div>
+                </div>
+                
+                <Separator />
+                
+                <div className="flex items-center">
+                  <Mail className="h-5 w-5 text-[#3b82f6] mr-3" />
+                  <div>
+                    <p className="font-medium">Email Address</p>
+                    <p className="text-sm text-gray-500">{user.email}</p>
+                  </div>
+                </div>
+                
+                {user.phone && (
+                  <>
+                    <Separator />
+                    <div className="flex items-center">
+                      <Phone className="h-5 w-5 text-[#3b82f6] mr-3" />
+                      <div>
+                        <p className="font-medium">Phone</p>
+                        <p className="text-sm text-gray-500">{user.phone}</p>
+                      </div>
+                    </div>
+                  </>
+                )}
+                
+                {user.bio && (
+                  <>
+                    <Separator />
+                    <div>
+                      <p className="font-medium mb-1">Bio</p>
+                      <p className="text-sm text-gray-600">{user.bio}</p>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
           </CardContent>
         </Card>
         
-        {/* Settings and Logout Section */}
+        {/* Business Information */}
         <Card className="border border-[#e2e8f0] shadow-sm mb-6">
-          <CardContent className="p-0">
-            <nav>
-              <div 
-                className="flex items-center justify-between p-4 hover:bg-gray-50 active:bg-gray-100 transition-colors cursor-pointer"
-                onClick={() => window.location.href = "/settings"}
+          <CardHeader className="p-4 pb-0 flex justify-between items-center">
+            <CardTitle className="text-lg">Business Information</CardTitle>
+            {editingSection !== 'business' ? (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-[#3b82f6] hover:bg-blue-50"
+                onClick={() => setEditingSection('business')}
               >
-                <div className="flex items-center">
-                  <div className="bg-blue-100 p-2 rounded-full">
-                    <Settings className="h-5 w-5 text-[#3b82f6]" />
-                  </div>
-                  <span className="ml-3 font-medium">Settings</span>
+                <Edit2 className="h-4 w-4 mr-1" /> Edit
+              </Button>
+            ) : (
+              <Button 
+                variant="default" 
+                size="sm" 
+                className="bg-[#3b82f6]" 
+                onClick={() => handleSaveSection('business')}
+                disabled={updateProfileMutation.isPending}
+              >
+                <Save className="h-4 w-4 mr-1" /> 
+                {updateProfileMutation.isPending ? 'Saving...' : 'Save'}
+              </Button>
+            )}
+          </CardHeader>
+          <CardContent className="p-4">
+            {editingSection === 'business' ? (
+              <div className="space-y-3">
+                <div>
+                  <Label htmlFor="company">Company</Label>
+                  <Input 
+                    id="company" 
+                    value={personalInfo.company || ''}
+                    onChange={handlePersonalInfoChange}
+                    placeholder="Your company or organization"
+                  />
                 </div>
-                <ChevronRight className="h-5 w-5 text-gray-400" />
+                
+                <div>
+                  <Label htmlFor="location">Location</Label>
+                  <Input 
+                    id="location" 
+                    value={personalInfo.location || ''}
+                    onChange={handlePersonalInfoChange}
+                    placeholder="City, Country"
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="website">Website</Label>
+                  <Input 
+                    id="website" 
+                    value={personalInfo.website || ''}
+                    onChange={handlePersonalInfoChange}
+                    placeholder="https://example.com"
+                  />
+                </div>
               </div>
-            </nav>
+            ) : (
+              <div className="space-y-3">
+                {user.company ? (
+                  <div className="flex items-center">
+                    <Briefcase className="h-5 w-5 text-[#3b82f6] mr-3" />
+                    <div>
+                      <p className="font-medium">Company</p>
+                      <p className="text-sm text-gray-500">{user.company}</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center text-gray-400">
+                    <Briefcase className="h-5 w-5 mr-3" />
+                    <p className="text-sm">No company info added</p>
+                  </div>
+                )}
+                
+                <Separator />
+                
+                {user.location ? (
+                  <div className="flex items-center">
+                    <MapPin className="h-5 w-5 text-[#3b82f6] mr-3" />
+                    <div>
+                      <p className="font-medium">Location</p>
+                      <p className="text-sm text-gray-500">{user.location}</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center text-gray-400">
+                    <MapPin className="h-5 w-5 mr-3" />
+                    <p className="text-sm">No location added</p>
+                  </div>
+                )}
+                
+                <Separator />
+                
+                {user.website ? (
+                  <div className="flex items-center">
+                    <Globe className="h-5 w-5 text-[#3b82f6] mr-3" />
+                    <div>
+                      <p className="font-medium">Website</p>
+                      <p className="text-sm text-gray-500 truncate">{user.website}</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center text-gray-400">
+                    <Globe className="h-5 w-5 mr-3" />
+                    <p className="text-sm">No website added</p>
+                  </div>
+                )}
+                
+                <Separator />
+                
+                <div className="flex items-center">
+                  <Calendar className="h-5 w-5 text-[#3b82f6] mr-3" />
+                  <div>
+                    <p className="font-medium">Member Since</p>
+                    <p className="text-sm text-gray-500">
+                      {new Date(user.joinDate || Date.now()).toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                      })}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+        
+        {/* Achievements Section */}
+        <Card className="border border-[#e2e8f0] shadow-sm mb-6">
+          <CardHeader className="p-4 pb-2">
+            <CardTitle className="text-lg flex items-center">
+              <Award className="h-5 w-5 text-[#3b82f6] mr-2" />
+              Achievements
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-4">
+            {achievements.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {achievements.map((achievement, index) => (
+                  <div key={index} className="bg-blue-50 border border-blue-100 rounded-lg p-3 flex-1 min-w-[130px]">
+                    <Badge variant="secondary" className="bg-blue-100 text-blue-800 mb-2">
+                      {achievement.title}
+                    </Badge>
+                    <p className="text-sm text-gray-600">{achievement.description}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-4">
+                <p className="text-gray-500 text-sm">Complete quizzes and modules to earn achievements</p>
+              </div>
+            )}
           </CardContent>
         </Card>
         
@@ -290,5 +537,25 @@ const ProfilePage: React.FC = () => {
     </MobileAppLayout>
   );
 };
+
+// Missing Globe icon from lucide-react, adding import
+const Globe = (props: any) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
+    <circle cx="12" cy="12" r="10" />
+    <line x1="2" y1="12" x2="22" y2="12" />
+    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+  </svg>
+);
 
 export default ProfilePage;
