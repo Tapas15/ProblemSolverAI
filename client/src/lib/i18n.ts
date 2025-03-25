@@ -2,61 +2,40 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
-// Import translations
-import en_common from '../locales/en/translations/common.json';
-import es_common from '../locales/es/translations/common.json';
+// Import translation files
+import enCommon from '../locales/en/translations/common.json';
+import esCommon from '../locales/es/translations/common.json';
 
-// Define supported languages and their translation resources
-const resources = {
-  en: {
-    common: en_common
-  },
-  es: {
-    common: es_common
-  },
-  // We can add more languages here as they become available
-  fr: {
-    common: {} // Empty for now, to be filled later
-  },
-  de: {
-    common: {} // Empty for now, to be filled later
-  },
-  zh: {
-    common: {} // Empty for now, to be filled later
-  },
-  hi: {
-    common: {} // Empty for now, to be filled later
-  }
-};
+export const DEFAULT_LANGUAGE = 'en';
+export const SUPPORTED_LANGUAGES = ['en', 'es', 'fr', 'de', 'zh', 'hi'];
 
 // Initialize i18next
 i18n
-  // Detect user language
+  // Detect the user's language
   .use(LanguageDetector)
-  // Pass i18n instance to react-i18next
+  // Pass the i18n instance to react-i18next
   .use(initReactI18next)
-  // Initialize configuration
+  // Initialize the i18n configuration
   .init({
-    resources,
-    fallbackLng: 'en', // Default language
-    debug: process.env.NODE_ENV === 'development', // Enable debug in development mode
-    
-    // Common namespaces across all loaded languages
-    ns: ['common'],
-    defaultNS: 'common',
-    
+    debug: true,
+    fallbackLng: ['en'],
     interpolation: {
-      escapeValue: false, // React already escapes values
+      escapeValue: false, // React already safes from XSS
     },
-    
-    detection: {
-      // Order of language detection
-      order: ['localStorage', 'navigator', 'htmlTag'],
-      // Cache language detection result in localStorage
-      caches: ['localStorage'],
-      // Name of localStorage key
-      lookupLocalStorage: 'i18nextLng',
+    resources: {
+      en: {
+        common: enCommon,
+      },
+      es: {
+        common: esCommon,
+      },
+      // Additional languages can be added here
+      // Example:
+      // fr: {
+      //   common: frCommon,
+      // },
     },
+    defaultNS: 'common',
   });
 
 export default i18n;
