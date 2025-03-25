@@ -1325,7 +1325,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       console.log("Quiz attempt request received from user ID:", req.user!.id);
       
-      // Add userId to the body before validation
+      // Always use the authenticated user's ID for security
+      // This ensures that users can only submit attempts for themselves
       const requestDataWithUserId = {
         ...req.body,
         userId: req.user!.id
@@ -1334,9 +1335,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log("Quiz attempt data with user ID:", requestDataWithUserId);
       
       // Validate attempt data (including userId)
-      const parseResult = insertQuizAttemptSchema.extend({
-        userId: z.number()
-      }).safeParse(requestDataWithUserId);
+      const parseResult = insertQuizAttemptSchema.safeParse(requestDataWithUserId);
       
       if (!parseResult.success) {
         console.log("Quiz attempt validation error:", parseResult.error.format());
@@ -1354,11 +1353,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Quiz not found" });
       }
       
-      // Double-check that userId is present
-      if (!attemptData.userId || attemptData.userId !== req.user!.id) {
-        console.log("User ID mismatch or missing:", { 
-          dataUserId: attemptData.userId, 
-          sessionUserId: req.user!.id 
+      // Ensure the userId matches the authenticated user
+      // This is a security measure to prevent user ID spoofing
+      if (attemptData.userId !== req.user!.id) {
+        console.log("User ID security check - overriding submitted ID:", { 
+          submittedUserId: attemptData.userId, 
+          authenticatedUserId: req.user!.id 
         });
         attemptData.userId = req.user!.id;
       }
