@@ -10,45 +10,58 @@ import { ArrowLeft, ArrowRight, Clock, Info, BookOpen } from "lucide-react";
 import { Link } from "wouter";
 import { Skeleton } from "@/components/ui/skeleton";
 import { isNativePlatform } from "@/lib/capacitor";
+import MainLayout from "@/components/layout/main-layout";
+import { MobileAppLayout } from "@/components/layout/mobile-app-layout";
 
 export default function ExercisePage() {
   const [, params] = useRoute("/exercises/:frameworkId");
   const [_, navigate] = useLocation();
   const frameworkId = params?.frameworkId ? parseInt(params.frameworkId) : undefined;
-  const isNative = isNativePlatform();
+  const [isNative, setIsNative] = useState(false);
+  
+  // Check if running on native platform
+  useEffect(() => {
+    setIsNative(isNativePlatform());
+  }, []);
+  
+  const Layout = isNative ? MobileAppLayout : MainLayout;
 
   // Redirect if no frameworkId
   if (!frameworkId) {
     return (
-      <div className="native-scroll pb-4">
-        <div className="flex items-center mb-4 py-2">
-          <Button 
-            variant="ghost" 
-            size="icon"
-            className="mr-2 h-9 w-9 rounded-full text-[#3b82f6]" 
-            onClick={() => navigate('/')}
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <h1 className="mobile-h1 text-[#0f172a]">Exercises</h1>
-        </div>
-        
-        <div className="native-empty-state">
-          <div className="native-empty-state-icon">
-            <BookOpen className="h-8 w-8" />
+      <Layout>
+        <div className={`native-scroll pb-4 ${isNative ? "px-4" : ""}`}>
+          {!isNative && (
+            <div className="flex items-center mb-4 py-2">
+              <Button 
+                variant="ghost" 
+                size="icon"
+                className="mr-2 h-9 w-9 rounded-full text-[#3b82f6]" 
+                onClick={() => navigate('/')}
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              <h1 className="mobile-h1 text-[#0f172a]">Exercises</h1>
+            </div>
+          )}
+          
+          <div className="native-empty-state">
+            <div className="native-empty-state-icon">
+              <BookOpen className="h-8 w-8" />
+            </div>
+            <h2 className="native-empty-state-title">Select a Framework</h2>
+            <p className="native-empty-state-description">
+              Please select a framework to view its exercises
+            </p>
+            <Button 
+              className="native-button text-sm py-2.5 flex justify-center items-center"
+              onClick={() => navigate('/exercises-frameworks')}
+            >
+              Browse Frameworks
+            </Button>
           </div>
-          <h2 className="native-empty-state-title">Select a Framework</h2>
-          <p className="native-empty-state-description">
-            Please select a framework to view its exercises
-          </p>
-          <Button 
-            className="native-button text-sm py-2.5 flex justify-center items-center"
-            onClick={() => navigate('/exercises-frameworks')}
-          >
-            Browse Frameworks
-          </Button>
         </div>
-      </div>
+      </Layout>
     );
   }
 
@@ -67,68 +80,76 @@ export default function ExercisePage() {
   // Loading state
   if (frameworkLoading || exercisesLoading) {
     return (
-      <div className="native-scroll pb-4">
-        <div className="flex items-center mb-4 py-2">
-          <Skeleton className="h-9 w-9 rounded-full mr-2" />
-          <Skeleton className="h-7 w-48" />
+      <Layout>
+        <div className={`native-scroll pb-4 ${isNative ? "px-4" : ""}`}>
+          {!isNative && (
+            <div className="flex items-center mb-4 py-2">
+              <Skeleton className="h-9 w-9 rounded-full mr-2" />
+              <Skeleton className="h-7 w-48" />
+            </div>
+          )}
+          
+          <Skeleton className="h-5 w-full mb-4" />
+          
+          <div className="space-y-4">
+            {[1, 2, 3].map((i) => (
+              <Skeleton key={i} className="h-44 w-full rounded-lg" />
+            ))}
+          </div>
         </div>
-        
-        <Skeleton className="h-5 w-full mb-4" />
-        
-        <div className="space-y-4">
-          {[1, 2, 3].map((i) => (
-            <Skeleton key={i} className="h-44 w-full rounded-lg" />
-          ))}
-        </div>
-      </div>
+      </Layout>
     );
   }
 
   return (
-    <div className="native-scroll pb-8">
-      {/* Page Header */}
-      <div className="flex items-center mb-4 py-2">
-        <Button 
-          variant="ghost" 
-          size="icon"
-          className="mr-2 h-9 w-9 rounded-full text-[#3b82f6]" 
-          onClick={() => navigate('/exercises-frameworks')}
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-        <h1 className="mobile-h1 text-[#0f172a]">{framework?.name}</h1>
-      </div>
-      
-      <div className="mb-5">
-        <p className="text-sm text-[#64748b]">
-          Apply {framework?.name} to real-world business scenarios and practice your problem-solving skills.
-        </p>
-      </div>
-      
-      {exercises && exercises.length > 0 ? (
-        <div className="space-y-4">
-          {exercises.map((exercise) => (
-            <ExerciseCard key={exercise.id} exercise={exercise} />
-          ))}
-        </div>
-      ) : (
-        <div className="native-empty-state mt-8">
-          <div className="native-empty-state-icon">
-            <Info className="h-8 w-8" />
+    <Layout>
+      <div className={`native-scroll pb-8 ${isNative ? "px-4" : ""}`}>
+        {/* Page Header - Only show for non-native */}
+        {!isNative && (
+          <div className="flex items-center mb-4 py-2">
+            <Button 
+              variant="ghost" 
+              size="icon"
+              className="mr-2 h-9 w-9 rounded-full text-[#3b82f6]" 
+              onClick={() => navigate('/exercises-frameworks')}
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <h1 className="mobile-h1 text-[#0f172a]">{framework?.name}</h1>
           </div>
-          <h2 className="native-empty-state-title">No Exercises Available</h2>
-          <p className="native-empty-state-description">
-            There are currently no exercises available for this framework.
+        )}
+        
+        <div className="mb-5">
+          <p className="text-sm text-[#64748b]">
+            Apply {framework?.name} to real-world business scenarios and practice your problem-solving skills.
           </p>
-          <Button 
-            className="native-button-secondary text-sm py-2.5 flex justify-center items-center"
-            onClick={() => navigate('/exercises-frameworks')}
-          >
-            Browse Other Frameworks
-          </Button>
         </div>
-      )}
-    </div>
+        
+        {exercises && exercises.length > 0 ? (
+          <div className="space-y-4">
+            {exercises.map((exercise) => (
+              <ExerciseCard key={exercise.id} exercise={exercise} />
+            ))}
+          </div>
+        ) : (
+          <div className="native-empty-state mt-8">
+            <div className="native-empty-state-icon">
+              <Info className="h-8 w-8" />
+            </div>
+            <h2 className="native-empty-state-title">No Exercises Available</h2>
+            <p className="native-empty-state-description">
+              There are currently no exercises available for this framework.
+            </p>
+            <Button 
+              className="native-button-secondary text-sm py-2.5 flex justify-center items-center"
+              onClick={() => navigate('/exercises-frameworks')}
+            >
+              Browse Other Frameworks
+            </Button>
+          </div>
+        )}
+      </div>
+    </Layout>
   );
 }
 

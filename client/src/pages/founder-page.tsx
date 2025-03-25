@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { SiLinkedin, SiInstagram } from 'react-icons/si';
 import { ArrowLeft, Award, Briefcase, BookOpen, ExternalLink } from 'lucide-react';
@@ -6,24 +6,38 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import MainLayout from '@/components/layout/main-layout';
+import { MobileAppLayout } from '@/components/layout/mobile-app-layout';
+import { isNativePlatform } from '@/lib/capacitor';
 
 const FounderPage: React.FC = () => {
   const [_, navigate] = useLocation();
-
+  const [isNative, setIsNative] = useState(false);
+  
+  // Check if running on native platform
+  useEffect(() => {
+    setIsNative(isNativePlatform());
+  }, []);
+  
+  const Layout = isNative ? MobileAppLayout : MainLayout;
+  
   return (
-    <div className="native-scroll pb-8">
-      {/* Page Header */}
-      <div className="flex items-center mb-4 py-2">
-        <Button 
-          variant="ghost" 
-          size="icon"
-          className="mr-2 h-9 w-9 rounded-full text-[#3b82f6]" 
-          onClick={() => navigate('/')}
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-        <h1 className="mobile-h1 text-[#0f172a]">Founder</h1>
-      </div>
+    <Layout>
+      <div className={`native-scroll pb-8 ${isNative ? "px-4" : ""}`}>
+        {!isNative && (
+          /* Page Header for non-native */
+          <div className="flex items-center mb-4 py-2">
+            <Button 
+              variant="ghost" 
+              size="icon"
+              className="mr-2 h-9 w-9 rounded-full text-[#3b82f6]" 
+              onClick={() => navigate('/')}
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <h1 className="mobile-h1 text-[#0f172a]">Founder</h1>
+          </div>
+        )}
 
       {/* Profile Header */}
       <div className="native-card p-0 overflow-hidden mb-5">
@@ -209,6 +223,7 @@ const FounderPage: React.FC = () => {
         Limited slots available each month
       </p>
     </div>
+    </Layout>
   );
 };
 
