@@ -1,181 +1,152 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/hooks/use-auth';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { MobileAppLayout } from '@/components/layout/mobile-app-layout';
 import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { useQuery } from '@tanstack/react-query';
-import { getUserProgress } from '@/lib/api';
-import { Progress } from '@/components/ui/progress';
-import { Loader2, User, Mail, FileText, LogOut } from 'lucide-react';
+import { Label } from '@/components/ui/label';
+import { Edit2, LogOut } from 'lucide-react';
+import { useMutation } from '@tanstack/react-query';
+import { queryClient, apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
-import { updateProfile } from '@/lib/api';
 
-export default function ProfilePage() {
-  const { user, logout } = useAuth();
+const ProfilePage: React.FC = () => {
+  const { user, logoutMutation } = useAuth();
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
 
-  const [formData, setFormData] = useState({
+  const [personalInfo, setPersonalInfo] = useState({
     name: user?.name || '',
     email: user?.email || '',
-    bio: user?.bio || ''
   });
 
-  // Get learning progress
-  const { data: progress } = useQuery({
-    queryKey: ['/api/user/progress'],
-    queryFn: () => getUserProgress()
-  });
-
-  const completedFrameworks = progress?.filter(p => p.status === 'completed')?.length || 0;
-  const inProgressFrameworks = progress?.filter(p => p.status === 'in_progress')?.length || 0;
-
-  const handleSave = async () => {
-    try {
-      setIsSaving(true);
-      await updateProfile(formData);
+  // Update profile mutation
+  const updateProfileMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const res = await apiRequest("POST", "/api/user/profile", data);
+      return await res.json();
+    },
+    onSuccess: () => {
       toast({
         title: "Profile updated",
-        description: "Your profile has been successfully updated."
+        description: "Your profile information has been updated successfully",
       });
+      queryClient.invalidateQueries({ queryKey: ['/api/user'] });
       setIsEditing(false);
-    } catch (error) {
+    },
+    onError: (error: Error) => {
       toast({
-        title: "Error",
-        description: "Failed to update profile. Please try again.",
+        title: "Update failed",
+        description: error.message || "Failed to update profile information",
         variant: "destructive"
       });
-    } finally {
-      setIsSaving(false);
     }
+  });
+
+  const handlePersonalInfoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setPersonalInfo(prev => ({
+      ...prev,
+      [id]: value
+    }));
+  };
+
+  const handlePersonalInfoSubmit = () => {
+    updateProfileMutation.mutate(personalInfo);
   };
 
   return (
-    <div className="container max-w-2xl mx-auto py-6 px-4">
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <User className="h-5 w-5" /> Profile Information
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {/* Avatar */}
-            <div className="flex justify-center mb-6">
-              <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center">
-                {user?.avatarUrl ? (
-                  <img 
-                    src={user.avatarUrl} 
-                    alt={user.name} 
-                    className="w-full h-full rounded-full object-cover"
-                  />
-                ) : (
-                  <User className="w-12 h-12 text-primary" />
-                )}
-              </div>
-            </div>
+    <MobileAppLayout>
+      <div className="py-4 px-4">
+        <div className="mb-6 relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#0f2544] to-[#19355f] p-5">
+          <div className="absolute top-0 right-0 w-[120px] h-[120px] bg-[#3b82f6]/20 rounded-full -mt-10 -mr-10 blur-xl"></div>
+          <div className="absolute bottom-0 left-0 w-[80px] h-[80px] bg-[#60a5fa]/10 rounded-full mb-[-40px] ml-[-20px] blur-xl"></div>
 
-            {/* Profile Fields */}
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm font-medium flex items-center gap-2">
-                  <User className="h-4 w-4" /> Name
-                </label>
-                <Input
-                  value={formData.name}
-                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                  disabled={!isEditing}
-                />
-              </div>
-
-              <div>
-                <label className="text-sm font-medium flex items-center gap-2">
-                  <Mail className="h-4 w-4" /> Email
-                </label>
-                <Input
-                  value={formData.email}
-                  onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                  disabled={!isEditing}
-                  type="email"
-                />
-              </div>
-
-              <div>
-                <label className="text-sm font-medium flex items-center gap-2">
-                  <FileText className="h-4 w-4" /> Bio
-                </label>
-                <Textarea
-                  value={formData.bio}
-                  onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
-                  disabled={!isEditing}
-                  rows={4}
-                />
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex justify-end gap-2 pt-4">
-              {isEditing ? (
-                <>
-                  <Button variant="outline" onClick={() => setIsEditing(false)}>
-                    Cancel
-                  </Button>
-                  <Button onClick={handleSave} disabled={isSaving}>
-                    {isSaving ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Saving...
-                      </>
-                    ) : (
-                      'Save Changes'
-                    )}
-                  </Button>
-                </>
-              ) : (
-                <Button onClick={() => setIsEditing(true)}>
-                  Edit Profile
+          {isEditing ? (
+            <div className="space-y-4 relative z-10">
+              <div className="flex justify-between items-center">
+                <h1 className="text-xl font-bold text-white">Edit Profile</h1>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-white hover:bg-white/10"
+                  onClick={() => setIsEditing(false)}
+                >
+                  Cancel
                 </Button>
-              )}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Learning Progress */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Learning Progress</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div>
-              <div className="flex justify-between mb-2">
-                <span className="text-sm font-medium">Completed Frameworks</span>
-                <span className="text-sm text-muted-foreground">{completedFrameworks}</span>
               </div>
-              <Progress value={completedFrameworks * 10} className="h-2" />
-            </div>
 
-            <div>
-              <div className="flex justify-between mb-2">
-                <span className="text-sm font-medium">In Progress</span>
-                <span className="text-sm text-muted-foreground">{inProgressFrameworks}</span>
+              <div className="space-y-3">
+                <div>
+                  <Label htmlFor="name" className="text-white/80 text-sm">Full Name</Label>
+                  <Input 
+                    id="name" 
+                    value={personalInfo.name}
+                    onChange={handlePersonalInfoChange}
+                    className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="email" className="text-white/80 text-sm">Email</Label>
+                  <Input 
+                    id="email" 
+                    value={personalInfo.email}
+                    onChange={handlePersonalInfoChange}
+                    className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
+                  />
+                </div>
               </div>
-              <Progress value={inProgressFrameworks * 10} className="h-2" />
-            </div>
-          </div>
 
-          <Button 
-            variant="destructive" 
-            className="mt-8 w-full"
-            onClick={logout}
-          >
-            <LogOut className="mr-2 h-4 w-4" /> Logout
-          </Button>
-        </CardContent>
-      </Card>
-    </div>
+              <div className="flex space-x-2 pt-2">
+                <Button
+                  className="bg-[#3b82f6] hover:bg-[#2563eb] text-white flex-1"
+                  onClick={handlePersonalInfoSubmit}
+                  disabled={updateProfileMutation.isPending}
+                >
+                  {updateProfileMutation.isPending ? 'Saving...' : 'Save Changes'}
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center relative z-10">
+              <div className="relative">
+                <Avatar className="h-20 w-20 border-2 border-[#60a5fa]/30">
+                  <AvatarImage src={user?.avatarUrl || ''} alt={user?.name} />
+                  <AvatarFallback className="bg-[#3b82f6] text-white text-lg">
+                    {user?.name?.substring(0, 2).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+              </div>
+
+              <div className="ml-4 flex-1">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-bold text-white">{user?.name}</h2>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-white hover:bg-white/10"
+                    onClick={() => setIsEditing(true)}
+                  >
+                    <Edit2 className="h-4 w-4" />
+                  </Button>
+                </div>
+                <p className="text-white/60 text-sm">{user?.email}</p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <Button
+          variant="ghost"
+          className="w-full text-red-500 hover:bg-red-500/10 hover:text-red-500"
+          onClick={() => logoutMutation.mutate()}
+        >
+          <LogOut className="w-4 h-4 mr-2" />
+          Logout
+        </Button>
+      </div>
+    </MobileAppLayout>
   );
-}
+};
+
+export default ProfilePage;
