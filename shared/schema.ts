@@ -168,7 +168,8 @@ export const quizAttempts = pgTable("quiz_attempts", {
 
 export const insertQuizAttemptSchema = createInsertSchema(quizAttempts)
   .pick({
-    quizId: true,  // userId will be added by the server
+    quizId: true,
+    userId: true,  // Include userId in the schema
     score: true,
     maxScore: true,
     answers: true,

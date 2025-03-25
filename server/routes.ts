@@ -1317,17 +1317,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   app.post("/api/quiz-attempts", async (req, res, next) => {
-    if (!req.isAuthenticated()) return res.sendStatus(401);
+    if (!req.isAuthenticated()) {
+      console.log("Unauthorized quiz attempt - user not authenticated");
+      return res.sendStatus(401);
+    }
     
     try {
+      console.log("Quiz attempt request received from user ID:", req.user!.id);
+      
       // Add userId to the body before validation
       const requestDataWithUserId = {
         ...req.body,
         userId: req.user!.id
       };
       
-      // Validate attempt data
-      const parseResult = insertQuizAttemptSchema.safeParse(requestDataWithUserId);
+      console.log("Quiz attempt data with user ID:", requestDataWithUserId);
+      
+      // Validate attempt data (including userId)
+      const parseResult = insertQuizAttemptSchema.extend({
+        userId: z.number()
+      }).safeParse(requestDataWithUserId);
       
       if (!parseResult.success) {
         console.log("Quiz attempt validation error:", parseResult.error.format());
@@ -1344,6 +1353,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!quiz) {
         return res.status(404).json({ message: "Quiz not found" });
       }
+      
+      // Double-check that userId is present
+      if (!attemptData.userId || attemptData.userId !== req.user!.id) {
+        console.log("User ID mismatch or missing:", { 
+          dataUserId: attemptData.userId, 
+          sessionUserId: req.user!.id 
+        });
+        attemptData.userId = req.user!.id;
+      }
+      
+      console.log("Creating quiz attempt with data:", {
+        quizId: attemptData.quizId,
+        userId: attemptData.userId,
+        score: attemptData.score
+      });
       
       const attempt = await storage.createQuizAttempt(attemptData);
       

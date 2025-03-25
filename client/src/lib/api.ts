@@ -139,16 +139,35 @@ export async function submitQuizAttempt(
   const passingThreshold = 0.7; // 70% by default
   const passed = score >= (maxScore * passingThreshold);
   
-  // Don't send completedAt - let the server handle it with defaultNow()
-  const res = await apiRequest("POST", "/api/quiz-attempts", {
-    quizId,
-    answers,
-    score,
-    maxScore,
-    passed,
-    timeTaken
-  });
-  return res.json();
+  try {
+    // Get current user to ensure we have a valid user ID
+    const userResponse = await apiRequest("GET", "/api/user");
+    if (!userResponse.ok) {
+      throw new Error("Not authenticated. Please log in again.");
+    }
+    
+    const currentUser = await userResponse.json();
+    
+    // Don't send completedAt - let the server handle it with defaultNow()
+    const res = await apiRequest("POST", "/api/quiz-attempts", {
+      quizId,
+      userId: currentUser.id, // Include user ID with the request
+      answers,
+      score,
+      maxScore,
+      passed,
+      timeTaken
+    });
+    
+    if (!res.ok) {
+      throw new Error(`Failed to submit quiz attempt: ${res.statusText}`);
+    }
+    
+    return await res.json();
+  } catch (error) {
+    console.error("Quiz submission error:", error);
+    throw error;
+  }
 }
 
 // xAPI Tracking functions
