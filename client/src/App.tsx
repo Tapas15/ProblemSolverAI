@@ -28,6 +28,7 @@ const ExercisePage = lazy(() => import("@/pages/exercise-page"));
 const ExerciseDetailPage = lazy(() => import("@/pages/exercise-detail-page"));
 const ExerciseFrameworksPage = lazy(() => import("@/pages/exercise-frameworks-page"));
 const MobileFeaturesPage = lazy(() => import("@/pages/mobile-features-page"));
+const CertificatesPage = lazy(() => import("@/pages/certificates-page"));
 const FounderPage = lazy(() => import("@/pages/founder-page"));
 const AboutPage = lazy(() => import("@/pages/about-page"));
 const ContactPage = lazy(() => import("@/pages/contact-page"));
@@ -78,6 +79,7 @@ function Router() {
         <ProtectedRoute path="/scorm-admin" component={ScormAdminPage} />
         <ProtectedRoute path="/learning-path" component={LearningPathPage} />
         <ProtectedRoute path="/mobile-features" component={MobileFeaturesPage} />
+        <ProtectedRoute path="/certificates" component={CertificatesPage} />
         <Route path="/founder" component={FounderPage} />
         <Route path="/about" component={AboutPage} />
         <Route path="/contact" component={ContactPage} />

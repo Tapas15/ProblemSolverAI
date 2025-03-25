@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getUserCertificates, getUserAchievements } from '@/lib/api';
-import MobileAppLayout from '@/components/layout/mobile-app-layout';
+import { MobileAppLayout } from '@/components/layout/mobile-app-layout';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Award, Certificate, Medal, Trophy, Download } from 'lucide-react';
+import { Award, FileText, Medal, Trophy, Download } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -77,7 +77,7 @@ export default function CertificatesPage() {
     if (!certificates || certificates.length === 0) {
       return (
         <div className="text-center py-10">
-          <Certificate className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+          <FileText className="h-16 w-16 mx-auto mb-4 text-gray-400" />
           <h3 className="text-lg font-semibold mb-2">No Certificates Yet</h3>
           <p className="text-sm text-gray-500 mb-4">
             Complete frameworks and pass quizzes to earn certificates.
@@ -111,11 +111,11 @@ export default function CertificatesPage() {
             </CardHeader>
             <CardContent>
               <div className="flex items-center mb-4">
-                <Certificate className="h-6 w-6 mr-2 text-primary" />
+                <FileText className="h-6 w-6 mr-2 text-primary" />
                 <span className="text-sm">{certificate.description}</span>
               </div>
               <div className="flex justify-between text-xs text-gray-500">
-                <div>Issued: {new Date(certificate.issueDate).toLocaleDateString()}</div>
+                <div>Issued: {certificate.issueDate ? new Date(certificate.issueDate).toLocaleDateString() : 'Unknown'}</div>
                 {certificate.expiryDate && (
                   <div>Expires: {new Date(certificate.expiryDate).toLocaleDateString()}</div>
                 )}
@@ -235,7 +235,7 @@ export default function CertificatesPage() {
               )}
               {achievement.earnedDate && (
                 <p className="text-xs text-gray-500 mt-1">
-                  Earned: {new Date(achievement.earnedDate).toLocaleDateString()}
+                  Earned: {achievement.earnedDate ? new Date(achievement.earnedDate).toLocaleDateString() : 'Unknown'}
                 </p>
               )}
             </div>
@@ -256,7 +256,7 @@ export default function CertificatesPage() {
         <Tabs defaultValue="certificates" onValueChange={setActiveTab}>
           <TabsList className="w-full mb-6">
             <TabsTrigger value="certificates" className="flex-1">
-              <Certificate className="h-4 w-4 mr-2" />
+              <FileText className="h-4 w-4 mr-2" />
               Certificates
             </TabsTrigger>
             <TabsTrigger value="achievements" className="flex-1">
