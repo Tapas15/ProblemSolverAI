@@ -152,7 +152,18 @@ export const learningTracking = {
       return response.data;
     } catch (error) {
       console.error('Error completing module with tracking:', error);
-      return null;
+      
+      // As a fallback, try the regular endpoint without tracking
+      try {
+        console.log('Trying fallback to regular completion without tracking...');
+        const fallbackResponse = await axios.patch(`/api/modules/${moduleId}/complete`, {
+          completed
+        });
+        return fallbackResponse.data;
+      } catch (fallbackError) {
+        console.error('Fallback completion also failed:', fallbackError);
+        return null;
+      }
     }
   },
   

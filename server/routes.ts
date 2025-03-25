@@ -1613,8 +1613,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const updatedModule = await storage.updateModule(moduleId, { completed });
       
-      // Invalidate module cache
+      // Invalidate all relevant caches to ensure UI updates correctly
       invalidateCache(CACHE_KEYS.MODULE(moduleId));
+      invalidateCachesByPattern(`modules:framework:${module.frameworkId}`);
+      invalidateCache(CACHE_KEYS.ALL_MODULES_BY_FRAMEWORK);
       
       // Update user progress and track with xAPI
       if (updatedModule && completed) {
