@@ -131,15 +131,20 @@ const ProfilePage: React.FC = () => {
     const achievements = [];
     
     // Count passed quizzes
-    const passedQuizzes = quizAttempts.filter((attempt: any) => attempt.passed);
+    const passedQuizzes = Array.isArray(quizAttempts) 
+      ? quizAttempts.filter((attempt: any) => attempt.passed)
+      : [];
+      
     if (passedQuizzes.length >= 1) {
       achievements.push({ title: 'Quiz Master', description: `Passed ${passedQuizzes.length} quizzes` });
     }
     
     // Count completed frameworks
-    const completedFrameworks = userProgress.filter((progress: any) => 
-      progress.status === 'completed' && progress.completedModules === progress.totalModules
-    );
+    const completedFrameworks = Array.isArray(userProgress)
+      ? userProgress.filter((progress: any) => 
+          progress.status === 'completed' && progress.completedModules === progress.totalModules
+        )
+      : [];
     
     if (completedFrameworks.length >= 1) {
       achievements.push({ 
@@ -149,7 +154,10 @@ const ProfilePage: React.FC = () => {
     }
     
     // Check for perfect score
-    const perfectScores = quizAttempts.filter((attempt: any) => attempt.score === attempt.maxScore);
+    const perfectScores = Array.isArray(quizAttempts)
+      ? quizAttempts.filter((attempt: any) => attempt.score === attempt.maxScore)
+      : [];
+      
     if (perfectScores.length >= 1) {
       achievements.push({ title: 'Perfect Score', description: 'Achieved 100% on a quiz' });
     }
@@ -568,9 +576,9 @@ const ProfilePage: React.FC = () => {
                   <div className="flex justify-between mb-1 items-center">
                     <span className="text-sm font-medium text-blue-800">Overall Progress</span>
                     <span className="text-sm font-medium text-blue-800">
-                      {Math.round((
-                        (userProgress?.reduce((sum: number, p: any) => sum + (p.completedModules || 0), 0) || 0) / 
-                        (userProgress?.reduce((sum: number, p: any) => sum + p.totalModules, 0) || 1) * 100
+                      {Math.round(
+                        ((Array.isArray(userProgress) ? userProgress.reduce((sum: number, p: any) => sum + (p.completedModules || 0), 0) : 0) || 0) / 
+                        ((Array.isArray(userProgress) ? userProgress.reduce((sum: number, p: any) => sum + p.totalModules, 0) : 1) || 1) * 100
                       )}%
                     </span>
                   </div>
@@ -578,9 +586,9 @@ const ProfilePage: React.FC = () => {
                     <div 
                       className="bg-gradient-to-r from-blue-600 to-indigo-500 h-2.5 rounded-full" 
                       style={{ 
-                        width: `${Math.round((
-                          (userProgress?.reduce((sum: number, p: any) => sum + (p.completedModules || 0), 0) || 0) / 
-                          (userProgress?.reduce((sum: number, p: any) => sum + p.totalModules, 0) || 1) * 100
+                        width: `${Math.round(
+                          ((Array.isArray(userProgress) ? userProgress.reduce((sum: number, p: any) => sum + (p.completedModules || 0), 0) : 0) || 0) / 
+                          ((Array.isArray(userProgress) ? userProgress.reduce((sum: number, p: any) => sum + p.totalModules, 0) : 1) || 1) * 100
                         )}%` 
                       }}
                     ></div>
