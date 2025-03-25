@@ -20,8 +20,7 @@ import { useAuth } from "@/hooks/use-auth";
 import MainLayout from "@/components/layout/main-layout";
 import QuizHistory from "@/components/quiz/quiz-history";
 
-// Maximum number of attempts allowed per quiz
-const MAX_ATTEMPTS = 3;
+
 
 type Question = {
   id: number;
@@ -341,61 +340,8 @@ export default function TakeQuizPage() {
     );
   }
   
-  // Check if user has reached maximum attempts
+  // Get quiz attempts for this quiz
   const quizAttemptsForThisQuiz = quizAttempts.filter(attempt => attempt.quizId === quizIdNum);
-  const hasReachedMaxAttempts = quizAttemptsForThisQuiz.length >= MAX_ATTEMPTS;
-  const attemptsRemaining = MAX_ATTEMPTS - quizAttemptsForThisQuiz.length;
-  
-  // Maximum attempts reached state
-  if (hasReachedMaxAttempts && !quizCompleted) {
-    const highestScore = Math.max(...quizAttemptsForThisQuiz.map(a => a.score));
-    const hasPassed = quizAttemptsForThisQuiz.some(a => a.passed);
-    
-    return (
-      <MainLayout>
-        <div className="container mx-auto">
-          <div className="max-w-2xl mx-auto space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Maximum Attempts Reached</CardTitle>
-                <CardDescription>{quiz.title}</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <Alert variant="destructive" className="border-amber-200 text-amber-800 bg-amber-50">
-                  <AlertTriangle className="h-4 w-4 text-amber-800" />
-                  <AlertTitle>No More Attempts Available</AlertTitle>
-                  <AlertDescription>
-                    You have used all {MAX_ATTEMPTS} attempts for this quiz. Your highest score was {highestScore}%.
-                    {hasPassed && (
-                      <span className="font-medium flex items-center gap-1 mt-1">
-                        <CheckCircle2 className="h-4 w-4 text-green-600" /> 
-                        <span className="text-green-600">You have already passed this quiz!</span>
-                      </span>
-                    )}
-                  </AlertDescription>
-                </Alert>
-                
-                <div className="mt-6">
-                  <h3 className="text-lg font-semibold mb-4">Your Performance</h3>
-                  <QuizHistory 
-                    attempts={quizAttemptsForThisQuiz} 
-                    quizId={quizIdNum} 
-                    maxAttempts={MAX_ATTEMPTS} 
-                  />
-                </div>
-              </CardContent>
-              <CardFooter className="justify-end">
-                <Button variant="outline" onClick={() => navigate(`/quizzes/${frameworkId}`)}>
-                  <ChevronLeft className="mr-2 h-4 w-4" />
-                  Back to Framework Quizzes
-                </Button>
-              </CardFooter>
-            </Card>
-          </div>
-        </div>
-      </MainLayout>
-    );
-  }
   
   // Results view
   if (quizCompleted) {
@@ -542,33 +488,7 @@ export default function TakeQuizPage() {
                     <h3 className="text-lg font-semibold">Your Performance History</h3>
                   </div>
                   
-                  {/* Display attempts remaining alert */}
-                  {attemptsRemaining > 0 && (
-                    <Alert className="mb-4">
-                      <AlertCircle className="h-4 w-4 text-blue-600" />
-                      <AlertTitle>Quiz Attempts Remaining</AlertTitle>
-                      <AlertDescription>
-                        You have {attemptsRemaining} attempt{attemptsRemaining === 1 ? '' : 's'} remaining for this quiz.
-                        Each quiz has a maximum of {MAX_ATTEMPTS} attempts.
-                      </AlertDescription>
-                    </Alert>
-                  )}
-                  
-                  {attemptsRemaining === 0 && (
-                    <Alert className="mb-4 border-amber-200 text-amber-800 bg-amber-50">
-                      <AlertTriangle className="h-4 w-4 text-amber-800" />
-                      <AlertTitle>Maximum Attempts Reached</AlertTitle>
-                      <AlertDescription>
-                        You have used all {MAX_ATTEMPTS} attempts for this quiz. Your highest score was {Math.max(...quizAttemptsForThisQuiz.map(a => a.score))}%.
-                        {passed && (
-                          <span className="font-medium flex items-center gap-1 mt-1">
-                            <CheckCircle2 className="h-4 w-4 text-green-600" /> 
-                            <span className="text-green-600">Congratulations on passing this quiz!</span>
-                          </span>
-                        )}
-                      </AlertDescription>
-                    </Alert>
-                  )}
+
                   
                   {/* Add a manual refresh button */}
                   <div className="mb-4 flex justify-end">
@@ -588,8 +508,7 @@ export default function TakeQuizPage() {
                   <QuizHistory 
                     attempts={quizAttempts} 
                     quizId={quizIdNum} 
-                    frameworkId={frameworkIdNum} 
-                    maxAttempts={MAX_ATTEMPTS}
+                    frameworkId={frameworkIdNum}
                   />
                 </div>
               </CardContent>
@@ -642,15 +561,7 @@ export default function TakeQuizPage() {
                   <Progress value={(currentQuestion + 1) / questions.length * 100} className="h-2" />
                 </div>
                 
-                {/* Attempts remaining notification */}
-                <Alert className="bg-blue-50 border-blue-100">
-                  <AlertCircle className="h-4 w-4 text-blue-600" />
-                  <AlertTitle>Quiz Attempts Limit</AlertTitle>
-                  <AlertDescription>
-                    You have {attemptsRemaining} attempt{attemptsRemaining === 1 ? '' : 's'} remaining for this quiz.
-                    Each quiz has a maximum of {MAX_ATTEMPTS} attempts.
-                  </AlertDescription>
-                </Alert>
+
                 
                 <div className="text-lg font-medium">{question.text}</div>
                 
