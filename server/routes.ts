@@ -28,9 +28,6 @@ import {
   invalidateRelatedCaches, CACHE_KEYS, cachingMiddleware, 
   addCacheHeaders, invalidateCachesByPattern 
 } from "./cache";
-import XLSX from 'xlsx'; // Import XLSX library
-import PDFDocument from 'pdfkit'; // Import PDFKit library (or another suitable library)
-
 
 // Configure multer for file uploads
 const multerStorage = multer.diskStorage({
@@ -55,13 +52,13 @@ const upload = multer({
 export async function registerRoutes(app: Express): Promise<Server> {
   // Add caching middleware
   app.use(cachingMiddleware);
-
+  
   // Add cache headers for static assets
   app.use(addCacheHeaders);
-
+  
   // Serve static files from the server/public directory
   app.use('/api/static', express.static(path.join(process.cwd(), 'server/public')));
-
+  
   // Serve uploaded files
   app.use('/uploads', (req, res, next) => {
     const filePath = path.join(process.cwd(), 'uploads', req.path);
@@ -71,10 +68,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       next();
     }
   });
-
+  
   // Set up authentication routes
   setupAuth(app);
-
+  
   // Upload avatar
   app.post("/api/user/avatar", upload.single('avatar'), async (req, res, next) => {
     try {
@@ -108,23 +105,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Get the user's basic information (without password)
       const user = await storage.getUser(req.user.id);
-
+      
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
-
+      
       // Remove sensitive data
       const { password, ...userInfo } = user;
-
+      
       // Get user's progress data
       const progressData = await storage.getUserProgress(req.user.id);
-
+      
       // Get user's quiz attempts
       const quizAttempts = await storage.getUserQuizAttempts(req.user.id);
-
+      
       // Get user's AI conversations
       const aiConversations = await storage.getAiConversations(req.user.id);
-
+      
       // Compile all data
       const userData = {
         userInfo,
@@ -133,16 +130,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         aiConversations,
         exportedAt: new Date().toISOString()
       };
-
-      const format = req.query.format as string || 'json'; // Get export format from query parameter
-      const exportedData = await exportUserData(userData, format); // Call the new export function
-
+      
+      // Convert to JSON
+      const jsonData = JSON.stringify(userData, null, 2);
+      
       // Set headers for file download
-      res.setHeader('Content-Disposition', `attachment; filename="user-data-export-${new Date().toISOString().split('T')[0]}.${format}"`);
-      res.setHeader('Content-Type', exportedData.type);
-
+      res.setHeader('Content-Disposition', `attachment; filename="user-data-export-${new Date().toISOString().split('T')[0]}.json"`);
+      res.setHeader('Content-Type', 'application/json');
+      
       // Send the data
-      res.send(exportedData);
+      res.send(jsonData);
     } catch (error) {
       next(error);
     }
@@ -177,7 +174,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       next(error);
     }
   });
-
+  
   // New POST endpoint for profile updates
   app.post("/api/user/profile", async (req, res, next) => {
     try {
@@ -213,22 +210,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!req.isAuthenticated() || !req.user) {
         return res.status(401).send("Unauthorized");
       }
-
+      
       // Import the 2FA service
       const { twoFactorAuthService } = await import('./services/two-factor-auth-service');
-
+      
       // Generate a secret
       const { secret, otpauth_url } = twoFactorAuthService.generateSecret(req.user.username);
-
+      
       // Generate QR code
       const qrCode = await twoFactorAuthService.generateQrCode(otpauth_url);
-
+      
       // Store the secret temporarily (not in the database yet, only in the session)
       if (!req.session.twoFactorSetup) {
         req.session.twoFactorSetup = {};
       }
       req.session.twoFactorSetup.secret = secret;
-
+      
       res.json({
         secret,
         qrCode
@@ -237,48 +234,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
       next(error);
     }
   });
-
+  
   app.post("/api/user/2fa/verify", async (req, res, next) => {
     try {
       if (!req.isAuthenticated() || !req.user) {
         return res.status(401).send("Unauthorized");
       }
-
+      
       const { token } = req.body;
-
+      
       if (!token) {
         return res.status(400).json({ message: "Token is required" });
       }
-
+      
       // Get the secret from the session
       const secret = req.session.twoFactorSetup?.secret;
-
+      
       if (!secret) {
         return res.status(400).json({ message: "2FA setup not initiated" });
       }
-
+      
       // Import the 2FA service
       const { twoFactorAuthService } = await import('./services/two-factor-auth-service');
-
+      
       // Verify the token
       const isValid = twoFactorAuthService.verifyToken(token, secret);
-
+      
       if (!isValid) {
         return res.status(400).json({ message: "Invalid token" });
       }
-
+      
       // If valid, enable 2FA for the user
       const updatedUser = await twoFactorAuthService.enableTwoFactor(req.user.id, secret);
-
+      
       // Clear the setup session
       delete req.session.twoFactorSetup;
-
+      
       // Generate backup codes
       const backupCodes = JSON.parse(updatedUser.twoFactorBackupCodes || '[]');
-
+      
       // Return success with the updated user (minus password)
       const { password, ...userWithoutPassword } = updatedUser;
-
+      
       // Update user in session
       req.login(updatedUser, (err) => {
         if (err) return next(err);
@@ -292,57 +289,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
       next(error);
     }
   });
-
+  
   app.post("/api/user/2fa/disable", async (req, res, next) => {
     try {
       if (!req.isAuthenticated() || !req.user) {
         return res.status(401).send("Unauthorized");
       }
-
+      
       // Check current password for additional security
       const { currentPassword, token } = req.body;
-
+      
       if (!currentPassword) {
         return res.status(400).json({ message: "Current password is required" });
       }
-
+      
       // Get the user with password
       const user = await storage.getUser(req.user.id);
-
+      
       if (!user) {
         return res.status(404).send("User not found");
       }
-
+      
       // Verify current password
       const isPasswordValid = await comparePasswords(currentPassword, user.password);
-
+      
       if (!isPasswordValid) {
         return res.status(400).json({ message: "Current password is incorrect" });
       }
-
+      
       // If 2FA is enabled, verify the token
       if (user.twoFactorEnabled && !token) {
         return res.status(400).json({ message: "Token is required to disable 2FA" });
       }
-
+      
       // Import the 2FA service
       const { twoFactorAuthService } = await import('./services/two-factor-auth-service');
-
+      
       if (user.twoFactorEnabled && token && user.twoFactorSecret) {
         // Verify the token
         const isValid = twoFactorAuthService.verifyToken(token, user.twoFactorSecret);
-
+        
         if (!isValid) {
           return res.status(400).json({ message: "Invalid token" });
         }
       }
-
+      
       // Disable 2FA
       const updatedUser = await twoFactorAuthService.disableTwoFactor(req.user.id);
-
+      
       // Return success with the updated user (minus password)
       const { password, ...userWithoutPassword } = updatedUser;
-
+      
       // Update user in session
       req.login(updatedUser, (err) => {
         if (err) return next(err);
@@ -355,56 +352,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
       next(error);
     }
   });
-
+  
   app.post("/api/user/2fa/backup", async (req, res, next) => {
     try {
       if (!req.isAuthenticated() || !req.user) {
         return res.status(401).send("Unauthorized");
       }
-
+      
       // Get the backup code from the request
       const { backupCode } = req.body;
-
+      
       if (!backupCode) {
         return res.status(400).json({ message: "Backup code is required" });
       }
-
+      
       // Get the user to check 2FA status
       const user = await storage.getUser(req.user.id);
-
+      
       if (!user) {
         return res.status(404).send("User not found");
       }
-
+      
       if (!user.twoFactorEnabled || !user.twoFactorBackupCodes) {
         return res.status(400).json({ message: "2FA is not enabled or no backup codes available" });
       }
-
+      
       // Import the 2FA service
       const { twoFactorAuthService } = await import('./services/two-factor-auth-service');
-
+      
       // Verify the backup code
       const { isValid, updatedCodes } = twoFactorAuthService.verifyBackupCode(
         backupCode,
         user.twoFactorBackupCodes
       );
-
+      
       if (!isValid) {
         return res.status(400).json({ message: "Invalid backup code" });
       }
-
+      
       // Update the user with the remaining backup codes
       const updatedUser = await storage.updateUser(req.user.id, {
         twoFactorBackupCodes: JSON.stringify(updatedCodes)
       });
-
+      
       if (!updatedUser) {
         return res.status(404).json({ message: "Failed to update user" });
       }
-
+      
       // Return success
       const { password, ...userWithoutPassword } = updatedUser;
-
+      
       // Update user in session
       req.login(updatedUser, (err) => {
         if (err) return next(err);
@@ -417,49 +414,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
       next(error);
     }
   });
-
+  
   app.post("/api/user/2fa/generate-backup-codes", async (req, res, next) => {
     try {
       if (!req.isAuthenticated() || !req.user) {
         return res.status(401).send("Unauthorized");
       }
-
+      
       // Get the token from the request
       const { token } = req.body;
-
+      
       if (!token) {
         return res.status(400).json({ message: "Token is required" });
       }
-
+      
       // Get the user to check 2FA status
       const user = await storage.getUser(req.user.id);
-
+      
       if (!user) {
         return res.status(404).send("User not found");
       }
-
+      
       if (!user.twoFactorEnabled || !user.twoFactorSecret) {
         return res.status(400).json({ message: "2FA is not enabled" });
       }
-
+      
       // Import the 2FA service
       const { twoFactorAuthService } = await import('./services/two-factor-auth-service');
-
+      
       // Verify the token
       const isValid = twoFactorAuthService.verifyToken(token, user.twoFactorSecret);
-
+      
       if (!isValid) {
         return res.status(400).json({ message: "Invalid token" });
       }
-
+      
       // Generate new backup codes
       const backupCodes = twoFactorAuthService.generateBackupCodes();
-
+      
       // Update the user with the new backup codes
       const updatedUser = await storage.updateUser(req.user.id, {
         twoFactorBackupCodes: JSON.stringify(backupCodes)
       });
-
+      
       // Return success
       res.status(200).json({
         message: "New backup codes generated successfully",
@@ -469,7 +466,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       next(error);
     }
   });
-
+  
   // User settings routes
   // POST endpoint for updating AI settings (new API)
   app.post("/api/user/ai-settings", async (req, res, next) => {
@@ -477,22 +474,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!req.isAuthenticated() || !req.user) {
         return res.status(401).send("Unauthorized");
       }
-
+      
       const updateSchema = z.object({
         apiKey: z.string().optional(),
         aiProvider: z.string().optional(),
       });
-
+      
       const validatedData = updateSchema.parse(req.body);
       const updatedUser = await storage.updateUser(req.user.id, validatedData);
-
+      
       if (!updatedUser) {
         return res.status(404).json({ message: "User not found" });
       }
-
+      
       // Remove password from response
       const { password, ...userWithoutPassword } = updatedUser;
-
+      
       // Update user in session
       req.login(updatedUser, (err) => {
         if (err) return next(err);
@@ -509,22 +506,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!req.isAuthenticated() || !req.user) {
         return res.status(401).send("Unauthorized");
       }
-
+      
       const updateSchema = z.object({
         apiKey: z.string().optional(),
         aiProvider: z.string().optional(),
       });
-
+      
       const validatedData = updateSchema.parse(req.body);
       const updatedUser = await storage.updateUser(req.user.id, validatedData);
-
+      
       if (!updatedUser) {
         return res.status(404).json({ message: "User not found" });
       }
-
+      
       // Remove password from response
       const { password, ...userWithoutPassword } = updatedUser;
-
+      
       // Update user in session
       req.login(updatedUser, (err) => {
         if (err) return next(err);
@@ -534,45 +531,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
       next(error);
     }
   });
-
+  
   // Update user password (POST endpoint - new API)
   app.post("/api/user/password", async (req, res, next) => {
     try {
       if (!req.isAuthenticated() || !req.user) {
         return res.status(401).send("Unauthorized");
       }
-
+      
       const updateSchema = z.object({
         currentPassword: z.string(),
         newPassword: z.string().min(6, "Password must be at least 6 characters"),
       });
-
+      
       const validatedData = updateSchema.parse(req.body);
-
+      
       // Get the user with password
       const user = await storage.getUser(req.user.id);
-
+      
       if (!user) {
         return res.status(404).send("User not found");
       }
-
+      
       // Verify current password
       const isPasswordValid = await comparePasswords(validatedData.currentPassword, user.password);
-
+      
       if (!isPasswordValid) {
         return res.status(400).json({ message: "Current password is incorrect" });
       }
-
+      
       // Hash the new password
       const hashedPassword = await hashPassword(validatedData.newPassword);
-
+      
       // Update password
       const updatedUser = await storage.updateUser(req.user.id, { password: hashedPassword });
-
+      
       if (!updatedUser) {
         return res.status(404).send("User not found");
       }
-
+      
       res.status(200).json({ message: "Password updated successfully" });
     } catch (error) {
       next(error);
@@ -585,62 +582,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!req.isAuthenticated() || !req.user) {
         return res.status(401).send("Unauthorized");
       }
-
+      
       const updateSchema = z.object({
         currentPassword: z.string(),
         newPassword: z.string().min(6, "Password must be at least 6 characters"),
       });
-
+      
       const validatedData = updateSchema.parse(req.body);
-
+      
       // Get the user with password
       const user = await storage.getUser(req.user.id);
-
+      
       if (!user) {
         return res.status(404).send("User not found");
       }
-
+      
       // Verify current password
       const isPasswordValid = await comparePasswords(validatedData.currentPassword, user.password);
-
+      
       if (!isPasswordValid) {
         return res.status(400).json({ message: "Current password is incorrect" });
       }
-
+      
       // Hash the new password
       const hashedPassword = await hashPassword(validatedData.newPassword);
-
+      
       // Update password
       const updatedUser = await storage.updateUser(req.user.id, { password: hashedPassword });
-
+      
       if (!updatedUser) {
         return res.status(404).send("User not found");
       }
-
+      
       res.status(200).json({ message: "Password updated successfully" });
     } catch (error) {
       next(error);
     }
   });
-
+  
   // Update user privacy settings (POST endpoint - new API)
   app.post("/api/user/privacy", async (req, res, next) => {
     try {
       if (!req.isAuthenticated() || !req.user) {
         return res.status(401).send("Unauthorized");
       }
-
+      
       const updateSchema = z.object({
         allowAnalytics: z.boolean().optional(),
         publicProfile: z.boolean().optional(), 
         allowPersonalization: z.boolean().optional(),
       });
-
+      
       const validatedData = updateSchema.parse(req.body);
-
+      
       // Store privacy settings in userPreferences field as JSON
       let userPreferences = {};
-
+      
       // Get existing preferences if they exist
       if (req.user.userPreferences) {
         try {
@@ -651,7 +648,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.error("Failed to parse user preferences:", e);
         }
       }
-
+      
       // Update preferences with new values
       const updatedPreferences = {
         ...userPreferences,
@@ -660,19 +657,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
           ...validatedData
         }
       };
-
+      
       // Update user with new preferences
       const updatedUser = await storage.updateUser(req.user.id, { 
         userPreferences: JSON.stringify(updatedPreferences) 
       });
-
+      
       if (!updatedUser) {
         return res.status(404).send("User not found");
       }
-
+      
       // Remove password from response
       const { password, ...userWithoutPassword } = updatedUser;
-
+      
       // Update user in session
       req.login(updatedUser, (err) => {
         if (err) return next(err);
@@ -692,18 +689,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!req.isAuthenticated() || !req.user) {
         return res.status(401).send("Unauthorized");
       }
-
+      
       const updateSchema = z.object({
         allowAnalytics: z.boolean().optional(),
         publicProfile: z.boolean().optional(), 
         allowPersonalization: z.boolean().optional(),
       });
-
+      
       const validatedData = updateSchema.parse(req.body);
-
+      
       // Store privacy settings in userPreferences field as JSON
       let userPreferences = {};
-
+      
       // Get existing preferences if they exist
       if (req.user.userPreferences) {
         try {
@@ -714,7 +711,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.error("Failed to parse user preferences:", e);
         }
       }
-
+      
       // Update preferences with new values
       const updatedPreferences = {
         ...userPreferences,
@@ -723,19 +720,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
           ...validatedData
         }
       };
-
+      
       // Update user with new preferences
       const updatedUser = await storage.updateUser(req.user.id, { 
         userPreferences: JSON.stringify(updatedPreferences) 
       });
-
+      
       if (!updatedUser) {
         return res.status(404).send("User not found");
       }
-
+      
       // Remove password from response
       const { password, ...userWithoutPassword } = updatedUser;
-
+      
       // Update user in session
       req.login(updatedUser, (err) => {
         if (err) return next(err);
@@ -748,14 +745,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       next(error);
     }
   });
-
+  
   // Update user notification settings - Legacy PATCH endpoint
   app.patch("/api/user/notifications", async (req, res, next) => {
     try {
       if (!req.isAuthenticated() || !req.user) {
         return res.status(401).send("Unauthorized");
       }
-
+      
       const updateSchema = z.object({
         learningReminders: z.boolean().optional(),
         frameworkUpdates: z.boolean().optional(),
@@ -763,12 +760,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         productUpdates: z.boolean().optional(),
         emailFrequency: z.enum(['immediately', 'daily', 'weekly', 'none']).optional()
       });
-
+      
       const validatedData = updateSchema.parse(req.body);
-
+      
       // Store notification settings in userPreferences field as JSON
       let userPreferences = {};
-
+      
       // Get existing preferences if they exist
       if (req.user.userPreferences) {
         try {
@@ -779,7 +776,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.error("Failed to parse user preferences:", e);
         }
       }
-
+      
       // Update preferences with new values
       const updatedPreferences = {
         ...userPreferences,
@@ -788,19 +785,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
           ...validatedData
         }
       };
-
+      
       // Update user with new preferences
       const updatedUser = await storage.updateUser(req.user.id, { 
         userPreferences: JSON.stringify(updatedPreferences) 
       });
-
+      
       if (!updatedUser) {
         return res.status(404).send("User not found");
       }
-
+      
       // Remove password from response
       const { password, ...userWithoutPassword } = updatedUser;
-
+      
       // Update user in session
       req.login(updatedUser, (err) => {
         if (err) return next(err);
@@ -813,14 +810,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       next(error);
     }
   });
-
+  
   // New POST endpoint for notification settings
   app.post("/api/user/notifications", async (req, res, next) => {
     try {
       if (!req.isAuthenticated() || !req.user) {
         return res.status(401).send("Unauthorized");
       }
-
+      
       const updateSchema = z.object({
         learningReminders: z.boolean().optional(),
         frameworkUpdates: z.boolean().optional(),
@@ -828,12 +825,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         productUpdates: z.boolean().optional(),
         emailFrequency: z.enum(['immediately', 'daily', 'weekly', 'none']).optional()
       });
-
+      
       const validatedData = updateSchema.parse(req.body);
-
+      
       // Store notification settings in userPreferences field as JSON
       let userPreferences = {};
-
+      
       // Get existing preferences if they exist
       if (req.user.userPreferences) {
         try {
@@ -844,7 +841,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.error("Failed to parse user preferences:", e);
         }
       }
-
+      
       // Update preferences with new values
       const updatedPreferences = {
         ...userPreferences,
@@ -853,19 +850,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
           ...validatedData
         }
       };
-
+      
       // Update user with new preferences
       const updatedUser = await storage.updateUser(req.user.id, { 
         userPreferences: JSON.stringify(updatedPreferences) 
       });
-
+      
       if (!updatedUser) {
         return res.status(404).send("User not found");
       }
-
+      
       // Remove password from response
       const { password, ...userWithoutPassword } = updatedUser;
-
+      
       // Update user in session
       req.login(updatedUser, (err) => {
         if (err) return next(err);
@@ -878,14 +875,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       next(error);
     }
   });
-
+  
   // User preferences route for display settings
   app.post("/api/user/preferences", async (req, res, next) => {
     try {
       if (!req.isAuthenticated() || !req.user) {
         return res.status(401).send("Unauthorized");
       }
-
+      
       const updateSchema = z.object({
         display: z.object({
           learningStyle: z.enum(['visual', 'auditory', 'kinesthetic', 'reading']).optional(),
@@ -893,12 +890,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           fontSize: z.enum(['small', 'medium', 'large']).optional()
         }).optional()
       });
-
+      
       const validatedData = updateSchema.parse(req.body);
-
+      
       // Store display settings in userPreferences field as JSON
       let userPreferences = {};
-
+      
       // Get existing preferences if they exist
       if (req.user.userPreferences) {
         try {
@@ -909,7 +906,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.error("Failed to parse user preferences:", e);
         }
       }
-
+      
       // Update preferences with new values
       const updatedPreferences = {
         ...userPreferences,
@@ -918,19 +915,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
           ...(validatedData.display || {})
         }
       };
-
+      
       // Update user with new preferences
       const updatedUser = await storage.updateUser(req.user.id, { 
         userPreferences: JSON.stringify(updatedPreferences) 
       });
-
+      
       if (!updatedUser) {
         return res.status(404).send("User not found");
       }
-
+      
       // Remove password from response
       const { password, ...userWithoutPassword } = updatedUser;
-
+      
       // Update user in session
       req.login(updatedUser, (err) => {
         if (err) return next(err);
@@ -943,7 +940,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       next(error);
     }
   });
-
+  
   // Framework routes
   app.get("/api/frameworks", async (req, res, next) => {
     try {
@@ -961,41 +958,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
       next(error);
     }
   });
-
+  
   app.get("/api/frameworks/:id", async (req, res, next) => {
     try {
       const id = parseInt(req.params.id);
-
+      
       if (isNaN(id)) {
         return res.status(400).json({ message: "Invalid framework ID" });
       }
-
+      
       // Check cache first
       const cacheKey = CACHE_KEYS.FRAMEWORK(id);
       const cachedData = getCachedData(cacheKey);
       if (cachedData) {
         return res.json(cachedData);
       }
-
+      
       const framework = await storage.getFramework(id);
-
+      
       if (!framework) {
         return res.status(404).json({ message: "Framework not found" });
       }
-
+      
       // Cache the framework data
       cacheData(cacheKey, framework);
       res.json(framework);
-    } catch(error) {
+    } catch (error) {
       next(error);
     }
   });
-
+  
   // Module media upload
   app.post("/api/modules/:id/media", upload.single('media'), async (req, res, next) => {
     try {
       if (!req.isAuthenticated()) return res.sendStatus(401);
-
+      
       if (!req.file) {
         return res.status(400).json({ message: "No file uploaded" });
       }
@@ -1006,7 +1003,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const mediaUrl = `/uploads/${req.file.filename}`;
-
+      
       res.json({ mediaUrl });
     } catch (error) {
       next(error);
@@ -1017,20 +1014,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/frameworks/:id/modules", async (req, res, next) => {
     try {
       const frameworkId = parseInt(req.params.id);
-
+      
       if (isNaN(frameworkId)) {
         return res.status(400).json({ message: "Invalid framework ID" });
       }
-
+      
       // Check cache first
       const cacheKey = CACHE_KEYS.MODULES(frameworkId);
       const cachedData = getCachedData(cacheKey);
       if (cachedData) {
         return res.json(cachedData);
       }
-
+      
       const modules = await storage.getModulesByFrameworkId(frameworkId);
-
+      
       // Cache the modules data
       cacheData(cacheKey, modules);
       res.json(modules);
@@ -1038,7 +1035,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       next(error);
     }
   });
-
+  
   // Get all modules organized by framework ID
   app.get("/api/all-modules-by-framework", async (req, res, next) => {
     try {
@@ -1048,19 +1045,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (cachedData) {
         return res.json(cachedData);
       }
-
+      
       // Get all frameworks
       const frameworks = await storage.getAllFrameworks();
-
+      
       // Create a map to hold modules by framework ID
       const modulesByFramework: Record<number, any[]> = {};
-
+      
       // For each framework, get modules and add to map
       for (const framework of frameworks) {
         const modules = await storage.getModulesByFrameworkId(framework.id);
         modulesByFramework[framework.id] = modules;
       }
-
+      
       // Cache the result
       cacheData(cacheKey, modulesByFramework);
       res.json(modulesByFramework);
@@ -1068,29 +1065,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
       next(error);
     }
   });
-
+  
   // Get single module
   app.get("/api/modules/:id", async (req, res, next) => {
     try {
       const id = parseInt(req.params.id);
-
+      
       if (isNaN(id)) {
         return res.status(400).json({ message: "Invalid module ID" });
       }
-
+      
       // Check cache first
       const cacheKey = CACHE_KEYS.MODULE(id);
       const cachedData = getCachedData(cacheKey);
       if (cachedData) {
         return res.json(cachedData);
       }
-
+      
       const module = await storage.getModule(id);
-
+      
       if (!module) {
         return res.status(404).json({ message: "Module not found" });
       }
-
+      
       // Cache the module data
       cacheData(cacheKey, module);
       res.json(module);
@@ -1098,87 +1095,87 @@ export async function registerRoutes(app: Express): Promise<Server> {
       next(error);
     }
   });
-
+  
   // Create module
   app.post("/api/modules", async (req, res, next) => {
     try {
       const moduleData = req.body;
-
+      
       if (!moduleData) {
         return res.status(400).json({ message: "No data provided" });
       }
-
+      
       if (!moduleData.frameworkId) {
         return res.status(400).json({ message: "Framework ID is required" });
       }
-
+      
       if (!moduleData.name) {
         return res.status(400).json({ message: "Module name is required" });
       }
-
+      
       const framework = await storage.getFramework(moduleData.frameworkId);
-
+      
       if (!framework) {
         return res.status(404).json({ message: "Framework not found" });
       }
-
+      
       const newModule = await storage.createModule(moduleData);
       res.status(201).json(newModule);
     } catch (error) {
       next(error);
     }
   });
-
+  
   // Update module content
   app.patch("/api/modules/:id", async (req, res, next) => {
     try {
       const moduleId = parseInt(req.params.id);
-
+      
       if (isNaN(moduleId)) {
         return res.status(400).json({ message: "Invalid module ID" });
       }
-
+      
       const moduleData = req.body;
-
+      
       if (!moduleData) {
         return res.status(400).json({ message: "No data provided" });
       }
-
+      
       const module = await storage.getModule(moduleId);
-
+      
       if (!module) {
         return res.status(404).json({ message: "Module not found" });
       }
-
+      
       const updatedModule = await storage.updateModule(moduleId, moduleData);
-
+      
       // Invalidate caches for this module and related framework modules
       invalidateCache(CACHE_KEYS.MODULE(moduleId));
       invalidateCachesByPattern(`modules:framework:${module.frameworkId}`);
       invalidateCache(CACHE_KEYS.ALL_MODULES_BY_FRAMEWORK);
-
+      
       res.json(updatedModule);
     } catch (error) {
       next(error);
     }
   });
-
+  
   // User progress routes
   app.get("/api/user/progress", async (req, res, next) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-
+    
     try {
       const userId = req.user!.id;
-
+      
       // Check cache first
       const cacheKey = CACHE_KEYS.USER_PROGRESS(userId);
       const cachedData = getCachedData(cacheKey);
       if (cachedData) {
         return res.json(cachedData);
       }
-
+      
       const progress = await storage.getUserProgress(userId);
-
+      
       // Cache the progress data
       cacheData(cacheKey, progress);
       res.json(progress);
@@ -1186,31 +1183,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       next(error);
     }
   });
-
+  
   app.post("/api/user/progress", async (req, res, next) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-
+    
     try {
       const userId = req.user!.id;
       const { frameworkId, status, completedModules, totalModules } = req.body;
-
+      
       if (!frameworkId || !status || totalModules === undefined) {
         return res.status(400).json({ message: "Missing required fields" });
       }
-
+      
       // Check if progress already exists
       const existingProgress = await storage.getUserProgressByFramework(userId, frameworkId);
-
+      
       if (existingProgress) {
         // Update existing progress
         const updatedProgress = await storage.updateUserProgress(existingProgress.id, {
           status,
           completedModules,
         });
-
+        
         return res.json(updatedProgress);
       }
-
+      
       // Create new progress
       const newProgress = await storage.createUserProgress({
         userId,
@@ -1219,54 +1216,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
         completedModules: completedModules || 0,
         totalModules,
       });
-
+      
       res.status(201).json(newProgress);
     } catch (error) {
       next(error);
     }
   });
-
+  
   // Module completion route
   app.patch("/api/modules/:id/complete", async (req, res, next) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-
+    
     try {
       const moduleId = parseInt(req.params.id);
       const { completed } = req.body;
-
+      
       if (isNaN(moduleId)) {
         return res.status(400).json({ message: "Invalid module ID" });
       }
-
+      
       if (completed === undefined) {
         return res.status(400).json({ message: "Completed status is required" });
       }
-
+      
       const module = await storage.getModule(moduleId);
-
+      
       if (!module) {
         return res.status(404).json({ message: "Module not found" });
       }
-
+      
       const updatedModule = await storage.updateModule(moduleId, { completed });
-
+      
       // Invalidate caches for this module and related framework modules
       invalidateCache(CACHE_KEYS.MODULE(moduleId));
       invalidateCachesByPattern(`modules:framework:${module.frameworkId}`);
       invalidateCache(CACHE_KEYS.ALL_MODULES_BY_FRAMEWORK);
-
+      
       // Update user progress
       if (updatedModule) {
         const userId = req.user!.id;
         const frameworkId = updatedModule.frameworkId;
-
+        
         // Get all modules for this framework
         const modules = await storage.getModulesByFrameworkId(frameworkId);
-
+        
         // Calculate completed modules
         const completedModules = modules.filter(m => m.completed).length;
         const totalModules = modules.length;
-
+        
         // Determine status
         let status = "not_started";
         if (completedModules === totalModules) {
@@ -1274,10 +1271,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         } else if (completedModules > 0) {
           status = "in_progress";
         }
-
+        
         // Update or create progress
         const existingProgress = await storage.getUserProgressByFramework(userId, frameworkId);
-
+        
         if (existingProgress) {
           await storage.updateUserProgress(existingProgress.id, {
             status,
@@ -1292,38 +1289,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
             totalModules,
           });
         }
-
+        
         // Invalidate user progress cache
         invalidateCachesByPattern(`user:${userId}:progress`);
       }
-
+      
       res.json(updatedModule);
     } catch (error) {
       next(error);
     }
   });
-
+  
   // AI Assistant routes
   app.post("/api/ai/ask", async (req, res, next) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-
+    
     try {
       const { question, frameworkId } = req.body;
       const userId = req.user!.id;
-
+      
       if (!question) {
         return res.status(400).json({ message: "Question is required" });
       }
-
+      
       const user = await storage.getUser(userId);
-
+      
       if (!user || !user.apiKey) {
         return res.status(400).json({ message: "API key not configured. Please set up your AI integration in settings." });
       }
-
+      
       let answer = "";
       const aiProvider = user.aiProvider || "openai";
-
+      
       if (aiProvider === "openai") {
         // Use OpenAI API
         try {
@@ -1345,7 +1342,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               }
             ],
           });
-
+          
           answer = response.choices[0].message.content || "I'm sorry, I couldn't generate a response. Please try again.";
         } catch (error: any) {
           console.error("OpenAI API error:", error);
@@ -1354,7 +1351,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } else {
         return res.status(400).json({ message: "Unsupported AI provider" });
       }
-
+      
       // Store the conversation
       const conversation = await storage.createAiConversation({
         userId,
@@ -1362,86 +1359,86 @@ export async function registerRoutes(app: Express): Promise<Server> {
         question,
         answer
       });
-
+      
       // Invalidate conversations cache
       invalidateCache(CACHE_KEYS.AI_CONVERSATIONS(userId));
-
+      
       res.json(conversation);
     } catch (error) {
       next(error);
     }
   });
-
+  
   app.get("/api/ai/conversations", async (req, res, next) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-
+    
     try {
       const userId = req.user!.id;
-
+      
       // Check cache first
       const cacheKey = CACHE_KEYS.AI_CONVERSATIONS(userId);
       const cachedConversations = getCachedData<AiConversation[]>(cacheKey);
-
+      
       if (cachedConversations) {
         return res.json(cachedConversations);
       }
-
+      
       // If not in cache, fetch from storage
       const conversations = await storage.getAiConversations(userId);
-
+      
       // Cache the result for 5 minutes
       cacheData(cacheKey, conversations, 300);
-
+      
       res.json(conversations);
     } catch (error) {
       next(error);
     }
   });
-
+  
   // Clear all AI conversations for the current user
   app.delete("/api/ai/conversations", async (req, res, next) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-
+    
     try {
       const userId = req.user!.id;
-
+      
       // Get all of the user's conversations
       const conversations = await storage.getAiConversations(userId);
-
+      
       // In a real database implementation, we would do this with a single query
       // For memory storage, we need to delete them one by one
       for (const conversation of conversations) {
         await storage.deleteAiConversation(conversation.id);
       }
-
+      
       // Invalidate the AI conversations cache
       invalidateCache(CACHE_KEYS.AI_CONVERSATIONS(userId));
-
+      
       res.status(204).send();
     } catch (error) {
       next(error);
     }
   });
-
+  
   // Quiz routes
   app.get("/api/quizzes/framework/:id", async (req, res, next) => {
     try {
       const frameworkId = parseInt(req.params.id);
       const level = req.query.level as string | undefined;
-
+      
       if (isNaN(frameworkId)) {
         return res.status(400).json({ message: "Invalid framework ID" });
       }
-
+      
       // Check cache first
       const cacheKey = CACHE_KEYS.QUIZZES(frameworkId, level);
       const cachedData = getCachedData(cacheKey);
       if (cachedData) {
         return res.json(cachedData);
       }
-
+      
       const quizzes = await storage.getQuizzesByFramework(frameworkId, level);
-
+      
       // Cache the quizzes data
       cacheData(cacheKey, quizzes);
       res.json(quizzes);
@@ -1449,28 +1446,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       next(error);
     }
   });
-
+  
   app.get("/api/quizzes/:id", async (req, res, next) => {
     try {
       const id = parseInt(req.params.id);
-
+      
       if (isNaN(id)) {
         return res.status(400).json({ message: "Invalid quiz ID" });
       }
-
+      
       // Check cache first
       const cacheKey = CACHE_KEYS.QUIZ(id);
       const cachedData = getCachedData(cacheKey);
       if (cachedData) {
         return res.json(cachedData);
       }
-
+      
       const quiz = await storage.getQuiz(id);
-
+      
       if (!quiz) {
         return res.status(404).json({ message: "Quiz not found" });
       }
-
+      
       // Cache the quiz data
       cacheData(cacheKey, quiz);
       res.json(quiz);
@@ -1478,113 +1475,113 @@ export async function registerRoutes(app: Express): Promise<Server> {
       next(error);
     }
   });
-
+  
   app.post("/api/quizzes", async (req, res, next) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-
+    
     try {
       // Validate quiz data
       const parseResult = insertQuizSchema.safeParse(req.body);
-
+      
       if (!parseResult.success) {
         return res.status(400).json({ 
           message: "Invalid quiz data", 
           errors: parseResult.error.format() 
         });
       }
-
+      
       const quizData = parseResult.data;
-
+      
       // Check if framework exists
       const framework = await storage.getFramework(quizData.frameworkId);
       if (!framework) {
         return res.status(404).json({ message: "Framework not found" });
       }
-
+      
       const quiz = await storage.createQuiz(quizData);
-
+      
       // Invalidate cached framework quizzes
       invalidateCachesByPattern(`quizzes:framework:${quizData.frameworkId}`);
-
+      
       res.status(201).json(quiz);
     } catch (error) {
       next(error);
     }
   });
-
+  
   app.patch("/api/quizzes/:id", async (req, res, next) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-
+    
     try {
       const id = parseInt(req.params.id);
-
+      
       if (isNaN(id)) {
         return res.status(400).json({ message: "Invalid quiz ID" });
       }
-
+      
       const quiz = await storage.getQuiz(id);
-
+      
       if (!quiz) {
         return res.status(404).json({ message: "Quiz not found" });
       }
-
+      
       const updatedQuiz = await storage.updateQuiz(id, req.body);
-
+      
       // Invalidate caches for this quiz and related framework quizzes
       invalidateCache(CACHE_KEYS.QUIZ(id));
       invalidateCachesByPattern(`quizzes:framework:${quiz.frameworkId}`);
-
+      
       res.json(updatedQuiz);
     } catch (error) {
       next(error);
     }
   });
-
+  
   app.delete("/api/quizzes/:id", async (req, res, next) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-
+    
     try {
       const id = parseInt(req.params.id);
-
+      
       if (isNaN(id)) {
         return res.status(400).json({ message: "Invalid quiz ID" });
       }
-
+      
       const quiz = await storage.getQuiz(id);
-
+      
       if (!quiz) {
         return res.status(404).json({ message: "Quiz not found" });
       }
-
+      
       await storage.deleteQuiz(id);
-
+      
       // Invalidate caches for this quiz and related framework quizzes
       invalidateCache(CACHE_KEYS.QUIZ(id));
       invalidateCachesByPattern(`quizzes:framework:${quiz.frameworkId}`);
-
+      
       res.status(204).send();
     } catch (error) {
       next(error);
     }
   });
-
+  
   // Quiz Attempts routes
   app.get("/api/quiz-attempts/user", async (req, res, next) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-
+    
     try {
       const userId = req.user!.id;
-
+      
       // For quiz attempts, always fetch fresh data to ensure real-time updates
       // This ensures that newly submitted quiz attempts are always visible
       const attempts = await storage.getUserQuizAttempts(userId);
-
+      
       // Set cache control headers to prevent browser caching
       res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
       res.setHeader('Pragma', 'no-cache');
       res.setHeader('Expires', '0');
       res.setHeader('Surrogate-Control', 'no-store');
-
+      
       // Return the attempts without caching
       res.json(attempts);
     } catch (error) {
@@ -1592,26 +1589,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       next(error);
     }
   });
-
+  
   app.get("/api/quiz-attempts/quiz/:id", async (req, res, next) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-
+    
     try {
       const quizId = parseInt(req.params.id);
-
+      
       if (isNaN(quizId)) {
         return res.status(400).json({ message: "Invalid quiz ID" });
       }
-
+      
       // Check cache first
       const cacheKey = CACHE_KEYS.QUIZ_ATTEMPTS(quizId);
       const cachedData = getCachedData(cacheKey);
       if (cachedData) {
         return res.json(cachedData);
       }
-
+      
       const attempts = await storage.getQuizAttemptsByQuiz(quizId);
-
+      
       // Cache the attempts data
       cacheData(cacheKey, attempts);
       res.json(attempts);
@@ -1619,28 +1616,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       next(error);
     }
   });
-
+  
   app.post("/api/quiz-attempts", async (req, res, next) => {
     if (!req.isAuthenticated()) {
       console.log("Unauthorized quiz attempt - user not authenticated");
       return res.sendStatus(401);
     }
-
+    
     try {
       console.log("Quiz attempt request received from user ID:", req.user!.id);
-
+      
       // Always use the authenticated user's ID for security
       // This ensures that users can only submit attempts for themselves
       const requestDataWithUserId = {
         ...req.body,
         userId: req.user!.id
       };
-
+      
       console.log("Quiz attempt data with user ID:", requestDataWithUserId);
-
+      
       // Validate attempt data (including userId)
       const parseResult = insertQuizAttemptSchema.safeParse(requestDataWithUserId);
-
+      
       if (!parseResult.success) {
         console.log("Quiz attempt validation error:", parseResult.error.format());
         return res.status(400).json({ 
@@ -1648,15 +1645,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
           errors: parseResult.error.format() 
         });
       }
-
+      
       const attemptData = parseResult.data;
-
+      
       // Check if quiz exists
       const quiz = await storage.getQuiz(attemptData.quizId);
       if (!quiz) {
         return res.status(404).json({ message: "Quiz not found" });
       }
-
+      
       // Ensure the userId matches the authenticated user
       // This is a security measure to prevent user ID spoofing
       if (attemptData.userId !== req.user!.id) {
@@ -1666,24 +1663,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
         attemptData.userId = req.user!.id;
       }
-
+      
       console.log("Creating quiz attempt with data:", {
         quizId: attemptData.quizId,
         userId: attemptData.userId,
         score: attemptData.score
       });
-
+      
       const attempt = await storage.createQuizAttempt(attemptData);
-
+      
       // Invalidate quiz attempts caches
       invalidateCache(CACHE_KEYS.USER_QUIZ_ATTEMPTS(req.user!.id));
       invalidateCache(CACHE_KEYS.QUIZ_ATTEMPTS(attemptData.quizId));
-
+      
       // Track quiz attempt with xAPI
       if (req.user) {
         try {
           const framework = await storage.getFramework(quiz.frameworkId);
-
+          
           if (framework) {
             await xapiService.trackQuizAttempt(
               req.user.id,
@@ -1706,29 +1703,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Continue even if xAPI tracking fails
         }
       }
-
+      
       res.status(201).json(attempt);
     } catch (error) {
       console.error("Error creating quiz attempt:", error);
       next(error);
     }
   });
-
+  
   // Endpoint to clear all quiz attempts for the authenticated user
   app.delete("/api/quiz-attempts/user/clear", async (req, res, next) => {
     if (!req.isAuthenticated()) {
       return res.sendStatus(401);
     }
-
+    
     try {
       const userId = req.user!.id;
       console.log(`Request to clear all quiz attempts for user ID: ${userId}`);
-
+      
       await storage.clearUserQuizAttempts(userId);
-
+      
       // Invalidate related caches
       invalidateCache(CACHE_KEYS.USER_QUIZ_ATTEMPTS(userId));
-
+      
       console.log(`Successfully cleared all quiz attempts for user ID: ${userId}`);
       res.status(200).json({ 
         success: true,
@@ -1739,11 +1736,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       next(error);
     }
   });
-
+  
   // xAPI routes
   app.post("/api/xapi/statements", async (req, res, next) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-
+    
     try {
       const statement = req.body;
       const parseResult = insertXapiStatementSchema.safeParse({
@@ -1752,33 +1749,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
         timestamp: new Date(),
         stored: false
       });
-
+      
       if (!parseResult.success) {
         return res.status(400).json({
           message: "Invalid xAPI statement",
           errors: parseResult.error.format()
         });
       }
-
+      
       const user = await storage.getUser(req.user!.id);
-
+      
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
-
+      
       // Define the object info type
       interface ObjectInfo {
         name: string;
         description?: string;
         type: string;
       }
-
+      
       // Get object info based on objectType and objectId
       let objectInfo: ObjectInfo = {
         name: statement.object,
         type: "http://adlnet.gov/expapi/activities/activity"
       };
-
+      
       if (statement.objectType === "module") {
         const module = await storage.getModule(statement.objectId);
         if (module) {
@@ -1808,10 +1805,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           };
         }
       }
-
+      
       // Extract and properly type the statement data to match the expected schema
       const { userId, verb, object, objectType, objectId } = parseResult.data;
-
+      
       // Create a properly typed statement object
       const statementData: Omit<XapiStatement, 'id' | 'timestamp' | 'stored'> = {
         userId,
@@ -1823,7 +1820,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         result: parseResult.data.result !== undefined ? parseResult.data.result : null,
         context: parseResult.data.context !== undefined ? parseResult.data.context : null
       };
-
+      
       const result = await xapiService.createStatement(
         statementData,
         {
@@ -1832,20 +1829,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
         objectInfo
       );
-
+      
       if (!result) {
         return res.status(500).json({ message: "Failed to create xAPI statement" });
       }
-
+      
       res.status(201).json(result);
     } catch (error) {
       next(error);
     }
   });
-
+  
   app.get("/api/xapi/statements", async (req, res, next) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-
+    
     try {
       // Implementation will depend on how we want to query xAPI statements
       // For now, we'll return a not implemented error
@@ -1854,22 +1851,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       next(error);
     }
   });
-
+  
   // LRS Configuration routes
   app.post("/api/lrs/config", async (req, res, next) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-
+    
     try {
       const config = req.body;
       const parseResult = insertLrsConfigurationSchema.safeParse(config);
-
+      
       if (!parseResult.success) {
         return res.status(400).json({
           message: "Invalid LRS configuration",
           errors: parseResult.error.format()
         });
       }
-
+      
       // Implementation will depend on how we want to store LRS configurations
       // For now, we'll return a not implemented error
       res.status(501).json({ message: "API not fully implemented" });
@@ -1877,113 +1874,113 @@ export async function registerRoutes(app: Express): Promise<Server> {
       next(error);
     }
   });
-
+  
   // SCORM routes
   app.post("/api/scorm/data", async (req, res, next) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-
+    
     try {
       const { scoId, elementName, elementValue } = req.body;
-
+      
       if (!scoId || !elementName || elementValue === undefined) {
         return res.status(400).json({ message: "Missing required fields" });
       }
-
+      
       const result = await scormService.storeScormData(
         req.user!.id,
         scoId,
         elementName,
         elementValue
       );
-
+      
       if (!result) {
         return res.status(500).json({ message: "Failed to store SCORM data" });
       }
-
+      
       res.status(201).json(result);
     } catch (error) {
       next(error);
     }
   });
-
+  
   app.get("/api/scorm/data/:scoId", async (req, res, next) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-
+    
     try {
       const scoId = req.params.scoId;
-
+      
       if (!scoId) {
         return res.status(400).json({ message: "SCO ID is required" });
       }
-
+      
       const data = await scormService.getScormDataBySCO(req.user!.id, scoId);
       const lmsData = scormService.transformScormDataToLMS(data);
-
+      
       res.json(lmsData);
     } catch (error) {
       next(error);
     }
   });
-
+  
   // Serve SCORM API wrapper script
   app.get("/api/scorm/api-wrapper.js", async (req, res, next) => {
     try {
       const version = req.query.version as string || "scorm2004";
       const apiEndpoint = `${req.protocol}://${req.headers.host}/api/scorm/data`;
-
+      
       const script = scormService.getScormApiWrapperScript(
         version as "scorm1.2" | "scorm2004",
         apiEndpoint
       );
-
+      
       res.setHeader("Content-Type", "application/javascript");
       res.send(script);
     } catch (error) {
       next(error);
     }
   });
-
+  
   // Enhanced module completion route with xAPI tracking
   app.patch("/api/modules/:id/complete-with-tracking", async (req, res, next) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-
+    
     try {
       const moduleId = parseInt(req.params.id);
       const { completed } = req.body;
-
+      
       if (isNaN(moduleId)) {
         return res.status(400).json({ message: "Invalid module ID" });
       }
-
+      
       if (completed === undefined) {
         return res.status(400).json({ message: "Completed status is required" });
       }
-
+      
       const module = await storage.getModule(moduleId);
-
+      
       if (!module) {
         return res.status(404).json({ message: "Module not found" });
       }
-
+      
       const updatedModule = await storage.updateModule(moduleId, { completed });
-
+      
       // Invalidate all relevant caches to ensure UI updates correctly
       invalidateCache(CACHE_KEYS.MODULE(moduleId));
       invalidateCachesByPattern(`modules:framework:${module.frameworkId}`);
       invalidateCache(CACHE_KEYS.ALL_MODULES_BY_FRAMEWORK);
-
+      
       // Update user progress and track with xAPI
       if (updatedModule && completed) {
         const userId = req.user!.id;
         const frameworkId = updatedModule.frameworkId;
-
+        
         // Get all modules for this framework
         const modules = await storage.getModulesByFrameworkId(frameworkId);
-
+        
         // Calculate completed modules
         const completedModules = modules.filter(m => m.completed).length;
         const totalModules = modules.length;
-
+        
         // Determine status
         let status = "not_started";
         if (completedModules === totalModules) {
@@ -1991,10 +1988,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         } else if (completedModules > 0) {
           status = "in_progress";
         }
-
+        
         // Update or create progress
-        const existingProgress = awaitstorage.getUserProgressByFramework(userId, frameworkId);
-
+        const existingProgress = await storage.getUserProgressByFramework(userId, frameworkId);
+        
         if (existingProgress) {
           await storage.updateUserProgress(existingProgress.id, {
             status,
@@ -2009,15 +2006,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
             totalModules,
           });
         }
-
+        
         // Invalidate user progress cache
         invalidateCache(CACHE_KEYS.USER_PROGRESS(userId));
-
+        
         // Track with xAPI if module was completed
         try {
           const user = await storage.getUser(userId);
           const framework = await storage.getFramework(frameworkId);
-
+          
           if (user && framework) {
             await xapiService.trackModuleCompletion(
               userId,
@@ -2030,7 +2027,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 email: user.email || `${user.username}@questionpro.ai`
               }
             );
-
+            
             // If all modules are completed, track framework completion as well
             if (completedModules === totalModules) {
               await xapiService.trackFrameworkCompletion(
@@ -2051,7 +2048,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Continue even if xAPI tracking fails
         }
       }
-
+      
       res.json(updatedModule);
     } catch (error) {
       next(error);
@@ -2074,7 +2071,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       cb(null, uniquePrefix + file.originalname);
     }
   });
-
+  
   // Create multer upload instance
   const scormUpload = multer({ 
     storage: scormStorage,
@@ -2096,46 +2093,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // SCORM package upload route
   app.post('/api/scorm/upload', scormUpload.single('scormPackage'), async (req, res, next) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-
+    
     try {
       if (!req.file) {
         return res.status(400).json({ message: 'No file uploaded' });
       }
-
+      
       const { moduleId } = req.body;
-
+      
       if (!moduleId) {
         return res.status(400).json({ message: 'Module ID is required' });
       }
-
+      
       const parsedModuleId = parseInt(moduleId, 10);
       if (isNaN(parsedModuleId)) {
         return res.status(400).json({ message: 'Invalid module ID' });
       }
-
+      
       // Get the module
       const module = await storage.getModule(parsedModuleId);
       if (!module) {
         return res.status(404).json({ message: 'Module not found' });
       }
-
+      
       // Extract the filename and create a directory for the package
       const uploadedFilename = req.file.filename;
       const packageName = path.basename(uploadedFilename, path.extname(uploadedFilename));
       const extractPath = path.join('./public/scorm-packages', packageName);
-
+      
       // Create directory if it doesn't exist
       if (!fs.existsSync(extractPath)) {
         fs.mkdirSync(extractPath, { recursive: true });
       }
-
+      
       // Extract the uploaded ZIP file
       const extractFile = async () => {
         try {
           // Use extract-zip package which should be installed
           const extractZip = require('extract-zip');
           await extractZip(req.file!.path, { dir: path.resolve(extractPath) });
-
+          
           // Check if the package has an imsmanifest.xml file (required for SCORM)
           const manifestPath = path.join(extractPath, 'imsmanifest.xml');
           if (fs.existsSync(manifestPath)) {
@@ -2147,23 +2144,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
           throw error;
         }
       };
-
+      
       await extractFile();
-
+      
       // Delete the original zip file
       fs.unlinkSync(req.file.path);
-
+      
       // Update the module with the SCORM package path
       // Find the index.html file in the extracted package
       let indexPath = '';
       const findIndexFile = (dir: string): string | null => {
         const files = fs.readdirSync(dir);
-
+        
         // Check if index.html exists in the current directory
         if (files.includes('index.html')) {
           return path.join(dir, 'index.html');
         }
-
+        
         // Look in subdirectories
         for (const file of files) {
           const filePath = path.join(dir, file);
@@ -2174,36 +2171,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
             }
           }
         }
-
+        
         return null;
       };
-
+      
       const indexFile = findIndexFile(extractPath);
       if (!indexFile) {
         throw new Error('Invalid SCORM package: no index.html found');
       }
-
+      
       // Get relative path from public directory
       const relativePath = indexFile.replace('./public', '');
-
+      
       // Update the module with the SCORM package path
       const updatedModule = await storage.updateModule(parsedModuleId, {
         scormPath: relativePath
       });
-
+      
       res.json({ 
         message: 'SCORM package uploaded and extracted successfully',
         module: updatedModule
       });
-
+      
     } catch (error: any) {
       console.error('SCORM upload error:', error);
-
+      
       // Clean up any partially uploaded files
       if (req.file && fs.existsSync(req.file.path)) {
         fs.unlinkSync(req.file.path);
       }
-
+      
       res.status(500).json({ message: `SCORM upload failed: ${error.message}` });
     }
   });
@@ -2211,14 +2208,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // SCORM package list route
   app.get('/api/scorm/packages', async (req, res, next) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-
+    
     try {
       const scormPackagesDir = './public/scorm-packages';
-
+      
       if (!fs.existsSync(scormPackagesDir)) {
         return res.json([]);
       }
-
+      
       const packages = fs.readdirSync(scormPackagesDir)
         .filter(item => {
           const itemPath = path.join(scormPackagesDir, item);
@@ -2227,7 +2224,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .map(dir => {
           const manifestPath = path.join(scormPackagesDir, dir, 'imsmanifest.xml');
           const hasManifest = fs.existsSync(manifestPath);
-
+          
           return {
             name: dir,
             path: `/scorm-packages/${dir}`,
@@ -2235,32 +2232,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
             uploadedAt: fs.statSync(path.join(scormPackagesDir, dir)).birthtime
           };
         });
-
+      
       res.json(packages);
-
+      
     } catch (error: any) {
       console.error('Error listing SCORM packages:', error);
       res.status(500).json({ message: `Failed to list SCORM packages: ${error.message}` });
     }
   });
-
+  
   // SCORM package delete route
   app.delete('/api/scorm/packages/:name', async (req, res, next) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-
+    
     try {
       const packageName = req.params.name;
       const packagePath = path.join('./public/scorm-packages', packageName);
-
+      
       if (!fs.existsSync(packagePath)) {
         return res.status(404).json({ message: 'SCORM package not found' });
       }
-
+      
       // Remove the package directory recursively
       fs.rmSync(packagePath, { recursive: true, force: true });
-
+      
       res.status(204).send();
-
+      
     } catch (error: any) {
       console.error('Error deleting SCORM package:', error);
       res.status(500).json({ message: `Failed to delete SCORM package: ${error.message}` });
@@ -2338,13 +2335,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Validate the request body using the insert schema
       const validatedData = insertExerciseSchema.parse(req.body);
-
+      
       // Create the exercise
       const exercise = await storage.createExercise(validatedData);
-
+      
       // Return the created exercise
       res.status(201).json(exercise);
-
+      
       // Invalidate related caches
       invalidateRelatedCaches([
         `${CACHE_KEYS.FRAMEWORK_EXERCISES_PREFIX}${exercise.frameworkId}`,
@@ -2386,13 +2383,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       const validatedData = updateSchema.parse(req.body);
-
+      
       // Update the exercise
       const updatedExercise = await storage.updateExercise(exerciseId, validatedData);
-
+      
       // Return the updated exercise
       res.json(updatedExercise);
-
+      
       // Invalidate related caches
       invalidateRelatedCaches([
         `${CACHE_KEYS.EXERCISE_PREFIX}${exerciseId}`,
@@ -2424,10 +2421,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Delete the exercise
       await storage.deleteExercise(exerciseId);
-
+      
       // Return success
       res.status(204).send();
-
+      
       // Invalidate related caches
       invalidateRelatedCaches([
         `${CACHE_KEYS.EXERCISE_PREFIX}${exerciseId}`,
@@ -2471,33 +2468,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
       next(error);
     }
   });
-
+  
   // Delete exercise submission
   app.delete("/api/exercise-submissions/:id", async (req, res, next) => {
     try {
       if (!req.isAuthenticated() || !req.user) {
         return res.status(401).send("Unauthorized");
       }
-
+      
       const submissionId = parseInt(req.params.id);
-
+      
       // Verify the submission exists and belongs to the user
       const submission = await storage.getExerciseSubmission(submissionId);
       if (!submission) {
         return res.status(404).send("Submission not found");
       }
-
+      
       if (submission.userId !== req.user.id) {
         return res.status(403).send("Forbidden: This submission belongs to another user");
       }
-
+      
       // Delete the submission
       await storage.deleteExerciseSubmission(submissionId);
-
+      
       // Invalidate related caches
       invalidateCache(CACHE_KEYS.USER_EXERCISE_SUBMISSIONS(req.user.id));
       invalidateCachesByPattern(`exercise:*:submissions`);
-
+      
       res.status(200).send({ success: true });
     } catch (error) {
       next(error);
@@ -2529,7 +2526,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       const validatedData = submitSchema.parse(req.body);
-
+      
       // Create the submission
       const submission = await storage.createExerciseSubmission({
         exerciseId,
@@ -2539,7 +2536,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         score: null,
         feedback: null
       });
-
+      
       // Return the submission
       res.status(201).json(submission);
     } catch (error) {
@@ -2573,10 +2570,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       const validatedData = updateSchema.parse(req.body);
-
+      
       // Update the submission
       const updatedSubmission = await storage.updateExerciseSubmission(submissionId, validatedData);
-
+      
       // Return the updated submission
       res.json(updatedSubmission);
     } catch (error) {
@@ -2585,14 +2582,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   const httpServer = createServer(app);
-
+  
   // Certificate API routes
   app.get("/api/certificates", async (req, res, next) => {
     try {
       if (!req.isAuthenticated() || !req.user) {
         return res.status(401).send("Unauthorized");
       }
-
+      
       const certificates = await storage.getUserCertificates(req.user.id);
       res.json(certificates);
     } catch (error) {
@@ -2605,12 +2602,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!req.isAuthenticated() || !req.user) {
         return res.status(401).send("Unauthorized");
       }
-
+      
       const frameworkId = parseInt(req.params.id);
       if (isNaN(frameworkId)) {
         return res.status(400).send("Invalid framework ID");
       }
-
+      
       const certificates = await storage.getFrameworkCertificates(frameworkId);
       res.json(certificates);
     } catch (error) {
@@ -2623,22 +2620,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!req.isAuthenticated() || !req.user) {
         return res.status(401).send("Unauthorized");
       }
-
+      
       const certificateId = parseInt(req.params.id);
       if (isNaN(certificateId)) {
         return res.status(400).send("Invalid certificate ID");
       }
-
+      
       const certificate = await storage.getCertificate(certificateId);
       if (!certificate) {
         return res.status(404).send("Certificate not found");
       }
-
+      
       // Only allow users to see their own certificates unless they're admins
       if (certificate.userId !== req.user.id && (!req.user.role || req.user.role !== "admin")) {
         return res.status(403).send("Forbidden");
       }
-
+      
       res.json(certificate);
     } catch (error) {
       next(error);
@@ -2650,12 +2647,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!req.isAuthenticated() || !req.user) {
         return res.status(401).send("Unauthorized");
       }
-
+      
       // Only admins can create certificates
       if (!req.user.role || req.user.role !== "admin") {
         return res.status(403).send("Only administrators can issue certificates");
       }
-
+      
       const certData = req.body;
       const certificate = await storage.createCertificate(certData);
       res.status(201).json(certificate);
@@ -2669,35 +2666,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!req.isAuthenticated() || !req.user) {
         return res.status(401).send("Unauthorized");
       }
-
+      
       const frameworkId = parseInt(req.params.frameworkId);
       if (isNaN(frameworkId)) {
         return res.status(400).send("Invalid framework ID");
       }
-
+      
       // Verify the user has completed the framework
       const progress = await storage.getUserProgressByFramework(req.user.id, frameworkId);
       if (!progress || progress.status !== "completed") {
         return res.status(400).send("Framework must be completed before certificate can be issued");
       }
-
+      
       // Get framework details
       const framework = await storage.getFramework(frameworkId);
       if (!framework) {
         return res.status(404).send("Framework not found");
       }
-
+      
       // Check if user already has a certificate for this framework
       const userCerts = await storage.getUserCertificates(req.user.id);
       const existingCert = userCerts.find(cert => cert.frameworkId === frameworkId && cert.status === "active");
-
+      
       if (existingCert) {
         return res.status(400).send("User already has an active certificate for this framework");
       }
-
+      
       // Generate certificate number (unique identifier)
       const certNumber = `QPM-${frameworkId}-${req.user.id}-${Date.now()}`;
-
+      
       // Create the certificate
       const certData = {
         userId: req.user.id,
@@ -2712,7 +2709,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           modules: progress.completedModules
         })
       };
-
+      
       const certificate = await storage.createCertificate(certData);
       res.status(201).json(certificate);
     } catch (error) {
@@ -2725,22 +2722,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!req.isAuthenticated() || !req.user) {
         return res.status(401).send("Unauthorized");
       }
-
+      
       // Only admins can update certificates
       if (!req.user.role || req.user.role !== "admin") {
         return res.status(403).send("Only administrators can update certificates");
       }
-
+      
       const certificateId = parseInt(req.params.id);
       if (isNaN(certificateId)) {
         return res.status(400).send("Invalid certificate ID");
       }
-
+      
       const certificate = await storage.updateCertificate(certificateId, req.body);
       if (!certificate) {
         return res.status(404).send("Certificate not found");
       }
-
+      
       res.json(certificate);
     } catch (error) {
       next(error);
@@ -2752,44 +2749,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!req.isAuthenticated() || !req.user) {
         return res.status(401).send("Unauthorized");
       }
-
+      
       // Only admins can revoke certificates
       if (!req.user.role || req.user.role !== "admin") {
         return res.status(403).send("Only administrators can revoke certificates");
       }
-
+      
       const certificateId = parseInt(req.params.id);
       if (isNaN(certificateId)) {
         return res.status(400).send("Invalid certificate ID");
       }
-
+      
       const certificate = await storage.revokeCertificate(certificateId);
       if (!certificate) {
         return res.status(404).send("Certificate not found");
       }
-
+      
       res.json(certificate);
     } catch (error) {
       next(error);
     }
   });
-
+  
   // Set up WebSocket server for real-time collaboration
   const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
-
+  
   // Store connected clients by exercise ID
   const exerciseRooms: Record<string, Map<string, WebSocket>> = {};
-
+  
   wss.on('connection', (ws) => {
     console.log('WebSocket client connected');
     let userId: number | null = null;
     let exerciseId: number | null = null;
     let username: string | null = null;
-
+    
     ws.on('message', (message) => {
       try {
         const data = JSON.parse(message.toString());
-
+        
         // Handle different message types
         switch(data.type) {
           case 'join':
@@ -2797,16 +2794,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
             userId = data.userId;
             exerciseId = data.exerciseId;
             username = data.username;
-
+            
             // Create room if it doesn't exist
             if (!exerciseRooms[exerciseId]) {
               exerciseRooms[exerciseId] = new Map();
             }
-
+            
             // Add user to room
             const clientId = `${userId}-${Date.now()}`;
             exerciseRooms[exerciseId].set(clientId, ws);
-
+            
             // Notify other users in the room
             broadcastToRoom(exerciseId, {
               type: 'user-joined',
@@ -2815,16 +2812,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
               timestamp: new Date().toISOString(),
               users: getActiveUsers(exerciseId)
             }, ws);
-
+            
             // Send join confirmation to the user
             ws.send(JSON.stringify({
               type: 'joined',
               exerciseId,
               users: getActiveUsers(exerciseId)
             }));
-
+            
             break;
-
+            
           case 'leave':
             // User leaves the exercise room
             if (exerciseId && exerciseRooms[exerciseId]) {
@@ -2835,7 +2832,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                   break;
                 }
               }
-
+              
               // Notify others that user left
               broadcastToRoom(exerciseId, {
                 type: 'user-left',
@@ -2844,14 +2841,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 timestamp: new Date().toISOString(),
                 users: getActiveUsers(exerciseId)
               });
-
+              
               // Clean up empty rooms
               if (exerciseRooms[exerciseId].size === 0) {
                 delete exerciseRooms[exerciseId];
               }
             }
             break;
-
+            
           case 'update-solution':
             // User updates their solution
             if (exerciseId && exerciseRooms[exerciseId]) {
@@ -2865,7 +2862,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               });
             }
             break;
-
+            
           case 'comment':
             // User adds a comment
             if (exerciseId && exerciseRooms[exerciseId]) {
@@ -2879,7 +2876,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               });
             }
             break;
-
+            
           case 'ping':
             // Respond to ping with pong to keep connection alive
             ws.send(JSON.stringify({ type: 'pong', timestamp: new Date().toISOString() }));
@@ -2889,7 +2886,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.error('Error processing WebSocket message:', error);
       }
     });
-
+    
     ws.on('close', () => {
       console.log('WebSocket client disconnected');
       // Handle user disconnection
@@ -2901,7 +2898,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             break;
           }
         }
-
+        
         // Notify others that user left
         broadcastToRoom(exerciseId, {
           type: 'user-left',
@@ -2910,7 +2907,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           timestamp: new Date().toISOString(),
           users: getActiveUsers(exerciseId)
         });
-
+        
         // Clean up empty rooms
         if (exerciseRooms[exerciseId].size === 0) {
           delete exerciseRooms[exerciseId];
@@ -2918,100 +2915,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     });
   });
-
+  
   // Helper function to broadcast a message to all clients in an exercise room
   function broadcastToRoom(exerciseId: number, message: any, excludeClient?: WebSocket) {
     if (!exerciseRooms[exerciseId]) return;
-
+    
     const messageStr = JSON.stringify(message);
-
+    
     exerciseRooms[exerciseId].forEach((client) => {
       if (client !== excludeClient && client.readyState === WebSocket.OPEN) {
         client.send(messageStr);
       }
     });
   }
-
+  
   // Helper function to get list of active users in a room
   function getActiveUsers(exerciseId: number): Array<{userId: number, username: string}> {
     if (!exerciseRooms[exerciseId]) return [];
-
+    
     const users = new Map<number, string>();
-
+    
     exerciseRooms[exerciseId].forEach((_, clientId) => {
       const userId = parseInt(clientId.split('-')[0], 10);
       const username = clientId.split('-')[1] || 'Anonymous';
       users.set(userId, username);
     });
-
+    
     return Array.from(users.entries()).map(([userId, username]) => ({ userId, username }));
   }
-
+  
   return httpServer;
-}
-
-
-async function exportUserData(userData: any, format: string): Promise<Blob> {
-  switch (format) {
-    case 'json':
-      return new Blob([JSON.stringify(userData, null, 2)], { type: 'application/json' });
-    case 'csv':
-      return new Blob([convertToCSV(userData)], { type: 'text/csv' });
-    case 'xml':
-      return new Blob([convertToXML(userData)], { type: 'application/xml' });
-    case 'pdf':
-      const pdfDoc = new PDFDocument();
-      pdfDoc.pipe(fs.createWriteStream('temp.pdf'));
-      pdfDoc.text(JSON.stringify(userData, null, 2));
-      pdfDoc.end();
-      const pdfBuffer = await new Promise<Buffer>((resolve, reject) => {
-        pdfDoc.on('end', () => {
-          fs.readFile('temp.pdf', (err, data) => {
-            if (err) reject(err);
-            else resolve(data);
-          });
-        });
-      });
-      fs.unlinkSync('temp.pdf');
-      return new Blob([pdfBuffer], { type: 'application/pdf' });
-    case 'xlsx':
-      const workbook = XLSX.utils.book_new();
-      const worksheet = XLSX.utils.json_to_sheet(userData);
-      XLSX.utils.book_append_sheet(workbook, worksheet, "User Data");
-      const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
-      return new Blob([excelBuffer], { type: 'applicationvnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    default:
-      return new Blob([JSON.stringify(userData, null, 2)], { type: 'application/json' });
-  }
-}
-
-function convertToCSV(data: any) {
-  if (!data || !data.length) return '';
-  const headers = Object.keys(data[0]);
-  const csvRows = [headers.join(',')];
-
-  for (const row of data) {
-    const values = headers.map(header => {
-      const val = row[header];
-      return typeof val === 'string' ? `"${val}"` : val;
-    });
-    csvRows.push(values.join(','));
-  }
-
-  return csvRows.join('\n');
-}
-
-function convertToXML(data: any) {
-  let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<userData>\n';
-
-  for (const item of data) {
-    xml += '  <item>\n';
-    for (const [key, value] of Object.entries(item)) {
-      xml += `    <${key}>${value}</${key}>\n`;
-    }
-    xml += '  </item>\n';
-  }
-
-  xml += '</userData>';
-  return xml;
 }
