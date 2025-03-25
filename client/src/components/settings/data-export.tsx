@@ -68,6 +68,8 @@ export function DataExport() {
               <SelectItem value="json">JSON</SelectItem>
               <SelectItem value="csv">CSV</SelectItem>
               <SelectItem value="xml">XML</SelectItem>
+              <SelectItem value="pdf">PDF</SelectItem>
+              <SelectItem value="xlsx">Excel (XLSX)</SelectItem>
             </SelectContent>
           </Select>
         </div>
