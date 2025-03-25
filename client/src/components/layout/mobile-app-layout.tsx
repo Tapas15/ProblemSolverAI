@@ -153,19 +153,52 @@ export function MobileAppLayout({ children }: MobileAppLayoutProps) {
               {platform.toUpperCase()}
             </Badge>
           )}
-          <Sheet open={showMenu} onOpenChange={setShowMenu}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="text-white hover:bg-[#1a4482]/50">
-                <Menu className="h-6 w-6" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-[280px] sm:w-[300px] border-l border-[#3b82f6]/10 bg-gradient-to-b from-[#0f2544] to-[#19355f] text-white">
-              <h2 className="sr-only">Navigation Menu</h2>
-              <div className="py-4">
-                <div className="flex items-center justify-between mb-6">
+          {/* Custom side menu implementation */}
+          <div className="relative">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => {
+                document.body.classList.add('prevent-scroll');
+                setShowMenu(true);
+              }} 
+              className="text-white hover:bg-[#1a4482]/50"
+            >
+              <Menu className="h-6 w-6" />
+            </Button>
+            
+            {/* Custom overlay */}
+            {showMenu && (
+              <div 
+                className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 touch-none"
+                onClick={() => {
+                  document.body.classList.add('prevent-scroll');
+                  setShowMenu(false);
+                  setTimeout(() => {
+                    document.body.classList.remove('prevent-scroll');
+                  }, 300);
+                }}
+              />
+            )}
+            
+            {/* Custom side panel */}
+            <div 
+              className={`fixed top-0 left-0 bottom-0 w-[280px] sm:w-[300px] z-50 transform transition-transform duration-300 ease-in-out touch-none
+                ${showMenu ? 'translate-x-0' : '-translate-x-full'}
+                border-r border-[#3b82f6]/10 bg-gradient-to-b from-[#0f2544] to-[#19355f] text-white shadow-lg`}
+            >
+              <div className="py-4 h-full flex flex-col">
+                <div className="flex items-center justify-between px-4 mb-6">
                   <div
-                    className="font-bold text-xl font-header tracking-tight cursor-pointer nav-item"
-                    onClick={() => handleNavigation("/")}
+                    className="font-bold text-xl font-header tracking-tight cursor-pointer"
+                    onClick={() => {
+                      document.body.classList.add('prevent-scroll');
+                      setShowMenu(false);
+                      setTimeout(() => {
+                        window.location.href = "/";
+                        document.body.classList.remove('prevent-scroll');
+                      }, 300);
+                    }}
                   >
                     <span className="text-[#3b82f6]">Question</span>
                     <span className="text-white">Pro </span>
@@ -189,7 +222,7 @@ export function MobileAppLayout({ children }: MobileAppLayoutProps) {
 
                 {/* User Profile Summary */}
                 {user && (
-                  <div className="mb-6 p-3 border border-[#3b82f6]/10 rounded-xl bg-[#1a4482]/30">
+                  <div className="mb-6 mx-4 p-3 border border-[#3b82f6]/10 rounded-xl bg-[#1a4482]/30">
                     <div className="flex items-center space-x-3">
                       <Avatar className="h-10 w-10 ring-2 ring-[#60a5fa]/30 shadow-inner">
                         <AvatarImage src="" alt={user.name} />
@@ -206,18 +239,27 @@ export function MobileAppLayout({ children }: MobileAppLayoutProps) {
                 )}
 
                 {/* Primary Navigation */}
-                <div className="mb-4">
+                <div className="px-4 mb-4 overflow-y-auto flex-1">
                   <h3 className="text-xs uppercase text-white/50 font-semibold mb-2 px-3">Main Navigation</h3>
-                  <nav className="space-y-1">
+                  <div className="space-y-1">
                     {menuItems.map((item) => (
                       <div
                         key={item.path}
-                        className={`flex items-center p-3 rounded-xl cursor-pointer transition-colors nav-item ${
+                        className={`flex items-center p-3 rounded-xl cursor-pointer transition-colors ${
                           isActive(item.path)
                             ? "bg-[#1a4482]/50 text-[#60a5fa]" 
                             : "text-white/80 hover:bg-[#1a4482]/30 hover:text-white"
                         }`}
-                        onClick={() => handleNavigation(item.path)}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          document.body.classList.add('prevent-scroll');
+                          setShowMenu(false);
+                          setTimeout(() => {
+                            window.location.href = item.path;
+                            document.body.classList.remove('prevent-scroll');
+                          }, 300);
+                        }}
                       >
                         <div className={isActive(item.path) ? "text-[#60a5fa]" : ""}>
                           {item.icon}
@@ -228,22 +270,31 @@ export function MobileAppLayout({ children }: MobileAppLayoutProps) {
                         )}
                       </div>
                     ))}
-                  </nav>
+                  </div>
                 </div>
 
                 {/* Secondary Navigation */}
-                <div className="mb-4">
+                <div className="px-4 mb-4">
                   <h3 className="text-xs uppercase text-white/50 font-semibold mb-2 px-3">More Options</h3>
-                  <nav className="space-y-1">
+                  <div className="space-y-1">
                     {secondaryMenuItems.map((item) => (
                       <div
                         key={item.path}
-                        className={`flex items-center p-3 rounded-xl cursor-pointer transition-colors nav-item ${
+                        className={`flex items-center p-3 rounded-xl cursor-pointer transition-colors ${
                           isActive(item.path)
                             ? "bg-[#1a4482]/50 text-[#60a5fa]"
                             : "text-white/80 hover:bg-[#1a4482]/30 hover:text-white"
                         }`}
-                        onClick={() => handleNavigation(item.path)}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          document.body.classList.add('prevent-scroll');
+                          setShowMenu(false);
+                          setTimeout(() => {
+                            window.location.href = item.path;
+                            document.body.classList.remove('prevent-scroll');
+                          }, 300);
+                        }}
                       >
                         <div className={isActive(item.path) ? "text-[#60a5fa]" : ""}>
                           {item.icon}
@@ -262,16 +313,16 @@ export function MobileAppLayout({ children }: MobileAppLayoutProps) {
                         )}
                       </div>
                     ))}
-                  </nav>
+                  </div>
                 </div>
 
                 {/* Version information */}
-                <div className="mt-auto pt-4 border-t border-[#3b82f6]/10 text-center text-xs text-white/40">
+                <div className="mt-auto px-4 pt-4 border-t border-[#3b82f6]/10 text-center text-xs text-white/40">
                   <p>QuestionPro AI Mobile {isNative ? platform : 'Web'} v1.0</p>
                 </div>
               </div>
-            </SheetContent>
-          </Sheet>
+            </div>
+          </div>
         </div>
       </header>
 
@@ -282,19 +333,30 @@ export function MobileAppLayout({ children }: MobileAppLayoutProps) {
         </div>
       </main>
 
-      {/* Mobile Tab Bar */}
+      {/* Mobile Tab Bar - Direct button implementation for better touch handling */}
       <nav className="mobile-tab-bar bg-gradient-to-r from-[#0f2544] to-[#19355f] border-t border-[#3b82f6]/10">
         {menuItems.slice(0, 5).map((item) => (
-          <div
+          <button
             key={item.path}
-            className={`flex flex-col items-center justify-center w-full h-full nav-item ${
+            className={`flex flex-col items-center justify-center w-full h-full outline-none touch-manipulation ${
               isActive(item.path) ? "text-[#60a5fa]" : "text-white/70"
             }`}
-            onClick={() => handleNavigation(item.path)}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              document.body.classList.add('prevent-scroll');
+              // Wait briefly before navigation to prevent scrolling during transition
+              setTimeout(() => {
+                window.location.href = item.path;
+                setTimeout(() => {
+                  document.body.classList.remove('prevent-scroll');
+                }, 100);
+              }, 50);
+            }}
           >
             {item.icon}
             <span className="text-xs mt-1">{item.name}</span>
-          </div>
+          </button>
         ))}
       </nav>
     </div>

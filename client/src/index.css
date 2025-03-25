@@ -133,11 +133,24 @@
 @layer base {
   * {
     @apply border-border;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
   
   body {
     @apply antialiased bg-background text-foreground tracking-tight;
     font-family: 'Outfit', sans-serif;
+  }
+  
+  /* Global touch handling for mobile */
+  body.prevent-scroll {
+    overflow: hidden !important;
+    position: fixed !important;
+    width: 100% !important;
+    height: 100% !important;
+    touch-action: none !important;
+    -webkit-overflow-scrolling: auto !important;
+    overscroll-behavior: none !important;
   }
   
   h1, h2, h3, h4, h5, h6 {
