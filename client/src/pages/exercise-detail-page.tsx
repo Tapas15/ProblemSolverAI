@@ -9,7 +9,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
-  ArrowLeft,
   Send as SendIcon,
   CheckCircle, 
   Clock, 
@@ -181,7 +180,7 @@ export default function ExerciseDetailPage() {
             className="mt-4" 
             onClick={() => setLocation("/exercises")}
           >
-            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Exercises
+            Go to Exercises
           </Button>
         </div>
       </Layout>
@@ -212,7 +211,7 @@ export default function ExerciseDetailPage() {
             className="mt-4" 
             onClick={() => setLocation("/exercises")}
           >
-            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Exercises
+            Go to Exercises
           </Button>
         </div>
       </Layout>
@@ -226,7 +225,6 @@ export default function ExerciseDetailPage() {
           {isNative ? (
             <>
               <div className="flex justify-between items-start">
-                {/* Back button removed as requested */}
                 <div className="flex items-center space-x-2">
                   <Badge variant="outline" className="flex items-center text-xs py-0 h-5">
                     <Clock className="mr-1 h-3 w-3" />
@@ -242,7 +240,6 @@ export default function ExerciseDetailPage() {
           ) : (
             <>
               <div className="flex items-center mb-4 lg:mb-0">
-                {/* Back button removed as requested */}
                 <h1 className="text-3xl font-bold">{exercise.title}</h1>
               </div>
               <div className="flex items-center space-x-3">
