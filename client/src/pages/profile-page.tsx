@@ -173,78 +173,64 @@ const ProfilePage: React.FC = () => {
 
   return (
     <MobileAppLayout>
-      <div className="py-4 px-4 pb-24">
-        {/* Header with blue gradient background */}
-        <div className="mb-6 relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#0f2544] to-[#19355f] p-5">
-          <div className="absolute top-0 right-0 w-[120px] h-[120px] bg-[#3b82f6]/20 rounded-full -mt-10 -mr-10 blur-xl"></div>
-          <div className="absolute bottom-0 left-0 w-[80px] h-[80px] bg-[#60a5fa]/10 rounded-full mb-[-40px] ml-[-20px] blur-xl"></div>
-          
-          <div className="flex items-center relative z-10">
-            <div className="relative">
-              <Avatar className="h-20 w-20 border-2 border-[#60a5fa]/30">
-                <AvatarImage src={user.avatarUrl || ''} alt={user.name} />
-                <AvatarFallback className="bg-[#3b82f6] text-white text-lg">
-                  {user.name?.substring(0, 2).toUpperCase() || 'U'}
-                </AvatarFallback>
-              </Avatar>
-              
-              <label htmlFor="avatar-upload" className="absolute bottom-0 right-0 bg-[#3b82f6] text-white p-1 rounded-full border-2 border-white cursor-pointer">
-                <Edit2 className="h-3 w-3" />
-              </label>
-              
-              <input
-                type="file"
-                id="avatar-upload"
-                accept="image/*"
-                className="hidden"
-                onChange={async (e) => {
-                  const file = e.target.files?.[0];
-                  if (!file) return;
-
-                  const formData = new FormData();
-                  formData.append('avatar', file);
-
-                  try {
-                    const response = await fetch('/api/user/avatar', {
-                      method: 'POST',
-                      body: formData,
-                    });
-                    
-                    if (!response.ok) throw new Error('Upload failed');
-                    
-                    toast({
-                      title: "Avatar updated",
-                      description: "Your profile photo has been updated",
-                    });
-                    
-                    queryClient.invalidateQueries({ queryKey: ['/api/user'] });
-                  } catch (error) {
-                    toast({
-                      title: "Error",
-                      description: "Failed to upload avatar",
-                      variant: "destructive"
-                    });
-                  }
-                }}
-              />
-            </div>
+      <div className="py-4 pb-24">
+        {/* Profile Avatar/Upload Section */}
+        <div className="mb-6 flex justify-center">
+          <div className="relative">
+            <Avatar className="h-24 w-24 border-2 border-[#60a5fa]/30 shadow-lg">
+              <AvatarImage src={user.avatarUrl || ''} alt={user.name} />
+              <AvatarFallback className="bg-gradient-to-r from-[#3b82f6] to-[#60a5fa] text-white text-xl">
+                {user.name?.substring(0, 2).toUpperCase() || 'U'}
+              </AvatarFallback>
+            </Avatar>
             
-            <div className="ml-4 flex-1">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-white">{user.name}</h2>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-white hover:bg-white/10"
-                  onClick={() => setEditingSection('profile')}
-                >
-                  <Edit2 className="h-4 w-4" />
-                </Button>
-              </div>
-              <p className="text-white/70 text-sm">@{user.username}</p>
-              <p className="text-white/70 text-sm mt-1">{user.email}</p>
-            </div>
+            <label htmlFor="avatar-upload" className="absolute bottom-0 right-0 bg-[#3b82f6] text-white p-1.5 rounded-full border-2 border-white cursor-pointer shadow-md">
+              <Edit2 className="h-4 w-4" />
+            </label>
+            
+            <input
+              type="file"
+              id="avatar-upload"
+              accept="image/*"
+              className="hidden"
+              onChange={async (e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+
+                const formData = new FormData();
+                formData.append('avatar', file);
+
+                try {
+                  const response = await fetch('/api/user/avatar', {
+                    method: 'POST',
+                    body: formData,
+                  });
+                  
+                  if (!response.ok) throw new Error('Upload failed');
+                  
+                  toast({
+                    title: "Avatar updated",
+                    description: "Your profile photo has been updated",
+                  });
+                  
+                  queryClient.invalidateQueries({ queryKey: ['/api/user'] });
+                } catch (error) {
+                  toast({
+                    title: "Error",
+                    description: "Failed to upload avatar",
+                    variant: "destructive"
+                  });
+                }
+              }}
+            />
           </div>
+        </div>
+        
+        {/* Profile summary */}
+        <div className="mb-6 text-center">
+          <h1 className="text-xl font-bold text-gray-800">{user.name}</h1>
+          <p className="text-gray-500">@{user.username}</p>
+          <p className="text-gray-500 mt-1">{user.email}</p>
         </div>
         
         {/* Editable Profile Section */}
@@ -517,7 +503,7 @@ const ProfilePage: React.FC = () => {
                 <div className="grid grid-cols-3 gap-3 mb-4">
                   <div className="bg-blue-50 rounded-xl p-3 text-center">
                     <div className="text-blue-600 text-xl font-bold">
-                      {userProgress?.filter((p: any) => p.status === 'completed').length || 0}
+                      {Array.isArray(userProgress) ? userProgress.filter((p: any) => p.status === 'completed').length : 0}
                     </div>
                     <div className="text-blue-700 text-xs">
                       Frameworks
@@ -526,7 +512,7 @@ const ProfilePage: React.FC = () => {
                   
                   <div className="bg-blue-50 rounded-xl p-3 text-center">
                     <div className="text-blue-600 text-xl font-bold">
-                      {userProgress?.reduce((sum: number, p: any) => sum + (p.completedModules || 0), 0) || 0}
+                      {Array.isArray(userProgress) ? userProgress.reduce((sum: number, p: any) => sum + (p.completedModules || 0), 0) : 0}
                     </div>
                     <div className="text-blue-700 text-xs">
                       Modules
@@ -535,7 +521,7 @@ const ProfilePage: React.FC = () => {
                   
                   <div className="bg-blue-50 rounded-xl p-3 text-center">
                     <div className="text-blue-600 text-xl font-bold">
-                      {quizAttempts?.filter((a: any) => a.passed).length || 0}
+                      {Array.isArray(quizAttempts) ? quizAttempts.filter((a: any) => a.passed).length : 0}
                     </div>
                     <div className="text-blue-700 text-xs">
                       Quizzes
