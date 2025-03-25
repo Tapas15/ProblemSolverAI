@@ -467,7 +467,7 @@ export class PostgresStorage implements IStorage {
         level: "Intermediate",
         duration: 45,
         status: "not_started",
-        imageUrl: "https://via.placeholder.com/500x300?text=MECE+Framework"
+        image_url: "https://via.placeholder.com/500x300?text=MECE+Framework"
       });
       const meceId = mece.id;
 
@@ -478,7 +478,7 @@ export class PostgresStorage implements IStorage {
         level: "Advanced",
         duration: 90,
         status: "not_started",
-        imageUrl: "https://via.placeholder.com/500x300?text=Design+Thinking"
+        image_url: "https://via.placeholder.com/500x300?text=Design+Thinking"
       });
       const designThinkingId = designThinking.id;
 
@@ -489,7 +489,7 @@ export class PostgresStorage implements IStorage {
         level: "Beginner",
         duration: 30,
         status: "not_started",
-        imageUrl: "https://via.placeholder.com/500x300?text=SWOT+Analysis"
+        image_url: "https://via.placeholder.com/500x300?text=SWOT+Analysis"
       });
       const swotId = swot.id;
 
@@ -500,7 +500,7 @@ export class PostgresStorage implements IStorage {
         level: "Advanced", 
         duration: 75,
         status: "not_started",
-        imageUrl: "https://via.placeholder.com/500x300?text=First+Principles"
+        image_url: "https://via.placeholder.com/500x300?text=First+Principles"
       });
       const firstPrinciplesId = firstPrinciples.id;
 
@@ -511,7 +511,7 @@ export class PostgresStorage implements IStorage {
         level: "Intermediate",
         duration: 50,
         status: "not_started",
-        imageUrl: "https://via.placeholder.com/500x300?text=Porter's+Five+Forces"
+        image_url: "https://via.placeholder.com/500x300?text=Porter's+Five+Forces"
       });
       const portersFiveForcesId = portersFiveForces.id;
 
@@ -522,7 +522,7 @@ export class PostgresStorage implements IStorage {
         level: "Intermediate",
         duration: 40,
         status: "not_started",
-        imageUrl: "https://via.placeholder.com/500x300?text=Jobs-To-Be-Done"
+        image_url: "https://via.placeholder.com/500x300?text=Jobs-To-Be-Done"
       });
       const jobsToBeDoneId = jobsToBeDone.id;
 
@@ -533,7 +533,7 @@ export class PostgresStorage implements IStorage {
         level: "Advanced",
         duration: 60,
         status: "not_started",
-        imageUrl: "https://via.placeholder.com/500x300?text=Blue+Ocean+Strategy"
+        image_url: "https://via.placeholder.com/500x300?text=Blue+Ocean+Strategy"
       });
       const blueOceanId = blueOcean.id;
 
@@ -544,7 +544,7 @@ export class PostgresStorage implements IStorage {
         level: "Intermediate",
         duration: 35,
         status: "not_started",
-        imageUrl: "https://via.placeholder.com/500x300?text=SCAMPER"
+        image_url: "https://via.placeholder.com/500x300?text=SCAMPER"
       });
       const scamperId = scamper.id;
 
@@ -555,7 +555,7 @@ export class PostgresStorage implements IStorage {
         level: "Intermediate",
         duration: 45,
         status: "not_started",
-        imageUrl: "https://via.placeholder.com/500x300?text=Problem-Tree+Analysis"
+        image_url: "https://via.placeholder.com/500x300?text=Problem-Tree+Analysis"
       });
       const problemTreeId = problemTree.id;
 
@@ -566,7 +566,7 @@ export class PostgresStorage implements IStorage {
         level: "Beginner",
         duration: 25,
         status: "not_started",
-        imageUrl: "https://via.placeholder.com/500x300?text=Pareto+Principle"
+        image_url: "https://via.placeholder.com/500x300?text=Pareto+Principle"
       });
       const paretoId = pareto.id;
 
