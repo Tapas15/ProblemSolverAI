@@ -98,7 +98,25 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
   });
   
   const handleModuleStatusChange = (moduleId: number, completed: boolean, moduleName?: string) => {
-    completeModuleMutation.mutate({ moduleId, completed, moduleName });
+    completeModuleMutation.mutate({ 
+      moduleId, 
+      completed, 
+      moduleName 
+    }, {
+      onSuccess: (updatedModule) => {
+        if (completed) {
+          // Find the index of current module
+          const currentModuleIndex = modules.findIndex(m => m.id === moduleId);
+          // If there's a next module, expand it
+          if (currentModuleIndex >= 0 && currentModuleIndex < modules.length - 1) {
+            // Set timeout to let the current module completion animation/styling finish
+            setTimeout(() => {
+              setExpandedModule(modules[currentModuleIndex + 1].id);
+            }, 300);
+          }
+        }
+      }
+    });
   };
   
   const handleAiQuestion = async () => {
