@@ -36,7 +36,7 @@ export function MobileAppLayout({ children }: MobileAppLayoutProps) {
   }, []);
 
   // These paths require no authentication and don't use the mobile layout
-  const publicPaths = ['/auth', '/about', '/contact', '/privacy', '/terms', '/founder'];
+  const publicPaths = ['/auth', '/about', '/contact', '/privacy', '/terms'];
   if (publicPaths.some(path => location.startsWith(path))) {
     return <>{children}</>;
   }
@@ -87,6 +87,11 @@ export function MobileAppLayout({ children }: MobileAppLayoutProps) {
       icon: <User className="h-5 w-5" /> 
     },
     { 
+      name: 'Founder', 
+      path: '/founder', 
+      icon: <Award className="h-5 w-5" /> 
+    },
+    { 
       name: 'Settings', 
       path: '/settings', 
       icon: <Settings className="h-5 w-5" /> 
@@ -135,7 +140,8 @@ export function MobileAppLayout({ children }: MobileAppLayoutProps) {
                 <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
-            <SheetContent className="w-[280px] sm:w-[300px] border-l border-[#3b82f6]/10 bg-gradient-to-b from-[#0f2544] to-[#19355f] text-white">
+            <SheetContent side="left" className="w-[280px] sm:w-[300px] border-l border-[#3b82f6]/10 bg-gradient-to-b from-[#0f2544] to-[#19355f] text-white">
+              <h2 className="sr-only">Navigation Menu</h2>
               <div className="py-4">
                 <div className="flex items-center justify-between mb-6">
                   <span className="font-bold text-xl font-header tracking-tight">
