@@ -126,7 +126,7 @@ export function MobileAppLayout({ children }: MobileAppLayoutProps) {
       {/* Mobile Top Bar */}
       <header className="sticky top-0 left-0 right-0 h-14 bg-gradient-to-r from-[#0f2544] to-[#19355f] z-30 flex items-center justify-between px-4 shadow-md">
         <div 
-          className="flex items-center cursor-pointer"
+          className="flex items-center cursor-pointer nav-item"
           onClick={() => handleNavigation("/")}
         >
           <span className="font-bold text-xl text-white font-header tracking-tight">
@@ -153,7 +153,7 @@ export function MobileAppLayout({ children }: MobileAppLayoutProps) {
               <div className="py-4">
                 <div className="flex items-center justify-between mb-6">
                   <div
-                    className="font-bold text-xl font-header tracking-tight cursor-pointer"
+                    className="font-bold text-xl font-header tracking-tight cursor-pointer nav-item"
                     onClick={() => handleNavigation("/")}
                   >
                     <span className="text-[#3b82f6]">Question</span>
@@ -221,7 +221,7 @@ export function MobileAppLayout({ children }: MobileAppLayoutProps) {
                     {secondaryMenuItems.map((item) => (
                       <div
                         key={item.path}
-                        className={`flex items-center p-3 rounded-xl cursor-pointer transition-colors ${
+                        className={`flex items-center p-3 rounded-xl cursor-pointer transition-colors nav-item ${
                           isActive(item.path)
                             ? "bg-[#1a4482]/50 text-[#60a5fa]"
                             : "text-white/80 hover:bg-[#1a4482]/30 hover:text-white"
@@ -270,7 +270,7 @@ export function MobileAppLayout({ children }: MobileAppLayoutProps) {
         {menuItems.slice(0, 5).map((item) => (
           <div
             key={item.path}
-            className={`flex flex-col items-center justify-center w-full h-full ${
+            className={`flex flex-col items-center justify-center w-full h-full nav-item ${
               isActive(item.path) ? "text-[#60a5fa]" : "text-white/70"
             }`}
             onClick={() => handleNavigation(item.path)}
