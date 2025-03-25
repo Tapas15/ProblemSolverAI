@@ -11,6 +11,7 @@ import {
   Trophy, Lightbulb, ArrowRightCircle, Medal, ArrowLeft
 } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
+import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Link, useLocation } from 'wouter';
 import { Badge } from '@/components/ui/badge';
@@ -21,6 +22,7 @@ import { QuizModuleInsights } from '@/components/dashboard/quiz-module-insights'
 
 const DashboardPage = () => {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('progress');
   
   // Fetch user progress
@@ -72,6 +74,16 @@ const DashboardPage = () => {
     queryFn: getAllModulesByFramework,
     staleTime: 60 * 1000,
   });
+  
+  // Fetch all quizzes (for quiz attempt navigation)
+  const {
+    data: quizzes,
+    isLoading: isQuizzesLoading
+  } = useQuery({
+    queryKey: ['/api/quizzes'],
+    queryFn: () => getQuizzesByFramework(0), // 0 means fetch all quizzes
+    staleTime: 60 * 1000,
+  });
 
   // Calculate statistics
   const calculateStats = () => {
@@ -108,7 +120,7 @@ const DashboardPage = () => {
   };
 
   const stats = calculateStats();
-  const isLoading = isProgressLoading || isFrameworksLoading || isQuizAttemptsLoading || isAllModulesLoading;
+  const isLoading = isProgressLoading || isFrameworksLoading || isQuizAttemptsLoading || isAllModulesLoading || isQuizzesLoading;
 
   // Get framework details for a progress item
   const getFrameworkDetails = (frameworkId: number) => {
