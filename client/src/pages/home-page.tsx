@@ -218,9 +218,9 @@ const HomePage: React.FC = () => {
                   <Card className="native-card touch-feedback overflow-hidden">
                     <CardContent className="p-3">
                       <div className="flex items-start space-x-3">
-                        {framework.imageUrl ? (
+                        {framework.image_url ? (
                           <img 
-                            src={framework.imageUrl} 
+                            src={framework.image_url} 
                             alt={framework.name} 
                             className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
                           />
@@ -295,9 +295,9 @@ const HomePage: React.FC = () => {
                   <Card className="native-card touch-feedback overflow-hidden">
                     <CardContent className="p-3">
                       <div className="flex items-start space-x-3">
-                        {framework.imageUrl ? (
+                        {framework.image_url ? (
                           <img 
-                            src={framework.imageUrl} 
+                            src={framework.image_url} 
                             alt={framework.name} 
                             className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
                           />
@@ -340,15 +340,20 @@ const HomePage: React.FC = () => {
             {isLoading ? (
               <div className="native-empty-state">
                 <div className="native-spinner" />
-                <p className="text-sm text-[#64748b] mt-2">Loading recommendations...</p>
+                <p className="text-sm text-[#64748b] mt-2">Loading frameworks...</p>
               </div>
             ) : filteredFrameworks.length === 0 ? (
               <div className="native-empty-state">
                 <div className="native-empty-state-icon">
-                  <Lightbulb className="h-6 w-6" />
+                  <Award className="h-6 w-6" />
                 </div>
-                <p className="native-empty-state-title">No recommendations</p>
-                <p className="native-empty-state-description">You've started all available frameworks!</p>
+                <p className="native-empty-state-title">No recommendations yet</p>
+                <p className="native-empty-state-description">Complete more frameworks to receive personalized recommendations</p>
+                <Link to="/frameworks">
+                  <Button variant="outline" size="sm" className="mt-4">
+                    Browse Frameworks
+                  </Button>
+                </Link>
               </div>
             ) : (
               filteredFrameworks.map((framework) => (
@@ -356,9 +361,9 @@ const HomePage: React.FC = () => {
                   <Card className="native-card touch-feedback overflow-hidden">
                     <CardContent className="p-3">
                       <div className="flex items-start space-x-3">
-                        {framework.imageUrl ? (
+                        {framework.image_url ? (
                           <img 
-                            src={framework.imageUrl} 
+                            src={framework.image_url} 
                             alt={framework.name} 
                             className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
                           />
@@ -378,11 +383,18 @@ const HomePage: React.FC = () => {
                           
                           <p className="text-xs text-[#64748b] line-clamp-1 mt-0.5">{framework.description}</p>
                           
-                          <div className="mt-2">
-                            <div className="flex items-center text-xs text-[#64748b]">
-                              <Clock className="h-3 w-3 mr-1" />
-                              <span>{`${framework.duration} min`}</span>
+                          <div className="mt-2 space-y-1">
+                            <div className="flex justify-between items-center text-xs text-[#64748b]">
+                              <div className="flex items-center">
+                                <Clock className="h-3 w-3 mr-1" />
+                                <span>{`${framework.duration} min`}</span>
+                              </div>
+                              <span>Ready to start</span>
                             </div>
+                            <Button variant="outline" size="sm" className="w-full text-xs mt-1 h-7">
+                              Start Learning
+                              <ArrowRight className="ml-1 h-3 w-3" />
+                            </Button>
                           </div>
                         </div>
                       </div>
@@ -393,26 +405,6 @@ const HomePage: React.FC = () => {
             )}
           </TabsContent>
         </Tabs>
-      </div>
-      
-      {/* AI Assistant Card */}
-      <div className="mb-2">
-        <Link to="/ai-assistant">
-          <Card className="native-card touch-feedback overflow-hidden bg-gradient-to-r from-[#7d5af1]/10 to-[#ff59b2]/10 border-purple-100">
-            <CardContent className="p-4">
-              <div className="flex items-center">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#7d5af1] to-[#ff59b2] flex items-center justify-center mr-4 shadow-lg">
-                  <Lightbulb className="h-6 w-6 text-white" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-medium text-[#0f172a]">AI Assistant</h3>
-                  <p className="text-xs text-[#64748b]">Get personalized help applying frameworks to your unique business challenges</p>
-                </div>
-                <ChevronRight className="h-5 w-5 text-[#64748b]" />
-              </div>
-            </CardContent>
-          </Card>
-        </Link>
       </div>
     </div>
   );
