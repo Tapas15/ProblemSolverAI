@@ -226,15 +226,7 @@ export default function ExerciseDetailPage() {
           {isNative ? (
             <>
               <div className="flex justify-between items-start">
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="px-2 h-8 -ml-2"
-                  onClick={() => setLocation(`/exercises/${exercise.frameworkId}`)}
-                >
-                  <ArrowLeft className="h-4 w-4 mr-1.5" /> 
-                  <span className="text-sm">Back</span>
-                </Button>
+                {/* Back button removed as requested */}
                 <div className="flex items-center space-x-2">
                   <Badge variant="outline" className="flex items-center text-xs py-0 h-5">
                     <Clock className="mr-1 h-3 w-3" />
@@ -250,11 +242,7 @@ export default function ExerciseDetailPage() {
           ) : (
             <>
               <div className="flex items-center mb-4 lg:mb-0">
-                <Link href={`/exercises/${exercise.frameworkId}`}>
-                  <Button variant="ghost" size="sm" className="mr-4">
-                    <ArrowLeft className="h-4 w-4 mr-2" /> Back to Exercises
-                  </Button>
-                </Link>
+                {/* Back button removed as requested */}
                 <h1 className="text-3xl font-bold">{exercise.title}</h1>
               </div>
               <div className="flex items-center space-x-3">
