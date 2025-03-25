@@ -133,31 +133,34 @@
   border: 1px solid rgba(59, 130, 246, 0.2);
 }
 
-/* Disable pull-to-refresh and overscroll behaviors */
+/* Disable pull-to-refresh and overscroll behaviors but allow proper scrolling */
 html, body {
   overscroll-behavior-y: none; 
   height: 100%;
   width: 100%;
-  position: fixed;
+  margin: 0;
+  padding: 0;
   overflow: hidden;
 }
 
 /* Enable scrolling within the content area */
 .native-scroll {
   overflow-y: auto;
-  height: calc(100vh - 120px); /* Account for header and tab bar */
-  max-height: calc(100vh - 120px);
+  height: 100%;
+  max-height: calc(100vh - 130px); /* Account for header and tab bar */
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE and Edge */
   padding-bottom: 20px;
+  position: relative;
 }
 
 /* Main content area with proper padding for the bottom tabs */
 main.native-scroll {
   padding-bottom: 80px !important; /* Extra padding to ensure content isn't hidden behind tabs */
-  height: calc(100vh - 70px);
-  max-height: calc(100vh - 70px);
+  height: auto;
+  min-height: calc(100vh - 130px);
+  position: relative;
 }
 
 .native-scroll::-webkit-scrollbar {
