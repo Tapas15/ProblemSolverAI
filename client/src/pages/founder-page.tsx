@@ -44,8 +44,8 @@ const FounderPage: React.FC = () => {
         <div className="bg-gradient-to-r from-[#0f2544] to-[#19355f] h-24 relative">
           <div className="absolute -bottom-12 left-4 ring-4 ring-white rounded-full">
             <Avatar className="h-24 w-24">
-              <AvatarImage src="/images/manas-profile.jpg" alt="Dr. Manas Kumar" />
-              <AvatarFallback className="bg-[#3b82f6] text-white text-xl">MK</AvatarFallback>
+              <AvatarImage src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%233b82f6' /><text x='50%' y='50%' font-size='35' font-family='Arial' fill='white' text-anchor='middle' dominant-baseline='middle'>MK</text></svg>" alt="Dr. Manas Kumar" />
+              <AvatarFallback className="bg-gradient-to-r from-[#3b82f6] to-[#60a5fa] text-white text-xl">MK</AvatarFallback>
             </Avatar>
           </div>
         </div>
@@ -85,7 +85,7 @@ const FounderPage: React.FC = () => {
       
       {/* About Section */}
       <Card className="native-card mb-5">
-        <CardContent className="p-0">
+        <CardContent className="p-4">
           <div className="flex items-center mb-3">
             <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center mr-3">
               <Award className="h-4 w-4 text-[#3b82f6]" />
@@ -108,7 +108,7 @@ const FounderPage: React.FC = () => {
       
       {/* Professional Background */}
       <Card className="native-card mb-5">
-        <CardContent className="p-0">
+        <CardContent className="p-4">
           <div className="flex items-center mb-3">
             <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center mr-3">
               <Briefcase className="h-4 w-4 text-[#3b82f6]" />
@@ -155,7 +155,7 @@ const FounderPage: React.FC = () => {
       
       {/* Approach */}
       <Card className="native-card mb-5">
-        <CardContent className="p-0">
+        <CardContent className="p-4">
           <div className="flex items-center mb-3">
             <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center mr-3">
               <BookOpen className="h-4 w-4 text-[#3b82f6]" />
