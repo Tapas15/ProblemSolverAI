@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getUserCertificates, getUserAchievements } from '@/lib/api';
-import { MobileAppLayout } from '@/components/layout/mobile-app-layout';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -246,34 +245,32 @@ export default function CertificatesPage() {
   };
   
   return (
-    <MobileAppLayout>
-      <div className="container max-w-3xl mx-auto px-4 py-6">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-primary mb-2">Certificates & Achievements</h1>
-          <p className="text-gray-600">Track your learning journey and showcase your expertise</p>
-        </div>
-        
-        <Tabs defaultValue="certificates" onValueChange={setActiveTab}>
-          <TabsList className="w-full mb-6">
-            <TabsTrigger value="certificates" className="flex-1">
-              <FileText className="h-4 w-4 mr-2" />
-              Certificates
-            </TabsTrigger>
-            <TabsTrigger value="achievements" className="flex-1">
-              <Trophy className="h-4 w-4 mr-2" />
-              Achievements
-            </TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="certificates" className="mt-4">
-            {renderCertificates()}
-          </TabsContent>
-          
-          <TabsContent value="achievements" className="mt-4">
-            {renderAchievements()}
-          </TabsContent>
-        </Tabs>
+    <div className="container max-w-3xl mx-auto px-4 py-6">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-primary mb-2">Certificates & Achievements</h1>
+        <p className="text-gray-600">Track your learning journey and showcase your expertise</p>
       </div>
-    </MobileAppLayout>
+      
+      <Tabs defaultValue="certificates" onValueChange={setActiveTab}>
+        <TabsList className="w-full mb-6">
+          <TabsTrigger value="certificates" className="flex-1">
+            <FileText className="h-4 w-4 mr-2" />
+            Certificates
+          </TabsTrigger>
+          <TabsTrigger value="achievements" className="flex-1">
+            <Trophy className="h-4 w-4 mr-2" />
+            Achievements
+          </TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="certificates" className="mt-4">
+          {renderCertificates()}
+        </TabsContent>
+        
+        <TabsContent value="achievements" className="mt-4">
+          {renderAchievements()}
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 }
