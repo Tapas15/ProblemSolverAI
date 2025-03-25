@@ -1,5 +1,5 @@
 // Mobile device features and capabilities through Capacitor
-import { Capacitor } from '@capacitor/core';
+import { Capacitor, PermissionState } from '@capacitor/core';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { SplashScreen } from '@capacitor/splash-screen';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
@@ -119,7 +119,10 @@ export const checkLocationPermission = async (): Promise<PermissionStatus> => {
     return await Geolocation.checkPermissions();
   } catch (error) {
     console.error('Error checking location permission:', error);
-    return { location: 'denied' };
+    return { 
+      location: 'denied' as PermissionState,
+      coarseLocation: 'denied' as PermissionState
+    };
   }
 };
 
@@ -131,7 +134,10 @@ export const requestLocationPermission = async (): Promise<PermissionStatus> => 
     return await Geolocation.requestPermissions();
   } catch (error) {
     console.error('Error requesting location permission:', error);
-    return { location: 'denied' };
+    return { 
+      location: 'denied' as PermissionState,
+      coarseLocation: 'denied' as PermissionState
+    };
   }
 };
 

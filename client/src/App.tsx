@@ -18,6 +18,7 @@ import LearningPathPage from "@/pages/learning-path-page";
 import ExercisePage from "@/pages/exercise-page";
 import ExerciseDetailPage from "@/pages/exercise-detail-page";
 import ExerciseFrameworksPage from "@/pages/exercise-frameworks-page";
+import MobileFeaturesPage from "@/pages/mobile-features-page";
 import FounderPage from "@/pages/founder-page";
 import AboutPage from "@/pages/about-page";
 import ContactPage from "@/pages/contact-page";
@@ -26,7 +27,7 @@ import TermsPage from "@/pages/terms-page";
 import { AuthProvider } from "@/hooks/use-auth";
 import { ProtectedRoute } from "@/lib/protected-route";
 import { MobileAppLayout } from "@/components/layout/mobile-app-layout";
-import { isNativePlatform } from "@/lib/capacitor";
+import { isNativePlatform, initializeApp } from "@/lib/capacitor";
 
 function Router() {
   return (
