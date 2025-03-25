@@ -25,6 +25,8 @@ import PrivacyPage from "@/pages/privacy-page";
 import TermsPage from "@/pages/terms-page";
 import { AuthProvider } from "@/hooks/use-auth";
 import { ProtectedRoute } from "@/lib/protected-route";
+import { MobileAppLayout } from "@/components/layout/mobile-app-layout";
+import { isNativePlatform } from "@/lib/capacitor";
 
 function Router() {
   return (
@@ -58,8 +60,10 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <Router />
-        <Toaster />
+        <MobileAppLayout>
+          <Router />
+          <Toaster />
+        </MobileAppLayout>
       </AuthProvider>
     </QueryClientProvider>
   );
