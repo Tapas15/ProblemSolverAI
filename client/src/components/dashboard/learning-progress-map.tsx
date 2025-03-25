@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'wouter';
+import { useLocation } from 'wouter';
 import { Framework, UserProgress, Module } from '@shared/schema';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -17,7 +17,7 @@ interface LearningProgressMapProps {
 }
 
 export function LearningProgressMap({ frameworks, userProgress, allModules = {} }: LearningProgressMapProps) {
-  const [_, navigate] = useNavigate();
+  const [_, setLocation] = useLocation();
 
   // Get framework progress
   const getFrameworkProgress = (frameworkId: number) => {
@@ -33,7 +33,16 @@ export function LearningProgressMap({ frameworks, userProgress, allModules = {} 
     return modules.find(m => !m.completed);
   };
 
+  // Calculate progress percentage from completed modules
   const getModuleProgressPercent = (frameworkId: number) => {
+    const progress = getFrameworkProgress(frameworkId);
+    
+    // If we have already calculated progress, use that
+    if (progress?.completedModules && progress?.totalModules) {
+      return Math.round((progress.completedModules / progress.totalModules) * 100);
+    }
+    
+    // Otherwise calculate from module data
     const modules = allModules[frameworkId] || [];
     if (!modules.length) return 0;
     
@@ -75,7 +84,7 @@ export function LearningProgressMap({ frameworks, userProgress, allModules = {} 
         {frameworks.map((framework) => {
           const progress = getFrameworkProgress(framework.id);
           const nextModule = getNextModule(framework.id);
-          const progressPercent = progress?.percentComplete || getModuleProgressPercent(framework.id) || 0;
+          const progressPercent = getModuleProgressPercent(framework.id);
           const isCompleted = progress?.status === 'completed';
           
           return (
@@ -166,7 +175,7 @@ export function LearningProgressMap({ frameworks, userProgress, allModules = {} 
                         ? "w-full text-green-600 border-green-300 hover:bg-green-50" 
                         : "w-full bg-gradient-to-r from-[#3b82f6] to-[#4f46e5]"
                       }
-                      onClick={() => navigate(`/frameworks/${framework.id}`)}
+                      onClick={() => setLocation(`/frameworks/${framework.id}`)}
                     >
                       {isCompleted ? (
                         <span className="flex items-center">

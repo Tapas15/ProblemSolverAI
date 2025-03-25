@@ -25,6 +25,11 @@ export async function getModules(frameworkId: number): Promise<Module[]> {
   return res.json();
 }
 
+export async function getAllModulesByFramework(): Promise<Record<number, Module[]>> {
+  const res = await apiRequest("GET", "/api/all-modules-by-framework");
+  return res.json();
+}
+
 export async function getUserProgress(): Promise<UserProgress[]> {
   const res = await apiRequest("GET", "/api/user/progress");
   return res.json();
