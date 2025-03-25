@@ -7,12 +7,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
-import { Shield, Lock, Key, AlertTriangle, Settings, Bell, Fingerprint } from 'lucide-react';
+import { Shield, Lock, Key, AlertTriangle, Settings, Bell, Fingerprint, Globe } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useMutation } from '@tanstack/react-query';
 import { updatePassword, updatePrivacySettings, updateNotificationSettings } from '@/lib/api';
 import { TwoFactorAuth } from '@/components/settings/two-factor-auth';
 import { DataExport } from '@/components/settings/data-export';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from '@/components/common/language-switcher';
 
 const SettingsPage: React.FC = () => {
   const { user, updateAiSettingsMutation } = useAuth();
@@ -421,6 +423,26 @@ const SettingsPage: React.FC = () => {
               </CardHeader>
               <CardContent className="px-4 sm:px-6">
                 <div className="space-y-4 sm:space-y-6">
+                  {/* Language Preferences */}
+                  <div className="space-y-3 sm:space-y-4">
+                    <h3 className="text-base sm:text-lg font-medium">Language Preferences</h3>
+                    <div className="bg-white rounded-lg border border-gray-200 p-4">
+                      <div className="flex flex-col gap-3">
+                        <div>
+                          <h4 className="font-medium text-sm sm:text-base mb-2">Application Language</h4>
+                          <p className="text-xs sm:text-sm text-gray-500 mb-3">
+                            Choose your preferred language for the application interface
+                          </p>
+                          <div className="w-full max-w-xs">
+                            <LanguageSwitcher />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <Separator />
+                  
                   <div className="space-y-3 sm:space-y-4">
                     <h3 className="text-base sm:text-lg font-medium">Data Management</h3>
                     
