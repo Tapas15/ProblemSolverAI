@@ -30,11 +30,12 @@ async function addImageFields() {
       { id: 1, name: 'MECE Framework', image: 'https://images.unsplash.com/photo-1572177215152-32f247303126?q=80&w=500&auto=format&fit=crop' }, // MECE - structured diagram on wall
       { id: 2, name: 'Design Thinking', image: 'https://images.unsplash.com/photo-1586717799252-bd134ad00e26?q=80&w=500&auto=format&fit=crop' }, // Design Thinking - creative brainstorming
       { id: 3, name: 'SWOT Analysis', image: 'https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?q=80&w=500&auto=format&fit=crop' }, // SWOT - strategic planning
-      { id: 4, name: 'First Principles', image: 'https://images.unsplash.com/photo-1518544801976-3e159b142a51?q=80&w=500&auto=format&fit=crop' }, // First Principles - breaking things down
+      { id: 4, name: 'First Principles', image: 'https://images.unsplash.com/photo-1457904375453-3e1fc2fc76f4?q=80&w=500&auto=format&fit=crop' }, // First Principles - thinking basics
       { id: 5, name: 'Porter\'s Five Forces', image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=500&auto=format&fit=crop' }, // Porter's - competition analysis
       { id: 6, name: 'Jobs-To-Be-Done', image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=500&auto=format&fit=crop' }, // JTBD - customer focused
       { id: 7, name: 'Blue Ocean Strategy', image: 'https://images.unsplash.com/photo-1566140967404-b8b3932483f5?q=80&w=500&auto=format&fit=crop' }, // Blue Ocean - uncharted waters
       { id: 8, name: 'SCAMPER', image: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=500&auto=format&fit=crop' }, // SCAMPER - creative ideation
+      { id: 9, name: 'Problem Tree Analysis', image: 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?q=80&w=500&auto=format&fit=crop' }, // Problem Tree - root cause analysis
       { id: 9, name: 'Problem Tree Analysis', image: 'https://images.unsplash.com/photo-1536009348192-756c394edd8b?q=80&w=500&auto=format&fit=crop' }, // Problem Tree - root cause tree
       { id: 10, name: 'Pareto Principle', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=500&auto=format&fit=crop' }, // Pareto - 80/20 rule charts
     ];
