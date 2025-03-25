@@ -93,10 +93,17 @@ function Router() {
 function App() {
   // Initialize the Capacitor app when the component mounts
   useEffect(() => {
-    // Initialize mobile app features
-    initializeApp().catch(error => {
-      console.error('Failed to initialize mobile app:', error);
-    });
+    // Initialize mobile app features with better error handling
+    try {
+      initializeApp().then(() => {
+        console.log('Capacitor initialized successfully');
+      }).catch(error => {
+        console.error('Failed to initialize mobile app:', error);
+      });
+    } catch (error) {
+      // Catch any synchronous errors that might occur
+      console.error('Error during Capacitor initialization:', error);
+    }
   }, []);
 
   return (

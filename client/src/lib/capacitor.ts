@@ -25,23 +25,48 @@ export const getPlatform = (): string => {
  * Initialize mobile app features
  */
 export const initializeApp = async (): Promise<void> => {
-  // Only run this code on native platforms
-  if (!isNativePlatform()) return;
-  
-  try {
-    // Configure and show the status bar
-    await StatusBar.setStyle({ style: Style.Dark });
-    if (getPlatform() === 'android') {
-      await StatusBar.setBackgroundColor({ color: '#0072FF' });
+  return new Promise((resolve, reject) => {
+    try {
+      // Only run this code on native platforms
+      if (!isNativePlatform()) {
+        // If not on a native platform, resolve immediately
+        resolve();
+        return;
+      }
+      
+      // Use Promise.all to handle all async operations
+      Promise.all([
+        // Configure status bar with error handling
+        StatusBar.setStyle({ style: Style.Dark })
+          .catch(e => console.warn('Status bar style setting failed:', e)),
+          
+        // Set background color for Android
+        getPlatform() === 'android' 
+          ? StatusBar.setBackgroundColor({ color: '#0072FF' })
+              .catch(e => console.warn('Status bar color setting failed:', e))
+          : Promise.resolve(),
+          
+        // Hide splash screen
+        SplashScreen.hide({ fadeOutDuration: 500 })
+          .catch(e => console.warn('Hiding splash screen failed:', e))
+      ])
+      .then(() => {
+        // All operations completed or handled
+        resolve();
+      })
+      .catch((error) => {
+        // This should only run if Promise.all itself fails
+        console.error('Capacitor initialization error:', error);
+        // Still resolve to prevent app from breaking
+        resolve();
+      });
+    } catch (error) {
+      // Catch any synchronous errors
+      console.error('Synchronous error in Capacitor initialization:', error);
+      // Still resolve to prevent app from breaking
+      resolve();
     }
-    
-    // Hide the splash screen with a fade animation
-    await SplashScreen.hide({
-      fadeOutDuration: 500
-    });
-  } catch (error) {
-    console.error('Error initializing mobile app:', error);
-  }
+  });
 };
 
 /**
