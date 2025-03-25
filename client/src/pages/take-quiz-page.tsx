@@ -53,6 +53,7 @@ export default function TakeQuizPage() {
   const [score, setScore] = useState(0);
   const [showAnswers, setShowAnswers] = useState(false);
   const [questions, setQuestions] = useState<Question[]>([]);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   
   // Redirect if not logged in
   useEffect(() => {
@@ -490,18 +491,41 @@ export default function TakeQuizPage() {
                   
 
                   
-                  {/* Add a manual refresh button */}
+                  {/* Add a manual refresh button with loading state */}
                   <div className="mb-4 flex justify-end">
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      onClick={() => refetchQuizAttempts()}
+                      onClick={() => {
+                        setIsRefreshing(true);
+                        refetchQuizAttempts()
+                          .then(() => {
+                            toast({
+                              title: "History refreshed",
+                              description: "Your quiz history has been updated.",
+                            });
+                          })
+                          .catch(err => {
+                            console.error("Error refreshing quiz history:", err);
+                            toast({
+                              title: "Refresh failed",
+                              description: "Could not refresh quiz history. Please try again.",
+                              variant: "destructive"
+                            });
+                          })
+                          .finally(() => {
+                            setIsRefreshing(false);
+                          });
+                      }}
+                      disabled={isRefreshing}
                       className="text-xs flex items-center gap-1"
                     >
-                      <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                      </svg>
-                      Refresh History
+                      {isRefreshing ? (
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                      ) : (
+                        <RefreshCw className="h-3 w-3" />
+                      )}
+                      {isRefreshing ? "Refreshing..." : "Refresh History"}
                     </Button>
                   </div>
                   
