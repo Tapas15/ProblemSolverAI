@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Loader2, ChevronLeft, Clock, AlertCircle, CheckCircle2, XCircle, BarChart2, AlertTriangle } from "lucide-react";
+import { Loader2, ChevronLeft, Clock, AlertCircle, CheckCircle2, XCircle, BarChart2, AlertTriangle, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import MainLayout from "@/components/layout/main-layout";
