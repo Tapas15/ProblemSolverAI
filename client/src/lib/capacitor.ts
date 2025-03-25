@@ -5,6 +5,7 @@ import { SplashScreen } from '@capacitor/splash-screen';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { Browser } from '@capacitor/browser';
 import { Preferences } from '@capacitor/preferences';
+import { Geolocation, Position, PermissionStatus } from '@capacitor/geolocation';
 
 /**
  * Check if the app is running on a native mobile platform
@@ -107,5 +108,55 @@ export const removeData = async (key: string): Promise<void> => {
     await Preferences.remove({ key });
   } catch (error) {
     console.error('Error removing data:', error);
+  }
+};
+
+/**
+ * Check geolocation permission status
+ */
+export const checkLocationPermission = async (): Promise<PermissionStatus> => {
+  try {
+    return await Geolocation.checkPermissions();
+  } catch (error) {
+    console.error('Error checking location permission:', error);
+    return { location: 'denied' };
+  }
+};
+
+/**
+ * Request geolocation permission
+ */
+export const requestLocationPermission = async (): Promise<PermissionStatus> => {
+  try {
+    return await Geolocation.requestPermissions();
+  } catch (error) {
+    console.error('Error requesting location permission:', error);
+    return { location: 'denied' };
+  }
+};
+
+/**
+ * Get current location
+ */
+export const getCurrentLocation = async (): Promise<Position | null> => {
+  try {
+    // Check for permission first
+    const permissionStatus = await checkLocationPermission();
+    
+    if (permissionStatus.location !== 'granted') {
+      const requestStatus = await requestLocationPermission();
+      if (requestStatus.location !== 'granted') {
+        throw new Error('Location permission not granted');
+      }
+    }
+    
+    // Get current position with high accuracy
+    return await Geolocation.getCurrentPosition({
+      enableHighAccuracy: true,
+      timeout: 10000
+    });
+  } catch (error) {
+    console.error('Error getting current location:', error);
+    return null;
   }
 };
