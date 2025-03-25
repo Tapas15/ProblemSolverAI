@@ -25,7 +25,8 @@ import {
   Briefcase,
   X,
   ChevronRight,
-  Home
+  Home,
+  Smartphone
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -240,6 +241,12 @@ const Sidebar: React.FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
             icon={<Dumbbell className="h-5 w-5" />} 
             label="Practice" 
             isActive={location.startsWith('/exercises') || location.startsWith('/exercise/')} 
+          />
+          <NavLink 
+            to="/mobile-features" 
+            icon={<Smartphone className="h-5 w-5" />} 
+            label="Mobile Features" 
+            isActive={location === '/mobile-features'} 
           />
           <NavLink 
             to="/founder" 

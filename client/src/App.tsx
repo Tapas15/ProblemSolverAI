@@ -1,3 +1,5 @@
+
+import { useEffect } from "react";
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -46,6 +48,7 @@ function Router() {
       <ProtectedRoute path="/settings" component={SettingsPage} />
       <ProtectedRoute path="/scorm-admin" component={ScormAdminPage} />
       <ProtectedRoute path="/learning-path" component={LearningPathPage} />
+      <ProtectedRoute path="/mobile-features" component={MobileFeaturesPage} />
       <Route path="/founder" component={FounderPage} />
       <Route path="/about" component={AboutPage} />
       <Route path="/contact" component={ContactPage} />
@@ -58,6 +61,14 @@ function Router() {
 }
 
 function App() {
+  // Initialize the Capacitor app when the component mounts
+  useEffect(() => {
+    // Initialize mobile app features
+    initializeApp().catch(error => {
+      console.error('Failed to initialize mobile app:', error);
+    });
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
