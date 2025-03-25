@@ -259,12 +259,13 @@ const AiAssistant: React.FC = () => {
       {/* AI Conversations History */}
       <div className="space-y-4">
         <div className="flex justify-between items-center mb-3">
-          <h3 className="text-lg font-semibold font-header text-primary">Recent Conversations</h3>
+          <h3 className="mobile-h3 text-[#0f172a]">Recent Conversations</h3>
           
           {conversations && conversations.length > 0 && (
             <Button 
               variant="outline" 
-              size="sm" 
+              size="sm"
+              className="h-8 px-3 text-xs"
               onClick={() => {
                 clearAiConversations();
                 queryClient.invalidateQueries({ queryKey: ['/api/ai/conversations'] });
