@@ -10,8 +10,7 @@ import {
   Lightbulb, 
   LayoutDashboard, 
   Smartphone,
-  LogOut,
-  Globe
+  LogOut
 } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -20,8 +19,6 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { isNativePlatform, getPlatform } from '@/lib/capacitor';
 import { useAuth } from '@/hooks/use-auth';
-import { useTranslation } from 'react-i18next';
-import LanguageSwitcher from '@/components/common/language-switcher';
 import "../../styles/mobile.css";
 
 interface MobileAppLayoutProps {
@@ -31,7 +28,6 @@ interface MobileAppLayoutProps {
 export function MobileAppLayout({ children }: MobileAppLayoutProps) {
   const [location] = useLocation();
   const { user, logoutMutation } = useAuth();
-  const { t } = useTranslation();
   const [platform, setPlatform] = useState<string>('web');
   const [showMenu, setShowMenu] = useState(false);
   const isNative = isNativePlatform();
