@@ -5,21 +5,23 @@ import { Loader2, DownloadCloud, FileDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { exportUserData } from "@/lib/api";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export function DataExport() {
   const { toast } = useToast();
   const [isExporting, setIsExporting] = useState(false);
+  const [format, setFormat] = useState('json');
 
   const handleExport = async () => {
     try {
       setIsExporting(true);
-      const blob = await exportUserData();
+      const blob = await exportUserData(format);
       
       // Create a temporary link and trigger download
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `user-data-export-${new Date().toISOString().split('T')[0]}.json`;
+      a.download = `user-data-export-${new Date().toISOString().split('T')[0]}.${format}`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -54,9 +56,21 @@ export function DataExport() {
         <Alert>
           <AlertTitle>Privacy Notice</AlertTitle>
           <AlertDescription>
-            The export includes your profile information, learning progress, quiz attempts, and AI conversations. The exported file will be in JSON format.
+            The export includes your profile information, learning progress, quiz attempts, and AI conversations.
           </AlertDescription>
         </Alert>
+        <div className="mt-4">
+          <Select value={format} onValueChange={setFormat}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select format" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="json">JSON</SelectItem>
+              <SelectItem value="csv">CSV</SelectItem>
+              <SelectItem value="xml">XML</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </CardContent>
       <CardFooter>
         <Button 
