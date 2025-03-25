@@ -30,7 +30,7 @@ async function addImageFields() {
       { id: 1, name: 'MECE Framework', image: 'https://images.unsplash.com/photo-1572177215152-32f247303126?q=80&w=500&auto=format&fit=crop' }, // MECE - structured diagram on wall
       { id: 2, name: 'Design Thinking', image: 'https://images.unsplash.com/photo-1586717799252-bd134ad00e26?q=80&w=500&auto=format&fit=crop' }, // Design Thinking - creative brainstorming
       { id: 3, name: 'SWOT Analysis', image: 'https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?q=80&w=500&auto=format&fit=crop' }, // SWOT - strategic planning
-      { id: 4, name: 'First Principles', image: 'https://images.unsplash.com/photo-1457904375453-3e1fc2fc76f4?q=80&w=500&auto=format&fit=crop' }, // First Principles - thinking basics
+      { id: 4, name: 'First Principles', image: 'https://images.unsplash.com/photo-1447069387593-a5de0862481e?q=80&w=500&auto=format&fit=crop' }, // First Principles - fundamental thinking
       { id: 5, name: 'Porter\'s Five Forces', image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=500&auto=format&fit=crop' }, // Porter's - competition analysis
       { id: 6, name: 'Jobs-To-Be-Done', image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=500&auto=format&fit=crop' }, // JTBD - customer focused
       { id: 7, name: 'Blue Ocean Strategy', image: 'https://images.unsplash.com/photo-1566140967404-b8b3932483f5?q=80&w=500&auto=format&fit=crop' }, // Blue Ocean - uncharted waters
