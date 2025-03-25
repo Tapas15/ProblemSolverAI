@@ -104,6 +104,9 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
     return dateB.getTime() - dateA.getTime();
   });
   
+  // Limit to only the 3 most recent attempts (as requested by user)
+  const recentAttempts = sortedAttempts.slice(0, 3);
+  
   // Calculate performance trends
   const getPerformanceTrend = (currentIndex: number) => {
     if (currentIndex >= sortedAttempts.length - 1) return 'neutral'; // First attempt has no trend
@@ -222,7 +225,8 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
         </TabsList>
         
         <TabsContent value="all" className="space-y-4 pt-4">
-          {sortedAttempts.map((attempt, index) => {
+          {/* Show only recent 3 attempts as requested */}
+          {recentAttempts.map((attempt, index) => {
             const { feedback, recommendations } = getPerformanceFeedback(attempt, index);
             const trend = getPerformanceTrend(index);
             const isExpanded = expandedAttempt === attempt.id;
@@ -281,7 +285,7 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
                           </div>
                         </div>
                         
-                        {index < sortedAttempts.length - 1 && (
+                        {index < recentAttempts.length - 1 && (
                           <div className="bg-gray-50 p-3 rounded">
                             <div className="text-gray-500 mb-1">vs. Previous</div>
                             <div className="font-medium flex items-center">
@@ -326,28 +330,28 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
               <CardDescription>Your score progression over time</CardDescription>
             </CardHeader>
             <CardContent>
-              {sortedAttempts.length > 1 ? (
+              {recentAttempts.length > 1 ? (
                 <div className="space-y-6">
                   <div className="h-[200px] w-full relative">
-                    {/* Simple chart visualization */}
+                    {/* Simple chart visualization showing only recent 3 attempts */}
                     <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gray-200"></div>
                     <div className="absolute left-0 bottom-0 top-0 w-[1px] bg-gray-200"></div>
                     
                     <div className="flex items-end justify-between h-full relative">
-                      {[...sortedAttempts].reverse().map((attempt, i) => {
+                      {[...recentAttempts].reverse().map((attempt, i) => {
                         const height = `${attempt.score}%`;
-                        const isLast = i === sortedAttempts.length - 1;
-                        const isImproved = i > 0 && attempt.score > sortedAttempts[sortedAttempts.length - i].score;
-                        const isDeclined = i > 0 && attempt.score < sortedAttempts[sortedAttempts.length - i].score;
+                        const isLast = i === recentAttempts.length - 1;
+                        const isImproved = i > 0 && attempt.score > recentAttempts[recentAttempts.length - i].score;
+                        const isDeclined = i > 0 && attempt.score < recentAttempts[recentAttempts.length - i].score;
                         
                         return (
-                          <div key={attempt.id} className="flex flex-col items-center" style={{ width: `${100 / sortedAttempts.length}%` }}>
+                          <div key={attempt.id} className="flex flex-col items-center" style={{ width: `${100 / recentAttempts.length}%` }}>
                             <div className="text-xs mb-1">{attempt.score}%</div>
                             <div 
                               className={`w-8 ${isImproved ? 'bg-green-400' : isDeclined ? 'bg-red-400' : 'bg-blue-400'}`} 
                               style={{ height }}
                             ></div>
-                            <div className="text-xs mt-1">Attempt {sortedAttempts.length - i}</div>
+                            <div className="text-xs mt-1">Attempt {i + 1}</div>
                           </div>
                         );
                       })}
@@ -356,12 +360,12 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
                   
                   <div className="bg-gray-50 p-4 rounded-md">
                     <h4 className="font-medium mb-2">Performance Summary</h4>
-                    {sortedAttempts[0].score > sortedAttempts[sortedAttempts.length - 1].score ? (
+                    {recentAttempts[0].score > recentAttempts[recentAttempts.length - 1].score ? (
                       <div className="flex items-center text-green-600">
                         <TrendingUp className="h-4 w-4 mr-2" />
                         <span>Your performance has improved over time!</span>
                       </div>
-                    ) : sortedAttempts[0].score < sortedAttempts[sortedAttempts.length - 1].score ? (
+                    ) : recentAttempts[0].score < recentAttempts[recentAttempts.length - 1].score ? (
                       <div className="flex items-center text-red-600">
                         <TrendingDown className="h-4 w-4 mr-2" />
                         <span>Your performance has declined. Review the material again.</span>
@@ -389,12 +393,12 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {sortedAttempts.length > 0 && (
+                {recentAttempts.length > 0 && (
                   <div className="p-4 border rounded-md">
-                    <h4 className="font-medium mb-2">Based on your latest attempt ({sortedAttempts[0].score}%)</h4>
-                    <p className="text-gray-600 mb-4">{getPerformanceFeedback(sortedAttempts[0], 0).recommendations}</p>
+                    <h4 className="font-medium mb-2">Based on your latest attempt ({recentAttempts[0].score}%)</h4>
+                    <p className="text-gray-600 mb-4">{getPerformanceFeedback(recentAttempts[0], 0).recommendations}</p>
                     
-                    {sortedAttempts[0].score < 80 && (
+                    {recentAttempts[0].score < 80 && (
                       <ul className="space-y-2 text-sm">
                         <li className="flex items-start">
                           <span className="h-5 w-5 text-blue-500 mr-2">•</span>
@@ -418,7 +422,7 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
         </TabsContent>
       </Tabs>
       
-      {!quizId && sortedAttempts.length > 0 && (
+      {!quizId && recentAttempts.length > 0 && (
         <div className="mt-6">
           <AlertDialog>
             <AlertDialogTrigger asChild>
