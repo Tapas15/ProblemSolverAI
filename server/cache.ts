@@ -1,11 +1,12 @@
 import NodeCache from 'node-cache';
 
-// Configure cache with enhanced performance settings
+// Configure cache with enhanced performance settings for faster loading
 export const cache = new NodeCache({
-  stdTTL: 900, // 15 minutes in seconds for better performance
-  checkperiod: 120, // Check for expired keys every 2 minutes to reduce CPU overhead
+  stdTTL: 3600, // 60 minutes in seconds for much better performance and fewer server requests
+  checkperiod: 300, // Check for expired keys every 5 minutes to reduce CPU overhead further
   useClones: false, // Disable cloning for better performance with large objects
-  maxKeys: 1000, // Limit maximum keys to prevent memory issues
+  maxKeys: 2000, // Increased limit for more comprehensive caching
+  deleteOnExpire: true, // Immediately delete expired items to free memory
 });
 
 // Cache keys
@@ -93,14 +94,27 @@ export function cachingMiddleware(req: any, res: any, next: any) {
   next();
 }
 
-// Function to add cache-control headers for static resources
+// Enhanced function to add cache-control headers for static resources
 export function addCacheHeaders(req: any, res: any, next: any) {
   const path = req.path;
   
-  // Add cache headers for static resources
-  if (path.match(/\.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$/)) {
-    res.setHeader('Cache-Control', 'public, max-age=86400'); // 1 day
-    // Add an etag header for better caching
+  // Set much more aggressive caching for static resources
+  if (path.match(/\.(css|js)$/)) {
+    // JavaScript and CSS - 7 days cache
+    res.setHeader('Cache-Control', 'public, max-age=604800, immutable');
+  } else if (path.match(/\.(png|jpg|jpeg|gif|ico|svg|webp)$/)) {
+    // Images - 30 days cache
+    res.setHeader('Cache-Control', 'public, max-age=2592000, immutable');
+  } else if (path.match(/\.(woff|woff2|ttf|eot)$/)) {
+    // Fonts - 365 days cache
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+  }
+  
+  // Add compression hint
+  res.setHeader('Vary', 'Accept-Encoding');
+  
+  // Add a strong ETag for validation
+  if (path.match(/\.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|webp)$/)) {
     res.setHeader('ETag', JSON.stringify({
       path: req.path,
       mtime: Date.now()
