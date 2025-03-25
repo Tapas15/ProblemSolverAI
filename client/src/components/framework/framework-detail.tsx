@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'wouter';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/use-auth';
@@ -39,6 +39,8 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
   const [aiQuestion, setAiQuestion] = useState('');
   const [aiResponse, setAiResponse] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
+  // Use local state for modules to ensure UI updates immediately
+  const [localModules, setLocalModules] = useState<Module[]>(modules);
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -76,19 +78,61 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
         
         // Force module update in the local state for immediate UI update
         if (updatedModule && modules) {
-          const updatedModules = modules.map(m => 
-            m.id === updatedModule.id ? {...m, completed: updatedModule.completed} : m
+          // Update modules state directly for immediate UI response
+          setLocalModules((prevModules: Module[]) => 
+            prevModules.map((m: Module) => 
+              m.id === updatedModule.id ? {...m, completed: updatedModule.completed} : m
+            )
           );
           
-          // This will cause a re-render with the updated module state
-          // without waiting for the query to finish
+          // Apply visual changes directly to DOM for immediate feedback
           window.setTimeout(() => {
             const moduleElement = document.getElementById(`module-${updatedModule.id}`);
             if (moduleElement) {
+              // Update the module element's appearance
               if (updatedModule.completed) {
                 moduleElement.classList.add('module-completed');
+                
+                // Update header section
+                const headerSection = moduleElement.querySelector('.bg-gray-50');
+                if (headerSection) {
+                  headerSection.className = headerSection.className.replace('bg-gray-50', 'bg-green-50');
+                }
+                
+                // Update module number badge
+                const badge = moduleElement.querySelector('.bg-gray-300');
+                if (badge) {
+                  badge.className = badge.className.replace('bg-gray-300', 'bg-green-500');
+                }
+                
+                // Update the module title
+                const title = moduleElement.querySelector('h4');
+                if (title && !title.className.includes('text-green-700')) {
+                  title.className += ' text-green-700';
+                }
+                
+                // Update the border
+                moduleElement.className = moduleElement.className.replace('border-gray-200', 'border-green-300');
               } else {
                 moduleElement.classList.remove('module-completed');
+                
+                // Revert all green styling
+                const headerSection = moduleElement.querySelector('.bg-green-50');
+                if (headerSection) {
+                  headerSection.className = headerSection.className.replace('bg-green-50', 'bg-gray-50');
+                }
+                
+                const badge = moduleElement.querySelector('.bg-green-500');
+                if (badge) {
+                  badge.className = badge.className.replace('bg-green-500', 'bg-gray-300');
+                }
+                
+                const title = moduleElement.querySelector('.text-green-700');
+                if (title) {
+                  title.className = title.className.replace('text-green-700', '');
+                }
+                
+                moduleElement.className = moduleElement.className.replace('border-green-300', 'border-gray-200');
               }
             }
           }, 50);
@@ -307,7 +351,8 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {modules.map((module) => (
+                  {/* Use localModules state for rendering to ensure immediate UI updates */}
+                  {localModules.map((module) => (
                     <div id={`module-${module.id}`} key={module.id} className={`border ${module.completed ? 'border-green-300 shadow-sm' : 'border-gray-200'} ${expandedModule === module.id ? 'module-active' : ''} rounded-lg overflow-hidden`}>
                       <div 
                         className={`${module.completed ? 'bg-green-50' : 'bg-gray-50'} px-4 py-3 flex justify-between items-center cursor-pointer`}
