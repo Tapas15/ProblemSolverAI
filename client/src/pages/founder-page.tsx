@@ -172,7 +172,10 @@ const FounderPage: React.FC = () => {
       {/* Consultation Options */}
       <h2 className="mobile-h2 mb-3 text-[#0f172a]">Consultation Options</h2>
       <div className="space-y-3 mb-5">
-        <Card className="native-card touch-feedback p-4">
+        <Card 
+          className="native-card touch-feedback p-4 cursor-pointer"
+          onClick={() => window.open("https://calendly.com/manasmk1703/15min", "_blank")}
+        >
           <div className="flex items-start">
             <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mr-3 flex-shrink-0">
               <ExternalLink className="h-5 w-5 text-[#3b82f6]" />
@@ -184,7 +187,10 @@ const FounderPage: React.FC = () => {
           </div>
         </Card>
         
-        <Card className="native-card touch-feedback p-4">
+        <Card 
+          className="native-card touch-feedback p-4 cursor-pointer"
+          onClick={() => window.open("https://calendly.com/manasmk1703/15min", "_blank")}
+        >
           <div className="flex items-start">
             <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mr-3 flex-shrink-0">
               <ExternalLink className="h-5 w-5 text-[#3b82f6]" />
@@ -196,7 +202,10 @@ const FounderPage: React.FC = () => {
           </div>
         </Card>
         
-        <Card className="native-card touch-feedback p-4">
+        <Card 
+          className="native-card touch-feedback p-4 cursor-pointer"
+          onClick={() => window.open("https://calendly.com/manasmk1703/15min", "_blank")}
+        >
           <div className="flex items-start">
             <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mr-3 flex-shrink-0">
               <ExternalLink className="h-5 w-5 text-[#3b82f6]" />
@@ -209,7 +218,10 @@ const FounderPage: React.FC = () => {
         </Card>
       </div>
       
-      <Button className="native-button w-full flex items-center justify-center mb-2">
+      <Button
+        className="native-button w-full flex items-center justify-center mb-2"
+        onClick={() => window.open("https://calendly.com/manasmk1703/15min", "_blank")}
+      >
         Request Consultation
       </Button>
       <p className="text-xs text-[#64748b] text-center">
