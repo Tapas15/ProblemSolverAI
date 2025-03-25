@@ -43,6 +43,7 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
   const [localModules, setLocalModules] = useState<Module[]>(modules);
   const [activeTab, setActiveTab] = useState<string>('overview');
   const [caseStudiesOpen, setCaseStudiesOpen] = useState(false); // Added case studies state
+  const [practicalApplicationOpen, setPracticalApplicationOpen] = useState(false); // Added practical application state
 
   // Keep localModules in sync with modules prop
   useEffect(() => {
@@ -509,33 +510,41 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
             {/* Practical Application section */}
             {!isLoading && framework && (
               <div className="mb-8">
-                <h3 className="text-lg font-semibold font-header text-primary mb-4">Practical Application</h3>
+                <div className="border border-gray-200 rounded-lg overflow-hidden">
+                  <div className="p-4 flex justify-between items-center cursor-pointer" onClick={() => setPracticalApplicationOpen(!practicalApplicationOpen)}>
+                    <h3 className="text-lg font-semibold font-header text-primary">Practical Application</h3>
+                    <button>
+                      {practicalApplicationOpen ? <ChevronUp/> : <ChevronDown />}
+                    </button>
+                  </div>
+                  {practicalApplicationOpen && (
+                    <div className="p-5">
+                      <h4 className="font-medium mb-3">Steps to Apply the {framework.name}</h4>
 
-                <div className="bg-gray-50 border border-gray-200 rounded-lg p-5">
-                  <h4 className="font-medium mb-3">Steps to Apply the {framework.name}</h4>
-
-                  <ol className="text-gray-700 space-y-4 ml-5 list-decimal">
-                    <li>
-                      <p className="font-medium">Define the problem clearly</p>
-                      <p className="text-sm text-gray-600 mt-1">Ensure you have a precise understanding of what you're trying to solve before attempting categorization.</p>
-                    </li>
-                    <li>
-                      <p className="font-medium">Identify main categories</p>
-                      <p className="text-sm text-gray-600 mt-1">Create top-level categories that don't overlap but cover all aspects of the problem.</p>
-                    </li>
-                    <li>
-                      <p className="font-medium">Test for mutual exclusivity</p>
-                      <p className="text-sm text-gray-600 mt-1">Verify that each element belongs to exactly one category without overlap.</p>
-                    </li>
-                    <li>
-                      <p className="font-medium">Test for collective exhaustiveness</p>
-                      <p className="text-sm text-gray-600 mt-1">Confirm that your categories cover all possible aspects of the problem with no gaps.</p>
-                    </li>
-                    <li>
-                      <p className="font-medium">Iterate if necessary</p>
-                      <p className="text-sm text-gray-600 mt-1">Refine your categories until they satisfy both MECE criteria.</p>
-                    </li>
-                  </ol>
+                      <ol className="text-gray-700 space-y-4 ml-5 list-decimal">
+                        <li>
+                          <p className="font-medium">Define the problem clearly</p>
+                          <p className="text-sm text-gray-600 mt-1">Ensure you have a precise understanding of what you're trying to solve before attempting categorization.</p>
+                        </li>
+                        <li>
+                          <p className="font-medium">Identify main categories</p>
+                          <p className="text-sm text-gray-600 mt-1">Create top-level categories that don't overlap but cover all aspects of the problem.</p>
+                        </li>
+                        <li>
+                          <p className="font-medium">Test for mutual exclusivity</p>
+                          <p className="text-sm text-gray-600 mt-1">Verify that each element belongs to exactly one category without overlap.</p>
+                        </li>
+                        <li>
+                          <p className="font-medium">Test for collective exhaustiveness</p>
+                          <p className="text-sm text-gray-600 mt-1">Confirm that your categories cover all possible aspects of the problem with no gaps.</p>
+                        </li>
+                        <li>
+                          <p className="font-medium">Iterate if necessary</p>
+                          <p className="text-sm text-gray-600 mt-1">Refine your categories until they satisfy both MECE criteria.</p>
+                        </li>
+                      </ol>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -543,10 +552,9 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
             {/* Case Studies section */}
             {!isLoading && framework && (
               <div className="mb-8">
-                <h3 className="text-lg font-semibold font-header text-primary mb-4">Case Studies</h3>
                 <div className="border border-gray-200 rounded-lg overflow-hidden">
                   <div className="p-4 flex justify-between items-center cursor-pointer" onClick={() => setCaseStudiesOpen(!caseStudiesOpen)}>
-                    <h4 className="font-medium">Case Studies</h4>
+                    <h3 className="text-lg font-semibold font-header text-primary">Case Studies</h3>
                     <button>
                       {caseStudiesOpen ? <ChevronUp/> : <ChevronDown />}
                     </button>
