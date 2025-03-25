@@ -1,17 +1,44 @@
 /* Mobile-specific styles for a more native app feeling */
 
+/* Base mobile app styling */
+.capacitor-app {
+  background-color: #f8f9fb;
+  color: #0f172a;
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+  overscroll-behavior-y: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  touch-action: manipulation;
+}
+
+/* Platform-specific styles */
 .capacitor-app.ios {
   /* iOS specific styles */
-  --safe-area-inset-top: env(safe-area-inset-top);
-  --safe-area-inset-bottom: env(safe-area-inset-bottom);
+  --safe-area-inset-top: env(safe-area-inset-top, 47px);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 34px);
+  --safe-area-inset-left: env(safe-area-inset-left, 0px);
+  --safe-area-inset-right: env(safe-area-inset-right, 0px);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  letter-spacing: -0.02em;
 }
 
 .capacitor-app.android {
   /* Android specific styles */
   --safe-area-inset-top: 24px;
   --safe-area-inset-bottom: 16px;
+  --safe-area-inset-left: 0px;
+  --safe-area-inset-right: 0px;
   font-family: Roboto, "Helvetica Neue", sans-serif;
+  letter-spacing: 0;
+}
+
+/* Container width based on device */
+.mobile-container {
+  width: 100%;
+  max-width: 480px;
+  padding-top: 1rem;
 }
 
 /* Add native-like animations */
@@ -23,7 +50,7 @@
 .page-transition-enter-active {
   opacity: 1;
   transform: translateX(0);
-  transition: opacity 300ms, transform 300ms;
+  transition: opacity 300ms, transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .page-transition-exit {
@@ -34,49 +61,92 @@
 .page-transition-exit-active {
   opacity: 0;
   transform: translateX(-100%);
-  transition: opacity 300ms, transform 300ms;
+  transition: opacity 300ms, transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* Native-like input styles */
 .native-input {
   -webkit-appearance: none;
-  border-radius: 8px;
-  padding: 12px 16px;
+  border-radius: 12px;
+  padding: 14px 16px;
   font-size: 16px; /* Prevent zoom on iOS */
-  background-color: rgba(0, 0, 0, 0.05);
-  border: none;
+  background-color: rgba(15, 37, 68, 0.05);
+  border: 1px solid rgba(59, 130, 246, 0.1);
   width: 100%;
+  color: #0f172a;
+  transition: all 0.2s ease;
 }
 
 .native-input:focus {
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: rgba(15, 37, 68, 0.08);
   outline: none;
+  border-color: rgba(59, 130, 246, 0.3);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
 }
 
-/* Native-like button styles */
+/* Native-like button styles with active state feedback */
 .native-button {
   -webkit-appearance: none;
-  border-radius: 8px;
-  padding: 12px 16px;
-  font-weight: 500;
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-weight: 600;
+  font-size: 15px;
   text-align: center;
-  transition: background-color 0.2s, transform 0.1s;
+  background: linear-gradient(to right, #3b82f6, #60a5fa);
+  color: white;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   touch-action: manipulation;
   user-select: none;
   width: 100%;
+  position: relative;
+  overflow: hidden;
 }
 
 .native-button:active {
-  transform: scale(0.98);
+  transform: scale(0.97);
+  opacity: 0.95;
 }
 
-/* Disable pull-to-refresh */
+.native-button:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, white 0%, transparent 70%);
+  opacity: 0;
+  transform: scale(2);
+  transition: opacity 0.7s, transform 0.7s;
+}
+
+.native-button:active:after {
+  opacity: 0.2;
+  transform: scale(0);
+  transition: opacity 0s, transform 0s;
+}
+
+/* Secondary button styles */
+.native-button-secondary {
+  background: rgba(15, 37, 68, 0.05);
+  color: #0f172a;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+/* Disable pull-to-refresh and overscroll behaviors */
 html, body {
-  overscroll-behavior-y: contain;
+  overscroll-behavior-y: none;
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  overflow: hidden;
 }
 
-/* Hide scrollbars but keep functionality */
+/* Enable scrolling within the content area */
 .native-scroll {
+  overflow-y: auto;
+  height: 100%;
+  -webkit-overflow-scrolling: touch;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE and Edge */
 }
@@ -93,85 +163,118 @@ html, body {
   right: 0;
   height: calc(56px + var(--safe-area-inset-bottom, 0px));
   padding-bottom: var(--safe-area-inset-bottom, 0px);
-  background-color: white;
   display: flex;
   align-items: center;
   justify-content: space-around;
-  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1);
   z-index: 1000;
 }
 
-/* Content area that accounts for top and bottom bars */
-.mobile-content {
-  padding-top: var(--safe-area-inset-top, 0px);
-  padding-bottom: calc(56px + var(--safe-area-inset-bottom, 0px));
-  min-height: 100vh;
-  width: 100%;
-  overflow-x: hidden;
+/* Active tab indicator animation */
+@keyframes tab-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
 }
 
-/* iOS style segmented control */
+.mobile-tab-bar a div.text-\[\#60a5fa\] {
+  animation: tab-bounce 0.5s ease-in-out;
+}
+
+/* Native-looking cards with improved styling */
+.native-card {
+  background-color: white;
+  border-radius: 16px;
+  padding: 18px;
+  margin-bottom: 16px;
+  box-shadow: 0 3px 12px rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.native-card:active {
+  transform: scale(0.98);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+}
+
+/* Improved list items with animated feedback */
+.native-list-item {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  background-color: white;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.native-list-item:active {
+  background-color: rgba(15, 37, 68, 0.05);
+  transform: scale(0.99);
+}
+
+/* iOS style segmented control with improved styling */
 .segmented-control {
   display: flex;
-  background-color: rgba(0, 0, 0, 0.05);
-  border-radius: 8px;
-  padding: 2px;
-  margin: 8px 0;
+  background-color: rgba(15, 37, 68, 0.06);
+  border-radius: 12px;
+  padding: 3px;
+  margin: 12px 0;
 }
 
 .segmented-control-option {
   flex: 1;
-  padding: 8px 12px;
+  padding: 10px 14px;
   text-align: center;
   font-size: 14px;
-  font-weight: 500;
-  transition: background-color 0.2s;
-  border-radius: 6px;
+  font-weight: 600;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 10px;
+  color: rgba(15, 37, 68, 0.6);
+  position: relative;
+  overflow: hidden;
 }
 
 .segmented-control-option.active {
   background-color: white;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  color: #3b82f6;
+  box-shadow: 0 2px 6px rgba(15, 37, 68, 0.06);
 }
 
-/* Native looking cards */
-.native-card {
-  background-color: white;
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+.segmented-control-option:active {
+  opacity: 0.8;
 }
 
-/* Pull to refresh animation placeholder */
-.pull-to-refresh-indicator {
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #007AFF;
-  font-size: 12px;
-}
-
-/* Native looking dialog/modal */
+/* Native-looking bottom sheet modal */
 .native-modal {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
   background-color: white;
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
-  padding: 20px;
-  padding-bottom: calc(20px + var(--safe-area-inset-bottom, 0px));
-  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  padding: 24px 20px;
+  padding-bottom: calc(24px + var(--safe-area-inset-bottom, 0px));
+  box-shadow: 0 -10px 30px rgba(15, 23, 42, 0.15);
   z-index: 1001;
   transform: translateY(100%);
-  transition: transform 0.3s ease-out;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .native-modal.open {
   transform: translateY(0);
+}
+
+/* Modal drag handle */
+.native-modal:before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 36px;
+  height: 5px;
+  background-color: rgba(15, 37, 68, 0.15);
+  border-radius: 3px;
 }
 
 .native-modal-backdrop {
@@ -180,7 +283,8 @@ html, body {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(2px);
   z-index: 1000;
   opacity: 0;
   transition: opacity 0.3s ease-out;
@@ -190,4 +294,274 @@ html, body {
 .native-modal-backdrop.open {
   opacity: 1;
   pointer-events: all;
+}
+
+/* Native-like spinners and loading states */
+.native-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(59, 130, 246, 0.1);
+  border-left-color: #3b82f6;
+  border-radius: 50%;
+  animation: spinner 0.8s linear infinite;
+}
+
+@keyframes spinner {
+  to { transform: rotate(360deg); }
+}
+
+/* Native-like form labels */
+.native-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(15, 23, 42, 0.7);
+  margin-bottom: 8px;
+  display: block;
+}
+
+/* Enhanced touch feedback for all interactive elements */
+.touch-feedback {
+  position: relative;
+  overflow: hidden;
+}
+
+.touch-feedback:after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100px;
+  height: 100px;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  transform: scale(0) translate(-50%, -50%);
+  opacity: 0;
+  transform-origin: top left;
+  pointer-events: none;
+}
+
+.touch-feedback:active:after {
+  animation: ripple 0.5s ease-out;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0) translate(-50%, -50%);
+    opacity: 0.4;
+  }
+  100% {
+    transform: scale(4) translate(-50%, -50%);
+    opacity: 0;
+  }
+}
+
+/* Pull to refresh animation */
+.pull-to-refresh-indicator {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  color: #3b82f6;
+  font-weight: 500;
+}
+
+.pull-to-refresh-spinner {
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  border: 2px solid rgba(59, 130, 246, 0.1);
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spinner 0.8s linear infinite;
+}
+
+/* Native empty state styles */
+.native-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.native-empty-state-icon {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(59, 130, 246, 0.1);
+  border-radius: 50%;
+  color: #3b82f6;
+  margin-bottom: 16px;
+}
+
+.native-empty-state-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #0f172a;
+}
+
+.native-empty-state-description {
+  font-size: 14px;
+  color: rgba(15, 23, 42, 0.6);
+  margin-bottom: 24px;
+  max-width: 260px;
+}
+
+/* Tailwind utilities for safe area insets */
+.pt-safe {
+  padding-top: var(--safe-area-inset-top, 0px);
+}
+
+.pb-safe {
+  padding-bottom: var(--safe-area-inset-bottom, 0px);
+}
+
+.pl-safe {
+  padding-left: var(--safe-area-inset-left, 0px);
+}
+
+.pr-safe {
+  padding-right: var(--safe-area-inset-right, 0px);
+}
+
+/* Native horizontal scroller */
+.native-scroll-x {
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-bottom: 10px; /* Add padding to prevent bottom cut-off */
+  margin-bottom: -10px; /* Compensate for padding */
+}
+
+.native-scroll-x::-webkit-scrollbar {
+  display: none;
+}
+
+/* Native app status bar */
+.status-bar-placeholder {
+  width: 100%;
+  z-index: 1001;
+}
+
+/* Mobile-optimized headings */
+.mobile-h1 {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 12px;
+}
+
+.mobile-h2 {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.25;
+  margin-bottom: 10px;
+}
+
+.mobile-h3 {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.3;
+  margin-bottom: 8px;
+}
+
+/* Framework cards with enhanced interactive states */
+.framework-card {
+  border-radius: 16px;
+  overflow: hidden;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(59, 130, 246, 0.08);
+  background-color: white;
+}
+
+.framework-card:active {
+  transform: scale(0.98);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+}
+
+/* Enhanced badges with different states */
+.badge-blue {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+.badge-green {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.badge-orange {
+  background-color: rgba(249, 115, 22, 0.1);
+  color: #f97316;
+}
+
+.badge-red {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.badge-purple {
+  background-color: rgba(139, 92, 246, 0.1);
+  color: #8b5cf6;
+}
+
+/* Toast notification styling */
+.mobile-toast {
+  position: fixed;
+  bottom: calc(64px + var(--safe-area-inset-bottom, 0px));
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #0f172a;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+  z-index: 1100;
+  font-size: 14px;
+  font-weight: 500;
+  max-width: 90%;
+  text-align: center;
+  animation: toast-appear 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes toast-appear {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+/* Floating action button (FAB) */
+.mobile-fab {
+  position: fixed;
+  bottom: calc(80px + var(--safe-area-inset-bottom, 0px));
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 28px;
+  background: linear-gradient(135deg, #3b82f6, #60a5fa);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+  color: white;
+  z-index: 1000;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mobile-fab:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25);
 }
