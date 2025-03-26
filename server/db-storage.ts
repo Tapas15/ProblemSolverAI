@@ -1,11 +1,12 @@
-import { users, frameworks, modules, userProgress, aiConversations, quizzes, quizAttempts, exercises, exerciseSubmissions, certificates } from "@shared/schema";
+import { users, frameworks, modules, userProgress, aiConversations, quizzes, quizAttempts, exercises, exerciseSubmissions, certificates, rewards, userRewards, userStreaks } from "@shared/schema";
 import { eq, and, desc } from "drizzle-orm";
 import type { 
   User, InsertUser, Framework, InsertFramework, Module, InsertModule, 
   UserProgress, InsertUserProgress, AiConversation, InsertAiConversation,
   Quiz, InsertQuiz, QuizAttempt, InsertQuizAttempt,
   Exercise, InsertExercise, ExerciseSubmission, InsertExerciseSubmission,
-  Certificate, InsertCertificate
+  Certificate, InsertCertificate, Reward, InsertReward, UserReward, InsertUserReward,
+  UserStreak, InsertUserStreak
 } from "@shared/schema";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
