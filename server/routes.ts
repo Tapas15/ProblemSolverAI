@@ -1306,14 +1306,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (!req.isAuthenticated()) return res.sendStatus(401);
     
     try {
+      console.log("AI ask request received:", req.body);
       const { question, frameworkId } = req.body;
       const userId = req.user!.id;
       
       if (!question) {
+        console.warn("AI request missing question field");
         return res.status(400).json({ message: "Question is required" });
       }
       
       const user = await storage.getUser(userId);
+      console.log(`User ${userId} AI settings:`, { 
+        hasApiKey: !!user?.apiKey, 
+        aiProvider: user?.aiProvider || "openai (default)" 
+      });
       
       if (!user || !user.apiKey) {
         return res.status(400).json({ message: "API key not configured. Please set up your AI integration in settings." });
@@ -1328,11 +1334,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         "Provide helpful, clear, and concise guidance on applying business frameworks to solve real-world problems."
       } Format your responses in a structured way with clear steps and explanations.`;
       
+      console.log(`Using AI provider: ${aiProvider}`);
+      
       if (aiProvider === "openai") {
         // Use OpenAI API
         try {
+          console.log("Initializing OpenAI client");
           const openai = new OpenAI({ apiKey: user.apiKey });
+          
           // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+          console.log("Sending request to OpenAI GPT-4o");
           const response = await openai.chat.completions.create({
             model: "gpt-4o",
             messages: [
@@ -1347,41 +1358,96 @@ export async function registerRoutes(app: Express): Promise<Server> {
             ],
           });
           
-          answer = response.choices[0].message.content || "I'm sorry, I couldn't generate a response. Please try again.";
+          console.log("Received OpenAI response:", {
+            status: "success",
+            model: response.model,
+            hasChoices: !!response.choices?.length
+          });
+          
+          answer = response.choices[0]?.message?.content || "I'm sorry, I couldn't generate a response. Please try again.";
         } catch (error: any) {
           console.error("OpenAI API error:", error);
-          return res.status(500).json({ message: `AI provider error: ${error.message}` });
+          // Add detailed error logging
+          if (error.response) {
+            console.error("OpenAI API response error details:", {
+              status: error.response.status,
+              statusText: error.response.statusText,
+              headers: error.response.headers,
+              data: error.response.data
+            });
+          }
+          
+          // Provide more specific error messages based on common API errors
+          if (error.code === 'invalid_api_key') {
+            return res.status(401).json({ message: "Invalid OpenAI API key. Please check your key and try again." });
+          } else if (error.status === 429) {
+            return res.status(429).json({ message: "OpenAI rate limit exceeded. Please try again later." });
+          } else {
+            return res.status(500).json({ message: `OpenAI API error: ${error.message}` });
+          }
         }
       } else if (aiProvider === "gemini") {
         // Use Google's Gemini API
         try {
+          console.log("Initializing Google Generative AI client");
           const genAI = new GoogleGenerativeAI(user.apiKey);
+          
           // Use the non-chat model approach instead of chat since there are compatibility issues
+          console.log("Creating Gemini 1.5 Pro model instance");
           const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
           
           // Send a single prompt that includes both system and user content
           const prompt = `${systemPrompt}\n\nQuestion: ${question}`;
+          console.log("Sending request to Gemini API");
           
           const result = await model.generateContent(prompt);
+          console.log("Received Gemini response");
           
           // Extract text from the Gemini response
           let responseText = "";
           try {
+            console.log("Extracting text from Gemini response using text() method");
             responseText = result.response.text();
+            console.log("Successfully extracted text from Gemini response");
           } catch (error) {
-            console.error("Error extracting text from Gemini response:", error);
+            console.error("Error extracting text from Gemini response using text() method:", error);
+            console.log("Attempting alternative method to extract text from Gemini response");
+            
             // Try alternate method of accessing the text
-            responseText = result.response.candidates?.[0]?.content?.parts?.[0]?.text || "";
+            const candidates = result.response.candidates || [];
+            console.log(`Gemini response has ${candidates.length} candidates`);
+            
+            if (candidates.length > 0 && candidates[0].content && candidates[0].content.parts) {
+              console.log(`Candidate has ${candidates[0].content.parts.length} parts`);
+              responseText = candidates[0].content.parts[0]?.text || "";
+              console.log("Extracted text from candidates array:", !!responseText);
+            }
           }
           
           answer = responseText || "I'm sorry, I couldn't generate a response. Please try again.";
         } catch (error: any) {
           console.error("Gemini API error:", error);
-          return res.status(500).json({ message: `AI provider error: ${error.message}` });
+          
+          // Add detailed error logging
+          if (error.details) {
+            console.error("Gemini API error details:", error.details);
+          }
+          
+          // Provide more specific error messages based on common API errors
+          if (error.message && error.message.includes("API key")) {
+            return res.status(401).json({ message: "Invalid Google Gemini API key. Please check your key and try again." });
+          } else if (error.message && error.message.includes("quota")) {
+            return res.status(429).json({ message: "Google Gemini quota exceeded. Please try again later." });
+          } else {
+            return res.status(500).json({ message: `Gemini API error: ${error.message}` });
+          }
         }
       } else {
+        console.warn(`Unsupported AI provider requested: ${aiProvider}`);
         return res.status(400).json({ message: "Unsupported AI provider. Please select either 'openai' or 'gemini' in your settings." });
       }
+      
+      console.log("AI response generated successfully, storing conversation");
       
       // Store the conversation
       const conversation = await storage.createAiConversation({
@@ -1392,10 +1458,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       
       // Invalidate conversations cache
+      console.log("Invalidating AI conversations cache");
       invalidateCache(CACHE_KEYS.AI_CONVERSATIONS(userId));
       
+      console.log("AI request completed successfully");
       res.json(conversation);
     } catch (error) {
+      console.error("Unhandled error in /api/ai/ask endpoint:", error);
       next(error);
     }
   });

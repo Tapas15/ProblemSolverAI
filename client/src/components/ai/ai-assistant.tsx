@@ -52,12 +52,22 @@ const AiAssistant: React.FC = () => {
   };
   
   const askAiMutation = useMutation({
-    mutationFn: ({ question, frameworkId }: AskQuestion) => askAi(question, frameworkId),
+    mutationFn: ({ question, frameworkId }: AskQuestion) => {
+      console.log('Sending AI query with:', { question, frameworkId });
+      try {
+        return askAi(question, frameworkId);
+      } catch (error) {
+        console.error('Error in askAi mutation function:', error);
+        throw error;
+      }
+    },
     onSuccess: () => {
+      console.log('AI query successful, clearing question and refreshing conversations');
       setQuestion('');
       queryClient.invalidateQueries({ queryKey: ['/api/ai/conversations'] });
     },
     onError: (error: Error) => {
+      console.error('AI query failed:', error);
       toast({
         title: "Failed to get AI response",
         description: error.message,
@@ -98,26 +108,51 @@ const AiAssistant: React.FC = () => {
   };
   
   const handleSubmitQuestion = () => {
-    if (!question.trim()) return;
+    console.log('handleSubmitQuestion called');
+    if (!question.trim()) {
+      console.log('Empty question, returning');
+      return;
+    }
     
     if (!user?.apiKey) {
+      console.log('No API key found, opening settings dialog');
       setIsAiSettingsOpen(true);
       return;
     }
     
-    if (activeTab === 'framework' && selectedFramework) {
-      // For framework-guided mode, send the formatted prompt and the framework ID
-      const frameworkIdNumber = parseInt(selectedFramework, 10);
-      const finalQuestion = getFrameworkPrompt(selectedFramework);
+    try {
+      console.log('Current user:', user);
+      console.log('Current user API key exists:', !!user.apiKey);
+      console.log('Current AI provider:', user.aiProvider || 'openai (default)');
       
-      askAiMutation.mutate({
-        question: finalQuestion,
-        frameworkId: frameworkIdNumber
-      });
-    } else {
-      // For custom questions, just send the question without a framework ID
-      askAiMutation.mutate({
-        question: question
+      if (activeTab === 'framework' && selectedFramework) {
+        // For framework-guided mode, send the formatted prompt and the framework ID
+        const frameworkIdNumber = parseInt(selectedFramework, 10);
+        const finalQuestion = getFrameworkPrompt(selectedFramework);
+        
+        console.log('Submitting framework-guided question:', {
+          question: finalQuestion,
+          frameworkId: frameworkIdNumber
+        });
+        
+        askAiMutation.mutate({
+          question: finalQuestion,
+          frameworkId: frameworkIdNumber
+        });
+      } else {
+        // For custom questions, just send the question without a framework ID
+        console.log('Submitting custom question:', question);
+        
+        askAiMutation.mutate({
+          question: question
+        });
+      }
+    } catch (error) {
+      console.error('Error in handleSubmitQuestion:', error);
+      toast({
+        title: "Error submitting question",
+        description: error instanceof Error ? error.message : "An unexpected error occurred",
+        variant: "destructive",
       });
     }
   };

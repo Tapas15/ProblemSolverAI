@@ -82,11 +82,20 @@ export async function askAi(
   question: string,
   frameworkId?: number
 ): Promise<AiConversation> {
-  const res = await apiRequest("POST", "/api/ai/ask", {
-    question,
-    frameworkId,
-  });
-  return res.json();
+  console.log('askAi called with:', { question, frameworkId });
+  try {
+    const res = await apiRequest("POST", "/api/ai/ask", {
+      question,
+      frameworkId,
+    });
+    console.log('askAi response status:', res.status);
+    const data = await res.json();
+    console.log('askAi response data:', data);
+    return data;
+  } catch (error) {
+    console.error('Error in askAi API call:', error);
+    throw error;
+  }
 }
 
 export async function getAiConversations(): Promise<AiConversation[]> {
