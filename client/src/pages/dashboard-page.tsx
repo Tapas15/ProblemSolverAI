@@ -224,34 +224,50 @@ const DashboardPage = () => {
           variant="ghost" 
           size="icon" 
           className="rounded-full w-9 h-9 bg-blue-50 text-blue-600 hover:bg-blue-100 transition-all touch-feedback"
-          onClick={() => {
+          onClick={async () => {
             // Show loading toast
             toast({
               title: "Refreshing dashboard...",
               description: "Fetching latest data",
             });
 
-            // Refresh all data
-            queryClient.invalidateQueries({ queryKey: ['/api/user/progress'] });
-            queryClient.invalidateQueries({ queryKey: ['/api/frameworks'] });
-            queryClient.invalidateQueries({ queryKey: ['/api/quiz-attempts/user'] });
-            queryClient.invalidateQueries({ queryKey: ['/api/all-modules-by-framework'] });
+            try {
+              // Use Promise.all to refresh all data in parallel
+              await Promise.all([
+                // Refresh all base data
+                queryClient.invalidateQueries({ queryKey: ['/api/user/progress'] }),
+                queryClient.invalidateQueries({ queryKey: ['/api/frameworks'] }),
+                queryClient.invalidateQueries({ queryKey: ['/api/quiz-attempts/user'] }),
+                queryClient.invalidateQueries({ queryKey: ['/api/all-modules-by-framework'] }),
+                
+                // Explicitly refetch quiz attempts to ensure latest data
+                refetchQuizAttempts(),
+                
+                // Explicitly refetch quiz data for all frameworks
+                ...frameworkIds.map((frameworkId: number) => 
+                  queryClient.invalidateQueries({ 
+                    queryKey: ['/api/quizzes/framework', frameworkId] 
+                  })
+                )
+              ]);
+              
+              // Once all promises are resolved, immediately run framework-specific refetches
+              refetchQuizzes();
 
-            // Refresh framework-specific quiz data
-            frameworkIds.forEach((frameworkId: number) => {
-              queryClient.invalidateQueries({ 
-                queryKey: ['/api/quizzes/framework', frameworkId] 
-              });
-            });
-
-            // Let the user know when refresh is complete
-            setTimeout(() => {
+              // Let the user know refresh is complete
               toast({
                 title: "Dashboard refreshed",
                 description: "Latest data loaded successfully",
                 variant: "default",
               });
-            }, 1000);
+            } catch (error) {
+              console.error("Error refreshing dashboard:", error);
+              toast({
+                title: "Refresh error",
+                description: "Could not refresh all data. Please try again.",
+                variant: "destructive",
+              });
+            }
           }}
           aria-label="Refresh data"
         >
