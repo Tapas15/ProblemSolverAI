@@ -10,6 +10,7 @@ import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { RewardsSection } from '@/components/rewards/rewards-section';
+import { Link } from 'wouter';
 import { 
   User, 
   Mail, 
@@ -22,7 +23,8 @@ import {
   MapPin,
   Calendar,
   Star,
-  Globe
+  Globe,
+  Flame
 } from 'lucide-react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { queryClient, apiRequest } from '@/lib/queryClient';
