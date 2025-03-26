@@ -26,6 +26,16 @@ const AiAssistant: React.FC = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
+  // Initialize API settings from user data
+  useEffect(() => {
+    if (user?.apiKey) {
+      setApiKey(user.apiKey);
+    }
+    if (user?.aiProvider) {
+      setAiProvider(user.aiProvider);
+    }
+  }, [user]);
+  
   const { data: frameworks } = useQuery({
     queryKey: ['/api/frameworks'],
     queryFn: () => getFrameworks(),
@@ -153,9 +163,40 @@ const AiAssistant: React.FC = () => {
           </Button>
         </div>
         
-        <p className="text-[#64748b] text-sm mb-4">
+        <p className="text-[#64748b] text-sm mb-2">
           Get tailored guidance for applying business frameworks to your unique challenges.
         </p>
+        
+        {!user?.apiKey && (
+          <div className="bg-muted p-3 rounded-md mb-4 text-xs">
+            <p className="font-medium mb-1">API Key Required:</p>
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <p className="font-medium text-secondary mb-1">OpenAI (GPT-4o):</p>
+                <ol className="list-decimal pl-4 space-y-0.5">
+                  <li>Visit <a href="https://platform.openai.com/api-keys" target="_blank" rel="noreferrer" className="text-primary underline">OpenAI API Keys</a></li>
+                  <li>Create account if needed</li>
+                  <li>Get API key that starts with "sk-"</li>
+                </ol>
+              </div>
+              <div className="flex-1">
+                <p className="font-medium text-secondary mb-1">Google (Gemini Pro):</p>
+                <ol className="list-decimal pl-4 space-y-0.5">
+                  <li>Visit <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-primary underline">Google AI Studio</a></li>
+                  <li>Sign in with Google</li>
+                  <li>Get API key that starts with "AIza"</li>
+                </ol>
+              </div>
+            </div>
+            <Button 
+              size="sm" 
+              className="mt-2 h-7 w-full bg-secondary hover:bg-secondary/90"
+              onClick={() => setIsAiSettingsOpen(true)}
+            >
+              Add Your API Key
+            </Button>
+          </div>
+        )}
         
         <Tabs defaultValue="custom" value={activeTab} onValueChange={setActiveTab} className="mb-4">
           <TabsList className="grid w-full grid-cols-2">
@@ -360,9 +401,29 @@ const AiAssistant: React.FC = () => {
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
               />
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-500 mb-1">
                 Your API key is stored securely and used only for your AI requests.
               </p>
+              <div className="mt-2 text-xs p-3 bg-muted rounded-md">
+                <p className="font-medium mb-1">How to get an API key:</p>
+                {aiProvider === 'openai' ? (
+                  <ol className="list-decimal pl-4 space-y-1">
+                    <li>Go to <a href="https://platform.openai.com/api-keys" target="_blank" rel="noreferrer" className="text-primary underline">OpenAI API Keys</a></li>
+                    <li>Sign in or create an account</li>
+                    <li>Click "Create new secret key"</li>
+                    <li>Copy the key and paste it here</li>
+                    <li>The API key starts with "sk-"</li>
+                  </ol>
+                ) : (
+                  <ol className="list-decimal pl-4 space-y-1">
+                    <li>Go to <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-primary underline">Google AI Studio</a></li>
+                    <li>Sign in with your Google account</li>
+                    <li>Click "Create API key"</li>
+                    <li>Copy the key and paste it here</li>
+                    <li>The API key starts with "AIza"</li>
+                  </ol>
+                )}
+              </div>
             </div>
             
             <div className="flex justify-end space-x-2 pt-4">
