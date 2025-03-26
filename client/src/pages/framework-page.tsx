@@ -1,13 +1,15 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, useLocation } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { getFramework, getModules, getUserProgress } from '@/lib/api';
 import MainLayout from '@/components/layout/main-layout';
 import FrameworkDetail from '@/components/framework/framework-detail';
+import { FrameworkWizardList } from '@/components/framework/framework-wizard-list';
 import { FrameworkDetailSkeleton } from '@/components/ui/skeleton-loader';
 import { AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Framework } from '@shared/schema';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const FrameworkPage: React.FC = () => {
   const params = useParams();
@@ -117,15 +119,33 @@ const FrameworkPage: React.FC = () => {
     );
   }
   
+  // State for active tab
+  const [activeTab, setActiveTab] = useState<string>("modules");
+  
   return (
     <MainLayout>
-      <FrameworkDetail 
-        isOpen={true} 
-        onClose={() => navigate('/')}
-        framework={enhancedFramework}
-        modules={modules}
-        isLoading={false}
-      />
+      <div className="container mx-auto px-4 py-6">
+        <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="mb-4">
+            <TabsTrigger value="modules">Modules</TabsTrigger>
+            <TabsTrigger value="wizard">Interactive Wizard</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="modules" className="mt-0">
+            <FrameworkDetail 
+              isOpen={true} 
+              onClose={() => navigate('/')}
+              framework={enhancedFramework}
+              modules={modules}
+              isLoading={false}
+            />
+          </TabsContent>
+          
+          <TabsContent value="wizard" className="mt-0">
+            <FrameworkWizardList frameworkId={frameworkId} />
+          </TabsContent>
+        </Tabs>
+      </div>
     </MainLayout>
   );
 };

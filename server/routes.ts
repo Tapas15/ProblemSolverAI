@@ -3121,6 +3121,303 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
     }
   });
   
+  // Wizard Session Routes
+  app.get("/api/wizard-sessions", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+      
+      const sessions = await storage.getUserWizardSessions(req.user.id);
+      res.json(sessions);
+    } catch (error) {
+      next(error);
+    }
+  });
+  
+  app.get("/api/wizard-sessions/framework/:id", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+      
+      const frameworkId = parseInt(req.params.id);
+      if (isNaN(frameworkId)) {
+        return res.status(400).send("Invalid framework ID");
+      }
+      
+      const sessions = await storage.getWizardSessionsByFramework(req.user.id, frameworkId);
+      res.json(sessions);
+    } catch (error) {
+      next(error);
+    }
+  });
+  
+  app.get("/api/wizard-sessions/:id", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+      
+      const sessionId = parseInt(req.params.id);
+      if (isNaN(sessionId)) {
+        return res.status(400).send("Invalid session ID");
+      }
+      
+      const session = await storage.getWizardSession(sessionId);
+      if (!session) {
+        return res.status(404).send("Wizard session not found");
+      }
+      
+      // Only allow users to see their own sessions unless they're admins
+      if (session.userId !== req.user.id && (!req.user.role || req.user.role !== "admin")) {
+        return res.status(403).send("Unauthorized to access this wizard session");
+      }
+      
+      res.json(session);
+    } catch (error) {
+      next(error);
+    }
+  });
+  
+  app.post("/api/wizard-sessions", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+      
+      // Validate the request body
+      const sessionData = insertWizardSessionSchema.parse({
+        ...req.body,
+        userId: req.user.id
+      });
+      
+      const session = await storage.createWizardSession(sessionData);
+      
+      // Invalidate sessions cache
+      invalidateRelatedCaches([CACHE_KEYS.WIZARD_SESSIONS]);
+      
+      res.status(201).json(session);
+    } catch (error) {
+      next(error);
+    }
+  });
+  
+  app.put("/api/wizard-sessions/:id", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+      
+      const sessionId = parseInt(req.params.id);
+      if (isNaN(sessionId)) {
+        return res.status(400).send("Invalid session ID");
+      }
+      
+      // Get the session to check ownership
+      const existingSession = await storage.getWizardSession(sessionId);
+      if (!existingSession) {
+        return res.status(404).send("Wizard session not found");
+      }
+      
+      // Only allow users to update their own sessions unless they're admins
+      if (existingSession.userId !== req.user.id && (!req.user.role || req.user.role !== "admin")) {
+        return res.status(403).send("Unauthorized to update this wizard session");
+      }
+      
+      // Update the session
+      const updatedSession = await storage.updateWizardSession(sessionId, req.body);
+      
+      // Invalidate sessions cache
+      invalidateRelatedCaches([CACHE_KEYS.WIZARD_SESSIONS]);
+      
+      res.json(updatedSession);
+    } catch (error) {
+      next(error);
+    }
+  });
+  
+  app.delete("/api/wizard-sessions/:id", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+      
+      const sessionId = parseInt(req.params.id);
+      if (isNaN(sessionId)) {
+        return res.status(400).send("Invalid session ID");
+      }
+      
+      // Get the session to check ownership
+      const existingSession = await storage.getWizardSession(sessionId);
+      if (!existingSession) {
+        return res.status(404).send("Wizard session not found");
+      }
+      
+      // Only allow users to delete their own sessions unless they're admins
+      if (existingSession.userId !== req.user.id && (!req.user.role || req.user.role !== "admin")) {
+        return res.status(403).send("Unauthorized to delete this wizard session");
+      }
+      
+      // Delete the session
+      await storage.deleteWizardSession(sessionId);
+      
+      // Invalidate sessions cache
+      invalidateRelatedCaches([CACHE_KEYS.WIZARD_SESSIONS]);
+      
+      res.status(204).send();
+    } catch (error) {
+      next(error);
+    }
+  });
+  
+  // Wizard Template Routes
+  app.get("/api/wizard-templates/framework/:id", async (req, res, next) => {
+    try {
+      const frameworkId = parseInt(req.params.id);
+      if (isNaN(frameworkId)) {
+        return res.status(400).send("Invalid framework ID");
+      }
+      
+      const templates = await storage.getWizardTemplatesByFramework(frameworkId);
+      
+      // Cache the templates
+      cacheData(`${CACHE_KEYS.WIZARD_TEMPLATES}:framework:${frameworkId}`, templates);
+      
+      res.json(templates);
+    } catch (error) {
+      next(error);
+    }
+  });
+  
+  app.get("/api/wizard-templates/framework/:frameworkId/step/:stepNumber", async (req, res, next) => {
+    try {
+      const frameworkId = parseInt(req.params.frameworkId);
+      const stepNumber = parseInt(req.params.stepNumber);
+      
+      if (isNaN(frameworkId) || isNaN(stepNumber)) {
+        return res.status(400).send("Invalid framework ID or step number");
+      }
+      
+      const template = await storage.getWizardTemplateByStep(frameworkId, stepNumber);
+      if (!template) {
+        return res.status(404).send("Wizard template not found");
+      }
+      
+      // Cache the template
+      cacheData(`${CACHE_KEYS.WIZARD_TEMPLATES}:framework:${frameworkId}:step:${stepNumber}`, template);
+      
+      res.json(template);
+    } catch (error) {
+      next(error);
+    }
+  });
+  
+  app.get("/api/wizard-templates/:id", async (req, res, next) => {
+    try {
+      const templateId = parseInt(req.params.id);
+      if (isNaN(templateId)) {
+        return res.status(400).send("Invalid template ID");
+      }
+      
+      const template = await storage.getWizardTemplate(templateId);
+      if (!template) {
+        return res.status(404).send("Wizard template not found");
+      }
+      
+      // Cache the template
+      cacheData(`${CACHE_KEYS.WIZARD_TEMPLATES}:${templateId}`, template);
+      
+      res.json(template);
+    } catch (error) {
+      next(error);
+    }
+  });
+  
+  app.post("/api/wizard-templates", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+      
+      // Only admins can create templates
+      if (!req.user.role || req.user.role !== "admin") {
+        return res.status(403).send("Only administrators can create wizard templates");
+      }
+      
+      // Validate the request body
+      const templateData = insertWizardTemplateSchema.parse(req.body);
+      
+      const template = await storage.createWizardTemplate(templateData);
+      
+      // Invalidate templates cache
+      invalidateRelatedCaches([CACHE_KEYS.WIZARD_TEMPLATES]);
+      
+      res.status(201).json(template);
+    } catch (error) {
+      next(error);
+    }
+  });
+  
+  app.put("/api/wizard-templates/:id", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+      
+      // Only admins can update templates
+      if (!req.user.role || req.user.role !== "admin") {
+        return res.status(403).send("Only administrators can update wizard templates");
+      }
+      
+      const templateId = parseInt(req.params.id);
+      if (isNaN(templateId)) {
+        return res.status(400).send("Invalid template ID");
+      }
+      
+      // Update the template
+      const updatedTemplate = await storage.updateWizardTemplate(templateId, req.body);
+      if (!updatedTemplate) {
+        return res.status(404).send("Wizard template not found");
+      }
+      
+      // Invalidate templates cache
+      invalidateRelatedCaches([CACHE_KEYS.WIZARD_TEMPLATES]);
+      
+      res.json(updatedTemplate);
+    } catch (error) {
+      next(error);
+    }
+  });
+  
+  app.delete("/api/wizard-templates/:id", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+      
+      // Only admins can delete templates
+      if (!req.user.role || req.user.role !== "admin") {
+        return res.status(403).send("Only administrators can delete wizard templates");
+      }
+      
+      const templateId = parseInt(req.params.id);
+      if (isNaN(templateId)) {
+        return res.status(400).send("Invalid template ID");
+      }
+      
+      // Delete the template
+      await storage.deleteWizardTemplate(templateId);
+      
+      // Invalidate templates cache
+      invalidateRelatedCaches([CACHE_KEYS.WIZARD_TEMPLATES]);
+      
+      res.status(204).send();
+    } catch (error) {
+      next(error);
+    }
+  });
+  
   // Set up WebSocket server for real-time collaboration
   const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
   

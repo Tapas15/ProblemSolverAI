@@ -29,6 +29,15 @@ export const CACHE_KEYS = {
   MODULE_EXERCISES_PREFIX: 'module:exercises:',
   USER_EXERCISE_SUBMISSIONS: (userId: number) => `user:${userId}:exercise-submissions`,
   EXERCISE_SUBMISSIONS: (exerciseId: number) => `exercise:${exerciseId}:submissions`,
+  // Wizard related cache keys
+  WIZARD_SESSIONS: 'wizard_sessions',
+  USER_WIZARD_SESSIONS: (userId: number) => `user:${userId}:wizard-sessions`,
+  FRAMEWORK_WIZARD_SESSIONS: (userId: number, frameworkId: number) => 
+    `user:${userId}:framework:${frameworkId}:wizard-sessions`,
+  WIZARD_SESSION: (id: number) => `wizard-session:${id}`,
+  WIZARD_TEMPLATES: 'wizard_templates',
+  FRAMEWORK_WIZARD_TEMPLATES: (frameworkId: number) => `framework:${frameworkId}:wizard-templates`,
+  WIZARD_TEMPLATE: (id: number) => `wizard-template:${id}`,
 };
 
 // Helper functions to work with the cache
