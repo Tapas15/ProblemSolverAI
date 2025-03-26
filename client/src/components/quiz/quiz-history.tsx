@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { 
   Card, 
   CardContent, 
@@ -60,6 +61,7 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   
   // Filter out invalid attempts
   const validAttempts = (attempts?.filter(a => a && typeof a.score === 'number') || []);
@@ -102,8 +104,16 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
         variant: "default",
       });
 
-      // We need to refresh the page to show the updated state
-      window.location.reload();
+      // Use onRefresh if available to refresh data instead of full page reload
+      if (onRefresh) {
+        await onRefresh();
+      } else {
+        // Fallback to query invalidation
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: ['/api/quiz-attempts/user'] }),
+          queryClient.invalidateQueries({ queryKey: ['/api/quizzes'] })
+        ]);
+      }
     } catch (error) {
       // Show error toast
       toast({

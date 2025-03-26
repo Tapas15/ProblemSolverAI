@@ -56,7 +56,7 @@ const DashboardPage = () => {
     queryKey: ['/api/quiz-attempts/user'],
     queryFn: getUserQuizAttempts,
     staleTime: 0,
-    cacheTime: 0,
+    gcTime: 0, // In TanStack Query v5, cacheTime was renamed to gcTime
     refetchInterval: 3000, // Refetch every 3 seconds
     refetchOnMount: "always",
     refetchOnWindowFocus: "always",
