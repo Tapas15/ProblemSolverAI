@@ -371,19 +371,11 @@ const AiAssistant: React.FC = () => {
                 try {
                   console.log("Clearing conversation history...");
                   await clearAiConversations();
-
-                  // Clear cache and refetch
-                  queryClient.removeQueries({ queryKey: ['/api/ai/conversations'] });
-
-                  // Wait for both operations to complete
-                  await Promise.all([
-                    queryClient.refetchQueries({ 
-                      queryKey: ['/api/ai/conversations'],
-                      exact: true 
-                    }),
-                    refetchConversations()
-                  ]);
-
+                  
+                  // After successful API call, just refetch the conversations
+                  // The API already invalidated the cache on the server
+                  await refetchConversations();
+                  
                   setQuestion(''); // Clear input field
                   console.log("Conversation history cleared");
                   toast({
@@ -431,7 +423,7 @@ const AiAssistant: React.FC = () => {
                   </div>
                 </CardHeader>
                 <CardContent className="p-4">
-                  <div className="text-sm text-gray-600 prose prose-sm max-w-none">
+                  <div className="text-sm text-gray-700 prose prose-sm max-w-none prose-headings:font-medium prose-headings:text-gray-900 prose-p:my-2 prose-ul:my-2 prose-ol:my-2 prose-li:my-1 prose-code:bg-gray-100 prose-code:px-1 prose-code:py-0.5 prose-code:rounded-sm prose-code:text-secondary prose-code:before:content-none prose-code:after:content-none">
                     <ReactMarkdown>{conversation.answer}</ReactMarkdown>
                   </div>
                 </CardContent>

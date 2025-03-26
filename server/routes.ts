@@ -1412,27 +1412,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const result = await model.generateContent(prompt);
           console.log("Received Gemini response");
           
-          // Extract text from the Gemini response
+          // Extract text from the Gemini response - simplified unified approach
           let responseText = "";
+          
           try {
-            console.log("Extracting text from Gemini response using text() method");
-            responseText = result.response.text();
-            console.log("Successfully extracted text from Gemini response");
-          } catch (error) {
-            console.error("Error extracting text from Gemini response using text() method:", error);
-            console.log("Attempting alternative method to extract text from Gemini response");
-            
-            // Try alternate method of accessing the text
-            const candidates = result.response.candidates || [];
-            console.log(`Gemini response has ${candidates.length} candidates`);
-            
-            if (candidates.length > 0 && candidates[0].content && candidates[0].content.parts) {
-              console.log(`Candidate has ${candidates[0].content.parts.length} parts`);
-              responseText = candidates[0].content.parts[0]?.text || "";
-              console.log("Extracted text from candidates array:", !!responseText);
+            // First try the standard text() method
+            if (result.response && typeof result.response.text === 'function') {
+              responseText = result.response.text();
+              console.log("Successfully extracted text from Gemini response using text() method");
+            } 
+            // If text() method failed or doesn't exist, try the candidates approach
+            else if (result.response?.candidates?.length > 0) {
+              // Get the first candidate's content
+              const firstCandidate = result.response.candidates[0];
+              
+              // Extract text from parts if available
+              if (firstCandidate.content?.parts?.length > 0) {
+                responseText = firstCandidate.content.parts[0]?.text || "";
+                console.log("Successfully extracted text from Gemini response using candidates.content.parts");
+              }
+              // Try the content.text approach
+              else if (firstCandidate.content?.text) {
+                responseText = firstCandidate.content.text;
+                console.log("Successfully extracted text from Gemini response using candidates.content.text");
+              }
             }
+          } catch (error) {
+            console.error("Error extracting text from Gemini response:", error);
           }
           
+          // Provide a fallback response if we couldn't extract text
           answer = responseText || "I'm sorry, I couldn't generate a response. Please try again.";
         } catch (error: any) {
           console.error("Gemini API error:", error);

@@ -144,10 +144,8 @@ export async function clearAiConversations(): Promise<{ success: boolean; messag
   try {
     const res = await apiRequest("DELETE", "/api/ai/conversations");
     
-    // Force invalidate the cache to ensure refresh
-    queryClient.removeQueries({ queryKey: ['/api/ai/conversations'] });
-    queryClient.refetchQueries({ queryKey: ['/api/ai/conversations'] });
-    
+    // The component will handle cache invalidation and refetching
+    // Let's just return success status
     return { success: true, message: "Conversation history cleared successfully" };
   } catch (error) {
     console.error("Error clearing AI conversations:", error);
