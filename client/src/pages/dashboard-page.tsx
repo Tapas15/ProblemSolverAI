@@ -55,12 +55,12 @@ const DashboardPage = () => {
   } = useQuery({
     queryKey: ['/api/quiz-attempts/user'],
     queryFn: getUserQuizAttempts,
-    staleTime: 0,
-    gcTime: 0, // In TanStack Query v5, cacheTime was renamed to gcTime
-    refetchInterval: 3000, // Refetch every 3 seconds
-    refetchOnMount: "always",
-    refetchOnWindowFocus: "always",
-    refetchOnReconnect: "always"
+    staleTime: 10000, // 10 seconds - reduced from 0 for better performance
+    gcTime: 15000, // 15 seconds - increased from 0 for better caching
+    refetchInterval: 20000, // 20 seconds - increased from 3 seconds to reduce server load
+    refetchOnMount: true, // Changed from "always" to true for better performance
+    refetchOnWindowFocus: true, // Changed from "always" to true for better performance
+    refetchOnReconnect: true // Changed from "always" to true for better performance
   });
 
   // For each quiz attempt, fetch the quiz data from all frameworks
@@ -76,9 +76,12 @@ const DashboardPage = () => {
     queries: frameworkIds.map((frameworkId: number) => ({
       queryKey: ['/api/quizzes/framework', frameworkId],
       queryFn: () => getQuizzesByFramework(frameworkId),
-      staleTime: 0,
+      staleTime: 30000, // 30 seconds - quiz data doesn't change that often
+      gcTime: 60000, // 1 minute 
       refetchOnMount: true,
-      refetchOnWindowFocus: true
+      refetchOnWindowFocus: true,
+      // Only refetch if on quizzes tab to reduce unnecessary API calls
+      enabled: activeTab === 'quizzes'
     }))
   });
 
@@ -135,7 +138,12 @@ const DashboardPage = () => {
   } = useQuery({
     queryKey: ['/api/all-modules-by-framework'],
     queryFn: getAllModulesByFramework,
-    staleTime: 60 * 1000,
+    staleTime: 5 * 60 * 1000, // 5 minutes - module data doesn't change frequently
+    gcTime: 10 * 60 * 1000, // 10 minutes
+    // Prefetch in background with lower priority for better initial load times
+    placeholderData: keepPreviousData => keepPreviousData,
+    // Only fetch when on progress tab or when frameworks are available
+    enabled: activeTab === 'progress' || (Array.isArray(frameworks) && frameworks.length > 0)
   });
 
   // Calculate statistics
