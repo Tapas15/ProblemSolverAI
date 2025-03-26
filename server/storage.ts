@@ -1,11 +1,13 @@
-import { users, frameworks, modules, userProgress, aiConversations, quizzes, quizAttempts, exercises, exerciseSubmissions, certificates } from "@shared/schema";
+import { users, frameworks, modules, userProgress, aiConversations, quizzes, quizAttempts, exercises, exerciseSubmissions, certificates, rewards, userRewards, userStreaks } from "@shared/schema";
 import type { 
   User, InsertUser, Framework, InsertFramework, 
   Module, InsertModule, UserProgress, InsertUserProgress, 
   AiConversation, InsertAiConversation,
   Quiz, InsertQuiz, QuizAttempt, InsertQuizAttempt,
   Exercise, InsertExercise, ExerciseSubmission, InsertExerciseSubmission,
-  Certificate, InsertCertificate
+  Certificate, InsertCertificate,
+  Reward, InsertReward, UserReward, InsertUserReward,
+  UserStreak, InsertUserStreak
 } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
@@ -150,6 +152,9 @@ export class MemStorage implements IStorage {
     this.exercises = new Map();
     this.exerciseSubmissions = new Map();
     this.certificates = new Map();
+    this.rewards = new Map();
+    this.userRewards = new Map();
+    this.userStreaks = new Map();
     
     this.userIdCounter = 1;
     this.frameworkIdCounter = 1;
@@ -161,6 +166,8 @@ export class MemStorage implements IStorage {
     this.exerciseIdCounter = 1;
     this.exerciseSubmissionIdCounter = 1;
     this.certificateIdCounter = 1;
+    this.rewardIdCounter = 1;
+    this.userRewardIdCounter = 1;
     
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000,
