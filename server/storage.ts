@@ -107,6 +107,22 @@ export interface IStorage {
   createUserStreak(userStreak: InsertUserStreak): Promise<UserStreak>;
   updateUserStreak(userId: number, streakData: Partial<UserStreak>): Promise<UserStreak | undefined>;
   checkAndUpdateStreak(userId: number): Promise<UserStreak>;
+  
+  // Wizard Session methods
+  getWizardSession(id: number): Promise<WizardSession | undefined>;
+  getUserWizardSessions(userId: number): Promise<WizardSession[]>;
+  getWizardSessionsByFramework(userId: number, frameworkId: number): Promise<WizardSession[]>;
+  createWizardSession(session: InsertWizardSession): Promise<WizardSession>;
+  updateWizardSession(id: number, sessionData: Partial<WizardSession>): Promise<WizardSession | undefined>;
+  deleteWizardSession(id: number): Promise<void>;
+  
+  // Wizard Template methods
+  getWizardTemplate(id: number): Promise<WizardTemplate | undefined>;
+  getWizardTemplatesByFramework(frameworkId: number): Promise<WizardTemplate[]>;
+  getWizardTemplateByStep(frameworkId: number, stepNumber: number): Promise<WizardTemplate | undefined>;
+  createWizardTemplate(template: InsertWizardTemplate): Promise<WizardTemplate>;
+  updateWizardTemplate(id: number, templateData: Partial<WizardTemplate>): Promise<WizardTemplate | undefined>;
+  deleteWizardTemplate(id: number): Promise<void>;
 }
 
 // In-memory storage implementation
@@ -133,11 +149,15 @@ export class MemStorage implements IStorage {
   private rewards: Map<number, Reward>;
   private userRewards: Map<number, UserReward>;
   private userStreaks: Map<number, UserStreak>;
+  private wizardSessions: Map<number, WizardSession>;
+  private wizardTemplates: Map<number, WizardTemplate>;
   private exerciseIdCounter: number;
   private exerciseSubmissionIdCounter: number;
   private certificateIdCounter: number;
   private rewardIdCounter: number;
   private userRewardIdCounter: number;
+  private wizardSessionIdCounter: number;
+  private wizardTemplateIdCounter: number;
   
   constructor() {
     this.users = new Map();
@@ -150,6 +170,11 @@ export class MemStorage implements IStorage {
     this.exercises = new Map();
     this.exerciseSubmissions = new Map();
     this.certificates = new Map();
+    this.rewards = new Map();
+    this.userRewards = new Map();
+    this.userStreaks = new Map();
+    this.wizardSessions = new Map();
+    this.wizardTemplates = new Map();
     
     this.userIdCounter = 1;
     this.frameworkIdCounter = 1;
@@ -161,6 +186,10 @@ export class MemStorage implements IStorage {
     this.exerciseIdCounter = 1;
     this.exerciseSubmissionIdCounter = 1;
     this.certificateIdCounter = 1;
+    this.rewardIdCounter = 1;
+    this.userRewardIdCounter = 1;
+    this.wizardSessionIdCounter = 1;
+    this.wizardTemplateIdCounter = 1;
     
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000,
@@ -621,6 +650,128 @@ export class MemStorage implements IStorage {
     existingCertificate.status = "revoked";
     this.certificates.set(id, existingCertificate);
     return existingCertificate;
+  }
+  
+  // Wizard Session Methods
+  async getWizardSession(id: number): Promise<WizardSession | undefined> {
+    return this.wizardSessions.get(id);
+  }
+  
+  async getUserWizardSessions(userId: number): Promise<WizardSession[]> {
+    const result: WizardSession[] = [];
+    for (const session of this.wizardSessions.values()) {
+      if (session.userId === userId) {
+        result.push(session);
+      }
+    }
+    // Sort by most recent
+    return result.sort((a, b) => {
+      if (!a.lastActiveAt || !b.lastActiveAt) return 0;
+      return b.lastActiveAt.getTime() - a.lastActiveAt.getTime();
+    });
+  }
+  
+  async getWizardSessionsByFramework(userId: number, frameworkId: number): Promise<WizardSession[]> {
+    const result: WizardSession[] = [];
+    for (const session of this.wizardSessions.values()) {
+      if (session.userId === userId && session.frameworkId === frameworkId) {
+        result.push(session);
+      }
+    }
+    // Sort by most recent
+    return result.sort((a, b) => {
+      if (!a.lastActiveAt || !b.lastActiveAt) return 0;
+      return b.lastActiveAt.getTime() - a.lastActiveAt.getTime();
+    });
+  }
+  
+  async createWizardSession(session: InsertWizardSession): Promise<WizardSession> {
+    const id = this.wizardSessionIdCounter++;
+    const now = new Date();
+    const newSession: WizardSession = {
+      ...session,
+      id,
+      currentStep: session.currentStep || 1,
+      isCompleted: session.isCompleted || false,
+      isShared: session.isShared || false,
+      shareLink: session.shareLink || null,
+      createdAt: now,
+      updatedAt: now,
+      lastActiveAt: now
+    };
+    this.wizardSessions.set(id, newSession);
+    return newSession;
+  }
+  
+  async updateWizardSession(id: number, sessionData: Partial<WizardSession>): Promise<WizardSession | undefined> {
+    const existingSession = this.wizardSessions.get(id);
+    if (!existingSession) return undefined;
+    
+    const now = new Date();
+    const updatedSession = {
+      ...existingSession,
+      ...sessionData,
+      updatedAt: now,
+      lastActiveAt: now
+    };
+    this.wizardSessions.set(id, updatedSession);
+    return updatedSession;
+  }
+  
+  async deleteWizardSession(id: number): Promise<void> {
+    this.wizardSessions.delete(id);
+  }
+  
+  // Wizard Template Methods
+  async getWizardTemplate(id: number): Promise<WizardTemplate | undefined> {
+    return this.wizardTemplates.get(id);
+  }
+  
+  async getWizardTemplatesByFramework(frameworkId: number): Promise<WizardTemplate[]> {
+    const result: WizardTemplate[] = [];
+    for (const template of this.wizardTemplates.values()) {
+      if (template.frameworkId === frameworkId) {
+        result.push(template);
+      }
+    }
+    // Sort by step number
+    return result.sort((a, b) => a.stepNumber - b.stepNumber);
+  }
+  
+  async getWizardTemplateByStep(frameworkId: number, stepNumber: number): Promise<WizardTemplate | undefined> {
+    for (const template of this.wizardTemplates.values()) {
+      if (template.frameworkId === frameworkId && template.stepNumber === stepNumber) {
+        return template;
+      }
+    }
+    return undefined;
+  }
+  
+  async createWizardTemplate(template: InsertWizardTemplate): Promise<WizardTemplate> {
+    const id = this.wizardTemplateIdCounter++;
+    const newTemplate: WizardTemplate = {
+      ...template,
+      id,
+      isRequired: template.isRequired !== undefined ? template.isRequired : true,
+      options: template.options || null,
+      helpText: template.helpText || null,
+      exampleText: template.exampleText || null
+    };
+    this.wizardTemplates.set(id, newTemplate);
+    return newTemplate;
+  }
+  
+  async updateWizardTemplate(id: number, templateData: Partial<WizardTemplate>): Promise<WizardTemplate | undefined> {
+    const existingTemplate = this.wizardTemplates.get(id);
+    if (!existingTemplate) return undefined;
+    
+    const updatedTemplate = { ...existingTemplate, ...templateData };
+    this.wizardTemplates.set(id, updatedTemplate);
+    return updatedTemplate;
+  }
+  
+  async deleteWizardTemplate(id: number): Promise<void> {
+    this.wizardTemplates.delete(id);
   }
   
   // Seed initial framework and module data

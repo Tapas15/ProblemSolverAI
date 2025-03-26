@@ -424,3 +424,68 @@ export type UserReward = typeof userRewards.$inferSelect;
 
 export type InsertUserStreak = z.infer<typeof insertUserStreakSchema>;
 export type UserStreak = typeof userStreaks.$inferSelect;
+
+// Framework Wizard Sessions schema
+export const wizardSessions = pgTable("wizard_sessions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  frameworkId: integer("framework_id").notNull().references(() => frameworks.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  problemStatement: text("problem_statement").notNull(),
+  currentStep: integer("current_step").default(1).notNull(),
+  totalSteps: integer("total_steps").notNull(),
+  data: text("data").notNull(), // Stores step-specific data as JSON
+  isCompleted: boolean("is_completed").default(false).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  isShared: boolean("is_shared").default(false).notNull(),
+  shareLink: text("share_link"),
+  lastActiveAt: timestamp("last_active_at").defaultNow().notNull(),
+});
+
+export const insertWizardSessionSchema = createInsertSchema(wizardSessions).pick({
+  userId: true,
+  frameworkId: true,
+  title: true,
+  problemStatement: true,
+  currentStep: true,
+  totalSteps: true,
+  data: true,
+  isCompleted: true,
+  isShared: true,
+  shareLink: true,
+});
+
+export type InsertWizardSession = z.infer<typeof insertWizardSessionSchema>;
+export type WizardSession = typeof wizardSessions.$inferSelect;
+
+// Framework Wizard Templates schema
+export const wizardTemplates = pgTable("wizard_templates", {
+  id: serial("id").primaryKey(),
+  frameworkId: integer("framework_id").notNull().references(() => frameworks.id, { onDelete: "cascade" }),
+  stepNumber: integer("step_number").notNull(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  instructionText: text("instruction_text").notNull(),
+  inputType: text("input_type").notNull(), // text, textarea, radio, checkbox, select, matrix
+  options: text("options"), // JSON string of options for input types that need them
+  helpText: text("help_text"),
+  exampleText: text("example_text"),
+  isRequired: boolean("is_required").default(true).notNull(),
+});
+
+export const insertWizardTemplateSchema = createInsertSchema(wizardTemplates).pick({
+  frameworkId: true,
+  stepNumber: true,
+  title: true,
+  description: true,
+  instructionText: true,
+  inputType: true,
+  options: true,
+  helpText: true,
+  exampleText: true,
+  isRequired: true,
+});
+
+export type InsertWizardTemplate = z.infer<typeof insertWizardTemplateSchema>;
+export type WizardTemplate = typeof wizardTemplates.$inferSelect;
