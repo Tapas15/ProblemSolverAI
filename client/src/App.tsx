@@ -16,7 +16,6 @@ const HomePage = lazy(() => import("@/pages/home-page"));
 const AuthPage = lazy(() => import("@/pages/auth-page"));
 const FrameworkPage = lazy(() => import("@/pages/framework-page"));
 const FrameworksPage = lazy(() => import("@/pages/frameworks-page"));
-const FrameworkWizardPage = lazy(() => import("@/pages/framework-wizard-page"));
 const AiAssistantPage = lazy(() => import("@/pages/ai-assistant-page"));
 const QuizPage = lazy(() => import("@/pages/quiz-page"));
 const TakeQuizPage = lazy(() => import("@/pages/take-quiz-page"));
@@ -68,7 +67,6 @@ function Router() {
         <ProtectedRoute path="/" component={HomePage} />
         <ProtectedRoute path="/frameworks" component={FrameworksPage} />
         <ProtectedRoute path="/frameworks/:id" component={FrameworkPage} />
-        <ProtectedRoute path="/framework-wizard/:frameworkId" component={FrameworkWizardPage} />
         <ProtectedRoute path="/ai-assistant" component={AiAssistantPage} />
         <ProtectedRoute path="/quizzes/:frameworkId" component={QuizPage} />
         <ProtectedRoute path="/quiz/:frameworkId/:quizId" component={TakeQuizPage} />
