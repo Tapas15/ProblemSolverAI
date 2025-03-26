@@ -62,207 +62,254 @@ const AiAssistant: React.FC = () => {
 
   const askAiMutation = useMutation({
     mutationFn: async ({ question, frameworkId }: AskQuestion) => {
-      return askAi(question, frameworkId);
+      console.log('Sending AI query with:', { question, frameworkId });
+      
+      // Show a toast to let the user know the request is being processed
+      toast({
+        title: "Processing your question",
+        description: "This may take a few seconds...",
+      });
+      
+      try {
+        return await askAi(question, frameworkId);
+      } catch (error) {
+        console.error('Error in askAi mutation function:', error);
+        throw error;
+      }
     },
-    onSuccess: () => {
-      // Clear the question input after successful query
+    onSuccess: (data) => {
+      console.log('AI query successful, clearing question and refreshing conversations');
       setQuestion('');
       
-      // Manually refetch conversations to ensure we have the latest data
-      refetchConversations();
+      // Force refresh the conversations data
+      queryClient.removeQueries({ queryKey: ['/api/ai/conversations'] });
+      queryClient.refetchQueries({ queryKey: ['/api/ai/conversations'] });
+      
+      // Show a success toast
+      toast({
+        title: "Response generated",
+        description: "Your answer is ready.",
+      });
     },
     onError: (error: Error) => {
+      console.error('AI query failed:', error);
       toast({
-        title: "Error",
-        description: error.message,
+        title: "Failed to get AI response",
+        description: error.message || "Something went wrong. Please try again.",
         variant: "destructive",
       });
     }
   });
 
-  const clearConversationsMutation = useMutation({
-    mutationFn: clearAiConversations,
-    onSuccess: () => {
-      // Invalidate and refetch conversations
-      queryClient.invalidateQueries({ queryKey: ['/api/ai/conversations'] });
-      toast({
-        title: "Success",
-        description: "Conversation history cleared",
-      });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Error",
-        description: `Failed to clear history: ${error.message}`,
-        variant: "destructive",
-      });
+  // Framework-specific prompt templates
+  const getFrameworkPrompt = (frameworkId: string): string => {
+    const framework = frameworks?.find(f => f.id.toString() === frameworkId);
+    if (!framework) return '';
+
+    switch (framework.name) {
+      case 'MECE Framework':
+        return `How can I apply the MECE (Mutually Exclusive, Collectively Exhaustive) framework to break down this problem: ${question}`;
+      case 'SWOT Analysis':
+        return `Help me conduct a SWOT Analysis for the following situation: ${question}`;
+      case 'First Principles Thinking':
+        return `Using First Principles Thinking, how would you approach this challenge: ${question}`;
+      case 'Porter\'s Five Forces':
+        return `Analyze the following industry using Porter's Five Forces framework: ${question}`;
+      case 'Design Thinking':
+        return `How can I apply Design Thinking to solve this problem: ${question}`;
+      case 'Jobs To Be Done':
+        return `Using the Jobs To Be Done framework, analyze this customer need: ${question}`;
+      case 'Blue Ocean Strategy':
+        return `How can I create a Blue Ocean Strategy for this market opportunity: ${question}`;
+      case 'SCAMPER':
+        return `Apply the SCAMPER technique to innovate on this product/service: ${question}`;
+      case 'Problem-Tree Analysis':
+        return `Help me build a Problem-Tree Analysis for this issue: ${question}`;
+      case 'Pareto Principle':
+        return `Apply the Pareto Principle (80/20 rule) to optimize this situation: ${question}`;
+      default:
+        return question;
     }
-  });
+  };
 
   const handleSubmitQuestion = () => {
+    console.log('handleSubmitQuestion called');
+    if (!question.trim()) {
+      console.log('Empty question, returning');
+      return;
+    }
+
     if (!user?.apiKey) {
+      console.log('No API key found, opening settings dialog');
       setIsAiSettingsOpen(true);
       return;
     }
 
-    if (!question.trim()) return;
+    try {
+      console.log('Current user:', user);
+      console.log('Current user API key exists:', !!user.apiKey);
+      console.log('Current AI provider:', user.aiProvider || 'openai (default)');
 
-    let frameworkId: number | undefined = undefined;
-    if (activeTab === 'framework' && selectedFramework) {
-      frameworkId = parseInt(selectedFramework, 10);
+      if (activeTab === 'framework' && selectedFramework) {
+        // For framework-guided mode, send the formatted prompt and the framework ID
+        const frameworkIdNumber = parseInt(selectedFramework, 10);
+        const finalQuestion = getFrameworkPrompt(selectedFramework);
+
+        console.log('Submitting framework-guided question:', {
+          question: finalQuestion,
+          frameworkId: frameworkIdNumber
+        });
+
+        askAiMutation.mutate({
+          question: finalQuestion,
+          frameworkId: frameworkIdNumber
+        });
+      } else {
+        // For custom questions, just send the question without a framework ID
+        console.log('Submitting custom question:', question);
+
+        askAiMutation.mutate({
+          question: question
+        });
+      }
+    } catch (error) {
+      console.error('Error in handleSubmitQuestion:', error);
+      toast({
+        title: "Error submitting question",
+        description: error instanceof Error ? error.message : "An unexpected error occurred",
+        variant: "destructive",
+      });
     }
-
-    askAiMutation.mutate({ question, frameworkId });
   };
 
-  const handleSaveApiSettings = (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const handleSaveAiSettings = () => {
+    if (!apiKey.trim()) {
+      toast({
+        title: "API Key Required",
+        description: "Please enter a valid API key.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     updateAiSettingsMutation.mutate(
       { apiKey, aiProvider },
       {
         onSuccess: () => {
           setIsAiSettingsOpen(false);
           toast({
-            title: "Success",
-            description: "AI settings updated successfully",
-          });
-        },
-        onError: (error: Error) => {
-          toast({
-            title: "Error",
-            description: `Failed to update AI settings: ${error.message}`,
-            variant: "destructive",
+            title: "AI Settings Saved",
+            description: "Your AI integration has been configured successfully.",
           });
         }
       }
     );
   };
 
-  const getFrameworkPrompt = (frameworkId: string) => {
-    const framework = frameworks?.find(f => f.id.toString() === frameworkId);
-    if (!framework) return "How to apply this framework to my business problem?";
-    
-    return `How to apply the ${framework.name} framework to my business problem?`;
-  };
-
   return (
-    <div className="space-y-6">
-      {/* API Settings Dialog */}
-      <Dialog open={isAiSettingsOpen} onOpenChange={setIsAiSettingsOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>AI Integration Settings</DialogTitle>
-            <DialogDescription>
-              Enter your API key to use the AI assistant. Your key is stored securely and used only for your requests.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <form onSubmit={handleSaveApiSettings} className="space-y-4">
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="aiProvider">AI Provider</Label>
-                <RadioGroup 
-                  id="aiProvider" 
-                  value={aiProvider} 
-                  onValueChange={setAiProvider}
-                  className="flex flex-col space-y-1"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="openai" id="openai" />
-                    <Label htmlFor="openai" className="font-normal">OpenAI (ChatGPT)</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="google" id="google" />
-                    <Label htmlFor="google" className="font-normal">Google (Gemini)</Label>
-                  </div>
-                </RadioGroup>
+    <div>
+      <div className="native-card mb-5">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="mobile-h3 text-[#0f172a]">
+            Ask a Question
+          </h3>
+
+          <Button 
+            variant="outline" 
+            className="h-8 px-3 text-xs"
+            onClick={() => setIsAiSettingsOpen(true)}
+          >
+            Configure API
+          </Button>
+        </div>
+
+        <p className="text-[#64748b] text-sm mb-2">
+          Get tailored guidance for applying business frameworks to your unique challenges.
+        </p>
+
+        {!user?.apiKey && (
+          <div className="bg-muted p-3 rounded-md mb-4 text-xs">
+            <p className="font-medium mb-1">API Key Required:</p>
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <p className="font-medium text-secondary mb-1">OpenAI (GPT-4o):</p>
+                <ol className="list-decimal pl-4 space-y-0.5">
+                  <li>Visit <a href="https://platform.openai.com/api-keys" target="_blank" rel="noreferrer" className="text-primary underline">OpenAI API Keys</a></li>
+                  <li>Create account if needed</li>
+                  <li>Get API key that starts with "sk-"</li>
+                </ol>
               </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="apiKey">API Key</Label>
-                <Input 
-                  id="apiKey" 
-                  type="password" 
-                  value={apiKey} 
-                  onChange={e => setApiKey(e.target.value)}
-                  placeholder={`Enter your ${aiProvider === 'openai' ? 'OpenAI' : 'Google AI'} API key`}
-                />
-                <p className="text-xs text-gray-500">
-                  {aiProvider === 'openai' 
-                    ? 'Get your OpenAI API key from https://platform.openai.com/api-keys'
-                    : 'Get your Google AI API key from https://ai.google.dev/'}
-                </p>
+              <div className="flex-1">
+                <p className="font-medium text-secondary mb-1">Google (Gemini 1.5 Pro):</p>
+                <ol className="list-decimal pl-4 space-y-0.5">
+                  <li>Visit <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-primary underline">Google AI Studio</a></li>
+                  <li>Sign in with Google</li>
+                  <li>Get API key that starts with "AIza"</li>
+                </ol>
               </div>
             </div>
-            
-            <div className="flex justify-end space-x-2">
-              <Button 
-                type="button" 
-                variant="outline" 
-                onClick={() => setIsAiSettingsOpen(false)}
-              >
-                Cancel
-              </Button>
-              <Button 
-                type="submit"
-                disabled={!apiKey || updateAiSettingsMutation.isPending}
-              >
-                {updateAiSettingsMutation.isPending ? 'Saving...' : 'Save Settings'}
-              </Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
-      
-      {/* Question Input */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="px-4 pt-4">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="custom">Custom Question</TabsTrigger>
-              <TabsTrigger value="framework">Framework-Specific</TabsTrigger>
-            </TabsList>
+            <Button 
+              size="sm" 
+              className="mt-2 h-7 w-full bg-secondary hover:bg-secondary/90"
+              onClick={() => setIsAiSettingsOpen(true)}
+            >
+              Add Your API Key
+            </Button>
           </div>
-          
-          <TabsContent value="custom" className="p-4 pt-2">
+        )}
+
+        <Tabs defaultValue="custom" value={activeTab} onValueChange={setActiveTab} className="mb-4">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="custom">Custom Question</TabsTrigger>
+            <TabsTrigger value="framework">Framework-Guided</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="custom" className="pt-4">
             <Textarea
-              placeholder="Ask any question about business frameworks or problem-solving techniques..."
+              rows={4}
+              placeholder="Example: How can I apply the MECE framework to analyze customer satisfaction issues in our retail business?"
               value={question}
-              onChange={e => setQuestion(e.target.value)}
-              className="min-h-[100px] bg-gray-50 border-gray-200"
+              onChange={(e) => setQuestion(e.target.value)}
+              className="w-full"
             />
           </TabsContent>
-          
-          <TabsContent value="framework" className="space-y-3 p-4 pt-2">
-            <Select
-              value={selectedFramework}
-              onValueChange={setSelectedFramework}
-            >
-              <SelectTrigger className="w-full bg-gray-50 border-gray-200">
-                <SelectValue placeholder="Select a framework" />
-              </SelectTrigger>
-              <SelectContent>
-                {frameworks?.map(framework => (
-                  <SelectItem key={framework.id} value={framework.id.toString()}>
-                    {framework.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            
-            <Textarea
-              placeholder={
-                selectedFramework 
-                  ? "Ask how to apply this framework to your specific business challenge..." 
-                  : "Select a framework first"
-              }
-              value={question}
-              onChange={e => setQuestion(e.target.value)}
-              className="min-h-[100px] bg-gray-50 border-gray-200"
-              disabled={!selectedFramework}
-            />
-            
+
+          <TabsContent value="framework" className="space-y-4 pt-4">
+            <div>
+              <Label htmlFor="framework-select" className="text-sm font-medium">
+                Select a framework
+              </Label>
+              <Select
+                value={selectedFramework}
+                onValueChange={setSelectedFramework}
+              >
+                <SelectTrigger className="w-full mt-1">
+                  <SelectValue placeholder="Choose a business framework" />
+                </SelectTrigger>
+                <SelectContent>
+                  {frameworks?.map((framework) => (
+                    <SelectItem key={framework.id} value={framework.id.toString()}>
+                      {framework.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="question-input" className="text-sm font-medium">
+                Your specific challenge or situation
+              </Label>
+              <Textarea
+                id="question-input"
+                rows={3}
+                placeholder="Describe your business challenge or situation"
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                className="w-full mt-1"
+              />
+            </div>
+
             {selectedFramework && (
               <Card className="bg-secondary/5 border-secondary/20">
                 <CardContent className="p-4 flex items-start gap-3">
@@ -281,14 +328,14 @@ const AiAssistant: React.FC = () => {
           </TabsContent>
         </Tabs>
 
-        <div className="flex justify-between items-center p-4 pt-0">
+        <div className="flex justify-between items-center">
           <button
             className="text-sm text-secondary hover:underline flex items-center"
             onClick={() => setIsAiSettingsOpen(true)}
           >
             {user?.apiKey ? "Update AI Settings" : "Configure AI Integration"}
           </button>
-          
+
           <Button
             onClick={handleSubmitQuestion}
             disabled={
@@ -314,59 +361,172 @@ const AiAssistant: React.FC = () => {
       <div className="space-y-4">
         <div className="flex justify-between items-center mb-3">
           <h3 className="mobile-h3 text-[#0f172a]">Recent Conversations</h3>
-          
+
           {conversations && conversations.length > 0 && (
-            <Button
-              variant="outline"
+            <Button 
+              variant="outline" 
               size="sm"
-              onClick={() => clearConversationsMutation.mutate()}
-              disabled={clearConversationsMutation.isPending}
-              className="h-8 text-xs"
+              className="h-8 px-3 text-xs"
+              onClick={async () => {
+                try {
+                  console.log("Clearing conversation history...");
+                  await clearAiConversations();
+                  
+                  // After successful API call, just refetch the conversations
+                  // The API already invalidated the cache on the server
+                  await refetchConversations();
+                  
+                  setQuestion(''); // Clear input field
+                  console.log("Conversation history cleared");
+                  toast({
+                    title: "Conversations cleared",
+                    description: "Your conversation history has been cleared.",
+                  });
+                } catch (error) {
+                  console.error("Error clearing conversations:", error);
+                  toast({
+                    title: "Error clearing history",
+                    description: "Failed to clear conversation history. Please try again.",
+                    variant: "destructive"
+                  });
+                }
+              }}
             >
-              {clearConversationsMutation.isPending ? (
-                <>
-                  <Loader2 className="mr-2 h-3 w-3 animate-spin" />
-                  Clearing...
-                </>
-              ) : (
-                "Clear History"
-              )}
+              Clear History
             </Button>
           )}
         </div>
-        
+
         {conversationsLoading ? (
-          <div className="flex justify-center py-8">
-            <Loader2 className="h-8 w-8 animate-spin text-secondary/70" />
+          <div className="text-center py-8">
+            <Loader2 className="h-8 w-8 animate-spin mx-auto text-secondary" />
+            <p className="text-gray-500 mt-2">Loading conversations...</p>
           </div>
         ) : conversations && conversations.length > 0 ? (
-          <div className="space-y-4">
-            {[...conversations].reverse().map((conversation) => (
-              <Card key={conversation.id} className="native-card shadow-sm border-gray-200">
-                <CardHeader className="p-4 pb-2">
+          conversations.map((conversation) => {
+            // Find the framework name if the conversation has a frameworkId
+            const framework = conversation.frameworkId && frameworks ? 
+              frameworks.find(f => f.id === conversation.frameworkId) : null;
+
+            return (
+              <Card key={conversation.id} className="overflow-hidden">
+                <CardHeader className="bg-gray-50 py-3 px-4">
                   <div className="flex justify-between items-start">
-                    <CardTitle className="text-sm font-medium text-gray-800">
+                    <CardTitle className="text-sm font-medium text-gray-700">
                       {conversation.question}
                     </CardTitle>
+                    {framework && (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary/10 text-secondary">
+                        {framework.name}
+                      </span>
+                    )}
                   </div>
-                  <CardDescription className="text-xs">
-                    {new Date(conversation.createdAt).toLocaleString()}
-                  </CardDescription>
                 </CardHeader>
-                <CardContent className="p-4 pt-2">
-                  <div className="prose prose-sm max-w-none text-gray-600">
+                <CardContent className="p-4">
+                  <div className="text-sm text-gray-700 prose prose-sm max-w-none prose-headings:font-medium prose-headings:text-gray-900 prose-p:my-2 prose-ul:my-2 prose-ol:my-2 prose-li:my-1 prose-code:bg-gray-100 prose-code:px-1 prose-code:py-0.5 prose-code:rounded-sm prose-code:text-secondary prose-code:before:content-none prose-code:after:content-none">
                     <ReactMarkdown>{conversation.answer}</ReactMarkdown>
                   </div>
                 </CardContent>
               </Card>
-            ))}
-          </div>
+            );
+          })
         ) : (
-          <div className="bg-gray-50 rounded-lg border border-gray-200 p-6 text-center">
-            <p className="text-sm text-gray-500">No conversation history yet. Ask a question to get started.</p>
-          </div>
+          <Card>
+            <CardContent className="p-8 text-center">
+              <p className="text-gray-500">No conversations yet. Start by asking a question above.</p>
+            </CardContent>
+          </Card>
         )}
       </div>
+
+      {/* AI Settings Dialog */}
+      <Dialog open={isAiSettingsOpen} onOpenChange={setIsAiSettingsOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Configure AI Integration</DialogTitle>
+            <DialogDescription>
+              Enter your API key to connect with your preferred AI service
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="ai-provider">AI Provider</Label>
+              <RadioGroup 
+                value={aiProvider} 
+                onValueChange={setAiProvider}
+                className="flex flex-col space-y-1"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="openai" id="openai" />
+                  <Label htmlFor="openai">OpenAI (GPT-4o)</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="gemini" id="gemini" />
+                  <Label htmlFor="gemini">Google (Gemini 1.5 Pro)</Label>
+                </div>
+              </RadioGroup>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="api-key">API Key</Label>
+              <Input 
+                id="api-key"
+                type="password"
+                placeholder={`Enter your ${aiProvider === 'openai' ? 'OpenAI' : 'Google Gemini 1.5'} API key`}
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+              />
+              <p className="text-xs text-gray-500 mb-1">
+                Your API key is stored securely and used only for your AI requests.
+              </p>
+              <div className="mt-2 text-xs p-3 bg-muted rounded-md">
+                <p className="font-medium mb-1">How to get an API key:</p>
+                {aiProvider === 'openai' ? (
+                  <ol className="list-decimal pl-4 space-y-1">
+                    <li>Go to <a href="https://platform.openai.com/api-keys" target="_blank" rel="noreferrer" className="text-primary underline">OpenAI API Keys</a></li>
+                    <li>Sign in or create an account</li>
+                    <li>Click "Create new secret key"</li>
+                    <li>Copy the key and paste it here</li>
+                    <li>The API key starts with "sk-"</li>
+                  </ol>
+                ) : (
+                  <ol className="list-decimal pl-4 space-y-1">
+                    <li>Go to <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-primary underline">Google AI Studio</a></li>
+                    <li>Sign in with your Google account</li>
+                    <li>Click "Create API key"</li>
+                    <li>Copy the key and paste it here</li>
+                    <li>The API key starts with "AIza"</li>
+                  </ol>
+                )}
+              </div>
+            </div>
+
+            <div className="flex justify-end space-x-2 pt-4">
+              <Button 
+                variant="outline" 
+                onClick={() => setIsAiSettingsOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleSaveAiSettings}
+                disabled={updateAiSettingsMutation.isPending}
+                className="bg-secondary hover:bg-secondary/90"
+              >
+                {updateAiSettingsMutation.isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  "Save Settings"
+                )}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
