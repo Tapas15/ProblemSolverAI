@@ -7,12 +7,45 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, ArrowLeft, ArrowRight, Check, Save } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
-import { WizardSession, WizardTemplate, Framework } from "@shared/schema";
+import { Framework } from "@shared/schema";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import { createPortal } from "react-dom";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
+
+// Define the WizardSession interface that matches our database schema
+interface WizardSession {
+  id: number;
+  userId: number;
+  frameworkId: number;
+  title: string;
+  problemStatement: string;
+  currentStep: number;
+  totalSteps: number;
+  data: string;
+  isCompleted: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  isShared: boolean;
+  shareLink: string | null;
+  lastActiveAt: Date;
+}
+
+// Define the WizardTemplate interface that matches our database schema
+interface WizardTemplate {
+  id: number;
+  frameworkId: number;
+  stepNumber: number;
+  title: string;
+  description: string;
+  fields: string; // JSON string containing form fields configuration
+  validations: string | null; // JSON string containing validation rules
+  instructions: string | null;
+  exampleOutput: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 export default function FrameworkWizardPage() {
   const { frameworkId, sessionId } = useParams<{ frameworkId?: string; sessionId?: string }>();
@@ -70,7 +103,7 @@ export default function FrameworkWizardPage() {
             userId: user?.id,
             frameworkId: parseInt(frameworkId || "0"),
             currentStep: currentStep,
-            status: "in_progress",
+            isCompleted: false
           }),
         });
         if (!res.ok) throw new Error("Failed to create session");
@@ -134,7 +167,7 @@ export default function FrameworkWizardPage() {
       id: session?.id,
       currentStep,
       data: JSON.stringify(inputs),
-      status: currentStep >= maxStep ? "completed" : "in_progress",
+      isCompleted: currentStep >= maxStep
     });
   };
 
@@ -150,7 +183,7 @@ export default function FrameworkWizardPage() {
         id: session?.id,
         currentStep,
         data: JSON.stringify(inputs),
-        status: "completed",
+        isCompleted: true
       });
       
       // Show completion message

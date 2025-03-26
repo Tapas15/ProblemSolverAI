@@ -26,8 +26,26 @@ import {
   AlertDialogTitle
 } from "@/components/ui/alert-dialog";
 import { Loader2, PlusCircle, Trash2, Play, FileEdit } from "lucide-react";
-import { WizardSession, Framework } from "@shared/schema";
+import { Framework } from "@shared/schema";
 import { useLocation } from "wouter";
+
+// Define the WizardSession interface that matches our database schema
+interface WizardSession {
+  id: number;
+  userId: number;
+  frameworkId: number;
+  title: string;
+  problemStatement: string;
+  currentStep: number;
+  totalSteps: number;
+  data: string;
+  isCompleted: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  isShared: boolean;
+  shareLink: string | null;
+  lastActiveAt: Date;
+}
 
 interface FrameworkWizardListProps {
   frameworkId: number;
