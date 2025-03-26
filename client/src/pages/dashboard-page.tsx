@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { useQuery, useQueryClient, useQueries } from '@tanstack/react-query';
+import { useQuery, useQueryClient, useQueries, UseQueryResult } from '@tanstack/react-query';
 import { getUserProgress, getUserQuizAttempts, getFrameworks, getAllModulesByFramework, getQuizzesByFramework } from '@/lib/api';
 import { Framework, UserProgress, QuizAttempt, Module, Quiz } from '@shared/schema';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -141,7 +141,6 @@ const DashboardPage = () => {
     staleTime: 5 * 60 * 1000, // 5 minutes - module data doesn't change frequently
     gcTime: 10 * 60 * 1000, // 10 minutes
     // Prefetch in background with lower priority for better initial load times
-    placeholderData: keepPreviousData => keepPreviousData,
     // Only fetch when on progress tab or when frameworks are available
     enabled: activeTab === 'progress' || (Array.isArray(frameworks) && frameworks.length > 0)
   });
