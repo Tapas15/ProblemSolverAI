@@ -47,27 +47,50 @@ export function FrameworkWizardList({ frameworkId }: FrameworkWizardListProps) {
 
   // Fetch wizard sessions for this framework
   const { 
-    data: sessions, 
+    data: sessions = [], 
     isLoading: isLoadingSessions,
     refetch: refetchSessions
   } = useQuery({
     queryKey: ["/api/wizard-sessions/framework", frameworkId],
+    queryFn: async () => {
+      if (!user || !frameworkId) return [];
+      try {
+        const response = await fetch(`/api/wizard-sessions/framework/${frameworkId}`);
+        if (!response.ok) {
+          // If the server isn't ready for this feature yet, return an empty array
+          console.warn("Failed to fetch wizard sessions:", response.statusText);
+          return [];
+        }
+        return await response.json();
+      } catch (error) {
+        console.error("Error fetching wizard sessions:", error);
+        return [];
+      }
+    },
     enabled: !!user && !!frameworkId,
   });
 
   // Create new session mutation
   const createSessionMutation = useMutation({
     mutationFn: async () => {
+      // Create a default session based on the schema requirements
+      const sessionData = {
+        userId: user?.id,
+        frameworkId,
+        title: `${framework?.name || 'Framework'} Session`,
+        problemStatement: 'Working on my business problem...',
+        currentStep: 1,
+        totalSteps: 5, // Default value, will be updated based on template
+        data: JSON.stringify({}),
+        isCompleted: false,
+        isShared: false,
+        shareLink: null
+      };
+      
       const res = await fetch("/api/wizard-sessions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: user?.id,
-          frameworkId,
-          currentStep: 1,
-          status: "in_progress",
-          data: JSON.stringify({}),
-        }),
+        body: JSON.stringify(sessionData),
       });
       
       if (!res.ok) throw new Error("Failed to create wizard session");
@@ -148,14 +171,12 @@ export function FrameworkWizardList({ frameworkId }: FrameworkWizardListProps) {
     return new Date(dateString).toLocaleString();
   };
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "in_progress":
-        return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-300">In Progress</Badge>;
-      case "completed":
-        return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-300">Completed</Badge>;
-      default:
-        return <Badge variant="outline">{status}</Badge>;
+  const getStatusBadge = (session: WizardSession) => {
+    // Use isCompleted field instead of status
+    if (session.isCompleted) {
+      return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-300">Completed</Badge>;
+    } else {
+      return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-300">In Progress</Badge>;
     }
   };
 
@@ -210,16 +231,16 @@ export function FrameworkWizardList({ frameworkId }: FrameworkWizardListProps) {
                   <CardTitle className="text-lg">
                     Session #{session.id}
                   </CardTitle>
-                  {getStatusBadge(session.status)}
+                  {getStatusBadge(session)}
                 </div>
               </CardHeader>
               <CardContent>
                 <div className="flex justify-between text-sm text-gray-500">
                   <div>
-                    Step {session.currentStep} {session.maxSteps ? `of ${session.maxSteps}` : ""}
+                    Step {session.currentStep} of {session.totalSteps}
                   </div>
                   <div>
-                    Last updated: {session.updatedAt ? formatDate(session.updatedAt) : "N/A"}
+                    Last updated: {session.updatedAt ? new Date(session.updatedAt).toLocaleString() : "N/A"}
                   </div>
                 </div>
               </CardContent>
@@ -237,7 +258,7 @@ export function FrameworkWizardList({ frameworkId }: FrameworkWizardListProps) {
                     size="sm"
                     onClick={() => handleContinueSession(session.id)}
                   >
-                    {session.status === "completed" ? (
+                    {session.isCompleted ? (
                       <>
                         <FileEdit className="mr-2 h-4 w-4" />
                         View/Edit
