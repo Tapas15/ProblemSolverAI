@@ -392,51 +392,7 @@ const AiAssistant: React.FC = () => {
               variant="outline" 
               size="sm"
               className="h-8 px-3 text-xs"
-              onClick={() => {
-                try {
-                  console.log("Clearing conversation history...");
-                  
-                  // Create a separate mutation for clear operation
-                  const clearMutation = useMutation({
-                    mutationFn: clearAiConversations,
-                    onSuccess: () => {
-                      // First invalidate the cache
-                      queryClient.invalidateQueries({ queryKey: ['/api/ai/conversations'] });
-                      
-                      // Then force a complete refetch
-                      queryClient.removeQueries({ queryKey: ['/api/ai/conversations'] });
-                      queryClient.refetchQueries({ queryKey: ['/api/ai/conversations'] });
-                      
-                      // Make sure UI state is reset
-                      setQuestion('');
-                      
-                      console.log("Conversation history cleared");
-                      toast({
-                        title: "Conversations cleared",
-                        description: "Your conversation history has been cleared.",
-                      });
-                    },
-                    onError: (error: Error) => {
-                      console.error("Error clearing conversations:", error);
-                      toast({
-                        title: "Error clearing history",
-                        description: "Failed to clear conversation history. Please try again.",
-                        variant: "destructive"
-                      });
-                    }
-                  });
-                  
-                  // Execute the mutation
-                  clearMutation.mutate();
-                } catch (error) {
-                  console.error("Error setting up clear conversation mutation:", error);
-                  toast({
-                    title: "Error clearing history",
-                    description: "Failed to clear conversation history. Please try again.",
-                    variant: "destructive"
-                  });
-                }
-              }}
+              onClick={() => clearConversationsMutation.mutate()}
             >
               Clear History
             </Button>
