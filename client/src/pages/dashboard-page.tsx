@@ -525,7 +525,7 @@ const DashboardPage = () => {
                                     setTimeout(() => {
                                       const refreshedQuiz = quizzes.find((q: Quiz) => q.id === attempt.quizId);
                                       if (refreshedQuiz) {
-                                        setLocation(`/quizzes/${refreshedQuiz.frameworkId}/${attempt.quizId}`);
+                                        setLocation(`/quiz/${refreshedQuiz.frameworkId}/${attempt.quizId}`);
                                       } else {
                                         toast({
                                           title: "Quiz not found",
@@ -553,11 +553,9 @@ const DashboardPage = () => {
                         </CardDescription>
                       </CardHeader>
                       <CardContent>
-                        <Link to="/quizzes">
-                          <Button>
-                            Browse Quizzes
-                          </Button>
-                        </Link>
+                        <Button onClick={() => setLocation("/frameworks")}>
+                          Browse Frameworks & Quizzes
+                        </Button>
                       </CardContent>
                     </Card>
                   )}
@@ -600,7 +598,7 @@ const DashboardPage = () => {
 
                         <Button 
                           className="native-button text-xs h-8 py-2 w-full flex items-center justify-center"
-                          onClick={() => setLocation('/quizzes')}
+                          onClick={() => setLocation('/frameworks')}
                         >
                           Start Quiz <ArrowRightCircle className="ml-1.5 h-3.5 w-3.5" />
                         </Button>
