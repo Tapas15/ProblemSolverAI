@@ -61,14 +61,8 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   
-  // Sort attempts by date and get only recent 3
-  const sortedAttempts = (attempts?.filter(a => a && typeof a.score === 'number') || [])
-    .sort((a, b) => {
-      const dateA = a.completedAt ? new Date(a.completedAt).getTime() : 0;
-      const dateB = b.completedAt ? new Date(b.completedAt).getTime() : 0;
-      return dateB - dateA;
-    })
-    .slice(0, 3); // Only keep the 3 most recent attempts
+  // Filter out invalid attempts
+  const validAttempts = (attempts?.filter(a => a && typeof a.score === 'number') || []);
 
   // Handle refresh button click
   const handleRefresh = async () => {
@@ -150,15 +144,16 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
   });
 
 
-  const recentAttempts = sortedAttempts;
+  // Only use the 3 most recent attempts for display and analysis
+  const recentAttempts = sortedAttempts.slice(0, 3);
 
 
   // Calculate performance trends
   const getPerformanceTrend = (currentIndex: number) => {
-    if (currentIndex >= sortedAttempts.length - 1) return 'neutral'; // First attempt has no trend
+    if (currentIndex >= recentAttempts.length - 1) return 'neutral'; // First attempt has no trend
 
-    const currentScore = sortedAttempts[currentIndex].score;
-    const previousScore = sortedAttempts[currentIndex + 1].score;
+    const currentScore = recentAttempts[currentIndex].score;
+    const previousScore = recentAttempts[currentIndex + 1].score;
 
     if (currentScore > previousScore) return 'improved';
     if (currentScore < previousScore) return 'declined';
@@ -167,10 +162,10 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
 
   // Calculate improvement percentage
   const getImprovementPercentage = (currentIndex: number) => {
-    if (currentIndex >= sortedAttempts.length - 1) return 0;
+    if (currentIndex >= recentAttempts.length - 1) return 0;
 
-    const currentScore = sortedAttempts[currentIndex].score;
-    const previousScore = sortedAttempts[currentIndex + 1].score;
+    const currentScore = recentAttempts[currentIndex].score;
+    const previousScore = recentAttempts[currentIndex + 1].score;
 
     return Math.round(((currentScore - previousScore) / previousScore) * 100);
   };
@@ -215,7 +210,7 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
     setExpandedAttempt(expandedAttempt === id ? null : id);
   };
 
-  if (!sortedAttempts.length) {
+  if (!recentAttempts.length) {
     return (
       <Card>
         <CardHeader>
@@ -251,8 +246,8 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
               <AlertCircle className="h-4 w-4 text-amber-800" />
               <AlertTitle>Maximum Attempts Reached</AlertTitle>
               <AlertDescription>
-                You have used all {maxAttempts} attempts for this quiz. Your highest score was {Math.max(...sortedAttempts.map(a => a.score))}%.
-                {sortedAttempts.some(a => a.passed) && (
+                You have used all {maxAttempts} attempts for this quiz. Your highest score was {Math.max(...recentAttempts.map(a => a.score))}%.
+                {recentAttempts.some(a => a.passed) && (
                   <span className="font-medium flex items-center gap-1 mt-1">
                     <Award className="h-4 w-4 text-green-600" /> 
                     <span className="text-green-600">Congratulations on passing this quiz!</span>
