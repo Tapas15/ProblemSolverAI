@@ -55,9 +55,12 @@ const DashboardPage = () => {
   } = useQuery({
     queryKey: ['/api/quiz-attempts/user'],
     queryFn: getUserQuizAttempts,
-    staleTime: 0, // Always fetch fresh data
-    refetchOnMount: true, // Refetch when component mounts
-    refetchOnWindowFocus: true, // Refetch when window gets focus
+    staleTime: 0,
+    cacheTime: 0,
+    refetchInterval: 3000, // Refetch every 3 seconds
+    refetchOnMount: "always",
+    refetchOnWindowFocus: "always",
+    refetchOnReconnect: "always"
   });
   
   // For each quiz attempt, fetch the quiz data from all frameworks
