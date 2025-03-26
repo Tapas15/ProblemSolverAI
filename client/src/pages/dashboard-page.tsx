@@ -510,7 +510,7 @@ const DashboardPage = () => {
 
                                   if (targetQuiz) {
                                     // We found the quiz, navigate to it
-                                    setLocation(`/quizzes/${targetQuiz.frameworkId}/${attempt.quizId}`);
+                                    setLocation(`/quiz/${targetQuiz.frameworkId}/${attempt.quizId}`);
                                   } else {
                                     // Quiz not found in our loaded data, try fetching data for all frameworks
                                     toast({
