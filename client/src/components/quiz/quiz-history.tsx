@@ -59,6 +59,13 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
   const [isClearing, setIsClearing] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const { toast } = useToast();
+  
+  // Sort attempts by date (most recent first)
+  const sortedAttempts = [...attempts].sort((a, b) => {
+    const dateA = a.completedAt ? new Date(a.completedAt).getTime() : 0;
+    const dateB = b.completedAt ? new Date(b.completedAt).getTime() : 0;
+    return dateB - dateA;
+  });
 
   // Handle refresh button click
   const handleRefresh = async () => {

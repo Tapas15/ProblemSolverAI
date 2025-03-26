@@ -13,12 +13,15 @@ export function QuizPerformanceChart({ quizAttempts, onRefresh }: QuizPerformanc
   const attemptsByQuiz = React.useMemo(() => {
     const grouped: Record<number, QuizAttempt[]> = {};
     
-    // Group attempts by quizId
+    // Group attempts by quizId and include all attempts
     quizAttempts.forEach(attempt => {
       if (!grouped[attempt.quizId]) {
         grouped[attempt.quizId] = [];
       }
-      grouped[attempt.quizId].push(attempt);
+      // Only add completed attempts
+      if (attempt.completedAt) {
+        grouped[attempt.quizId].push(attempt);
+      }
     });
     
     // Sort attempts within each quiz by date (most recent first)
