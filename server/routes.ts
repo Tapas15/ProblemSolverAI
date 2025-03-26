@@ -1364,7 +1364,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           const result = await model.generateContent(prompt);
           
-          answer = result.response.text || "I'm sorry, I couldn't generate a response. Please try again.";
+          // Extract text from the Gemini response
+          let responseText = "";
+          try {
+            responseText = result.response.text();
+          } catch (error) {
+            console.error("Error extracting text from Gemini response:", error);
+            // Try alternate method of accessing the text
+            responseText = result.response.candidates?.[0]?.content?.parts?.[0]?.text || "";
+          }
+          
+          answer = responseText || "I'm sorry, I couldn't generate a response. Please try again.";
         } catch (error: any) {
           console.error("Gemini API error:", error);
           return res.status(500).json({ message: `AI provider error: ${error.message}` });
