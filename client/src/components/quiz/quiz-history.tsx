@@ -62,13 +62,7 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
   const { toast } = useToast();
   
   // Sort attempts by date and get only recent 3
-  const sortedAttempts = attempts?.filter(a => a && typeof a.score === 'number')
-    .sort((a, b) => {
-      const dateA = a.completedAt ? new Date(a.completedAt).getTime() : 0;
-      const dateB = b.completedAt ? new Date(b.completedAt).getTime() : 0;
-      return dateB - dateA;
-    })
-    .slice(0, 3) || [];
+  const sortedAttempts = (attempts?.filter(a => a && typeof a.score === 'number') || [])
     .sort((a, b) => {
       const dateA = a.completedAt ? new Date(a.completedAt).getTime() : 0;
       const dateB = b.completedAt ? new Date(b.completedAt).getTime() : 0;
