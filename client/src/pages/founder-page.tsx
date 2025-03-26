@@ -86,16 +86,27 @@ const FounderPage: React.FC = () => {
             <h3 className="mobile-h3 text-[#0f172a]">About Me</h3>
           </div>
           
-          <p className="text-sm text-[#334155] mb-3">
-            With over 8 years of experience as a business coach and mentor, I have helped thousands of professionals
-            transform their careers and businesses. My expertise spans across strategic planning, leadership development,
-            and performance optimization.
-          </p>
-          
-          <p className="text-sm text-[#334155]">
-            I believe in a structured approach to problem-solving using proven frameworks that have been refined 
-            through years of real-world application.
-          </p>
+          <div className="flex flex-col md:flex-row gap-4 mb-3">
+            <div className="md:w-1/3">
+              <img 
+                src="/images/manas-profile.jpg" 
+                alt="Dr. Manas Kumar" 
+                className="rounded-lg w-full h-auto shadow-sm"
+              />
+            </div>
+            <div className="md:w-2/3">
+              <p className="text-sm text-[#334155] mb-3">
+                With over 8 years of experience as a business coach and mentor, I have helped thousands of professionals
+                transform their careers and businesses. My expertise spans across strategic planning, leadership development,
+                and performance optimization.
+              </p>
+              
+              <p className="text-sm text-[#334155]">
+                I believe in a structured approach to problem-solving using proven frameworks that have been refined 
+                through years of real-world application.
+              </p>
+            </div>
+          </div>
         </CardContent>
       </Card>
       
