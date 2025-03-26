@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { RewardsSection } from '@/components/rewards/rewards-section';
+// Rewards system removed as requested
 import { Link } from 'wouter';
 import { 
   User, 
@@ -489,12 +489,43 @@ const ProfilePage: React.FC = () => {
           </CardContent>
         </Card>
         
-        {/* Rewards and Achievements Section */}
-        <RewardsSection 
-          userProgress={userProgress} 
-          quizAttempts={quizAttempts} 
-          achievements={achievements}
-        />
+        {/* Achievements Section - Replaced rewards with direct achievements display */}
+        <Card className="border border-[#e2e8f0] shadow-sm mb-6">
+          <CardHeader className="p-4 pb-0">
+            <CardTitle className="flex items-center">
+              <Award className="mr-2 h-5 w-5 text-yellow-500" />
+              Your Achievements
+            </CardTitle>
+            <CardDescription>
+              Recognitions you've earned through your learning journey
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-4">
+            {achievements && achievements.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {achievements.map((achievement, index) => (
+                  <Card key={index} className="border border-blue-100 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-900/20">
+                    <CardContent className="p-4">
+                      <div className="flex items-center mb-2">
+                        <Star className="h-5 w-5 text-yellow-500 mr-2" />
+                        <h3 className="font-semibold">{achievement.title}</h3>
+                      </div>
+                      <p className="text-sm text-gray-600 dark:text-gray-300">{achievement.description}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <Award className="mx-auto h-12 w-12 text-muted-foreground opacity-20" />
+                <h3 className="mt-2 text-lg font-semibold">No achievements yet</h3>
+                <p className="text-muted-foreground">
+                  Complete modules and quizzes to earn achievements!
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
         
         <Button 
           variant="outline" 
