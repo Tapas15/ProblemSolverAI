@@ -328,7 +328,7 @@ const AiAssistant: React.FC = () => {
           <DialogHeader>
             <DialogTitle>Configure AI Integration</DialogTitle>
             <DialogDescription>
-              Enter your API key to connect with OpenAI services
+              Enter your API key to connect with your preferred AI service
             </DialogDescription>
           </DialogHeader>
           
@@ -344,6 +344,10 @@ const AiAssistant: React.FC = () => {
                   <RadioGroupItem value="openai" id="openai" />
                   <Label htmlFor="openai">OpenAI (GPT-4o)</Label>
                 </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="google" id="google" />
+                  <Label htmlFor="google">Google (Gemini Pro)</Label>
+                </div>
               </RadioGroup>
             </div>
             
@@ -352,7 +356,7 @@ const AiAssistant: React.FC = () => {
               <Input 
                 id="api-key"
                 type="password"
-                placeholder="Enter your API key"
+                placeholder={`Enter your ${aiProvider === 'openai' ? 'OpenAI' : 'Google AI'} API key`}
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
               />

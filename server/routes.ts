@@ -14,6 +14,7 @@ import {
 } from "@shared/schema";
 import { WebSocketServer, WebSocket } from 'ws';
 import OpenAI from "openai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { xapiService } from "./services/xapi-service";
 import { scormService } from "./services/scorm-service";
 import path from "path";
