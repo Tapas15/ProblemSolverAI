@@ -10,7 +10,9 @@ import {
   XapiStatement,
   insertExerciseSchema, insertExerciseSubmissionSchema,
   Exercise, ExerciseSubmission,
-  insertCertificateSchema, Certificate
+  insertCertificateSchema, Certificate,
+  insertWizardSessionSchema, WizardSession,
+  insertWizardTemplateSchema, WizardTemplate
 } from "@shared/schema";
 import { WebSocketServer, WebSocket } from 'ws';
 import OpenAI from "openai";
