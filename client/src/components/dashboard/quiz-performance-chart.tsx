@@ -39,7 +39,7 @@ export function QuizPerformanceChart({ quizAttempts, onRefresh }: QuizPerformanc
     return grouped;
   }, [quizAttempts]);
   
-  // Format data for the chart - only include quizzes with multiple attempts
+  // Format data for the chart - include all quizzes with attempts
   const chartData = React.useMemo(() => {
     const data: Array<{
       name: string;
@@ -47,6 +47,15 @@ export function QuizPerformanceChart({ quizAttempts, onRefresh }: QuizPerformanc
       attempt2?: number;
       attempt3?: number;
     }> = [];
+
+    // Sort attempts by completedAt date before processing
+    Object.entries(attemptsByQuiz).forEach(([quizId, attempts]) => {
+      attempts.sort((a, b) => {
+        const dateA = a.completedAt ? new Date(a.completedAt).getTime() : 0;
+        const dateB = b.completedAt ? new Date(b.completedAt).getTime() : 0;
+        return dateB - dateA;
+      });
+    });
     
     Object.entries(attemptsByQuiz).forEach(([quizId, attempts]) => {
       if (attempts.length > 0) {

@@ -121,12 +121,12 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
     ? safeAttempts.filter(attempt => attempt && attempt.quizId === quizId)
     : safeAttempts;
 
-  // Force refresh component when attempts change
+  // Only refresh when component mounts
   useEffect(() => {
     if (onRefresh) {
       onRefresh();
     }
-  }, [attempts]);
+  }, []); // Empty dependency array for mount-only
     
   // Calculate how many attempts are remaining (if a specific quiz is selected)
   const attemptsRemaining = quizId ? maxAttempts - filteredAttempts.length : null;
