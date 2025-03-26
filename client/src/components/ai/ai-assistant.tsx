@@ -73,7 +73,7 @@ const AiAssistant: React.FC = () => {
       try {
         return await askAi(question, frameworkId);
       } catch (error) {
-        console.error('Error in askAi mutation function:', error);
+        console.error('Error in askAi API call:', error);
         throw error;
       }
     },
@@ -82,8 +82,7 @@ const AiAssistant: React.FC = () => {
       setQuestion('');
       
       // Force refresh the conversations data
-      queryClient.removeQueries({ queryKey: ['/api/ai/conversations'] });
-      queryClient.refetchQueries({ queryKey: ['/api/ai/conversations'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/ai/conversations'] });
       
       // Show a success toast
       toast({
@@ -91,12 +90,38 @@ const AiAssistant: React.FC = () => {
         description: "Your answer is ready.",
       });
     },
-    onError: (error: Error) => {
+    onError: (error: any) => {
       console.error('AI query failed:', error);
       toast({
         title: "Failed to get AI response",
-        description: error.message || "Something went wrong. Please try again.",
+        description: error?.message || "Something went wrong. Please try again.",
         variant: "destructive",
+      });
+    }
+  });
+  
+  // Separate mutation for clearing conversations
+  const clearConversationsMutation = useMutation({
+    mutationFn: clearAiConversations,
+    onSuccess: () => {
+      // Invalidate and refetch conversations
+      queryClient.invalidateQueries({ queryKey: ['/api/ai/conversations'] });
+      
+      // Reset question field
+      setQuestion('');
+      
+      // Show success toast
+      toast({
+        title: "Conversations cleared",
+        description: "Your conversation history has been cleared.",
+      });
+    },
+    onError: (error: any) => {
+      console.error("Error clearing conversations:", error);
+      toast({
+        title: "Error clearing history",
+        description: error?.message || "Failed to clear conversation history. Please try again.",
+        variant: "destructive"
       });
     }
   });
