@@ -16,26 +16,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ReactMarkdown from 'react-markdown';
 
 const AiAssistant: React.FC = () => {
+  const { user, updateAiSettingsMutation } = useAuth();
+  
   const [question, setQuestion] = useState('');
   const [selectedFramework, setSelectedFramework] = useState<string>('');
   const [activeTab, setActiveTab] = useState<string>('custom');
   const [isAiSettingsOpen, setIsAiSettingsOpen] = useState(false);
-  const [apiKey, setApiKey] = useState('');
-  const [aiProvider, setAiProvider] = useState('openai');
-
-  const { user, updateAiSettingsMutation } = useAuth();
+  const [apiKey, setApiKey] = useState(user?.apiKey || '');
+  const [aiProvider, setAiProvider] = useState<'openai' | 'gemini'>((user?.aiProvider as 'openai' | 'gemini') || 'openai');
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Initialize API settings from user data
-  useEffect(() => {
-    if (user?.apiKey) {
-      setApiKey(user.apiKey);
-    }
-    if (user?.aiProvider) {
-      setAiProvider(user.aiProvider);
-    }
-  }, [user]);
+  // Note: No need for an initialization useEffect since we now set initial state based on user data
 
   const { data: frameworks } = useQuery({
     queryKey: ['/api/frameworks'],
@@ -81,8 +73,14 @@ const AiAssistant: React.FC = () => {
       console.log('AI query successful, clearing question and refreshing conversations');
       setQuestion('');
       
-      // Force refresh the conversations data
+      // First remove existing queries to ensure clean state
+      queryClient.removeQueries({ queryKey: ['/api/ai/conversations'] });
+      
+      // Then invalidate to trigger a fresh fetch
       queryClient.invalidateQueries({ queryKey: ['/api/ai/conversations'] });
+      
+      // Force a refetch to ensure state is updated
+      void queryClient.refetchQueries({ queryKey: ['/api/ai/conversations'] });
       
       // Show a success toast
       toast({
@@ -104,10 +102,18 @@ const AiAssistant: React.FC = () => {
   const clearConversationsMutation = useMutation({
     mutationFn: clearAiConversations,
     onSuccess: () => {
-      // Invalidate and refetch conversations
+      console.log("Successfully cleared conversations");
+      
+      // First remove the queries completely to force a clean state
+      queryClient.removeQueries({ queryKey: ['/api/ai/conversations'] });
+      
+      // Then invalidate to trigger a fresh fetch
       queryClient.invalidateQueries({ queryKey: ['/api/ai/conversations'] });
       
-      // Reset question field
+      // Force a refetch to ensure state is updated
+      void queryClient.refetchQueries({ queryKey: ['/api/ai/conversations'] });
+      
+      // Reset local state
       setQuestion('');
       
       // Show success toast
@@ -456,7 +462,7 @@ const AiAssistant: React.FC = () => {
               <Label htmlFor="ai-provider">AI Provider</Label>
               <RadioGroup 
                 value={aiProvider} 
-                onValueChange={setAiProvider}
+                onValueChange={(value: 'openai' | 'gemini') => setAiProvider(value)}
                 className="flex flex-col space-y-1"
               >
                 <div className="flex items-center space-x-2">
