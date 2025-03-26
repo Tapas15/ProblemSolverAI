@@ -86,6 +86,27 @@ export interface IStorage {
   createCertificate(certificate: InsertCertificate): Promise<Certificate>;
   updateCertificate(id: number, certificateData: Partial<Certificate>): Promise<Certificate | undefined>;
   revokeCertificate(id: number): Promise<Certificate | undefined>;
+  
+  // Rewards methods
+  getReward(id: number): Promise<Reward | undefined>;
+  getAllRewards(): Promise<Reward[]>;
+  getRewardsByType(type: string): Promise<Reward[]>;
+  createReward(reward: InsertReward): Promise<Reward>;
+  updateReward(id: number, rewardData: Partial<Reward>): Promise<Reward | undefined>;
+  deleteReward(id: number): Promise<void>;
+  
+  // User Rewards methods
+  getUserReward(id: number): Promise<UserReward | undefined>;
+  getUserRewards(userId: number): Promise<UserReward[]>;
+  getUserRewardsByType(userId: number, type: string): Promise<UserReward[]>;
+  createUserReward(userReward: InsertUserReward): Promise<UserReward>;
+  checkUserRewardExists(userId: number, rewardId: number): Promise<boolean>;
+  
+  // User Streaks methods
+  getUserStreak(userId: number): Promise<UserStreak | undefined>;
+  createUserStreak(userStreak: InsertUserStreak): Promise<UserStreak>;
+  updateUserStreak(userId: number, streakData: Partial<UserStreak>): Promise<UserStreak | undefined>;
+  checkAndUpdateStreak(userId: number): Promise<UserStreak>;
 }
 
 // In-memory storage implementation
@@ -109,9 +130,14 @@ export class MemStorage implements IStorage {
   private exercises: Map<number, Exercise>;
   private exerciseSubmissions: Map<number, ExerciseSubmission>;
   private certificates: Map<number, Certificate>;
+  private rewards: Map<number, Reward>;
+  private userRewards: Map<number, UserReward>;
+  private userStreaks: Map<number, UserStreak>;
   private exerciseIdCounter: number;
   private exerciseSubmissionIdCounter: number;
   private certificateIdCounter: number;
+  private rewardIdCounter: number;
+  private userRewardIdCounter: number;
   
   constructor() {
     this.users = new Map();

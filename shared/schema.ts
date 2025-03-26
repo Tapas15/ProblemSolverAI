@@ -359,3 +359,68 @@ export const insertCertificateSchema = createInsertSchema(certificates).pick({
 
 export type InsertCertificate = z.infer<typeof insertCertificateSchema>;
 export type Certificate = typeof certificates.$inferSelect;
+
+// Rewards schema
+export const rewards = pgTable("rewards", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  type: text("type").notNull(), // 'badge', 'points', 'streak', 'achievement'
+  iconUrl: text("icon_url"), // URL to reward icon
+  pointValue: integer("point_value").default(0), // Points value (if applicable)
+  condition: text("condition").notNull(), // JSON describing trigger conditions
+  rarity: text("rarity").default("common"), // 'common', 'uncommon', 'rare', 'epic', 'legendary'
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertRewardSchema = createInsertSchema(rewards).pick({
+  name: true,
+  description: true,
+  type: true,
+  iconUrl: true,
+  pointValue: true,
+  condition: true,
+  rarity: true,
+});
+
+// User Rewards schema
+export const userRewards = pgTable("user_rewards", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  rewardId: integer("reward_id").notNull(),
+  earnedAt: timestamp("earned_at").defaultNow(),
+  data: text("data"), // Additional data about how reward was earned
+});
+
+export const insertUserRewardSchema = createInsertSchema(userRewards).pick({
+  userId: true,
+  rewardId: true,
+  data: true,
+});
+
+// User Streaks
+export const userStreaks = pgTable("user_streaks", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  currentStreak: integer("current_streak").default(0),
+  longestStreak: integer("longest_streak").default(0),
+  lastActivityDate: timestamp("last_activity_date").defaultNow(),
+  streakStartDate: timestamp("streak_start_date").defaultNow(),
+});
+
+export const insertUserStreakSchema = createInsertSchema(userStreaks).pick({
+  userId: true,
+  currentStreak: true,
+  longestStreak: true,
+  lastActivityDate: true,
+  streakStartDate: true,
+});
+
+export type InsertReward = z.infer<typeof insertRewardSchema>;
+export type Reward = typeof rewards.$inferSelect;
+
+export type InsertUserReward = z.infer<typeof insertUserRewardSchema>;
+export type UserReward = typeof userRewards.$inferSelect;
+
+export type InsertUserStreak = z.infer<typeof insertUserStreakSchema>;
+export type UserStreak = typeof userStreaks.$inferSelect;
