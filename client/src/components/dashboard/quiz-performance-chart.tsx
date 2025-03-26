@@ -31,9 +31,6 @@ export function QuizPerformanceChart({ quizAttempts, onRefresh }: QuizPerformanc
         // Sort by date, most recent first
         return new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime();
       });
-      
-      // Keep only the most recent 3 attempts
-      grouped[Number(quizId)] = grouped[Number(quizId)].slice(0, 3);
     });
     
     return grouped;

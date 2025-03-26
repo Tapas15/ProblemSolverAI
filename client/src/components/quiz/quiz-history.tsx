@@ -59,15 +59,15 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
   const [isClearing, setIsClearing] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const { toast } = useToast();
-  
+
   // Handle refresh button click
   const handleRefresh = async () => {
     if (!onRefresh) return;
-    
+
     try {
       setIsRefreshing(true);
       await onRefresh();
-      
+
       toast({
         title: "Data Refreshed",
         description: "Your quiz history has been updated with the latest data.",
@@ -75,7 +75,7 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
       });
     } catch (error) {
       console.error("Error refreshing quiz history:", error);
-      
+
       toast({
         title: "Refresh Failed",
         description: "Could not update your quiz history. Please try again.",
@@ -85,19 +85,19 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
       setIsRefreshing(false);
     }
   };
-  
+
   const handleClearAllAttempts = async () => {
     try {
       setIsClearing(true);
       await clearQuizAttempts();
-      
+
       // Show success toast
       toast({
         title: "Success",
         description: "All quiz attempts have been cleared successfully.",
         variant: "default",
       });
-      
+
       // We need to refresh the page to show the updated state
       window.location.reload();
     } catch (error) {
@@ -112,68 +112,68 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
       setIsClearing(false);
     }
   };
-  
+
   // Make sure attempts is always an array, even if it's null or undefined
   const safeAttempts = Array.isArray(attempts) ? attempts : [];
-  
-  // Filter attempts for this quiz if quizId is provided and ensure proper type checking
+
   const filteredAttempts = quizId 
     ? safeAttempts.filter(attempt => attempt && attempt.quizId === quizId)
     : safeAttempts;
 
-  // Only refresh when component mounts
+  // Refresh when component mounts and when attempts change
   useEffect(() => {
     if (onRefresh) {
       onRefresh();
     }
-  }, []); // Empty dependency array for mount-only
-    
-  // Calculate how many attempts are remaining (if a specific quiz is selected)
-  const attemptsRemaining = quizId ? maxAttempts - filteredAttempts.length : null;
+  }, [onRefresh, attempts]); 
+
+  // Remove attempts limit
+  const attemptsRemaining = null;
   const hasAttemptsRemaining = attemptsRemaining !== null && attemptsRemaining > 0;
   const hasReachedMaxAttempts = attemptsRemaining !== null && attemptsRemaining <= 0;
-  
+
   // Sort attempts by completion date, newest first
   const sortedAttempts = [...filteredAttempts].sort((a, b) => {
     const dateA = a.completedAt ? new Date(a.completedAt) : new Date();
     const dateB = b.completedAt ? new Date(b.completedAt) : new Date();
     return dateB.getTime() - dateA.getTime();
   });
-  
-  // Limit to only the 3 most recent attempts (as requested by user)
-  const recentAttempts = sortedAttempts.slice(0, 3);
-  
+
+
+  const recentAttempts = sortedAttempts;
+
+
   // Calculate performance trends
   const getPerformanceTrend = (currentIndex: number) => {
     if (currentIndex >= sortedAttempts.length - 1) return 'neutral'; // First attempt has no trend
-    
+
     const currentScore = sortedAttempts[currentIndex].score;
     const previousScore = sortedAttempts[currentIndex + 1].score;
-    
+
     if (currentScore > previousScore) return 'improved';
     if (currentScore < previousScore) return 'declined';
     return 'neutral';
   };
-  
+
   // Calculate improvement percentage
   const getImprovementPercentage = (currentIndex: number) => {
     if (currentIndex >= sortedAttempts.length - 1) return 0;
-    
+
     const currentScore = sortedAttempts[currentIndex].score;
     const previousScore = sortedAttempts[currentIndex + 1].score;
-    
+
     return Math.round(((currentScore - previousScore) / previousScore) * 100);
   };
-  
+
   // Generate performance feedback and recommendations
   const getPerformanceFeedback = (attempt: QuizAttempt, index: number) => {
     const trend = getPerformanceTrend(index);
     const improvementPercent = getImprovementPercentage(index);
-    
+
     // General feedback based on score
     let feedback = '';
     let recommendations = '';
-    
+
     if (attempt.score >= 90) {
       feedback = "Excellent work! You've demonstrated mastery of this material.";
       recommendations = "Consider exploring advanced topics or helping others learn this material.";
@@ -190,21 +190,21 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
       feedback = "This material needs more attention.";
       recommendations = "Consider revisiting the entire module before attempting the quiz again.";
     }
-    
+
     // Add trend-specific feedback
     if (trend === 'improved' && improvementPercent > 0) {
       feedback += ` You've improved by ${improvementPercent}% since your last attempt!`;
     } else if (trend === 'declined' && improvementPercent < 0) {
       recommendations += ` Try a different study approach than your previous attempt.`;
     }
-    
+
     return { feedback, recommendations };
   };
-  
+
   const toggleAttempt = (id: number) => {
     setExpandedAttempt(expandedAttempt === id ? null : id);
   };
-  
+
   if (!sortedAttempts.length) {
     return (
       <Card>
@@ -222,7 +222,7 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
       </Card>
     );
   }
-  
+
   return (
     <div className="space-y-4">
       {quizId && (
@@ -253,20 +253,19 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
           )}
         </>
       )}
-      
+
       <Tabs defaultValue="all">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="all">All Attempts</TabsTrigger>
           <TabsTrigger value="performance">Performance Analysis</TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="all" className="space-y-4 pt-4">
-          {/* Show only recent 3 attempts as requested */}
           {recentAttempts.map((attempt, index) => {
             const { feedback, recommendations } = getPerformanceFeedback(attempt, index);
             const trend = getPerformanceTrend(index);
             const isExpanded = expandedAttempt === attempt.id;
-            
+
             return (
               <Card key={attempt.id} className="overflow-hidden">
                 <div 
@@ -287,7 +286,7 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center">
                     <div className="text-right mr-3">
                       <div className="font-semibold">{attempt.score}%</div>
@@ -298,11 +297,11 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
                     {isExpanded ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
                   </div>
                 </div>
-                
+
                 {isExpanded && (
                   <CardContent className="pt-0">
                     <Separator className="mb-4" />
-                    
+
                     <div className="space-y-4">
                       <div>
                         <div className="mb-2 flex justify-between">
@@ -311,7 +310,7 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
                         </div>
                         <Progress value={attempt.score} className="h-2" />
                       </div>
-                      
+
                       <div className="grid grid-cols-2 gap-3 text-sm">
                         <div className="bg-gray-50 p-3 rounded">
                           <div className="text-gray-500 mb-1">Time Taken</div>
@@ -320,7 +319,7 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
                             {attempt.timeTaken ? `${Math.floor(attempt.timeTaken / 60)}m ${attempt.timeTaken % 60}s` : 'N/A'}
                           </div>
                         </div>
-                        
+
                         {index < recentAttempts.length - 1 && (
                           <div className="bg-gray-50 p-3 rounded">
                             <div className="text-gray-500 mb-1">vs. Previous</div>
@@ -345,7 +344,7 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
                           </div>
                         )}
                       </div>
-                      
+
                       <div className="bg-blue-50 p-4 rounded-md border border-blue-100">
                         <h4 className="font-medium text-blue-800 mb-2">Feedback & Recommendations</h4>
                         <p className="text-sm text-blue-700 mb-2">{feedback}</p>
@@ -358,7 +357,7 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
             );
           })}
         </TabsContent>
-        
+
         <TabsContent value="performance" className="space-y-4 pt-4">
           <Card>
             <CardHeader>
@@ -372,14 +371,14 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
                     {/* Simple chart visualization showing only recent 3 attempts */}
                     <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gray-200"></div>
                     <div className="absolute left-0 bottom-0 top-0 w-[1px] bg-gray-200"></div>
-                    
+
                     <div className="flex items-end justify-between h-full relative">
                       {[...recentAttempts].reverse().map((attempt, i) => {
                         const height = `${attempt.score}%`;
                         const isLast = i === recentAttempts.length - 1;
                         const isImproved = i > 0 && attempt.score > recentAttempts[recentAttempts.length - i].score;
                         const isDeclined = i > 0 && attempt.score < recentAttempts[recentAttempts.length - i].score;
-                        
+
                         return (
                           <div key={attempt.id} className="flex flex-col items-center" style={{ width: `${100 / recentAttempts.length}%` }}>
                             <div className="text-xs mb-1">{attempt.score}%</div>
@@ -393,7 +392,7 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
                       })}
                     </div>
                   </div>
-                  
+
                   <div className="bg-gray-50 p-4 rounded-md">
                     <h4 className="font-medium mb-2">Performance Summary</h4>
                     {recentAttempts[0].score > recentAttempts[recentAttempts.length - 1].score ? (
@@ -421,7 +420,7 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
               )}
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader>
               <CardTitle>Learning Recommendations</CardTitle>
@@ -433,7 +432,7 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
                   <div className="p-4 border rounded-md">
                     <h4 className="font-medium mb-2">Based on your latest attempt ({recentAttempts[0].score}%)</h4>
                     <p className="text-gray-600 mb-4">{getPerformanceFeedback(recentAttempts[0], 0).recommendations}</p>
-                    
+
                     {recentAttempts[0].score < 80 && (
                       <ul className="space-y-2 text-sm">
                         <li className="flex items-start">
@@ -457,7 +456,7 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
           </Card>
         </TabsContent>
       </Tabs>
-      
+
       {!quizId && recentAttempts.length > 0 && (
         <div className="mt-6 space-y-3">
           {onRefresh && (
@@ -471,7 +470,7 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
               {isRefreshing ? "Refreshing..." : "Refresh Quiz History"}
             </Button>
           )}
-          
+
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button 
