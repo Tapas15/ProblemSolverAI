@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { askAi, getAiConversations, getFrameworks, clearAiConversations } from '@/lib/api';
 import { useAuth } from '@/hooks/use-auth';
@@ -345,8 +345,8 @@ const AiAssistant: React.FC = () => {
                   <Label htmlFor="openai">OpenAI (GPT-4o)</Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="google" id="google" />
-                  <Label htmlFor="google">Google (Gemini Pro)</Label>
+                  <RadioGroupItem value="gemini" id="gemini" />
+                  <Label htmlFor="gemini">Google (Gemini Pro)</Label>
                 </div>
               </RadioGroup>
             </div>
@@ -356,7 +356,7 @@ const AiAssistant: React.FC = () => {
               <Input 
                 id="api-key"
                 type="password"
-                placeholder={`Enter your ${aiProvider === 'openai' ? 'OpenAI' : 'Google AI'} API key`}
+                placeholder={`Enter your ${aiProvider === 'openai' ? 'OpenAI' : 'Google Gemini'} API key`}
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
               />

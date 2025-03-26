@@ -1322,6 +1322,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let answer = "";
       const aiProvider = user.aiProvider || "openai";
       
+      // System prompt for both AI providers
+      const systemPrompt = `You are an AI assistant for the QuestionPro AI platform, specializing in business problem-solving frameworks. ${
+        frameworkId ? `The user is currently working with a specific framework (ID: ${frameworkId}).` : 
+        "Provide helpful, clear, and concise guidance on applying business frameworks to solve real-world problems."
+      } Format your responses in a structured way with clear steps and explanations.`;
+      
       if (aiProvider === "openai") {
         // Use OpenAI API
         try {
@@ -1332,10 +1338,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             messages: [
               {
                 role: "system",
-                content: `You are an AI assistant for the QuestionPro AI platform, specializing in business problem-solving frameworks. ${
-                  frameworkId ? `The user is currently working with a specific framework (ID: ${frameworkId}).` : 
-                  "Provide helpful, clear, and concise guidance on applying business frameworks to solve real-world problems."
-                } Format your responses in a structured way with clear steps and explanations.`
+                content: systemPrompt
               },
               {
                 role: "user",
@@ -1349,8 +1352,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.error("OpenAI API error:", error);
           return res.status(500).json({ message: `AI provider error: ${error.message}` });
         }
+      } else if (aiProvider === "gemini") {
+        // Use Google's Gemini API
+        try {
+          const genAI = new GoogleGenerativeAI(user.apiKey);
+          const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+          
+          const chat = model.startChat({
+            history: [
+              {
+                role: "user",
+                parts: [{ text: "Hello, I need help with business frameworks" }],
+              },
+              {
+                role: "model",
+                parts: [{ text: "Hello! I'd be happy to help you with business frameworks. What specific framework or business problem would you like assistance with?" }],
+              },
+            ],
+            generationConfig: {
+              maxOutputTokens: 1000,
+            },
+          });
+          
+          const result = await chat.sendMessage(
+            [
+              { text: systemPrompt },
+              { text: question }
+            ]
+          );
+          
+          answer = result.response.text() || "I'm sorry, I couldn't generate a response. Please try again.";
+        } catch (error: any) {
+          console.error("Gemini API error:", error);
+          return res.status(500).json({ message: `AI provider error: ${error.message}` });
+        }
       } else {
-        return res.status(400).json({ message: "Unsupported AI provider" });
+        return res.status(400).json({ message: "Unsupported AI provider. Please select either 'openai' or 'gemini' in your settings." });
       }
       
       // Store the conversation
