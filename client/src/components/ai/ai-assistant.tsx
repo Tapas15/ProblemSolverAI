@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import ReactMarkdown from 'react-markdown';
 
 const AiAssistant: React.FC = () => {
   const [question, setQuestion] = useState('');
@@ -407,8 +408,8 @@ const AiAssistant: React.FC = () => {
                   </div>
                 </CardHeader>
                 <CardContent className="p-4">
-                  <div className="text-sm text-gray-600 whitespace-pre-line">
-                    {conversation.answer}
+                  <div className="text-sm text-gray-600 prose prose-sm max-w-none">
+                    <ReactMarkdown>{conversation.answer}</ReactMarkdown>
                   </div>
                 </CardContent>
               </Card>
