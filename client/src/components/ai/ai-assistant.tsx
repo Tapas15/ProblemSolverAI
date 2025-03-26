@@ -352,15 +352,18 @@ const AiAssistant: React.FC = () => {
                   console.log("Clearing conversation history...");
                   await clearAiConversations();
                   
-                  // Force a refetch instead of just invalidating the cache
-                  console.log("Force refetching conversations...");
+                  // Force immediate cache invalidation
+                  queryClient.removeQueries({ queryKey: ['/api/ai/conversations'] });
+                  
+                  // Wait for refetch to complete
+                  await refetchConversations();
+                  
+                  // Force another refetch to ensure clean state
                   await queryClient.refetchQueries({ 
                     queryKey: ['/api/ai/conversations'],
-                    exact: true 
+                    exact: true,
+                    stale: true
                   });
-                  
-                  // Use refetchConversations instead of trying to set state directly
-                  refetchConversations();
                   
                   console.log("Conversation history cleared");
                   toast({
