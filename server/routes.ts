@@ -1332,7 +1332,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const systemPrompt = `You are an AI assistant for the QuestionPro AI platform, specializing in business problem-solving frameworks. ${
         frameworkId ? `The user is currently working with a specific framework (ID: ${frameworkId}).` : 
         "Provide helpful, clear, and concise guidance on applying business frameworks to solve real-world problems."
-      } Format your responses in a structured way with clear steps and explanations.`;
+      } 
+      
+      Important instructions for formatting your responses:
+      1. Keep your answers brief and to the point - maximum 3-4 short paragraphs
+      2. Use bullet points and numbered lists instead of long paragraphs
+      3. Focus on the most essential information only
+      4. Avoid lengthy explanations and examples
+      5. Structure your response with clear headings
+      6. Always prioritize brevity and clarity over comprehensive coverage
+      7. Limit any examples to 1-2 brief sentences`;
       
       console.log(`Using AI provider: ${aiProvider}`);
       
@@ -1500,22 +1509,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (!req.isAuthenticated()) return res.sendStatus(401);
     
     try {
+      console.log("Clearing AI conversations for user");
       const userId = req.user!.id;
       
       // Get all of the user's conversations
+      console.log(`Getting conversations for user ${userId}`);
       const conversations = await storage.getAiConversations(userId);
+      console.log(`Found ${conversations.length} conversations to delete`);
       
       // In a real database implementation, we would do this with a single query
       // For memory storage, we need to delete them one by one
       for (const conversation of conversations) {
+        console.log(`Deleting conversation ${conversation.id}`);
         await storage.deleteAiConversation(conversation.id);
       }
       
-      // Invalidate the AI conversations cache
-      invalidateCache(CACHE_KEYS.AI_CONVERSATIONS(userId));
+      // Force the cache to be completely invalidated for this user's conversations
+      const cacheKey = CACHE_KEYS.AI_CONVERSATIONS(userId);
+      console.log(`Invalidating cache for key: ${cacheKey}`);
+      invalidateCache(cacheKey);
       
-      res.status(204).send();
+      // Double-check that conversations were cleared by getting them again
+      const remainingConversations = await storage.getAiConversations(userId);
+      console.log(`After deletion, user has ${remainingConversations.length} conversations remaining`);
+      
+      // Respond with empty array instead of 204 for better client handling
+      res.status(200).json([]);
     } catch (error) {
+      console.error("Error clearing AI conversations:", error);
       next(error);
     }
   });

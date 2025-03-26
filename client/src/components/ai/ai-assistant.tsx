@@ -41,7 +41,11 @@ const AiAssistant: React.FC = () => {
     queryFn: () => getFrameworks(),
   });
   
-  const { data: conversations, isLoading: conversationsLoading } = useQuery({
+  const { 
+    data: conversations, 
+    isLoading: conversationsLoading,
+    refetch: refetchConversations
+  } = useQuery({
     queryKey: ['/api/ai/conversations'],
     queryFn: () => getAiConversations(),
   });
@@ -342,13 +346,34 @@ const AiAssistant: React.FC = () => {
               variant="outline" 
               size="sm"
               className="h-8 px-3 text-xs"
-              onClick={() => {
-                clearAiConversations();
-                queryClient.invalidateQueries({ queryKey: ['/api/ai/conversations'] });
-                toast({
-                  title: "Conversations cleared",
-                  description: "Your conversation history has been cleared.",
-                });
+              onClick={async () => {
+                try {
+                  console.log("Clearing conversation history...");
+                  await clearAiConversations();
+                  
+                  // Force a refetch instead of just invalidating the cache
+                  console.log("Force refetching conversations...");
+                  await queryClient.refetchQueries({ 
+                    queryKey: ['/api/ai/conversations'],
+                    exact: true 
+                  });
+                  
+                  // Use refetchConversations instead of trying to set state directly
+                  refetchConversations();
+                  
+                  console.log("Conversation history cleared");
+                  toast({
+                    title: "Conversations cleared",
+                    description: "Your conversation history has been cleared.",
+                  });
+                } catch (error) {
+                  console.error("Error clearing conversations:", error);
+                  toast({
+                    title: "Error clearing history",
+                    description: "Failed to clear conversation history. Please try again.",
+                    variant: "destructive"
+                  });
+                }
               }}
             >
               Clear History
