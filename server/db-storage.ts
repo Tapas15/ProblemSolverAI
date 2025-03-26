@@ -28,6 +28,67 @@ export class PostgresStorage implements IStorage {
     // Initialize database
     this.initializeDatabase();
   }
+  
+  // Stub methods for removed reward functionality
+  async getReward(id: number): Promise<Reward | undefined> {
+    return undefined;
+  }
+
+  async getAllRewards(): Promise<Reward[]> {
+    return [];
+  }
+
+  async getRewardsByType(type: string): Promise<Reward[]> {
+    return [];
+  }
+
+  async createReward(reward: InsertReward): Promise<Reward> {
+    throw new Error("Rewards feature has been removed");
+  }
+
+  async updateReward(id: number, rewardData: Partial<Reward>): Promise<Reward | undefined> {
+    throw new Error("Rewards feature has been removed");
+  }
+
+  async deleteReward(id: number): Promise<void> {
+    throw new Error("Rewards feature has been removed");
+  }
+
+  async getUserReward(id: number): Promise<UserReward | undefined> {
+    return undefined;
+  }
+
+  async getUserRewards(userId: number): Promise<UserReward[]> {
+    return [];
+  }
+
+  async getUserRewardsByType(userId: number, type: string): Promise<UserReward[]> {
+    return [];
+  }
+
+  async createUserReward(userReward: InsertUserReward): Promise<UserReward> {
+    throw new Error("Rewards feature has been removed");
+  }
+
+  async checkUserRewardExists(userId: number, rewardId: number): Promise<boolean> {
+    return false;
+  }
+
+  async getUserStreak(userId: number): Promise<UserStreak | undefined> {
+    return undefined;
+  }
+
+  async createUserStreak(userStreak: InsertUserStreak): Promise<UserStreak> {
+    throw new Error("Streaks feature has been removed");
+  }
+
+  async updateUserStreak(userId: number, streakData: Partial<UserStreak>): Promise<UserStreak | undefined> {
+    throw new Error("Streaks feature has been removed");
+  }
+
+  async checkAndUpdateStreak(userId: number): Promise<UserStreak> {
+    throw new Error("Streaks feature has been removed");
+  }
 
   private async initializeDatabase() {
     try {      

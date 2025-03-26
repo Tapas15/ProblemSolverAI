@@ -1045,6 +1045,6 @@ export class MemStorage implements IStorage {
   }
 }
 
-// For now, use MemStorage since rewards functionality is only implemented there
-// Later we can migrate these functions to PostgresStorage
-export const storage = new MemStorage();
+// Use PostgresStorage for persistent storage since rewards system has been removed
+import { PostgresStorage } from "./db-storage";
+export const storage = new PostgresStorage();
