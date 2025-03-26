@@ -1,13 +1,11 @@
-import { users, frameworks, modules, userProgress, aiConversations, quizzes, quizAttempts, exercises, exerciseSubmissions, certificates, rewards, userRewards, userStreaks } from "@shared/schema";
+import { users, frameworks, modules, userProgress, aiConversations, quizzes, quizAttempts, exercises, exerciseSubmissions, certificates } from "@shared/schema";
 import type { 
   User, InsertUser, Framework, InsertFramework, 
   Module, InsertModule, UserProgress, InsertUserProgress, 
   AiConversation, InsertAiConversation,
   Quiz, InsertQuiz, QuizAttempt, InsertQuizAttempt,
   Exercise, InsertExercise, ExerciseSubmission, InsertExerciseSubmission,
-  Certificate, InsertCertificate,
-  Reward, InsertReward, UserReward, InsertUserReward,
-  UserStreak, InsertUserStreak
+  Certificate, InsertCertificate
 } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
@@ -152,9 +150,6 @@ export class MemStorage implements IStorage {
     this.exercises = new Map();
     this.exerciseSubmissions = new Map();
     this.certificates = new Map();
-    this.rewards = new Map();
-    this.userRewards = new Map();
-    this.userStreaks = new Map();
     
     this.userIdCounter = 1;
     this.frameworkIdCounter = 1;
@@ -166,8 +161,6 @@ export class MemStorage implements IStorage {
     this.exerciseIdCounter = 1;
     this.exerciseSubmissionIdCounter = 1;
     this.certificateIdCounter = 1;
-    this.rewardIdCounter = 1;
-    this.userRewardIdCounter = 1;
     
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000,
@@ -630,190 +623,6 @@ export class MemStorage implements IStorage {
     return existingCertificate;
   }
   
-  // Rewards methods
-  async getReward(id: number): Promise<Reward | undefined> {
-    return this.rewards.get(id);
-  }
-  
-  async getAllRewards(): Promise<Reward[]> {
-    return Array.from(this.rewards.values());
-  }
-  
-  async getRewardsByType(type: string): Promise<Reward[]> {
-    const result: Reward[] = [];
-    for (const reward of this.rewards.values()) {
-      if (reward.type === type) {
-        result.push(reward);
-      }
-    }
-    return result;
-  }
-  
-  async createReward(reward: InsertReward): Promise<Reward> {
-    const id = this.rewardIdCounter++;
-    const now = new Date();
-    const newReward: Reward = {
-      ...reward,
-      id,
-      createdAt: now,
-      pointValue: reward.pointValue ?? 0,
-      rarity: reward.rarity || "common",
-      iconUrl: reward.iconUrl || null
-    };
-    this.rewards.set(id, newReward);
-    return newReward;
-  }
-  
-  async updateReward(id: number, rewardData: Partial<Reward>): Promise<Reward | undefined> {
-    const existingReward = this.rewards.get(id);
-    if (!existingReward) return undefined;
-    
-    const updatedReward = { ...existingReward, ...rewardData };
-    this.rewards.set(id, updatedReward);
-    return updatedReward;
-  }
-  
-  async deleteReward(id: number): Promise<void> {
-    this.rewards.delete(id);
-  }
-  
-  // User Rewards methods
-  async getUserReward(id: number): Promise<UserReward | undefined> {
-    return this.userRewards.get(id);
-  }
-  
-  async getUserRewards(userId: number): Promise<UserReward[]> {
-    const result: UserReward[] = [];
-    for (const userReward of this.userRewards.values()) {
-      if (userReward.userId === userId) {
-        result.push(userReward);
-      }
-    }
-    return result;
-  }
-  
-  async getUserRewardsByType(userId: number, type: string): Promise<UserReward[]> {
-    const userRewards = await this.getUserRewards(userId);
-    const rewardIds = userRewards.map(ur => ur.rewardId);
-    
-    const typedRewards: UserReward[] = [];
-    for (const userReward of userRewards) {
-      const reward = await this.getReward(userReward.rewardId);
-      if (reward && reward.type === type) {
-        typedRewards.push(userReward);
-      }
-    }
-    
-    return typedRewards;
-  }
-  
-  async createUserReward(userReward: InsertUserReward): Promise<UserReward> {
-    const id = this.userRewardIdCounter++;
-    const now = new Date();
-    const newUserReward: UserReward = {
-      ...userReward,
-      id,
-      earnedAt: now,
-      data: userReward.data || null
-    };
-    this.userRewards.set(id, newUserReward);
-    return newUserReward;
-  }
-  
-  async checkUserRewardExists(userId: number, rewardId: number): Promise<boolean> {
-    for (const userReward of this.userRewards.values()) {
-      if (userReward.userId === userId && userReward.rewardId === rewardId) {
-        return true;
-      }
-    }
-    return false;
-  }
-  
-  // User Streaks methods
-  async getUserStreak(userId: number): Promise<UserStreak | undefined> {
-    for (const streak of this.userStreaks.values()) {
-      if (streak.userId === userId) {
-        return streak;
-      }
-    }
-    return undefined;
-  }
-  
-  async createUserStreak(userStreak: InsertUserStreak): Promise<UserStreak> {
-    const now = new Date();
-    const newUserStreak: UserStreak = {
-      ...userStreak,
-      id: userStreak.userId, // Using userId as the primary key since a user can only have one streak record
-      currentStreak: userStreak.currentStreak || 0,
-      longestStreak: userStreak.longestStreak || 0,
-      lastActivityDate: userStreak.lastActivityDate || now,
-      streakStartDate: userStreak.streakStartDate || now
-    };
-    this.userStreaks.set(userStreak.userId, newUserStreak);
-    return newUserStreak;
-  }
-  
-  async updateUserStreak(userId: number, streakData: Partial<UserStreak>): Promise<UserStreak | undefined> {
-    const existingStreak = await this.getUserStreak(userId);
-    if (!existingStreak) return undefined;
-    
-    const updatedStreak = { ...existingStreak, ...streakData };
-    this.userStreaks.set(userId, updatedStreak);
-    return updatedStreak;
-  }
-  
-  async checkAndUpdateStreak(userId: number): Promise<UserStreak> {
-    const now = new Date();
-    let streak = await this.getUserStreak(userId);
-    
-    // If no streak exists, create a new one
-    if (!streak) {
-      return this.createUserStreak({ 
-        userId, 
-        currentStreak: 1,
-        longestStreak: 1,
-        lastActivityDate: now,
-        streakStartDate: now
-      });
-    }
-    
-    // Get the last activity date (without time)
-    const lastDate = new Date(streak.lastActivityDate);
-    lastDate.setHours(0, 0, 0, 0);
-    
-    // Get today's date (without time)
-    const today = new Date(now);
-    today.setHours(0, 0, 0, 0);
-    
-    // Get yesterday's date (without time)
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
-    
-    // If last activity was today, no update needed
-    if (lastDate.getTime() === today.getTime()) {
-      return streak;
-    }
-    
-    // If last activity was yesterday, increment streak
-    if (lastDate.getTime() === yesterday.getTime()) {
-      const currentStreak = streak.currentStreak + 1;
-      const longestStreak = Math.max(currentStreak, streak.longestStreak);
-      
-      return this.updateUserStreak(userId, {
-        currentStreak,
-        longestStreak,
-        lastActivityDate: now
-      });
-    }
-    
-    // If last activity was before yesterday, reset streak
-    return this.updateUserStreak(userId, {
-      currentStreak: 1,
-      lastActivityDate: now,
-      streakStartDate: now
-    });
-  }
-  
   // Seed initial framework and module data
   private seedFrameworks() {
     if (this.frameworks.size > 0) return; // already seeded
@@ -1045,6 +854,8 @@ export class MemStorage implements IStorage {
   }
 }
 
-// Use PostgresStorage for persistent storage since rewards system has been removed
-import { PostgresStorage } from "./db-storage";
-export const storage = new PostgresStorage();
+// Import the PostgresStorage from db-storage.ts file
+import { PostgresStorage as DatabaseStorage } from "./db-storage";
+
+// Use PostgreSQL for persistent storage
+export const storage = new DatabaseStorage();

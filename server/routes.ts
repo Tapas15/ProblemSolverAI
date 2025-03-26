@@ -10,10 +10,7 @@ import {
   XapiStatement,
   insertExerciseSchema, insertExerciseSubmissionSchema,
   Exercise, ExerciseSubmission,
-  insertCertificateSchema, Certificate,
-  insertRewardSchema, Reward, 
-  insertUserRewardSchema, UserReward,
-  insertUserStreakSchema, UserStreak
+  insertCertificateSchema, Certificate
 } from "@shared/schema";
 import { WebSocketServer, WebSocket } from 'ws';
 import OpenAI from "openai";
@@ -3139,9 +3136,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     return Array.from(users.entries()).map(([userId, username]) => ({ userId, username }));
   }
-  
-  // ======= REWARD SYSTEM ENDPOINTS =======
-  // Rewards system removed as requested
   
   return httpServer;
 }

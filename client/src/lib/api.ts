@@ -1,4 +1,4 @@
-import { Framework, Module, UserProgress, AiConversation, Quiz, QuizAttempt, Exercise, ExerciseSubmission, Certificate, Reward, UserReward, UserStreak } from "@shared/schema";
+import { Framework, Module, UserProgress, AiConversation, Quiz, QuizAttempt, Exercise, ExerciseSubmission, Certificate } from "@shared/schema";
 import { apiRequest, queryClient } from "./queryClient";
 import learningTracking from "./learning-tracking";
 
@@ -639,62 +639,4 @@ export async function getUserAchievements(): Promise<Achievement[]> {
     console.error("Error generating achievements:", error);
     return [];
   }
-}
-
-// ======= REWARD SYSTEM API FUNCTIONS =======
-
-// Get all available rewards in the system
-export async function getAllRewards(): Promise<Reward[]> {
-  const res = await apiRequest("GET", "/api/rewards");
-  return res.json();
-}
-
-// Get rewards by type (achievement, streak, special, etc.)
-export async function getRewardsByType(type: string): Promise<Reward[]> {
-  const res = await apiRequest("GET", `/api/rewards/type/${encodeURIComponent(type)}`);
-  return res.json();
-}
-
-// Get a specific reward by ID
-export async function getReward(id: number): Promise<Reward> {
-  const res = await apiRequest("GET", `/api/rewards/${id}`);
-  return res.json();
-}
-
-// Get all rewards earned by the current user
-export async function getUserRewards(): Promise<(UserReward & { reward: Reward | null })[]> {
-  const res = await apiRequest("GET", "/api/user/rewards");
-  return res.json();
-}
-
-// Get user rewards by type
-export async function getUserRewardsByType(type: string): Promise<(UserReward & { reward: Reward | null })[]> {
-  const res = await apiRequest("GET", `/api/user/rewards/type/${encodeURIComponent(type)}`);
-  return res.json();
-}
-
-// Award a reward to the current user
-export async function awardUserReward(
-  rewardId: number, 
-  data?: Record<string, any>,
-  updateStreak = false
-): Promise<UserReward & { reward: Reward }> {
-  const res = await apiRequest("POST", "/api/user/rewards", {
-    rewardId,
-    data: data ? JSON.stringify(data) : null,
-    updateStreak
-  });
-  return res.json();
-}
-
-// Get the current user's streak information
-export async function getUserStreak(): Promise<UserStreak> {
-  const res = await apiRequest("GET", "/api/user/streak");
-  return res.json();
-}
-
-// Perform a daily check-in to update the user's streak
-export async function checkInStreak(): Promise<UserStreak> {
-  const res = await apiRequest("POST", "/api/user/streak/check-in");
-  return res.json();
 }
