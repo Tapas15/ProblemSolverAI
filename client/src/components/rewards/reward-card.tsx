@@ -53,7 +53,7 @@ export function RewardCard({ userReward }: RewardCardProps) {
       case "epic":
         return "destructive";
       case "legendary":
-        return "yellow";
+        return "default"; // Changed from "yellow" to "default" which is supported
       default:
         return "outline";
     }
