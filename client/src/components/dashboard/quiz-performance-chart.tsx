@@ -15,11 +15,13 @@ export function QuizPerformanceChart({ quizAttempts, onRefresh }: QuizPerformanc
     
     // Group attempts by quizId and include all attempts
     quizAttempts.forEach(attempt => {
+      if (!attempt || !attempt.quizId) return; // Skip invalid attempts
+      
       if (!grouped[attempt.quizId]) {
         grouped[attempt.quizId] = [];
       }
-      // Only add completed attempts
-      if (attempt.completedAt) {
+      // Only add completed attempts with scores
+      if (attempt.completedAt && typeof attempt.score === 'number') {
         grouped[attempt.quizId].push(attempt);
       }
     });
