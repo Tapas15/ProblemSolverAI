@@ -49,6 +49,10 @@ const AiAssistant: React.FC = () => {
   } = useQuery({
     queryKey: ['/api/ai/conversations'],
     queryFn: () => getAiConversations(),
+    staleTime: 0, // Always fetch fresh data
+    gcTime: 0, // Don't keep data in cache
+    refetchOnMount: true, // Always refetch when component mounts
+    refetchOnWindowFocus: true, // Refetch when window gets focus
   });
 
   type AskQuestion = {
@@ -57,25 +61,41 @@ const AiAssistant: React.FC = () => {
   };
 
   const askAiMutation = useMutation({
-    mutationFn: ({ question, frameworkId }: AskQuestion) => {
+    mutationFn: async ({ question, frameworkId }: AskQuestion) => {
       console.log('Sending AI query with:', { question, frameworkId });
+      
+      // Show a toast to let the user know the request is being processed
+      toast({
+        title: "Processing your question",
+        description: "This may take a few seconds...",
+      });
+      
       try {
-        return askAi(question, frameworkId);
+        return await askAi(question, frameworkId);
       } catch (error) {
         console.error('Error in askAi mutation function:', error);
         throw error;
       }
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       console.log('AI query successful, clearing question and refreshing conversations');
       setQuestion('');
-      queryClient.invalidateQueries({ queryKey: ['/api/ai/conversations'] });
+      
+      // Force refresh the conversations data
+      queryClient.removeQueries({ queryKey: ['/api/ai/conversations'] });
+      queryClient.refetchQueries({ queryKey: ['/api/ai/conversations'] });
+      
+      // Show a success toast
+      toast({
+        title: "Response generated",
+        description: "Your answer is ready.",
+      });
     },
     onError: (error: Error) => {
       console.error('AI query failed:', error);
       toast({
         title: "Failed to get AI response",
-        description: error.message,
+        description: error.message || "Something went wrong. Please try again.",
         variant: "destructive",
       });
     }
