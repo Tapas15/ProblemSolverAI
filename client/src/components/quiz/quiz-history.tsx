@@ -116,10 +116,17 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
   // Make sure attempts is always an array, even if it's null or undefined
   const safeAttempts = Array.isArray(attempts) ? attempts : [];
   
-  // Filter attempts for this quiz if quizId is provided
+  // Filter attempts for this quiz if quizId is provided and ensure proper type checking
   const filteredAttempts = quizId 
-    ? safeAttempts.filter(attempt => attempt.quizId === quizId)
+    ? safeAttempts.filter(attempt => attempt && attempt.quizId === quizId)
     : safeAttempts;
+
+  // Force refresh component when attempts change
+  useEffect(() => {
+    if (onRefresh) {
+      onRefresh();
+    }
+  }, [attempts]);
     
   // Calculate how many attempts are remaining (if a specific quiz is selected)
   const attemptsRemaining = quizId ? maxAttempts - filteredAttempts.length : null;

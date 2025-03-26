@@ -25,7 +25,7 @@ const DashboardPage = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('progress');
-  
+
   // Fetch user progress
   const { 
     data: progressData, 
@@ -62,7 +62,7 @@ const DashboardPage = () => {
     refetchOnWindowFocus: "always",
     refetchOnReconnect: "always"
   });
-  
+
   // For each quiz attempt, fetch the quiz data from all frameworks
   // This will ensure we have quiz details for the "Try Again" button
   const frameworkIds = useMemo(() => {
@@ -70,7 +70,7 @@ const DashboardPage = () => {
     if (!frameworks) return [];
     return frameworks.map(f => f.id);
   }, [frameworks]);
-  
+
   // Fetch quizzes for each framework
   const quizzesQueries = useQueries({
     queries: frameworkIds.map((frameworkId: number) => ({
@@ -81,25 +81,25 @@ const DashboardPage = () => {
       refetchOnWindowFocus: true
     }))
   });
-  
+
   // Combine all quizzes from different frameworks into a single array
   const quizzes = useMemo(() => {
     return quizzesQueries
       .filter(query => query.data)
       .flatMap(query => query.data || []);
   }, [quizzesQueries]);
-  
+
   const isQuizzesLoading = quizzesQueries.some(query => query.isLoading);
-  
+
   // Function to refetch all quizzes
   const refetchQuizzes = useCallback(() => {
     quizzesQueries.forEach(query => query.refetch());
   }, [quizzesQueries]);
-  
+
   // Process quiz attempts to get unique latest attempts per quiz
   const uniqueQuizAttempts = useMemo(() => {
     if (!quizAttempts) return [];
-    
+
     // Group attempts by quiz ID
     const attemptsByQuiz: Record<number, QuizAttempt[]> = {};
     quizAttempts.forEach(attempt => {
@@ -108,7 +108,7 @@ const DashboardPage = () => {
       }
       attemptsByQuiz[attempt.quizId].push(attempt);
     });
-    
+
     // Get the most recent attempt for each quiz
     return Object.values(attemptsByQuiz).map(attempts => {
       // Sort by completion date, most recent first
@@ -119,7 +119,7 @@ const DashboardPage = () => {
       })[0]; // Take the first (most recent) attempt
     });
   }, [quizAttempts]);
-  
+
   // Refetch quiz attempts and quizzes on tab change to ensure data is fresh
   useEffect(() => {
     if (activeTab === 'quizzes') {
@@ -127,7 +127,7 @@ const DashboardPage = () => {
       refetchQuizzes();
     }
   }, [activeTab, refetchQuizAttempts, refetchQuizzes]);
-  
+
   // Fetch all modules by framework
   const {
     data: allModulesByFramework,
@@ -144,13 +144,13 @@ const DashboardPage = () => {
 
     const totalFrameworks = frameworks.length;
     const completedFrameworks = progressData.filter(p => p.status === 'completed').length;
-    
+
     const totalModules = progressData.reduce((sum, p) => sum + p.totalModules, 0);
     const completedModules = progressData.reduce((sum, p) => sum + (p.completedModules || 0), 0);
-    
+
     const totalQuizzes = quizAttempts.length;
     const passedQuizzes = quizAttempts.filter(a => a.passed).length;
-    
+
     const averageScore = totalQuizzes > 0 
       ? Math.round(quizAttempts.reduce((sum, a) => sum + (a.score / a.maxScore * 100), 0) / totalQuizzes) 
       : 0;
@@ -159,15 +159,15 @@ const DashboardPage = () => {
       totalFrameworks,
       completedFrameworks,
       frameworkProgress: totalFrameworks > 0 ? Math.round((completedFrameworks / totalFrameworks) * 100) : 0,
-      
+
       totalModules,
       completedModules,
       moduleProgress: totalModules > 0 ? Math.round((completedModules / totalModules) * 100) : 0,
-      
+
       totalQuizzes,
       passedQuizzes,
       quizProgress: totalQuizzes > 0 ? Math.round((passedQuizzes / totalQuizzes) * 100) : 0,
-      
+
       averageScore
     };
   };
@@ -182,7 +182,7 @@ const DashboardPage = () => {
 
   const [location, setLocation] = useLocation();
   const queryClient = useQueryClient();
-  
+
   // Performance optimization
   useEffect(() => {
     // Prefetch frameworks data for faster framework detail access
@@ -190,26 +190,26 @@ const DashboardPage = () => {
       queryKey: ['/api/frameworks'],
       queryFn: getFrameworks,
     });
-    
+
     // Preload common images
     const preloadImages = [
       // Default framework images
       "https://images.unsplash.com/photo-1542744094-3a31f272c490?q=80&w=500&auto=format&fit=crop"
     ];
-    
+
     preloadImages.forEach(src => {
       const img = new Image();
       img.src = src;
     });
-    
+
     // Add priority to the main content
     document.body.style.contain = 'content';
-    
+
     return () => {
       document.body.style.contain = '';
     };
   }, [queryClient]);
-  
+
   return (
     <div className="native-scroll pb-16">
       {/* Mobile App Header */}
@@ -218,7 +218,7 @@ const DashboardPage = () => {
           {/* Back button removed as requested */}
           <h1 className="mobile-h1 text-[#0f172a]">Dashboard</h1>
         </div>
-        
+
         {/* Refresh button */}
         <Button 
           variant="ghost" 
@@ -230,20 +230,20 @@ const DashboardPage = () => {
               title: "Refreshing dashboard...",
               description: "Fetching latest data",
             });
-            
+
             // Refresh all data
             queryClient.invalidateQueries({ queryKey: ['/api/user/progress'] });
             queryClient.invalidateQueries({ queryKey: ['/api/frameworks'] });
             queryClient.invalidateQueries({ queryKey: ['/api/quiz-attempts/user'] });
             queryClient.invalidateQueries({ queryKey: ['/api/all-modules-by-framework'] });
-            
+
             // Refresh framework-specific quiz data
             frameworkIds.forEach((frameworkId: number) => {
               queryClient.invalidateQueries({ 
                 queryKey: ['/api/quizzes/framework', frameworkId] 
               });
             });
-            
+
             // Let the user know when refresh is complete
             setTimeout(() => {
               toast({
@@ -382,7 +382,7 @@ const DashboardPage = () => {
                       </CardContent>
                     </Card>
                   )}
-                  
+
                   {/* Show this only if there's no progress data */}
                   {(!progressData || progressData.length === 0) && (
                     <Card className="shadow-sm">
@@ -404,7 +404,7 @@ const DashboardPage = () => {
                 </>
               )}
             </TabsContent>
-            
+
             <TabsContent value="quizzes" className="space-y-4">
               {isLoading ? (
                 <>
@@ -481,10 +481,10 @@ const DashboardPage = () => {
                                     refetchQuizzes();
                                     return;
                                   }
-                                  
+
                                   // Find the quiz in our loaded quizzes data
                                   const targetQuiz = quizzes.find((q: Quiz) => q.id === attempt.quizId);
-                                  
+
                                   if (targetQuiz) {
                                     // We found the quiz, navigate to it
                                     setLocation(`/quizzes/${targetQuiz.frameworkId}/${attempt.quizId}`);
@@ -494,10 +494,10 @@ const DashboardPage = () => {
                                       title: "Loading quiz data...",
                                       description: "Please wait a moment.",
                                     });
-                                    
+
                                     // Force a refresh of quiz data
                                     refetchQuizzes();
-                                    
+
                                     // Retry after a short delay to allow data to load
                                     setTimeout(() => {
                                       const refreshedQuiz = quizzes.find((q: Quiz) => q.id === attempt.quizId);
@@ -541,7 +541,7 @@ const DashboardPage = () => {
                 </>
               )}
             </TabsContent>
-            
+
             <TabsContent value="recommendations" className="space-y-4">
               <div className="space-y-4">
                 <Card className="native-card touch-feedback overflow-hidden">
@@ -553,7 +553,7 @@ const DashboardPage = () => {
                       <div className="flex-1">
                         <h3 className="text-[#0f172a] font-medium text-base">Design Thinking</h3>
                         <p className="text-xs text-[#64748b] mt-0.5 mb-2">Perfect next step for your learning journey</p>
-                        
+
                         <Button 
                           className="native-button text-xs h-8 py-2 w-full flex items-center justify-center"
                           onClick={() => setLocation('/')}
@@ -564,7 +564,7 @@ const DashboardPage = () => {
                     </div>
                   </CardContent>
                 </Card>
-                
+
                 <Card className="native-card touch-feedback overflow-hidden">
                   <CardContent className="p-4">
                     <div className="flex items-start gap-3">
@@ -574,7 +574,7 @@ const DashboardPage = () => {
                       <div className="flex-1">
                         <h3 className="text-[#0f172a] font-medium text-base">Take Your First Quiz</h3>
                         <p className="text-xs text-[#64748b] mt-0.5 mb-2">Test your knowledge with a beginner quiz</p>
-                        
+
                         <Button 
                           className="native-button text-xs h-8 py-2 w-full flex items-center justify-center"
                           onClick={() => setLocation('/quizzes')}
@@ -585,7 +585,7 @@ const DashboardPage = () => {
                     </div>
                   </CardContent>
                 </Card>
-                
+
                 <Card className="native-card touch-feedback overflow-hidden">
                   <CardContent className="p-4">
                     <div className="flex items-start gap-3">
@@ -595,7 +595,7 @@ const DashboardPage = () => {
                       <div className="flex-1">
                         <h3 className="text-[#0f172a] font-medium text-base">Try AI Assistant</h3>
                         <p className="text-xs text-[#64748b] mt-0.5 mb-2">Get personalized guidance on applying frameworks</p>
-                        
+
                         <Button 
                           className="native-button text-xs h-8 py-2 w-full flex items-center justify-center"
                           onClick={() => setLocation('/ai-assistant')}
