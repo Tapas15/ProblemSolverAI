@@ -60,12 +60,14 @@ export default function QuizHistory({ attempts, quizId, frameworkId, maxAttempts
   const [isRefreshing, setIsRefreshing] = useState(false);
   const { toast } = useToast();
   
-  // Sort attempts by date (most recent first)
-  const sortedAttempts = [...attempts].sort((a, b) => {
-    const dateA = a.completedAt ? new Date(a.completedAt).getTime() : 0;
-    const dateB = b.completedAt ? new Date(b.completedAt).getTime() : 0;
-    return dateB - dateA;
-  });
+  // Sort attempts by date and get only recent 3
+  const sortedAttempts = [...attempts]
+    .sort((a, b) => {
+      const dateA = a.completedAt ? new Date(a.completedAt).getTime() : 0;
+      const dateB = b.completedAt ? new Date(b.completedAt).getTime() : 0;
+      return dateB - dateA;
+    })
+    .slice(0, 3); // Only keep the 3 most recent attempts
 
   // Handle refresh button click
   const handleRefresh = async () => {

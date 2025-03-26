@@ -48,6 +48,27 @@ export function QuizPerformanceChart({ quizAttempts, onRefresh }: QuizPerformanc
       attempt3?: number;
     }> = [];
 
+    // Get only the most recent 3 attempts for each quiz
+    Object.entries(attemptsByQuiz).forEach(([quizId, attempts]) => {
+      if (attempts.length > 0) {
+        const recentAttempts = attempts.slice(0, 3); // Get only the most recent 3
+        const quizName = `Quiz #${quizId}`;
+        const entry: any = { name: quizName };
+        
+        // Add score percentage for each attempt (most recent first)
+        recentAttempts.forEach((attempt, index) => {
+          const attemptNumber = recentAttempts.length - index;
+          const scorePercentage = Math.round((attempt.score / attempt.maxScore) * 100);
+          entry[`attempt${attemptNumber}`] = scorePercentage;
+        });
+        
+        data.push(entry);
+      }
+    });
+    
+    return data;
+  }, [attemptsByQuiz]);
+
     // Sort attempts by completedAt date before processing
     Object.entries(attemptsByQuiz).forEach(([quizId, attempts]) => {
       attempts.sort((a, b) => {
