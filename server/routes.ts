@@ -2865,7 +2865,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
+  // Custom AI Model routes
+app.post("/api/custom-ai/train", async (req, res, next) => {
+  if (!req.isAuthenticated()) return res.sendStatus(401);
+  
+  try {
+    const { trainingData } = req.body;
+    await customAIService.trainModel(trainingData);
+    res.json({ message: "Model trained successfully" });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post("/api/custom-ai/predict", async (req, res, next) => {
+  if (!req.isAuthenticated()) return res.sendStatus(401);
+  
+  try {
+    const { features } = req.body;
+    const prediction = await customAIService.predict(features);
+    res.json({ prediction });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
     try {
       if (!req.isAuthenticated() || !req.user) {
         return res.status(401).send("Unauthorized");
