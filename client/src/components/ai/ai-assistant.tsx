@@ -180,7 +180,7 @@ const AiAssistant: React.FC = () => {
                 </ol>
               </div>
               <div className="flex-1">
-                <p className="font-medium text-secondary mb-1">Google (Gemini Pro):</p>
+                <p className="font-medium text-secondary mb-1">Google (Gemini 1.5 Pro):</p>
                 <ol className="list-decimal pl-4 space-y-0.5">
                   <li>Visit <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-primary underline">Google AI Studio</a></li>
                   <li>Sign in with Google</li>
@@ -387,7 +387,7 @@ const AiAssistant: React.FC = () => {
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="gemini" id="gemini" />
-                  <Label htmlFor="gemini">Google (Gemini Pro)</Label>
+                  <Label htmlFor="gemini">Google (Gemini 1.5 Pro)</Label>
                 </div>
               </RadioGroup>
             </div>
@@ -397,7 +397,7 @@ const AiAssistant: React.FC = () => {
               <Input 
                 id="api-key"
                 type="password"
-                placeholder={`Enter your ${aiProvider === 'openai' ? 'OpenAI' : 'Google Gemini'} API key`}
+                placeholder={`Enter your ${aiProvider === 'openai' ? 'OpenAI' : 'Google Gemini 1.5'} API key`}
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
               />

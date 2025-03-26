@@ -1356,32 +1356,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Use Google's Gemini API
         try {
           const genAI = new GoogleGenerativeAI(user.apiKey);
-          const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+          // Use the non-chat model approach instead of chat since there are compatibility issues
+          const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
           
-          const chat = model.startChat({
-            history: [
-              {
-                role: "user",
-                parts: [{ text: "Hello, I need help with business frameworks" }],
-              },
-              {
-                role: "model",
-                parts: [{ text: "Hello! I'd be happy to help you with business frameworks. What specific framework or business problem would you like assistance with?" }],
-              },
-            ],
-            generationConfig: {
-              maxOutputTokens: 1000,
-            },
-          });
+          // Send a single prompt that includes both system and user content
+          const prompt = `${systemPrompt}\n\nQuestion: ${question}`;
           
-          const result = await chat.sendMessage(
-            [
-              { text: systemPrompt },
-              { text: question }
-            ]
-          );
+          const result = await model.generateContent(prompt);
           
-          answer = result.response.text() || "I'm sorry, I couldn't generate a response. Please try again.";
+          answer = result.response.text || "I'm sorry, I couldn't generate a response. Please try again.";
         } catch (error: any) {
           console.error("Gemini API error:", error);
           return res.status(500).json({ message: `AI provider error: ${error.message}` });
