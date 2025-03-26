@@ -15,6 +15,9 @@ const FrameworkPage: React.FC = () => {
   const params = useParams();
   const [_, navigate] = useLocation();
   
+  // State for active tab
+  const [activeTab, setActiveTab] = useState<string>("modules");
+  
   // Convert id to number
   const frameworkId = parseInt(params.id || '0');
   
@@ -118,9 +121,6 @@ const FrameworkPage: React.FC = () => {
       </MainLayout>
     );
   }
-  
-  // State for active tab
-  const [activeTab, setActiveTab] = useState<string>("modules");
   
   return (
     <MainLayout>
