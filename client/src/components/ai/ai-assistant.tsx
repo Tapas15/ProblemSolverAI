@@ -22,11 +22,11 @@ const AiAssistant: React.FC = () => {
   const [isAiSettingsOpen, setIsAiSettingsOpen] = useState(false);
   const [apiKey, setApiKey] = useState('');
   const [aiProvider, setAiProvider] = useState('openai');
-  
+
   const { user, updateAiSettingsMutation } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  
+
   // Initialize API settings from user data
   useEffect(() => {
     if (user?.apiKey) {
@@ -36,12 +36,12 @@ const AiAssistant: React.FC = () => {
       setAiProvider(user.aiProvider);
     }
   }, [user]);
-  
+
   const { data: frameworks } = useQuery({
     queryKey: ['/api/frameworks'],
     queryFn: () => getFrameworks(),
   });
-  
+
   const { 
     data: conversations, 
     isLoading: conversationsLoading,
@@ -50,12 +50,12 @@ const AiAssistant: React.FC = () => {
     queryKey: ['/api/ai/conversations'],
     queryFn: () => getAiConversations(),
   });
-  
+
   type AskQuestion = {
     question: string;
     frameworkId?: number;
   };
-  
+
   const askAiMutation = useMutation({
     mutationFn: ({ question, frameworkId }: AskQuestion) => {
       console.log('Sending AI query with:', { question, frameworkId });
@@ -80,12 +80,12 @@ const AiAssistant: React.FC = () => {
       });
     }
   });
-  
+
   // Framework-specific prompt templates
   const getFrameworkPrompt = (frameworkId: string): string => {
     const framework = frameworks?.find(f => f.id.toString() === frameworkId);
     if (!framework) return '';
-    
+
     switch (framework.name) {
       case 'MECE Framework':
         return `How can I apply the MECE (Mutually Exclusive, Collectively Exhaustive) framework to break down this problem: ${question}`;
@@ -111,35 +111,35 @@ const AiAssistant: React.FC = () => {
         return question;
     }
   };
-  
+
   const handleSubmitQuestion = () => {
     console.log('handleSubmitQuestion called');
     if (!question.trim()) {
       console.log('Empty question, returning');
       return;
     }
-    
+
     if (!user?.apiKey) {
       console.log('No API key found, opening settings dialog');
       setIsAiSettingsOpen(true);
       return;
     }
-    
+
     try {
       console.log('Current user:', user);
       console.log('Current user API key exists:', !!user.apiKey);
       console.log('Current AI provider:', user.aiProvider || 'openai (default)');
-      
+
       if (activeTab === 'framework' && selectedFramework) {
         // For framework-guided mode, send the formatted prompt and the framework ID
         const frameworkIdNumber = parseInt(selectedFramework, 10);
         const finalQuestion = getFrameworkPrompt(selectedFramework);
-        
+
         console.log('Submitting framework-guided question:', {
           question: finalQuestion,
           frameworkId: frameworkIdNumber
         });
-        
+
         askAiMutation.mutate({
           question: finalQuestion,
           frameworkId: frameworkIdNumber
@@ -147,7 +147,7 @@ const AiAssistant: React.FC = () => {
       } else {
         // For custom questions, just send the question without a framework ID
         console.log('Submitting custom question:', question);
-        
+
         askAiMutation.mutate({
           question: question
         });
@@ -161,7 +161,7 @@ const AiAssistant: React.FC = () => {
       });
     }
   };
-  
+
   const handleSaveAiSettings = () => {
     if (!apiKey.trim()) {
       toast({
@@ -171,7 +171,7 @@ const AiAssistant: React.FC = () => {
       });
       return;
     }
-    
+
     updateAiSettingsMutation.mutate(
       { apiKey, aiProvider },
       {
@@ -185,7 +185,7 @@ const AiAssistant: React.FC = () => {
       }
     );
   };
-  
+
   return (
     <div>
       <div className="native-card mb-5">
@@ -193,7 +193,7 @@ const AiAssistant: React.FC = () => {
           <h3 className="mobile-h3 text-[#0f172a]">
             Ask a Question
           </h3>
-          
+
           <Button 
             variant="outline" 
             className="h-8 px-3 text-xs"
@@ -202,11 +202,11 @@ const AiAssistant: React.FC = () => {
             Configure API
           </Button>
         </div>
-        
+
         <p className="text-[#64748b] text-sm mb-2">
           Get tailored guidance for applying business frameworks to your unique challenges.
         </p>
-        
+
         {!user?.apiKey && (
           <div className="bg-muted p-3 rounded-md mb-4 text-xs">
             <p className="font-medium mb-1">API Key Required:</p>
@@ -237,13 +237,13 @@ const AiAssistant: React.FC = () => {
             </Button>
           </div>
         )}
-        
+
         <Tabs defaultValue="custom" value={activeTab} onValueChange={setActiveTab} className="mb-4">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="custom">Custom Question</TabsTrigger>
             <TabsTrigger value="framework">Framework-Guided</TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="custom" className="pt-4">
             <Textarea
               rows={4}
@@ -253,7 +253,7 @@ const AiAssistant: React.FC = () => {
               className="w-full"
             />
           </TabsContent>
-          
+
           <TabsContent value="framework" className="space-y-4 pt-4">
             <div>
               <Label htmlFor="framework-select" className="text-sm font-medium">
@@ -275,7 +275,7 @@ const AiAssistant: React.FC = () => {
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div>
               <Label htmlFor="question-input" className="text-sm font-medium">
                 Your specific challenge or situation
@@ -289,7 +289,7 @@ const AiAssistant: React.FC = () => {
                 className="w-full mt-1"
               />
             </div>
-            
+
             {selectedFramework && (
               <Card className="bg-secondary/5 border-secondary/20">
                 <CardContent className="p-4 flex items-start gap-3">
@@ -307,7 +307,7 @@ const AiAssistant: React.FC = () => {
             )}
           </TabsContent>
         </Tabs>
-        
+
         <div className="flex justify-between items-center">
           <button
             className="text-sm text-secondary hover:underline flex items-center"
@@ -315,7 +315,7 @@ const AiAssistant: React.FC = () => {
           >
             {user?.apiKey ? "Update AI Settings" : "Configure AI Integration"}
           </button>
-          
+
           <Button
             onClick={handleSubmitQuestion}
             disabled={
@@ -336,12 +336,12 @@ const AiAssistant: React.FC = () => {
           </Button>
         </div>
       </div>
-      
+
       {/* AI Conversations History */}
       <div className="space-y-4">
         <div className="flex justify-between items-center mb-3">
           <h3 className="mobile-h3 text-[#0f172a]">Recent Conversations</h3>
-          
+
           {conversations && conversations.length > 0 && (
             <Button 
               variant="outline" 
@@ -351,20 +351,20 @@ const AiAssistant: React.FC = () => {
                 try {
                   console.log("Clearing conversation history...");
                   await clearAiConversations();
-                  
-                  // Force immediate cache invalidation
+
+                  // Clear cache and refetch
                   queryClient.removeQueries({ queryKey: ['/api/ai/conversations'] });
-                  
-                  // Wait for refetch to complete
-                  await refetchConversations();
-                  
-                  // Force another refetch to ensure clean state
-                  await queryClient.refetchQueries({ 
-                    queryKey: ['/api/ai/conversations'],
-                    exact: true,
-                    stale: true
-                  });
-                  
+
+                  // Wait for both operations to complete
+                  await Promise.all([
+                    queryClient.refetchQueries({ 
+                      queryKey: ['/api/ai/conversations'],
+                      exact: true 
+                    }),
+                    refetchConversations()
+                  ]);
+
+                  setQuestion(''); // Clear input field
                   console.log("Conversation history cleared");
                   toast({
                     title: "Conversations cleared",
@@ -384,7 +384,7 @@ const AiAssistant: React.FC = () => {
             </Button>
           )}
         </div>
-        
+
         {conversationsLoading ? (
           <div className="text-center py-8">
             <Loader2 className="h-8 w-8 animate-spin mx-auto text-secondary" />
@@ -395,7 +395,7 @@ const AiAssistant: React.FC = () => {
             // Find the framework name if the conversation has a frameworkId
             const framework = conversation.frameworkId && frameworks ? 
               frameworks.find(f => f.id === conversation.frameworkId) : null;
-              
+
             return (
               <Card key={conversation.id} className="overflow-hidden">
                 <CardHeader className="bg-gray-50 py-3 px-4">
@@ -426,7 +426,7 @@ const AiAssistant: React.FC = () => {
           </Card>
         )}
       </div>
-      
+
       {/* AI Settings Dialog */}
       <Dialog open={isAiSettingsOpen} onOpenChange={setIsAiSettingsOpen}>
         <DialogContent>
@@ -436,7 +436,7 @@ const AiAssistant: React.FC = () => {
               Enter your API key to connect with your preferred AI service
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label htmlFor="ai-provider">AI Provider</Label>
@@ -455,7 +455,7 @@ const AiAssistant: React.FC = () => {
                 </div>
               </RadioGroup>
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="api-key">API Key</Label>
               <Input 
@@ -489,7 +489,7 @@ const AiAssistant: React.FC = () => {
                 )}
               </div>
             </div>
-            
+
             <div className="flex justify-end space-x-2 pt-4">
               <Button 
                 variant="outline" 
