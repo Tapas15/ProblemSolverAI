@@ -60,28 +60,66 @@ export class LocalAIService {
     const startTime = Date.now();
     
     try {
-      // Enhance the prompt with any framework context
-      const enhancedPrompt = options.frameworkContext 
-        ? `${options.frameworkContext}\n\nQuestion: ${prompt}\n\nAnswer:` 
-        : prompt;
+      // Format with clear separators for better generation
+      const enhancedPrompt = `### INSTRUCTION ###
+${prompt}
+
+### ANSWER ###
+`;
       
       // Load model if not already loaded
       const model = await this.loadModel();
       
-      // Generate response
+      // Generate response with improved parameters
       const result = await model(enhancedPrompt, {
-        max_new_tokens: options.maxTokens || 256,
-        temperature: 0.7,
-        top_k: 50,
-        top_p: 0.95,
-        repetition_penalty: 1.2,
-        do_sample: true,
+        max_new_tokens: options.maxTokens || 500,
+        temperature: 0.8,          // Slightly more creative
+        top_k: 40,                 // Focus on more likely tokens
+        top_p: 0.92,               // Sample from top probability tokens
+        repetition_penalty: 1.3,   // Higher penalty for repetition
+        do_sample: true,           // Use sampling for more variety
+        num_beams: 3,              // Use beam search for more coherent text
+        no_repeat_ngram_size: 3,   // Avoid repeating 3-grams
       });
       
       const generatedText = result[0].generated_text;
       
-      // Clean up response to remove the prompt
-      const response = generatedText.substring(enhancedPrompt.length).trim();
+      // Clean up response to extract just the answer part
+      const answerMarker = "### ANSWER ###";
+      const responseStartIndex = generatedText.indexOf(answerMarker) + answerMarker.length;
+      let response = "";
+      
+      if (responseStartIndex > answerMarker.length) {
+        // Extract everything after the answer marker
+        response = generatedText.substring(responseStartIndex).trim();
+        
+        // Find and remove any subsequent markers that might appear
+        const stopPatterns = ["###", "Question:", "Answer:", "User:", "Response:"];
+        for (const pattern of stopPatterns) {
+          const patternIndex = response.indexOf(pattern);
+          if (patternIndex > 0) {
+            response = response.substring(0, patternIndex).trim();
+          }
+        }
+      } else {
+        // Fallback to the old method if markers aren't found
+        response = generatedText.substring(enhancedPrompt.length).trim();
+      }
+      
+      // Remove any incomplete sentences at the end
+      if (response.length > 0) {
+        const lastPeriodIndex = response.lastIndexOf('.');
+        const lastExclamationIndex = response.lastIndexOf('!');
+        const lastQuestionIndex = response.lastIndexOf('?');
+        
+        // Find the last sentence ending
+        const lastSentenceEnd = Math.max(lastPeriodIndex, lastExclamationIndex, lastQuestionIndex);
+        
+        // If we found a sentence ending and it's not at the very end
+        if (lastSentenceEnd > 0 && lastSentenceEnd < response.length - 1) {
+          response = response.substring(0, lastSentenceEnd + 1);
+        }
+      }
       
       const processingTime = (Date.now() - startTime) / 1000;
       return { text: response, processingTime };

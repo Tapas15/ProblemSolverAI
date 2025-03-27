@@ -18,6 +18,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { xapiService } from "./services/xapi-service";
 import { scormService } from "./services/scorm-service";
 import { localAIService } from "./services/local-ai-service";
+import { customAIService } from "./services/custom-ai-service";
 import path from "path";
 import fs from "fs";
 import multer from "multer";
@@ -1331,17 +1332,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
         "Provide helpful, clear, and concise guidance on applying business frameworks to solve real-world problems."
       } 
       
+      THE FRAMEWORKS YOU KNOW INCLUDE:
+      1. MECE (Mutually Exclusive, Collectively Exhaustive)
+      2. SWOT Analysis (Strengths, Weaknesses, Opportunities, Threats)
+      3. Porter's Five Forces
+      4. First Principles Thinking
+      5. Blue Ocean Strategy
+      6. SCAMPER (Substitute, Combine, Adapt, Modify, Put to another use, Eliminate, Reverse)
+      7. Design Thinking
+      8. Problem-Tree Analysis
+      9. Pareto Principle (80/20 Rule)
+      10. Jobs-To-Be-Done Framework
+      
       CRITICAL FORMATTING INSTRUCTIONS:
-      1. Be extremely concise - limit to 2-3 short paragraphs maximum
-      2. Use bullet points for lists instead of paragraphs
-      3. Focus ONLY on essential information
-      4. Never use asterisks (*) in your response
-      5. Use ## for main headings and ### for subheadings only when necessary
-      6. Give direct, actionable advice without lengthy explanations
-      7. Maximum 1 brief example if absolutely necessary
-      8. Avoid any introductory or concluding statements
-      9. Write as if responding on a small mobile screen
-      10. Never apologize or use disclaimers in your response`;
+      1. Always answer directly and completely based on the user's question
+      2. Be extremely concise - limit to 2-3 short paragraphs maximum
+      3. Use bullet points for lists instead of paragraphs
+      4. Focus ONLY on essential information
+      5. Never use asterisks (*) in your response
+      6. Use ## for main headings and ### for subheadings only when necessary
+      7. Give direct, actionable advice without lengthy explanations
+      8. Maximum 1 brief example if absolutely necessary
+      9. Avoid any introductory or concluding statements
+      10. Write as if responding on a small mobile screen
+      11. Never apologize or use disclaimers in your response
+      12. Answer as if you are an expert business consultant
+      13. Be clear, specific, and practical
+      
+      REMEMBER: I expect you to respond to my prompt completely and give a comprehensive answer to what I asked, not a partial or incomplete response.`;
       
       console.log(`Using AI provider: ${aiProvider}`);
       
@@ -1356,13 +1374,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
             const framework = await storage.getFramework(frameworkId);
             if (framework) {
               frameworkContext = `You're helping with the ${framework.name} framework. This framework ${framework.description}`;
+              
+              // Get modules for this framework to provide more context
+              const modules = await storage.getModulesByFrameworkId(frameworkId);
+              if (modules && modules.length > 0) {
+                frameworkContext += ". Key modules include: ";
+                modules.forEach((module, index) => {
+                  if (index > 0) frameworkContext += ", ";
+                  frameworkContext += module.name;
+                });
+              }
             }
           }
           
-          // Generate response using local AI model
-          const response = await localAIService.generateResponse(question, {
-            maxTokens: 300,
-            frameworkContext: frameworkContext
+          // Craft a more specific prompt for the local model
+          const enhancedPrompt = `${systemPrompt}\n\nAs a business framework expert, answer this question completely: ${question}\n\nContext: ${frameworkContext}`;
+          
+          // Generate response using local AI model with more tokens
+          const response = await localAIService.generateResponse(enhancedPrompt, {
+            maxTokens: 500  // Increased token limit for more complete answers
           });
           
           console.log("Generated local AI response:", {
@@ -3249,85 +3279,107 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
             exerciseId = data.exerciseId;
             username = data.username;
             
+            // Make sure we have valid values
+            if (exerciseId === null || userId === null || !username) {
+              console.warn('Invalid join data:', { userId, exerciseId, username });
+              ws.send(JSON.stringify({
+                type: 'error',
+                message: 'Invalid join data. Missing userId, exerciseId, or username.'
+              }));
+              return;
+            }
+            
+            // Convert exerciseId to string for use as an object key
+            const roomId = exerciseId.toString();
+            
             // Create room if it doesn't exist
-            if (!exerciseRooms[exerciseId]) {
-              exerciseRooms[exerciseId] = new Map();
+            if (!exerciseRooms[roomId]) {
+              exerciseRooms[roomId] = new Map();
             }
             
             // Add user to room
             const clientId = `${userId}-${Date.now()}`;
-            exerciseRooms[exerciseId].set(clientId, ws);
+            exerciseRooms[roomId].set(clientId, ws);
             
             // Notify other users in the room
-            broadcastToRoom(exerciseId, {
+            broadcastToRoom(roomId, {
               type: 'user-joined',
               userId,
               username,
               timestamp: new Date().toISOString(),
-              users: getActiveUsers(exerciseId)
+              users: getActiveUsers(roomId)
             }, ws);
             
             // Send join confirmation to the user
             ws.send(JSON.stringify({
               type: 'joined',
               exerciseId,
-              users: getActiveUsers(exerciseId)
+              users: getActiveUsers(roomId)
             }));
             
             break;
             
           case 'leave':
             // User leaves the exercise room
-            if (exerciseId && exerciseRooms[exerciseId]) {
-              // Find and remove the user from the room
-              for (const [clientId, client] of exerciseRooms[exerciseId].entries()) {
-                if (client === ws) {
-                  exerciseRooms[exerciseId].delete(clientId);
-                  break;
+            if (exerciseId !== null) {
+              const roomId = exerciseId.toString();
+              if (exerciseRooms[roomId]) {
+                // Find and remove the user from the room
+                for (const [clientId, client] of [...exerciseRooms[roomId].entries()]) { // Use array spread to avoid iterator issues
+                  if (client === ws) {
+                    exerciseRooms[roomId].delete(clientId);
+                    break;
+                  }
                 }
-              }
-              
-              // Notify others that user left
-              broadcastToRoom(exerciseId, {
-                type: 'user-left',
-                userId,
-                username,
-                timestamp: new Date().toISOString(),
-                users: getActiveUsers(exerciseId)
-              });
-              
-              // Clean up empty rooms
-              if (exerciseRooms[exerciseId].size === 0) {
-                delete exerciseRooms[exerciseId];
+                
+                // Notify others that user left
+                broadcastToRoom(roomId, {
+                  type: 'user-left',
+                  userId,
+                  username,
+                  timestamp: new Date().toISOString(),
+                  users: getActiveUsers(roomId)
+                });
+                
+                // Clean up empty rooms
+                if (exerciseRooms[roomId].size === 0) {
+                  delete exerciseRooms[roomId];
+                }
               }
             }
             break;
             
           case 'update-solution':
             // User updates their solution
-            if (exerciseId && exerciseRooms[exerciseId]) {
-              // Broadcast the solution update to all users in the room
-              broadcastToRoom(exerciseId, {
-                type: 'solution-updated',
-                userId,
-                username,
-                solution: data.solution,
-                timestamp: new Date().toISOString()
-              });
+            if (exerciseId !== null) {
+              const roomId = exerciseId.toString();
+              if (exerciseRooms[roomId]) {
+                // Broadcast the solution update to all users in the room
+                broadcastToRoom(roomId, {
+                  type: 'solution-updated',
+                  userId,
+                  username,
+                  solution: data.solution,
+                  timestamp: new Date().toISOString()
+                });
+              }
             }
             break;
             
           case 'comment':
             // User adds a comment
-            if (exerciseId && exerciseRooms[exerciseId]) {
-              // Broadcast the comment to all users in the room
-              broadcastToRoom(exerciseId, {
-                type: 'new-comment',
-                userId,
-                username,
-                comment: data.comment,
-                timestamp: new Date().toISOString()
-              });
+            if (exerciseId !== null) {
+              const roomId = exerciseId.toString();
+              if (exerciseRooms[roomId]) {
+                // Broadcast the comment to all users in the room
+                broadcastToRoom(roomId, {
+                  type: 'new-comment',
+                  userId,
+                  username,
+                  comment: data.comment,
+                  timestamp: new Date().toISOString()
+                });
+              }
             }
             break;
             
@@ -3344,39 +3396,43 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
     ws.on('close', () => {
       console.log('WebSocket client disconnected');
       // Handle user disconnection
-      if (exerciseId && exerciseRooms[exerciseId]) {
-        // Find and remove the user from the room
-        for (const [clientId, client] of exerciseRooms[exerciseId].entries()) {
-          if (client === ws) {
-            exerciseRooms[exerciseId].delete(clientId);
-            break;
+      if (exerciseId !== null) {
+        const roomId = exerciseId.toString();
+        if (exerciseRooms[roomId]) {
+          // Find and remove the user from the room
+          for (const [clientId, client] of [...exerciseRooms[roomId].entries()]) { // Array spread to fix iterator issues
+            if (client === ws) {
+              exerciseRooms[roomId].delete(clientId);
+              break;
+            }
           }
-        }
-        
-        // Notify others that user left
-        broadcastToRoom(exerciseId, {
-          type: 'user-left',
-          userId,
-          username,
-          timestamp: new Date().toISOString(),
-          users: getActiveUsers(exerciseId)
-        });
-        
-        // Clean up empty rooms
-        if (exerciseRooms[exerciseId].size === 0) {
-          delete exerciseRooms[exerciseId];
+          
+          // Notify others that user left
+          broadcastToRoom(roomId, {
+            type: 'user-left',
+            userId,
+            username,
+            timestamp: new Date().toISOString(),
+            users: getActiveUsers(roomId)
+          });
+          
+          // Clean up empty rooms
+          if (exerciseRooms[roomId].size === 0) {
+            delete exerciseRooms[roomId];
+          }
         }
       }
     });
   });
   
   // Helper function to broadcast a message to all clients in an exercise room
-  function broadcastToRoom(exerciseId: number, message: any, excludeClient?: WebSocket) {
-    if (!exerciseRooms[exerciseId]) return;
+  function broadcastToRoom(roomId: string, message: any, excludeClient?: WebSocket) {
+    if (!exerciseRooms[roomId]) return;
     
     const messageStr = JSON.stringify(message);
     
-    exerciseRooms[exerciseId].forEach((client) => {
+    // Use Array.from to avoid iterator issues
+    Array.from(exerciseRooms[roomId].entries()).forEach(([_, client]) => {
       if (client !== excludeClient && client.readyState === WebSocket.OPEN) {
         client.send(messageStr);
       }
@@ -3384,12 +3440,13 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
   }
   
   // Helper function to get list of active users in a room
-  function getActiveUsers(exerciseId: number): Array<{userId: number, username: string}> {
-    if (!exerciseRooms[exerciseId]) return [];
+  function getActiveUsers(roomId: string): Array<{userId: number, username: string}> {
+    if (!exerciseRooms[roomId]) return [];
     
     const users = new Map<number, string>();
     
-    exerciseRooms[exerciseId].forEach((_, clientId) => {
+    // Use Array.from to avoid iterator issues
+    Array.from(exerciseRooms[roomId].entries()).forEach(([clientId]) => {
       const userId = parseInt(clientId.split('-')[0], 10);
       const username = clientId.split('-')[1] || 'Anonymous';
       users.set(userId, username);
