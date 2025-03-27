@@ -121,6 +121,9 @@ export function CertificateFrame({
             <p>{frameworkName}</p>
           </div>
         </div>
+        <div className="mt-2 text-center">
+          <p className="text-xs text-gray-400">This certificate verifies mastery of the {frameworkName} framework and its professional business applications.</p>
+        </div>
       </div>
       
       {/* Download Button */}

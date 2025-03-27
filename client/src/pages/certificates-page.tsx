@@ -100,6 +100,7 @@ export default function CertificatesPage() {
             
             {/* Extract framework name from description - in a real app you'd get this from the API */}
             {(() => {
+              // Extract framework name from description with improved pattern to match professional descriptions
               const frameworkNameMatch = certificate.description.match(/the (.+?) framework/i);
               const frameworkName = frameworkNameMatch ? frameworkNameMatch[1] : "Professional Framework";
               
@@ -220,14 +221,14 @@ export default function CertificatesPage() {
     
     if (userProgress && frameworks) {
       // Get frameworks with completed status
-      const completedProgress = userProgress.filter(p => p.status === 'completed');
+      const completedProgress = userProgress.filter((p: any) => p.status === 'completed');
       
       // For each completed framework, check if a certificate already exists
       for (const progress of completedProgress) {
-        const framework = frameworks.find(f => f.id === progress.frameworkId);
+        const framework = frameworks.find((f: any) => f.id === progress.frameworkId);
         
         // Check if user already has a certificate for this framework
-        const hasCertificate = certificates?.some(c => 
+        const hasCertificate = certificates?.some((c: any) => 
           c.frameworkId === progress.frameworkId && c.status === 'active'
         );
         
