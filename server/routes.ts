@@ -2506,14 +2506,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Generate certificate number (unique identifier)
-      const certNumber = `QPM-${frameworkId}-${req.user.id}-${Date.now()}`;
+      const certNumber = `FP-${frameworkId}-${req.user.id}-${Date.now()}`;
       
       // Create the certificate
       const certData = {
         userId: req.user.id,
         frameworkId: frameworkId,
         title: `${framework.name} Certificate`,
-        description: `This certifies that ${req.user.name} has successfully completed the ${framework.name} in the QuestionPro AI mobile app.`,
+        description: `This certifies that ${req.user.name} has successfully completed the ${framework.name} in the Framework Pro mobile app.`,
         certificateNumber: certNumber,
         status: "active",
         achievements: JSON.stringify({
@@ -2760,7 +2760,7 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
         <div class="certificate">
           <div class="header">
             <div class="title">Certificate of Completion</div>
-            <div class="subtitle">QuestionPro AI - Professional Learning Platform</div>
+            <div class="subtitle">Framework Pro - Professional Learning Platform</div>
           </div>
           
           <div class="content">
@@ -2780,11 +2780,11 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
           </div>
           
           <div class="signature">
-            QuestionPro AI
+            Framework Pro
           </div>
           
           <div class="certificate-footer">
-            This certificate verifies the completion of the ${framework.name} framework in the QuestionPro AI mobile application.
+            This certificate verifies the completion of the ${framework.name} framework in the Framework Pro mobile application.
           </div>
         </div>
       </body>
