@@ -1451,9 +1451,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
             return res.status(500).json({ message: `Gemini API error: ${error.message}` });
           }
         }
+      } else if (aiProvider === "local") {
+        // Use local AI implementation
+        try {
+          console.log("Using local AI implementation");
+          
+          // Generate a rule-based response based on the question and framework context
+          let localAnswer = "I'm the local AI assistant for QuestionPro. ";
+          
+          // Analyze the question to provide a relevant response
+          if (question.toLowerCase().includes("how to use")) {
+            localAnswer += "To use this application, navigate to the Frameworks section to explore business frameworks. Each framework contains modules that explain concepts with practical examples. You can track your progress, take quizzes, and earn certificates as you learn.";
+          } else if (question.toLowerCase().includes("framework")) {
+            localAnswer += "QuestionPro AI offers several business frameworks including MECE, SWOT Analysis, First Principles Thinking, Design Thinking, Pareto Principle, and more. Each framework provides structured approaches to solving business problems.";
+          } else if (question.toLowerCase().includes("quiz")) {
+            localAnswer += "Quizzes are available for each framework to test your knowledge. You can access them from the framework detail page or the Quiz section. Complete quizzes to track your progress and earn certificates.";
+          } else {
+            localAnswer += "I can help answer questions about business frameworks, problem-solving methodologies, and how to use this application effectively. Please ask specific questions about any framework or feature you're interested in.";
+          }
+          
+          answer = localAnswer;
+          console.log("Generated local AI response");
+        } catch (error: any) {
+          console.error("Local AI error:", error);
+          return res.status(500).json({ message: `Local AI error: ${error.message}` });
+        }
       } else {
         console.warn(`Unsupported AI provider requested: ${aiProvider}`);
-        return res.status(400).json({ message: "Unsupported AI provider. Please select either 'openai' or 'gemini' in your settings." });
+        return res.status(400).json({ message: "Unsupported AI provider. Please select either 'openai', 'gemini', or 'local' in your settings." });
       }
       
       console.log("AI response generated successfully, storing conversation");
