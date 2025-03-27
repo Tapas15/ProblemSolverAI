@@ -10,8 +10,6 @@ export const users = pgTable("users", {
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
   role: text("role").default("user"), // 'user' or 'admin'
-  apiKey: text("api_key"),
-  aiProvider: text("ai_provider"),
   userPreferences: text("user_preferences"),
   avatarUrl: text("avatar_url"),
   phone: text("phone"),
@@ -26,8 +24,6 @@ export const insertUserSchema = createInsertSchema(users).pick({
   password: true,
   name: true,
   email: true,
-  apiKey: true,
-  aiProvider: true,
   userPreferences: true,
   avatarUrl: true,
   phone: true,
@@ -112,22 +108,7 @@ export const insertUserProgressSchema = createInsertSchema(userProgress).pick({
   totalModules: true,
 });
 
-// AI Conversation schema
-export const aiConversations = pgTable("ai_conversations", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull(),
-  frameworkId: integer("framework_id"),
-  question: text("question").notNull(),
-  answer: text("answer").notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
-});
 
-export const insertAiConversationSchema = createInsertSchema(aiConversations).pick({
-  userId: true,
-  frameworkId: true,
-  question: true,
-  answer: true,
-});
 
 // Quiz schema
 export const quizzes = pgTable("quizzes", {
@@ -253,8 +234,7 @@ export type Module = typeof modules.$inferSelect;
 export type InsertUserProgress = z.infer<typeof insertUserProgressSchema>;
 export type UserProgress = typeof userProgress.$inferSelect;
 
-export type InsertAiConversation = z.infer<typeof insertAiConversationSchema>;
-export type AiConversation = typeof aiConversations.$inferSelect;
+
 
 export type InsertQuiz = z.infer<typeof insertQuizSchema>;
 export type Quiz = typeof quizzes.$inferSelect;

@@ -1,8 +1,7 @@
-import { users, frameworks, modules, userProgress, aiConversations, quizzes, quizAttempts, exercises, exerciseSubmissions, certificates } from "@shared/schema";
+import { users, frameworks, modules, userProgress, quizzes, quizAttempts, exercises, exerciseSubmissions, certificates } from "@shared/schema";
 import type { 
   User, InsertUser, Framework, InsertFramework, 
   Module, InsertModule, UserProgress, InsertUserProgress, 
-  AiConversation, InsertAiConversation,
   Quiz, InsertQuiz, QuizAttempt, InsertQuizAttempt,
   Exercise, InsertExercise, ExerciseSubmission, InsertExerciseSubmission,
   Certificate, InsertCertificate
@@ -41,10 +40,6 @@ export interface IStorage {
   createUserProgress(progress: InsertUserProgress): Promise<UserProgress>;
   updateUserProgress(id: number, progressData: Partial<UserProgress>): Promise<UserProgress | undefined>;
   
-  // AI Conversation methods
-  getAiConversations(userId: number): Promise<AiConversation[]>;
-  createAiConversation(conversation: InsertAiConversation): Promise<AiConversation>;
-  deleteAiConversation(id: number): Promise<void>;
   
   // Quiz methods
   getQuiz(id: number): Promise<Quiz | undefined>;
@@ -115,7 +110,7 @@ export class MemStorage implements IStorage {
   private frameworks: Map<number, Framework>;
   private modules: Map<number, Module>;
   private userProgress: Map<number, UserProgress>;
-  private aiConversations: Map<number, AiConversation>;
+
   private quizzes: Map<number, Quiz>;
   private quizAttempts: Map<number, QuizAttempt>;
   sessionStore: any;
@@ -124,7 +119,7 @@ export class MemStorage implements IStorage {
   private frameworkIdCounter: number;
   private moduleIdCounter: number;
   private progressIdCounter: number;
-  private conversationIdCounter: number;
+
   private quizIdCounter: number;
   private quizAttemptIdCounter: number;
   private exercises: Map<number, Exercise>;
@@ -144,7 +139,7 @@ export class MemStorage implements IStorage {
     this.frameworks = new Map();
     this.modules = new Map();
     this.userProgress = new Map();
-    this.aiConversations = new Map();
+
     this.quizzes = new Map();
     this.quizAttempts = new Map();
     this.exercises = new Map();
@@ -155,7 +150,7 @@ export class MemStorage implements IStorage {
     this.frameworkIdCounter = 1;
     this.moduleIdCounter = 1;
     this.progressIdCounter = 1;
-    this.conversationIdCounter = 1;
+
     this.quizIdCounter = 1;
     this.quizAttemptIdCounter = 1;
     this.exerciseIdCounter = 1;
@@ -198,8 +193,6 @@ export class MemStorage implements IStorage {
       ...insertUser, 
       id,
       role: insertUser.role || null,
-      apiKey: insertUser.apiKey || null,
-      aiProvider: insertUser.aiProvider || null,
       userPreferences: insertUser.userPreferences || null,
       avatarUrl: insertUser.avatarUrl || null,
       twoFactorEnabled: insertUser.twoFactorEnabled || null,
@@ -342,36 +335,7 @@ export class MemStorage implements IStorage {
     return updatedProgress;
   }
   
-  async getAiConversations(userId: number): Promise<AiConversation[]> {
-    const result: AiConversation[] = [];
-    for (const conversation of this.aiConversations.values()) {
-      if (conversation.userId === userId) {
-        result.push(conversation);
-      }
-    }
-    // Sort by most recent
-    return result.sort((a, b) => {
-      if (!a.createdAt || !b.createdAt) return 0;
-      return b.createdAt.getTime() - a.createdAt.getTime();
-    });
-  }
-  
-  async createAiConversation(conversation: InsertAiConversation): Promise<AiConversation> {
-    const id = this.conversationIdCounter++;
-    const now = new Date();
-    const newConversation: AiConversation = { 
-      ...conversation, 
-      id, 
-      createdAt: now,
-      frameworkId: conversation.frameworkId || null
-    };
-    this.aiConversations.set(id, newConversation);
-    return newConversation;
-  }
-  
-  async deleteAiConversation(id: number): Promise<void> {
-    this.aiConversations.delete(id);
-  }
+
   
   // Quiz methods
   async getQuiz(id: number): Promise<Quiz | undefined> {
