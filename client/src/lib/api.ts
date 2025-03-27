@@ -702,3 +702,22 @@ export async function getUserAchievements(): Promise<Achievement[]> {
     return [];
   }
 }
+
+// Local AI Model functions
+export async function getModelInfo(): Promise<{
+  modelName: string;
+  isLoaded: boolean;
+  isLoading: boolean;
+}> {
+  const res = await apiRequest("GET", "/api/ai/model-info");
+  return res.json();
+}
+
+export async function switchModel(modelName: string): Promise<{
+  success: boolean;
+  message: string;
+  modelName: string;
+}> {
+  const res = await apiRequest("POST", "/api/ai/switch-model", { modelName });
+  return res.json();
+}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import AiAssistant from '@/components/ai/ai-assistant';
+import NewAiAssistant from '@/components/ai/new-ai-assistant';
 import { LocalAISettings } from '@/components/ai/local-ai-settings';
 import { 
   ChevronDown, 
@@ -57,7 +57,7 @@ const AiAssistantPage: React.FC = () => {
           </TabsList>
           
           <TabsContent value="chat" className="space-y-4">
-            <AiAssistant />
+            <NewAiAssistant />
           </TabsContent>
           
           <TabsContent value="settings" className="space-y-4">

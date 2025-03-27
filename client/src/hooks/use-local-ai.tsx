@@ -1,79 +1,74 @@
-import { useState, useEffect } from 'react';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { apiRequest, queryClient } from '@/lib/queryClient';
+import { createContext, useState, useEffect, useContext, ReactNode } from 'react';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { getModelInfo, switchModel } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 
-export type ModelInfo = {
-  modelName: string;
-  isLoaded: boolean;
+type LocalAIContextType = {
+  currentModel: {
+    modelName: string;
+    isLoaded: boolean;
+    isLoading: boolean;
+  } | null;
   isLoading: boolean;
+  switchModelMutation: ReturnType<typeof useMutation<any, Error, string>>;
 };
 
-export function useLocalAI() {
-  const { toast } = useToast();
-  const [isSwitchingModel, setIsSwitchingModel] = useState(false);
+export const LocalAIContext = createContext<LocalAIContextType | null>(null);
 
-  // Query to get model information
-  const {
-    data: modelData,
-    isLoading: isLoadingModelInfo,
-    error: modelInfoError,
-    refetch: refetchModelInfo
-  } = useQuery({
+export function LocalAIProvider({ children }: { children: ReactNode }) {
+  const { toast } = useToast();
+
+  const { 
+    data: currentModel, 
+    isLoading,
+    refetch 
+  } = useQuery<{
+    modelName: string;
+    isLoaded: boolean;
+    isLoading: boolean;
+  }>({
     queryKey: ['/api/ai/model-info'],
-    queryFn: async () => {
-      const response = await apiRequest('GET', '/api/ai/model-info');
-      return await response.json();
-    },
-    // Don't refetch too often to avoid unnecessary requests
-    gcTime: 60 * 1000, // 1 minute
-    staleTime: 30 * 1000, // 30 seconds
+    queryFn: getModelInfo,
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
-  // Mutation to switch the AI model
   const switchModelMutation = useMutation({
-    mutationFn: async (modelName: string) => {
-      setIsSwitchingModel(true);
-      const res = await apiRequest('POST', '/api/ai/switch-model', { modelName });
-      return await res.json();
-    },
+    mutationFn: (modelName: string) => switchModel(modelName),
     onSuccess: () => {
-      setIsSwitchingModel(false);
-      // Invalidate the model info query to fetch fresh data
-      queryClient.invalidateQueries({ queryKey: ['/api/ai/model-info'] });
       toast({
-        title: 'Model switched successfully',
-        description: 'The AI model has been updated',
-        variant: 'default',
+        title: "Model switched",
+        description: "The AI model has been changed successfully.",
       });
+      // Refetch model info after switching
+      refetch();
     },
     onError: (error: Error) => {
-      setIsSwitchingModel(false);
       toast({
-        title: 'Failed to switch model',
+        title: "Error switching model",
         description: error.message,
-        variant: 'destructive',
+        variant: "destructive",
       });
     },
   });
 
-  // Display toast for model info errors
-  useEffect(() => {
-    if (modelInfoError) {
-      toast({
-        title: 'Error loading AI model information',
-        description: (modelInfoError as Error).message,
-        variant: 'destructive',
-      });
-    }
-  }, [modelInfoError, toast]);
+  return (
+    <LocalAIContext.Provider
+      value={{
+        currentModel: currentModel || null,
+        isLoading,
+        switchModelMutation,
+      }}
+    >
+      {children}
+    </LocalAIContext.Provider>
+  );
+}
 
-  return {
-    currentModel: modelData?.currentModel as ModelInfo | undefined,
-    recommendedModels: modelData?.recommendedModels as Record<string, string> | undefined,
-    switchModel: switchModelMutation.mutate,
-    isLoadingModelInfo,
-    isSwitchingModel,
-    refetchModelInfo,
-  };
+export function useLocalAI() {
+  const context = useContext(LocalAIContext);
+  if (!context) {
+    throw new Error("useLocalAI must be used within a LocalAIProvider");
+  }
+  return context;
 }
