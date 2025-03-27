@@ -93,6 +93,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
       next(error);
     }
   });
+  
+  // Upload founder image
+  app.post("/api/founder/image", upload.single('founderImage'), async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).send("Unauthorized");
+      }
+
+      // Check if the authenticated user is an admin or has appropriate permissions
+      // This is a simple check to make sure only authorized users can update the founder image
+      // You might want to implement more sophisticated permission checks
+      if (req.user.role !== 'admin' && req.user.username !== 'Manas') {
+        return res.status(403).json({ message: "Permission denied" });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
+      // Create public/images directory if it doesn't exist
+      const imagesDir = path.join(process.cwd(), 'public', 'images');
+      if (!fs.existsSync(imagesDir)) {
+        fs.mkdirSync(imagesDir, { recursive: true });
+      }
+
+      // Copy the uploaded file to the public/images directory with the name 'founder.jpg'
+      const founderImagePath = path.join(imagesDir, 'founder.jpg');
+      
+      // Read the uploaded file and write it to the destination
+      fs.copyFileSync(
+        path.join(process.cwd(), 'uploads', req.file.filename),
+        founderImagePath
+      );
+
+      // Return success response
+      res.json({ 
+        message: "Founder image updated successfully", 
+        imageUrl: "/images/founder.jpg"
+      });
+    } catch (error) {
+      console.error('Error updating founder image:', error);
+      next(error);
+    }
+  });
 
   // Export user data
   app.get("/api/user/export", async (req, res, next) => {
