@@ -17,6 +17,7 @@ import OpenAI from "openai";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { xapiService } from "./services/xapi-service";
 import { scormService } from "./services/scorm-service";
+import { localAIService } from "./services/local-ai-service";
 import path from "path";
 import fs from "fs";
 import multer from "multer";
@@ -1318,17 +1319,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const user = await storage.getUser(userId);
       console.log(`User ${userId} AI settings:`, { 
         hasApiKey: !!user?.apiKey, 
-        aiProvider: user?.aiProvider || "openai (default)" 
+        aiProvider: user?.aiProvider || "local (default)" 
       });
       
-      if (!user || !user.apiKey) {
-        return res.status(400).json({ message: "API key not configured. Please set up your AI integration in settings." });
-      }
-      
       let answer = "";
-      const aiProvider = user.aiProvider || "openai";
+      const aiProvider = user?.aiProvider || "local";
       
-      // System prompt for both AI providers
+      // System prompt for all AI providers
       const systemPrompt = `You are an AI assistant for the QuestionPro AI mobile app, specializing in business problem-solving frameworks. ${
         frameworkId ? `The user is currently working with a specific framework (ID: ${frameworkId}).` : 
         "Provide helpful, clear, and concise guidance on applying business frameworks to solve real-world problems."
@@ -1348,8 +1345,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log(`Using AI provider: ${aiProvider}`);
       
-      if (aiProvider === "openai") {
-        // Use OpenAI API
+      if (aiProvider === "local") {
+        // Use local AI model
+        try {
+          console.log("Using local AI model for inference");
+          
+          // Get the framework context if a frameworkId is provided
+          let frameworkContext = "";
+          if (frameworkId) {
+            const framework = await storage.getFramework(frameworkId);
+            if (framework) {
+              frameworkContext = `You're helping with the ${framework.name} framework. This framework ${framework.description}`;
+            }
+          }
+          
+          // Generate response using local AI model
+          const response = await localAIService.generateResponse(question, {
+            maxTokens: 300,
+            frameworkContext: frameworkContext
+          });
+          
+          console.log("Generated local AI response:", {
+            status: "success",
+            processingTime: response.processingTime,
+            textLength: response.text.length
+          });
+          
+          answer = response.text || "I'm sorry, I couldn't generate a response. Please try again.";
+        } catch (error: any) {
+          console.error("Local AI model error:", error);
+          return res.status(500).json({ message: `Local AI error: ${error.message}` });
+        }
+      } else if (aiProvider === "openai") {
+        // Use OpenAI API (requires API key)
+        if (!user || !user.apiKey) {
+          return res.status(400).json({ message: "OpenAI API key not configured. Please set up your AI integration in settings." });
+        }
+        
         try {
           console.log("Initializing OpenAI client");
           const openai = new OpenAI({ apiKey: user.apiKey });
@@ -1399,7 +1431,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         }
       } else if (aiProvider === "gemini") {
-        // Use Google's Gemini API
+        // Use Google's Gemini API (requires API key)
+        if (!user || !user.apiKey) {
+          return res.status(400).json({ message: "Gemini API key not configured. Please set up your AI integration in settings." });
+        }
+        
         try {
           console.log("Initializing Google Generative AI client");
           const genAI = new GoogleGenerativeAI(user.apiKey);
@@ -1425,19 +1461,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
               console.log("Successfully extracted text from Gemini response using text() method");
             } 
             // If text() method failed or doesn't exist, try the candidates approach
-            else if (result.response?.candidates?.length > 0) {
+            else if (result.response?.candidates && result.response.candidates.length > 0) {
               // Get the first candidate's content
               const firstCandidate = result.response.candidates[0];
               
               // Extract text from parts if available
               if (firstCandidate.content?.parts?.length > 0) {
-                responseText = firstCandidate.content.parts[0]?.text || "";
-                console.log("Successfully extracted text from Gemini response using candidates.content.parts");
-              }
-              // Try the content.text approach
-              else if (firstCandidate.content?.text) {
-                responseText = firstCandidate.content.text;
-                console.log("Successfully extracted text from Gemini response using candidates.content.text");
+                const textPart = firstCandidate.content.parts[0];
+                if (textPart && typeof textPart === 'object' && 'text' in textPart) {
+                  responseText = textPart.text || "";
+                  console.log("Successfully extracted text from Gemini response using candidates.content.parts");
+                }
               }
             }
           } catch (error) {
@@ -1465,7 +1499,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       } else {
         console.warn(`Unsupported AI provider requested: ${aiProvider}`);
-        return res.status(400).json({ message: "Unsupported AI provider. Please select either 'openai' or 'gemini' in your settings." });
+        return res.status(400).json({ message: "Unsupported AI provider. Please select 'local', 'openai', or 'gemini' in your settings." });
       }
       
       console.log("AI response generated successfully, storing conversation");
@@ -1512,6 +1546,65 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(conversations);
     } catch (error) {
+      next(error);
+    }
+  });
+  
+  // Get local AI model information
+  app.get("/api/ai/model-info", async (req, res, next) => {
+    try {
+      // Get information about the current local AI model
+      const modelInfo = localAIService.getModelInfo();
+      
+      // Get available recommended models
+      const recommendedModels = {
+        small: "Xenova/distilgpt2",
+        medium: "Xenova/gpt2",
+        large: "Xenova/opt-1.3b"
+      };
+      
+      res.json({
+        currentModel: modelInfo,
+        recommendedModels
+      });
+    } catch (error) {
+      console.error("Error getting AI model info:", error);
+      next(error);
+    }
+  });
+  
+  // Switch local AI model
+  app.post("/api/ai/switch-model", async (req, res, next) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    
+    try {
+      const { modelName } = req.body;
+      
+      if (!modelName) {
+        return res.status(400).json({ message: "Model name is required" });
+      }
+      
+      console.log(`Request to switch local AI model to: ${modelName}`);
+      
+      // Switch to the specified model
+      const success = await localAIService.switchModel(modelName);
+      
+      if (!success) {
+        return res.status(500).json({ message: `Failed to switch to model ${modelName}` });
+      }
+      
+      // Get updated model info
+      const modelInfo = localAIService.getModelInfo();
+      
+      console.log(`Successfully switched to model: ${modelInfo.modelName}`);
+      
+      res.json({
+        success: true,
+        message: `Successfully switched to model: ${modelInfo.modelName}`,
+        modelInfo
+      });
+    } catch (error) {
+      console.error("Error switching AI model:", error);
       next(error);
     }
   });
