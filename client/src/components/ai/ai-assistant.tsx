@@ -16,18 +16,26 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ReactMarkdown from 'react-markdown';
 
 const AiAssistant: React.FC = () => {
-  const { user, updateAiSettingsMutation } = useAuth();
-  
   const [question, setQuestion] = useState('');
   const [selectedFramework, setSelectedFramework] = useState<string>('');
   const [activeTab, setActiveTab] = useState<string>('custom');
   const [isAiSettingsOpen, setIsAiSettingsOpen] = useState(false);
-  const [apiKey, setApiKey] = useState(user?.apiKey || '');
-  const [aiProvider, setAiProvider] = useState<'openai' | 'gemini'>((user?.aiProvider as 'openai' | 'gemini') || 'openai');
+  const [apiKey, setApiKey] = useState('');
+  const [aiProvider, setAiProvider] = useState('openai');
+
+  const { user, updateAiSettingsMutation } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Note: No need for an initialization useEffect since we now set initial state based on user data
+  // Initialize API settings from user data
+  useEffect(() => {
+    if (user?.apiKey) {
+      setApiKey(user.apiKey);
+    }
+    if (user?.aiProvider) {
+      setAiProvider(user.aiProvider);
+    }
+  }, [user]);
 
   const { data: frameworks } = useQuery({
     queryKey: ['/api/frameworks'],
@@ -41,12 +49,6 @@ const AiAssistant: React.FC = () => {
   } = useQuery({
     queryKey: ['/api/ai/conversations'],
     queryFn: () => getAiConversations(),
-    staleTime: 0, // Always fetch fresh data
-    gcTime: 0, // Don't keep data in cache
-    refetchOnMount: 'always', // Always refetch when component mounts
-    refetchOnWindowFocus: true, // Refetch when window gets focus
-    retryOnMount: true, // Retry if fetch fails on mount
-    networkMode: 'always' // Always try to fetch from network
   });
 
   type AskQuestion = {
@@ -55,78 +57,26 @@ const AiAssistant: React.FC = () => {
   };
 
   const askAiMutation = useMutation({
-    mutationFn: async ({ question, frameworkId }: AskQuestion) => {
+    mutationFn: ({ question, frameworkId }: AskQuestion) => {
       console.log('Sending AI query with:', { question, frameworkId });
-      
-      // Show a toast to let the user know the request is being processed
-      toast({
-        title: "Processing your question",
-        description: "This may take a few seconds...",
-      });
-      
       try {
-        return await askAi(question, frameworkId);
+        return askAi(question, frameworkId);
       } catch (error) {
-        console.error('Error in askAi API call:', error);
+        console.error('Error in askAi mutation function:', error);
         throw error;
       }
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       console.log('AI query successful, clearing question and refreshing conversations');
       setQuestion('');
-      
-      // Invalidate the cache first
       queryClient.invalidateQueries({ queryKey: ['/api/ai/conversations'] });
-      
-      // Explicitly refetch to get the latest data
-      refetchConversations();
-      
-      // Show a success toast
-      toast({
-        title: "Response generated",
-        description: "Your answer is ready.",
-      });
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error('AI query failed:', error);
       toast({
         title: "Failed to get AI response",
-        description: error?.message || "Something went wrong. Please try again.",
+        description: error.message,
         variant: "destructive",
-      });
-    }
-  });
-  
-  // Separate mutation for clearing conversations
-  const clearConversationsMutation = useMutation({
-    mutationFn: clearAiConversations,
-    onSuccess: () => {
-      console.log("Successfully cleared conversations");
-      
-      // Reset local state first
-      setQuestion('');
-      
-      // Clear cache and fetch fresh data
-      queryClient.setQueryData(['/api/ai/conversations'], []);
-      
-      // Then invalidate to trigger a fresh fetch if needed
-      queryClient.invalidateQueries({ queryKey: ['/api/ai/conversations'] });
-      
-      // Explicitly trigger a refetch with fresh data from server
-      refetchConversations();
-      
-      // Show success toast
-      toast({
-        title: "Conversations cleared",
-        description: "Your conversation history has been cleared.",
-      });
-    },
-    onError: (error: any) => {
-      console.error("Error clearing conversations:", error);
-      toast({
-        title: "Error clearing history",
-        description: error?.message || "Failed to clear conversation history. Please try again.",
-        variant: "destructive"
       });
     }
   });
@@ -397,7 +347,38 @@ const AiAssistant: React.FC = () => {
               variant="outline" 
               size="sm"
               className="h-8 px-3 text-xs"
-              onClick={() => clearConversationsMutation.mutate()}
+              onClick={async () => {
+                try {
+                  console.log("Clearing conversation history...");
+                  await clearAiConversations();
+
+                  // Clear cache and refetch
+                  queryClient.removeQueries({ queryKey: ['/api/ai/conversations'] });
+
+                  // Wait for both operations to complete
+                  await Promise.all([
+                    queryClient.refetchQueries({ 
+                      queryKey: ['/api/ai/conversations'],
+                      exact: true 
+                    }),
+                    refetchConversations()
+                  ]);
+
+                  setQuestion(''); // Clear input field
+                  console.log("Conversation history cleared");
+                  toast({
+                    title: "Conversations cleared",
+                    description: "Your conversation history has been cleared.",
+                  });
+                } catch (error) {
+                  console.error("Error clearing conversations:", error);
+                  toast({
+                    title: "Error clearing history",
+                    description: "Failed to clear conversation history. Please try again.",
+                    variant: "destructive"
+                  });
+                }
+              }}
             >
               Clear History
             </Button>
@@ -430,7 +411,7 @@ const AiAssistant: React.FC = () => {
                   </div>
                 </CardHeader>
                 <CardContent className="p-4">
-                  <div className="text-sm text-gray-700 prose prose-sm max-w-none prose-headings:font-medium prose-headings:text-gray-900 prose-p:my-2 prose-ul:my-2 prose-ol:my-2 prose-li:my-1 prose-code:bg-gray-100 prose-code:px-1 prose-code:py-0.5 prose-code:rounded-sm prose-code:text-secondary prose-code:before:content-none prose-code:after:content-none">
+                  <div className="text-sm text-gray-600 prose prose-sm max-w-none">
                     <ReactMarkdown>{conversation.answer}</ReactMarkdown>
                   </div>
                 </CardContent>
@@ -461,7 +442,7 @@ const AiAssistant: React.FC = () => {
               <Label htmlFor="ai-provider">AI Provider</Label>
               <RadioGroup 
                 value={aiProvider} 
-                onValueChange={(value: 'openai' | 'gemini') => setAiProvider(value)}
+                onValueChange={setAiProvider}
                 className="flex flex-col space-y-1"
               >
                 <div className="flex items-center space-x-2">

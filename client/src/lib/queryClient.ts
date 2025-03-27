@@ -84,33 +84,10 @@ export const queryClient = new QueryClient({
       refetchOnWindowFocus: false,
       staleTime: 1000 * 60 * 5, // 5 minutes - better for performance than Infinity while still maintaining freshness
       gcTime: 1000 * 60 * 10, // 10 minutes
-      retry: (failureCount, error) => {
-        // Don't retry 401 (unauthorized) or 404 (not found) errors
-        if (error instanceof Error) {
-          if (error.message.includes('401') || error.message.includes('404')) {
-            return false;
-          }
-        }
-        
-        // Retry server errors or connection issues a few times
-        return failureCount < 2; // Retry once
-      },
-      retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 10000), // Exponential backoff
+      retry: false,
     },
     mutations: {
-      retry: (failureCount, error) => {
-        // For AI requests, don't retry on 400-level errors as they're likely client-side issues
-        // that won't be resolved by retrying (like invalid API keys)
-        if (error instanceof Error) {
-          if (error.message.includes('API key')) {
-            return false;
-          }
-        }
-        
-        // For other mutations, retry once in case of network issues
-        return failureCount < 1;
-      },
-      retryDelay: 1000, // Simple 1 second delay for mutations
+      retry: false,
     },
   },
 });

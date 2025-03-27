@@ -45,7 +45,7 @@ const Navbar: React.FC = () => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
     };
-
+    
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -63,7 +63,7 @@ const Navbar: React.FC = () => {
     >
       {/* Neon accent bar at top */}
       <div className="h-0.5 w-full bg-gradient-to-r from-[#7d5af1]/10 via-[#ff59b2] to-[#7d5af1]/10"></div>
-
+      
       <div className="container mx-auto px-4 md:px-6 py-2 flex justify-between items-center">
         <div className="flex items-center">
           <Link to="/">
@@ -94,6 +94,14 @@ const Navbar: React.FC = () => {
                 <BarChart className="h-3.5 w-3.5" />
                 <span className="text-sm pb-0.5">
                   Learning
+                </span>
+              </div>
+            </Link>
+            <Link to="/ai-assistant">
+              <div className={`py-1 flex items-center space-x-1 group nav-link ${location === '/ai-assistant' ? 'active' : ''}`}>
+                <Lightbulb className="h-3.5 w-3.5" />
+                <span className="text-sm pb-0.5">
+                  AI Assistant
                 </span>
               </div>
             </Link>
@@ -256,7 +264,7 @@ const Navbar: React.FC = () => {
               </button>
             )}
           </div>
-
+          
           <div className="grid grid-cols-2 gap-2">
             <Link to="/" onClick={() => setMobileMenuOpen(false)}>
               <div className={`flex flex-col items-center justify-center p-3 rounded-xl ${location === '/' ? 'bg-gradient-to-br from-[#7d5af1]/20 to-[#7d5af1]/5 text-[#7d5af1]' : 'text-white hover:bg-[#36005A]/50'} transition-colors`}>
@@ -268,6 +276,12 @@ const Navbar: React.FC = () => {
               <div className={`flex flex-col items-center justify-center p-3 rounded-xl ${location === '/learning-path' ? 'bg-gradient-to-br from-[#ff59b2]/20 to-[#ff59b2]/5 text-[#ff59b2]' : 'text-white hover:bg-[#36005A]/50'} transition-colors`}>
                 <BarChart className="h-5 w-5 mb-1" />
                 <span className="font-medium text-sm">Learning Path</span>
+              </div>
+            </Link>
+            <Link to="/ai-assistant" onClick={() => setMobileMenuOpen(false)}>
+              <div className={`flex flex-col items-center justify-center p-3 rounded-xl ${location === '/ai-assistant' ? 'bg-gradient-to-br from-[#7d5af1]/20 to-[#7d5af1]/5 text-[#7d5af1]' : 'text-white hover:bg-[#36005A]/50'} transition-colors`}>
+                <Lightbulb className="h-5 w-5 mb-1" />
+                <span className="font-medium text-sm">AI Assistant</span>
               </div>
             </Link>
             <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)}>
@@ -324,7 +338,7 @@ const Navbar: React.FC = () => {
           </div>
         </div>
       )}
-
+      
       {/* Spacer for fixed navbar */}
       <div className="h-16 md:hidden"></div>
     </nav>
