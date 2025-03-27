@@ -8,7 +8,14 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Loader2, Lightbulb, Cpu, Info, RefreshCw, Trash2 } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogTrigger, 
+  DialogDescription 
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -285,88 +292,93 @@ const NewAiAssistant: React.FC = () => {
             )}
           </Button>
           
-          {/* AI Settings Dialog Trigger */}
-          <Dialog open={isAiSettingsOpen} onOpenChange={setIsAiSettingsOpen}>
-            <DialogTrigger asChild>
-              <Button variant="outline" size="sm">
-                <Info className="h-4 w-4 mr-1" />
-                AI Settings
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-md">
-              <DialogHeader>
-                <DialogTitle>AI Settings</DialogTitle>
-                <DialogDescription>
-                  Configure your AI assistant preferences
-                </DialogDescription>
-              </DialogHeader>
-              
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="aiProvider">AI Provider</Label>
-                  <RadioGroup 
-                    value={aiProvider} 
-                    onValueChange={setAiProvider}
-                    className="flex flex-col space-y-1"
-                  >
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="local" id="local" />
-                      <Label htmlFor="local" className="cursor-pointer">Local AI (No API key required)</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="openai" id="openai" />
-                      <Label htmlFor="openai" className="cursor-pointer">OpenAI (ChatGPT)</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="gemini" id="gemini" />
-                      <Label htmlFor="gemini" className="cursor-pointer">Google (Gemini)</Label>
-                    </div>
-                  </RadioGroup>
-                </div>
-                
-                {aiProvider !== 'local' && (
-                  <div className="space-y-2">
-                    <Label htmlFor="apiKey">API Key</Label>
-                    <Input 
-                      id="apiKey" 
-                      type="password"
-                      value={apiKey}
-                      onChange={(e) => setApiKey(e.target.value)}
-                      placeholder={`Enter your ${aiProvider === 'openai' ? 'OpenAI' : 'Google'} API key`}
-                    />
-                    <p className="text-xs text-gray-500">
-                      Your API key is stored securely and never shared. All AI requests are made directly from your browser.
-                    </p>
-                  </div>
-                )}
-                
-                <div className="flex justify-end space-x-2 pt-4">
-                  <Button 
-                    variant="outline" 
-                    onClick={() => setIsAiSettingsOpen(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button 
-                    onClick={handleSaveAiSettings}
-                    disabled={updateAiSettingsMutation.isPending}
-                    className="bg-secondary hover:bg-secondary/90"
-                  >
-                    {updateAiSettingsMutation.isPending ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Saving...
-                      </>
-                    ) : (
-                      "Save Settings"
-                    )}
-                  </Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
+          {/* AI Settings Button */}
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => setIsAiSettingsOpen(!isAiSettingsOpen)}
+          >
+            <Info className="h-4 w-4 mr-1" />
+            AI Settings
+          </Button>
         </div>
       </div>
+      
+      {/* AI Settings Panel (conditionally rendered) */}
+      {isAiSettingsOpen && (
+        <Card className="border-0 shadow-sm mb-4">
+          <CardHeader className="p-4 bg-gray-50 border-b">
+            <CardTitle className="text-lg font-medium">AI Settings</CardTitle>
+            <CardDescription>
+              Configure your AI assistant preferences
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-4">
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="aiProvider">AI Provider</Label>
+                <RadioGroup 
+                  value={aiProvider} 
+                  onValueChange={setAiProvider}
+                  className="flex flex-col space-y-1"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="local" id="local" />
+                    <Label htmlFor="local" className="cursor-pointer">Local AI (No API key required)</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="openai" id="openai" />
+                    <Label htmlFor="openai" className="cursor-pointer">OpenAI (ChatGPT)</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="gemini" id="gemini" />
+                    <Label htmlFor="gemini" className="cursor-pointer">Google (Gemini)</Label>
+                  </div>
+                </RadioGroup>
+              </div>
+              
+              {aiProvider !== 'local' && (
+                <div className="space-y-2">
+                  <Label htmlFor="apiKey">API Key</Label>
+                  <Input 
+                    id="apiKey" 
+                    type="password"
+                    value={apiKey}
+                    onChange={(e) => setApiKey(e.target.value)}
+                    placeholder={`Enter your ${aiProvider === 'openai' ? 'OpenAI' : 'Google'} API key`}
+                  />
+                  <p className="text-xs text-gray-500">
+                    Your API key is stored securely and never shared. All AI requests are made directly from your browser.
+                  </p>
+                </div>
+              )}
+              
+              <div className="flex justify-end space-x-2 pt-4">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setIsAiSettingsOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={handleSaveAiSettings}
+                  disabled={updateAiSettingsMutation.isPending}
+                  className="bg-secondary hover:bg-secondary/90"
+                >
+                  {updateAiSettingsMutation.isPending ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    "Save Settings"
+                  )}
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
       
       {/* Conversations List */}
       <div className="space-y-4">
