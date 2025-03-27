@@ -623,8 +623,8 @@ const ProfilePage: React.FC = () => {
         
         {/* App version */}
         <div className="text-center text-xs text-gray-400 py-4 mt-6">
-          <p>QuestionPro AI {isNative ? 'Mobile' : 'Web'} v1.0</p>
-          <p className="mt-1">© 2025 QuestionPro AI. All rights reserved.</p>
+          <p>Framework Pro {isNative ? 'Mobile' : 'Web'} v1.0</p>
+          <p className="mt-1">© 2025 Framework Pro. All rights reserved.</p>
         </div>
       </div>
     );

@@ -80,6 +80,7 @@ export interface IStorage {
   getCertificate(id: number): Promise<Certificate | undefined>;
   getUserCertificates(userId: number): Promise<Certificate[]>;
   getFrameworkCertificates(frameworkId: number): Promise<Certificate[]>;
+  getAllCertificates(): Promise<Certificate[]>;
   createCertificate(certificate: InsertCertificate): Promise<Certificate>;
   updateCertificate(id: number, certificateData: Partial<Certificate>): Promise<Certificate | undefined>;
   revokeCertificate(id: number): Promise<Certificate | undefined>;
@@ -565,6 +566,10 @@ export class MemStorage implements IStorage {
       }
     }
     return result;
+  }
+  
+  async getAllCertificates(): Promise<Certificate[]> {
+    return Array.from(this.certificates.values());
   }
   
   async createCertificate(certificate: InsertCertificate): Promise<Certificate> {

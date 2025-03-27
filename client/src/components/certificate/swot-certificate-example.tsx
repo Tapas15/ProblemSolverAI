@@ -88,7 +88,7 @@ export function SwotCertificateExample() {
         {/* Certificate Header with Logo */}
         <div className="flex flex-col items-center mb-4 relative">
           <div className="relative">
-            <img src="/api/images/fp-logo-new.png" alt="Framework Pro Logo" className="h-20 mb-3" />
+            <img src="/api/images/fp-logo-certificates.jpg" alt="Framework Pro Logo" className="h-20 mb-3" />
           </div>
           
           <h2 className="text-2xl font-bold text-black leading-tight mb-1 font-serif tracking-wider text-center mx-auto" style={{letterSpacing: "0.08em", wordSpacing: "0.1em"}}>SWOT Analysis Certificate</h2>

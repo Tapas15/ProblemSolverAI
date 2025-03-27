@@ -16,7 +16,7 @@ type AuthContextType = {
   loginMutation: UseMutationResult<Omit<SelectUser, "password">, Error, LoginData>;
   logoutMutation: UseMutationResult<void, Error, void>;
   registerMutation: UseMutationResult<Omit<SelectUser, "password">, Error, RegisterData>;
-  updateAiSettingsMutation: UseMutationResult<Omit<SelectUser, "password">, Error, AiSettings>;
+  // AI settings mutation removed as per requirements
 };
 
 type LoginData = {
@@ -33,11 +33,6 @@ const registerSchema = insertUserSchema.extend({
 });
 
 type RegisterData = z.infer<typeof registerSchema>;
-
-type AiSettings = {
-  apiKey: string;
-  aiProvider: string;
-};
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -86,7 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       queryClient.setQueryData(["/api/user"], user);
       toast({
         title: "Registration successful",
-        description: `Welcome to QuestionPro AI, ${user.name}!`,
+        description: `Welcome to Framework Pro, ${user.name}!`,
       });
     },
     onError: (error: Error) => {
@@ -118,34 +113,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
   });
   
-  const updateAiSettingsMutation = useMutation({
-    mutationFn: async (settings: AiSettings) => {
-      try {
-        // Try POST first (new API)
-        const res = await apiRequest("POST", "/api/user/ai-settings", settings);
-        return await res.json();
-      } catch (error) {
-        // Fall back to PATCH (legacy API) if POST fails
-        console.warn('Falling back to PATCH for AI settings');
-        const res = await apiRequest("PATCH", "/api/user/ai-settings", settings);
-        return await res.json();
-      }
-    },
-    onSuccess: (user: Omit<SelectUser, "password">) => {
-      queryClient.setQueryData(["/api/user"], user);
-      toast({
-        title: "AI settings updated",
-        description: "Your AI integration settings have been updated.",
-      });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Failed to update AI settings",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
+  // AI settings removed as per requirements
 
   return (
     <AuthContext.Provider
@@ -156,7 +124,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         loginMutation,
         logoutMutation,
         registerMutation,
-        updateAiSettingsMutation,
       }}
     >
       {children}

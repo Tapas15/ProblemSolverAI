@@ -183,7 +183,7 @@ export class XApiService {
       },
       verb: verb,
       object: {
-        id: `${process.env.BASE_URL || 'https://questionpro.ai'}/api/${statement.objectType}/${statement.objectId}`,
+        id: `${process.env.BASE_URL || 'https://frameworkpro.ai'}/api/${statement.objectType}/${statement.objectId}`,
         objectType: 'Activity',
         definition: {
           name: {
@@ -270,7 +270,7 @@ export class XApiService {
       contextActivities: {
         parent: [
           {
-            id: `${process.env.BASE_URL || 'https://questionpro.ai'}/api/frameworks/${frameworkId}`,
+            id: `${process.env.BASE_URL || 'https://frameworkpro.ai'}/api/frameworks/${frameworkId}`,
             objectType: 'Activity'
           }
         ]
@@ -327,7 +327,7 @@ export class XApiService {
       contextActivities: {
         parent: [
           {
-            id: `${process.env.BASE_URL || 'https://questionpro.ai'}/api/frameworks/${frameworkId}`,
+            id: `${process.env.BASE_URL || 'https://frameworkpro.ai'}/api/frameworks/${frameworkId}`,
             objectType: 'Activity'
           }
         ]

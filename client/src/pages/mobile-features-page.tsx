@@ -312,7 +312,7 @@ export default function MobileFeaturesPage() {
       <div className="native-card overflow-hidden mb-4">
         <div className="bg-gradient-to-r from-[#0f2544] to-[#19355f] px-5 py-4">
           <h3 className="text-white font-semibold">Why Go Native?</h3>
-          <p className="text-[#60a5fa] text-sm mt-1">The benefits of using QuestionPro AI's mobile app</p>
+          <p className="text-[#60a5fa] text-sm mt-1">The benefits of using Framework Pro's mobile app</p>
         </div>
         <CardContent className="pt-4">
           <ul className="space-y-3">
@@ -348,7 +348,7 @@ export default function MobileFeaturesPage() {
       </div>
 
       {!isNative && (
-        <Button className="native-button w-full flex items-center justify-center" onClick={() => window.open('https://questionpro.ai/download', '_blank')}>
+        <Button className="native-button w-full flex items-center justify-center" onClick={() => window.open('https://frameworkpro.ai/download', '_blank')}>
           <Download className="mr-2 h-4 w-4" />
           Download Native App
         </Button>

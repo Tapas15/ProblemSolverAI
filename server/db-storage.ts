@@ -396,6 +396,13 @@ export class PostgresStorage implements IStorage {
       .where(eq(certificates.frameworkId, frameworkId))
       .execute();
   }
+  
+  async getAllCertificates(): Promise<Certificate[]> {
+    return await db
+      .select()
+      .from(certificates)
+      .execute();
+  }
 
   async createCertificate(certificate: InsertCertificate): Promise<Certificate> {
     const results = await db

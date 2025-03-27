@@ -58,9 +58,8 @@ const MobileNav: React.FC = () => {
       <Link to="/">
         <div className="font-bold text-lg sm:text-xl font-header tracking-tight flex items-center group touch-manipulation">
           <div className="relative">
-            <span className="text-[#3b82f6]">Question</span>
-            <span className="text-white">Pro </span>
-            <span className="text-[#60a5fa]">AI</span>
+            <span className="text-[#3b82f6]">Framework</span>
+            <span className="text-white">Pro</span>
           </div>
         </div>
       </Link>

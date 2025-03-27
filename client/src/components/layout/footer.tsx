@@ -9,12 +9,11 @@ const Footer: React.FC = () => {
         <div className="md:flex md:justify-between">
           <div className="mb-8 md:mb-0">
             <div className="font-bold text-xl font-header tracking-tight mb-4">
-              <span className="text-accent">Question</span>
-              <span className="text-white">Pro</span>{' '}
-              <span className="text-secondary">AI</span>
+              <span className="text-accent">Framework</span>
+              <span className="text-white">Pro</span>
             </div>
             <p className="text-gray-300 max-w-sm">
-              Empowering business professionals with AI-enhanced problem-solving frameworks and tools.
+              Empowering business professionals with proven problem-solving frameworks and practical tools.
             </p>
           </div>
           
@@ -28,8 +27,8 @@ const Footer: React.FC = () => {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/ai-assistant">
-                    <span className="text-gray-300 hover:text-white text-sm">AI Integration</span>
+                  <Link to="/mobile-features">
+                    <span className="text-gray-300 hover:text-white text-sm">Mobile App</span>
                   </Link>
                 </li>
                 <li>
@@ -38,7 +37,7 @@ const Footer: React.FC = () => {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/certification">
+                  <Link to="/certificates">
                     <span className="text-gray-300 hover:text-white text-sm">Certification</span>
                   </Link>
                 </li>
@@ -100,7 +99,7 @@ const Footer: React.FC = () => {
         </div>
         
         <div className="mt-8 pt-8 border-t border-gray-700 flex flex-col md:flex-row md:justify-between md:items-center">
-          <p className="text-gray-400 text-sm">© {new Date().getFullYear()} Framework Pro. All rights reserved.</p>
+          <p className="text-gray-400 text-sm">© {new Date().getFullYear()} FrameworkPro.ai. All rights reserved.</p>
           
           <div className="mt-4 md:mt-0 flex space-x-4">
             <a href="#" className="text-gray-400 hover:text-white">

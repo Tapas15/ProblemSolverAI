@@ -81,9 +81,8 @@ const Sidebar: React.FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
             <Link to="/">
               <div className="font-bold text-xl font-header tracking-tight flex items-center group">
                 <div className="relative">
-                  <span className="text-[#3b82f6]">Question</span>
-                  <span className="text-white">Pro </span>
-                  <span className="text-[#60a5fa]">AI</span>
+                  <span className="text-[#3b82f6]">Framework</span>
+                  <span className="text-white">Pro</span>
                 </div>
               </div>
             </Link>
@@ -91,7 +90,7 @@ const Sidebar: React.FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
           {isCollapsed && (
             <Link to="/">
               <div className="font-bold text-2xl font-header">
-                <span className="text-[#3b82f6]">Q</span>
+                <span className="text-[#3b82f6]">F</span>
               </div>
             </Link>
           )}

@@ -330,6 +330,10 @@ export const certificates = pgTable("certificates", {
   imageUrl: text("image_url"), // URL to certificate template/image
   achievements: text("achievements"), // JSON string describing achievements that led to this certificate
   metaData: text("meta_data"), // Additional information about the certificate
+  userName: text("user_name"), // Cached user name at time of certificate creation
+  frameworkName: text("framework_name"), // Cached framework name at time of certificate creation
+  revokedReason: text("revoked_reason"), // Reason for revocation if status is 'revoked'
+  verificationCode: text("verification_code"), // Optional additional verification code
 });
 
 export const insertCertificateSchema = createInsertSchema(certificates).pick({
@@ -343,6 +347,10 @@ export const insertCertificateSchema = createInsertSchema(certificates).pick({
   imageUrl: true,
   achievements: true,
   metaData: true,
+  userName: true,
+  frameworkName: true,
+  revokedReason: true,
+  verificationCode: true,
 });
 
 export type InsertCertificate = z.infer<typeof insertCertificateSchema>;

@@ -39,34 +39,58 @@ export default function CertificatesPage() {
     queryFn: getUserAchievements
   });
   
-  const handleDownloadCertificate = (id: number) => {
+  const handleDownloadCertificate = async (id: number) => {
     toast({
       title: "Download Started",
       description: "Your certificate will be downloaded shortly.",
     });
     
-    // Create a hidden iframe to handle the download
     try {
       const downloadUrl = `/api/certificates/${id}/download`;
       
-      // First option: use window.open (default)
-      const newWindow = window.open(downloadUrl, '_blank');
+      // Use fetch with credentials to handle authentication
+      const response = await fetch(downloadUrl, {
+        method: 'GET',
+        credentials: 'include', // This ensures cookies are sent with the request
+      });
       
-      // Fallback option if window.open doesn't work
-      if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
-        // Create hidden iframe for download as fallback
-        const iframe = document.createElement('iframe');
-        iframe.style.display = 'none';
-        iframe.src = downloadUrl;
-        document.body.appendChild(iframe);
-        
-        // Remove iframe after download is initiated
-        setTimeout(() => {
-          if (iframe.parentNode) {
-            iframe.parentNode.removeChild(iframe);
-          }
-        }, 5000);
+      if (!response.ok) {
+        throw new Error(`Download failed with status: ${response.status}`);
       }
+      
+      // Get the html content
+      const htmlContent = await response.text();
+      
+      // Get the filename from the Content-Disposition header if available
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let filename = 'FrameworkPro-Certificate.html';
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename="(.+?)"/);
+        if (filenameMatch && filenameMatch[1]) {
+          filename = filenameMatch[1];
+        }
+      }
+      
+      // Create a blob from the html content
+      const blob = new Blob([htmlContent], { type: 'text/html' });
+      
+      // Create a link to download the blob
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      
+      // Cleanup
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(a.href);
+      }, 100);
+      
+      toast({
+        title: "Certificate Downloaded",
+        description: "Your certificate has been downloaded. You can print it or save it as PDF.",
+      });
     } catch (error) {
       console.error('Error downloading certificate:', error);
       toast({
@@ -142,7 +166,10 @@ export default function CertificatesPage() {
                   certificateNumber={certificate.certificateNumber}
                   issueDate={certificate.issueDate ? certificate.issueDate.toString() : null}
                   frameworkName={frameworkName}
-                  onDownload={() => handleDownloadCertificate(certificate.id)}
+                  onDownload={() => {
+                    console.log("Download button clicked for certificate ID:", certificate.id);
+                    handleDownloadCertificate(certificate.id);
+                  }}
                 />
               );
             })()}

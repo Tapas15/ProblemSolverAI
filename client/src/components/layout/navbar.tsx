@@ -70,12 +70,8 @@ const Navbar: React.FC = () => {
             <div className="font-bold text-2xl font-header tracking-tight flex items-center relative group">
               <div className="absolute -inset-1 bg-gradient-to-r from-[#7d5af1] via-[#ff59b2] to-[#7d5af1] opacity-0 group-hover:opacity-100 blur-lg transition-all duration-700 rounded-full"></div>
               <div className="relative">
-                <span className="text-[#ff59b2]">Question</span>
+                <span className="text-[#ff59b2]">Framework</span>
                 <span className="text-white">Pro</span>
-                <span className="text-[#7d5af1] ml-1 relative">
-                  AI
-                  <Sparkles className="absolute -top-1 -right-4 h-3 w-3 text-[#ff59b2] animate-pulse" />
-                </span>
               </div>
             </div>
           </Link>
