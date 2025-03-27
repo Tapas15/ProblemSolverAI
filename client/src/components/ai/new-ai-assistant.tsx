@@ -46,7 +46,7 @@ const NewAiAssistant: React.FC = () => {
 
   // Get conversation history
   const { 
-    data: conversations, 
+    data: conversations = [], 
     isLoading: conversationsLoading,
     refetch: refetchConversations
   } = useQuery({
@@ -64,13 +64,27 @@ const NewAiAssistant: React.FC = () => {
   const askAiMutation = useMutation({
     mutationFn: ({ question, frameworkId }: { question: string; frameworkId?: number }) => 
       askAi(question, frameworkId),
-    onSuccess: () => {
-      // Clear the question field and refetch conversations
+    onSuccess: (data) => {
+      // Clear the question field and update the conversations
       setQuestion('');
-      refetchConversations();
+      console.log("Question submitted successfully", {data});
+      
+      // Force a fresh fetch of conversations
       queryClient.invalidateQueries({ queryKey: ['/api/ai/conversations'] });
+      
+      // This ensures we get a fresh fetch rather than using stale data
+      setTimeout(() => {
+        refetchConversations();
+      }, 300);
+      
+      toast({
+        title: "Question submitted",
+        description: "Your question has been processed successfully.",
+        duration: 2000,
+      });
     },
     onError: (error: Error) => {
+      console.error("Error asking question:", error);
       toast({
         title: "Error",
         description: error.message,
@@ -82,10 +96,10 @@ const NewAiAssistant: React.FC = () => {
   // Clear conversations mutation
   const clearConversationsMutation = useMutation({
     mutationFn: () => clearAiConversations(),
-    onSuccess: () => {
-      // Invalidate and refetch conversations to update the UI
-      queryClient.invalidateQueries({ queryKey: ['/api/ai/conversations'] });
-      refetchConversations();
+    onSuccess: (data) => {
+      // Update the cache directly
+      queryClient.setQueryData(['/api/ai/conversations'], []);
+      console.log("Conversation history cleared successfully", {data});
       
       toast({
         title: "Conversations cleared",
@@ -93,6 +107,7 @@ const NewAiAssistant: React.FC = () => {
       });
     },
     onError: (error: Error) => {
+      console.error("Error clearing conversations:", error);
       toast({
         title: "Error clearing conversations",
         description: error.message,
@@ -266,7 +281,16 @@ const NewAiAssistant: React.FC = () => {
         <Button 
           variant="outline" 
           size="sm" 
-          onClick={() => refetchConversations()}
+          onClick={() => {
+            console.log("Manual refresh requested");
+            refetchConversations();
+            queryClient.invalidateQueries({ queryKey: ['/api/ai/conversations'] });
+            toast({
+              title: "Refreshed",
+              description: "Conversation history has been refreshed.",
+              duration: 2000,
+            });
+          }}
           className="flex items-center gap-1"
         >
           <RefreshCw className="h-4 w-4" />
