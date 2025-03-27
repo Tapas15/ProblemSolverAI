@@ -2668,7 +2668,7 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
       
       // Use proper path for images in public directory
       const logoPath = 'public/images/fp-logo-new.jpg';
-      const signaturePath = 'public/images/signature-new.jpg';
+      const signaturePath = 'public/images/manas-signature.png';
       
       let logoBase64 = '';
       let signatureBase64 = '';
@@ -2678,12 +2678,12 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
         logoBase64 = `data:image/jpeg;base64,${logoData.toString('base64')}`;
         
         const signatureData = fs.readFileSync(signaturePath);
-        signatureBase64 = `data:image/jpeg;base64,${signatureData.toString('base64')}`;
+        signatureBase64 = `data:image/png;base64,${signatureData.toString('base64')}`;
       } catch (err) {
         console.error('Error reading image files:', err);
         // Fall back to using URLs if files can't be read
         logoBase64 = '/api/static/images/fp-logo-new.jpg';
-        signatureBase64 = '/api/static/images/signature-new.jpg';
+        signatureBase64 = '/api/static/images/manas-signature.png';
       }
       
       // Generate HTML for certificate

@@ -166,8 +166,8 @@ export function CertificateFrame({
         <div className="mt-8 flex justify-between items-end">
           {/* Signature */}
           <div className="flex flex-col items-center">
-            <img src="/api/static/images/signature-new.jpg" alt="Signature" className="h-14 mb-1" />
-            <p className="text-sm font-medium text-gray-700">Manas Kumar</p>
+            <img src="/api/static/images/manas-signature.png" alt="Signature" className="h-16 mb-0" />
+            <p className="text-sm font-medium text-gray-700 mt-1">Manas Kumar</p>
             <p className="text-xs text-gray-500">CEO & Platform Director</p>
           </div>
           
