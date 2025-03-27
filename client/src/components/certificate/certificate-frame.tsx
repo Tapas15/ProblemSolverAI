@@ -110,7 +110,7 @@ export function CertificateFrame({
         border: `4px solid ${accentColor}`,
         background: "white",
         backgroundImage: `
-          linear-gradient(to bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)), 
+          linear-gradient(to bottom, rgba(248, 245, 230, 0.97), rgba(255, 253, 244, 0.97)), 
           url('/api/static/images/fp-logo-new.jpg')
         `,
         backgroundRepeat: 'no-repeat',
@@ -132,7 +132,8 @@ export function CertificateFrame({
           backgroundSize: frameworkName === "Porter's Five Forces" ? '40px 40px' : 
                           frameworkName === 'SWOT' ? '50px 50px' : 
                           '20px 20px',
-          backgroundPosition: frameworkName === 'SWOT' ? '0 0, 25px 0, 25px -25px, 0px 25px' : '0 0'
+          backgroundPosition: frameworkName === 'SWOT' ? '0 0, 25px 0, 25px -25px, 0px 25px' : '0 0',
+          backgroundColor: 'rgba(248, 245, 230, 0.6)'
         }}
       >
         {/* Certificate Header with Logo (no embellishments) */}
@@ -156,7 +157,7 @@ export function CertificateFrame({
         <div className="my-8 text-center">
           <p className="text-sm text-gray-500 mb-2 uppercase tracking-wider">This certificate is awarded to</p>
           <h1 className="text-3xl font-bold mb-4 font-serif">{userName || 'User'}</h1>
-          <div className="max-w-lg mx-auto p-4 border rounded-lg" style={{borderColor: `${accentColor}40`}}>
+          <div className="max-w-lg mx-auto p-4 border rounded-lg bg-white bg-opacity-80" style={{borderColor: `${accentColor}40`}}>
             <p className="text-sm text-gray-700 leading-relaxed">{description}</p>
           </div>
         </div>
