@@ -107,10 +107,10 @@ export function CertificateFrame({
     <div 
       className="relative rounded-xl overflow-hidden shadow-xl transition-all hover:shadow-2xl"
       style={{ 
-        border: `4px solid #14B8A6`,
-        background: "#10513a", // Deep emerald green
+        border: `4px solid #D4AF37`,
+        background: "#F8F5E6", // Subtle cream background
         backgroundImage: `
-          linear-gradient(to bottom, rgba(16, 81, 58, 0.97), rgba(20, 100, 70, 0.97)), 
+          linear-gradient(to bottom, rgba(248, 245, 230, 0.97), rgba(255, 253, 244, 0.97)), 
           url('/api/static/images/fp-logo-new.jpg')
         `,
         backgroundRepeat: 'no-repeat',
@@ -119,14 +119,17 @@ export function CertificateFrame({
       }}
     >
       {/* Decorative Corner Elements */}
-      <div className="absolute top-0 left-0 w-16 h-16 border-t-4 border-l-4 rounded-tl-lg" style={{ borderColor: '#14B8A6' }}></div>
-      <div className="absolute top-0 right-0 w-16 h-16 border-t-4 border-r-4 rounded-tr-lg" style={{ borderColor: '#14B8A6' }}></div>
-      <div className="absolute bottom-0 left-0 w-16 h-16 border-b-4 border-l-4 rounded-bl-lg" style={{ borderColor: '#14B8A6' }}></div>
-      <div className="absolute bottom-0 right-0 w-16 h-16 border-b-4 border-r-4 rounded-br-lg" style={{ borderColor: '#14B8A6' }}></div>
+      <div className="absolute top-0 left-0 w-16 h-16 border-t-4 border-l-4 rounded-tl-lg" style={{ borderColor: '#D4AF37' }}></div>
+      <div className="absolute top-0 right-0 w-16 h-16 border-t-4 border-r-4 rounded-tr-lg" style={{ borderColor: '#D4AF37' }}></div>
+      <div className="absolute bottom-0 left-0 w-16 h-16 border-b-4 border-l-4 rounded-bl-lg" style={{ borderColor: '#D4AF37' }}></div>
+      <div className="absolute bottom-0 right-0 w-16 h-16 border-b-4 border-r-4 rounded-br-lg" style={{ borderColor: '#D4AF37' }}></div>
       
-      {/* Light Pattern Elements */}
+      {/* Light Pattern Elements - Soft Linen Texture */}
       <div className="absolute inset-0 opacity-10" style={{ 
-        background: 'radial-gradient(circle, transparent 20%, #10513a 20%, #10513a 80%, transparent 80%, transparent), radial-gradient(circle, transparent 20%, #10513a 20%, #10513a 80%, transparent 80%, transparent) 25px 25px',
+        backgroundImage: `
+          repeating-linear-gradient(0deg, rgba(0,0,0,0.05), rgba(0,0,0,0.05) 1px, transparent 1px, transparent 50px),
+          repeating-linear-gradient(90deg, rgba(0,0,0,0.05), rgba(0,0,0,0.05) 1px, transparent 1px, transparent 50px)
+        `,
         backgroundSize: '50px 50px' 
       }}></div>
       
@@ -134,14 +137,16 @@ export function CertificateFrame({
       <div 
         className="p-6 bg-white bg-opacity-95"
         style={{ 
-          backgroundImage: patternStyle,
-          backgroundSize: frameworkName === "Porter's Five Forces" ? '40px 40px' : 
-                          frameworkName === 'SWOT' ? '50px 50px' : 
-                          '20px 20px',
-          backgroundPosition: frameworkName === 'SWOT' ? '0 0, 25px 0, 25px -25px, 0px 25px' : '0 0',
-          backgroundColor: 'rgba(225, 245, 235, 0.95)',
+          backgroundImage: `
+            linear-gradient(rgba(255, 253, 244, 0.8), rgba(248, 245, 230, 0.8)),
+            linear-gradient(45deg, rgba(212, 175, 55, 0.05) 25%, transparent 25%, transparent 75%, rgba(212, 175, 55, 0.05) 75%),
+            linear-gradient(45deg, rgba(212, 175, 55, 0.05) 25%, transparent 25%, transparent 75%, rgba(212, 175, 55, 0.05) 75%)
+          `,
+          backgroundPosition: '0 0, 0 0, 10px 10px',
+          backgroundSize: 'cover, 20px 20px, 20px 20px',
+          backgroundColor: 'rgba(248, 245, 230, 0.95)',
           backdropFilter: 'blur(4px)',
-          boxShadow: 'inset 0 0 30px rgba(16, 81, 58, 0.1)'
+          boxShadow: 'inset 0 0 30px rgba(212, 175, 55, 0.1)'
         }}
       >
         {/* Certificate Header with Logo (no embellishments) */}
@@ -165,7 +170,7 @@ export function CertificateFrame({
         <div className="my-8 text-center">
           <p className="text-sm text-gray-500 mb-2 uppercase tracking-wider">This certificate is awarded to</p>
           <h1 className="text-3xl font-bold mb-4 font-serif">{userName || 'User'}</h1>
-          <div className="max-w-lg mx-auto p-4 border rounded-lg bg-white bg-opacity-80" style={{borderColor: `#14B8A640`, borderWidth: '1px'}}>
+          <div className="max-w-lg mx-auto p-4 border rounded-lg bg-white bg-opacity-80" style={{borderColor: `#D4AF3740`, borderWidth: '1px'}}>
             <p className="text-sm text-gray-700 leading-relaxed">{description}</p>
           </div>
         </div>
@@ -202,7 +207,7 @@ export function CertificateFrame({
           </div>
         </div>
         <div className="mt-2 text-center">
-          <p className="text-xs leading-relaxed" style={{color: '#14B8A6'}}>
+          <p className="text-xs leading-relaxed" style={{color: '#996515'}}>
             This certificate verifies mastery of the <span className="inline-block italic mx-1">{frameworkName}</span> framework and its professional business applications.
           </p>
         </div>
@@ -213,12 +218,12 @@ export function CertificateFrame({
         <Button 
           onClick={onDownload} 
           variant="outline" 
-          className="w-full hover:text-white transition-colors"
+          className="w-full hover:text-white transition-colors hover:bg-amber-700"
           style={{
             backgroundColor: "white", 
-            borderColor: '#14B8A6', 
-            color: '#14B8A6',
-            boxShadow: '0 2px 4px rgba(20, 184, 166, 0.2)'
+            borderColor: '#D4AF37', 
+            color: '#996515',
+            boxShadow: '0 2px 4px rgba(153, 101, 21, 0.15)'
           }}
         >
           <Download className="h-4 w-4 mr-2" />
