@@ -2688,6 +2688,26 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
         return res.status(404).send("Framework not found");
       }
       
+      // Read image files from the file system and convert to base64
+      const fs = require('fs');
+      const path = require('path');
+      
+      const logoPath = path.join(__dirname, 'public/images/fp-logo.jpg');
+      const signaturePath = path.join(__dirname, 'public/images/signature.jpg');
+      
+      let logoBase64 = '';
+      let signatureBase64 = '';
+      
+      try {
+        const logoData = fs.readFileSync(logoPath);
+        logoBase64 = `data:image/jpeg;base64,${logoData.toString('base64')}`;
+        
+        const signatureData = fs.readFileSync(signaturePath);
+        signatureBase64 = `data:image/jpeg;base64,${signatureData.toString('base64')}`;
+      } catch (err) {
+        console.error('Error reading image files:', err);
+      }
+      
       // Generate HTML for certificate
       const certificateHtml = `
       <!DOCTYPE html>
@@ -2696,8 +2716,10 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
         <meta charset="UTF-8">
         <title>${certificate.title}</title>
         <style>
+          @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Outfit:wght@400;500;700&display=swap');
+          
           body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Outfit', 'Arial', sans-serif;
             margin: 0;
             padding: 0;
             display: flex;
@@ -2740,6 +2762,7 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
             margin-bottom: 20px;
           }
           .title {
+            font-family: 'Space Grotesk', sans-serif;
             font-size: 36px;
             font-weight: bold;
             margin-bottom: 10px;
@@ -2760,9 +2783,10 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
             background-color: rgba(0, 0, 0, 0.02);
           }
           .name {
+            font-family: 'Space Grotesk', sans-serif;
             font-size: 28px;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             color: #000;
           }
           .description {
@@ -2777,6 +2801,7 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
             font-size: 14px;
             display: flex;
             justify-content: space-between;
+            padding: 0 20px;
             color: #555;
           }
           .certificate-number {
@@ -2791,18 +2816,19 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
             right: 20px;
             width: 100px;
             height: 100px;
-            background-color: rgba(0, 0, 0, 0.05);
+            background-color: rgba(255, 215, 0, 0.1);
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
             font-size: 14px;
+            font-weight: bold;
             transform: rotate(15deg);
-            border: 2px solid rgba(0, 0, 0, 0.1);
-            color: #000;
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            color: #996515;
           }
           .signature-container {
-            margin-top: 40px;
+            margin-top: 35px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -2820,19 +2846,21 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
             margin-top: 20px;
             font-size: 12px;
             color: #777;
+            padding: 0 40px;
+            line-height: 1.5;
           }
         </style>
       </head>
       <body>
         <div class="certificate">
           <div class="header">
-            <img src="/images/fp-logo.jpg" alt="Framework Pro Logo" class="logo">
+            <img src="${logoBase64}" alt="Framework Pro Logo" class="logo">
             <div class="title">Certificate of Completion</div>
             <div class="subtitle">Professional Business Framework Mastery</div>
           </div>
           
           <div class="content">
-            <div class="name">${user.name}</div>
+            <div class="name">${user.name || user.username}</div>
             <div class="description">
               ${certificate.description}
             </div>
@@ -2848,7 +2876,7 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
           </div>
           
           <div class="signature-container">
-            <img src="/images/signature.jpg" alt="Signature" class="signature-image">
+            <img src="${signatureBase64}" alt="Signature" class="signature-image">
             <div class="signature-name">Manas Kumar</div>
           </div>
           
