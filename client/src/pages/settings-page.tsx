@@ -20,7 +20,7 @@ const SettingsPage: React.FC = () => {
   
   // AI Settings state
   const [apiKey, setApiKey] = useState<string>(user?.apiKey || '');
-  const [aiProvider, setAiProvider] = useState<string>(user?.aiProvider || 'local');
+  const [aiProvider, setAiProvider] = useState<string>(user?.aiProvider || 'openai');
   
   // Password change state
   const [currentPassword, setCurrentPassword] = useState('');
@@ -359,8 +359,8 @@ const SettingsPage: React.FC = () => {
                         </div>
                         <div className="ml-3 text-xs sm:text-sm text-blue-700">
                           <p>
-                            You can use our built-in Local AI model without an API key, or connect to OpenAI or Google for more advanced AI capabilities.
-                            If you choose an external provider, your API key is stored securely and used only for your requests.
+                            To use AI features, you'll need to provide your own API key from OpenAI or Google. 
+                            Your API key is stored securely and used only for your requests.
                           </p>
                         </div>
                       </div>
@@ -374,28 +374,25 @@ const SettingsPage: React.FC = () => {
                         onChange={(e) => setAiProvider(e.target.value)}
                         className="w-full h-9 sm:h-10 px-3 py-1 sm:py-2 text-xs sm:text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary"
                       >
-                        <option value="local">Local AI (No API key required)</option>
                         <option value="openai">OpenAI (ChatGPT)</option>
-                        <option value="gemini">Google (Gemini)</option>
+                        <option value="google">Google (Gemini)</option>
                       </select>
                     </div>
                     
-                    {aiProvider !== 'local' && (
-                      <div className="space-y-1 sm:space-y-2">
-                        <Label htmlFor="apiKey" className="text-sm">API Key</Label>
-                        <Input 
-                          id="apiKey" 
-                          type="password"
-                          value={apiKey}
-                          onChange={(e) => setApiKey(e.target.value)}
-                          placeholder={`Enter your ${aiProvider === 'openai' ? 'OpenAI' : 'Google'} API key`}
-                          className="border-gray-200 text-sm h-9 sm:h-10"
-                        />
-                        <p className="text-xs text-gray-500">
-                          Your API key is stored securely and never shared. All AI requests are made directly from your browser.
-                        </p>
-                      </div>
-                    )}
+                    <div className="space-y-1 sm:space-y-2">
+                      <Label htmlFor="apiKey" className="text-sm">API Key</Label>
+                      <Input 
+                        id="apiKey" 
+                        type="password"
+                        value={apiKey}
+                        onChange={(e) => setApiKey(e.target.value)}
+                        placeholder={`Enter your ${aiProvider === 'openai' ? 'OpenAI' : 'Google'} API key`}
+                        className="border-gray-200 text-sm h-9 sm:h-10"
+                      />
+                      <p className="text-xs text-gray-500">
+                        Your API key is stored securely and never shared. All AI requests are made directly from your browser.
+                      </p>
+                    </div>
 
                     <div className="flex justify-end pt-2">
                       <Button 
