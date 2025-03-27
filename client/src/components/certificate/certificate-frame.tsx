@@ -1,5 +1,5 @@
 import React from 'react';
-import { Award, Download, CheckCircle } from 'lucide-react';
+import { Download, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface CertificateFrameProps {
@@ -56,19 +56,19 @@ export function CertificateFrame({
   // Determine border color based on framework name for visual distinction
   const getBorderColor = (name: string) => {
     const colors = {
-      'MECE': 'border-blue-200',
-      'Design Thinking': 'border-purple-200',
-      'SWOT': 'border-green-200',
-      'First Principles': 'border-red-200',
-      "Porter's Five Forces": 'border-yellow-200',
-      'Jobs-To-Be-Done': 'border-indigo-200',
-      'Blue Ocean': 'border-cyan-200',
-      'SCAMPER': 'border-pink-200',
-      'Problem-Tree': 'border-orange-200',
-      'Pareto': 'border-emerald-200'
+      'MECE': 'border-black',
+      'Design Thinking': 'border-black',
+      'SWOT': 'border-black',
+      'First Principles': 'border-black',
+      "Porter's Five Forces": 'border-black',
+      'Jobs-To-Be-Done': 'border-black',
+      'Blue Ocean': 'border-black',
+      'SCAMPER': 'border-black',
+      'Problem-Tree': 'border-black',
+      'Pareto': 'border-black'
     };
     
-    return colors[name as keyof typeof colors] || 'border-gray-200';
+    return colors[name as keyof typeof colors] || 'border-black';
   };
   
   const borderColorClass = getBorderColor(frameworkName);
@@ -87,17 +87,11 @@ export function CertificateFrame({
         }}
       >
         {/* Certificate Header */}
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center">
-            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mr-3">
-              <Award className="h-7 w-7 text-primary" />
-            </div>
-            <div>
-              <h2 className="text-lg font-bold text-primary leading-tight">{title}</h2>
-              <p className="text-sm text-gray-500">Certificate #{certificateNumber}</p>
-            </div>
-          </div>
-          <div className="flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
+        <div className="flex flex-col items-center mb-4">
+          <img src="/images/fp-logo.jpg" alt="Framework Pro Logo" className="h-16 mb-3" />
+          <h2 className="text-lg font-bold text-black leading-tight mb-1">{title}</h2>
+          <p className="text-sm text-gray-500">Certificate #{certificateNumber}</p>
+          <div className="flex items-center mt-2 px-3 py-1 rounded-full bg-black/5 text-black text-xs font-medium">
             <CheckCircle className="h-3.5 w-3.5 mr-1" />
             Verified
           </div>
@@ -108,6 +102,12 @@ export function CertificateFrame({
           <p className="text-sm text-gray-500 mb-2">This certificate is awarded to</p>
           <h1 className="text-2xl font-bold mb-3">{userName || 'User'}</h1>
           <p className="text-sm text-gray-600 max-w-md mx-auto">{description}</p>
+        </div>
+        
+        {/* Signature */}
+        <div className="flex flex-col items-center mt-4">
+          <img src="/images/signature.jpg" alt="Signature" className="h-12 mb-1" />
+          <p className="text-sm font-medium text-gray-700">Manas Kumar</p>
         </div>
         
         {/* Certificate Footer */}
@@ -128,7 +128,7 @@ export function CertificateFrame({
         <Button 
           onClick={onDownload} 
           variant="outline" 
-          className="w-full hover:bg-primary hover:text-white transition-colors"
+          className="w-full hover:bg-black hover:text-white transition-colors"
         >
           <Download className="h-4 w-4 mr-2" />
           Download Certificate

@@ -2709,14 +2709,15 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
           .certificate {
             width: 800px;
             height: 600px;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-            color: white;
+            background: white;
+            color: #333;
             padding: 40px;
             border-radius: 15px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             text-align: center;
             position: relative;
             overflow: hidden;
+            border: 10px solid #000;
           }
           .certificate::before {
             content: '';
@@ -2725,10 +2726,17 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
             left: 0;
             width: 100%;
             height: 100%;
-            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSg0NSkiPjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjA1KSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNwYXR0ZXJuKSIvPjwvc3ZnPg==');
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSg0NSkiPjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0icmdiYSgwLDAsMCwwLjAyKSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNwYXR0ZXJuKSIvPjwvc3ZnPg==');
             opacity: 0.1;
           }
           .header {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+          }
+          .logo {
+            width: 150px;
             margin-bottom: 20px;
           }
           .title {
@@ -2737,35 +2745,39 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
             margin-bottom: 10px;
             text-transform: uppercase;
             letter-spacing: 2px;
+            color: #000;
           }
           .subtitle {
             font-size: 18px;
             margin-bottom: 30px;
-            opacity: 0.9;
+            color: #777;
           }
           .content {
             margin: 30px 0;
             padding: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(0, 0, 0, 0.1);
             border-radius: 10px;
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: rgba(0, 0, 0, 0.02);
           }
           .name {
             font-size: 28px;
             font-weight: bold;
             margin-bottom: 10px;
+            color: #000;
           }
           .description {
             font-size: 16px;
             margin-bottom: 20px;
             line-height: 1.5;
             padding: 0 40px;
+            color: #555;
           }
           .certificate-info {
             margin-top: 30px;
             font-size: 14px;
             display: flex;
             justify-content: space-between;
+            color: #555;
           }
           .certificate-number {
             font-style: italic;
@@ -2779,32 +2791,44 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
             right: 20px;
             width: 100px;
             height: 100px;
-            background-color: rgba(255, 255, 255, 0.2);
+            background-color: rgba(0, 0, 0, 0.05);
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
             font-size: 14px;
             transform: rotate(15deg);
-            border: 2px solid rgba(255, 255, 255, 0.4);
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            color: #000;
           }
-          .signature {
-            font-family: 'Brush Script MT', cursive;
-            font-size: 24px;
+          .signature-container {
             margin-top: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+          }
+          .signature-image {
+            width: 150px;
+            margin-bottom: 10px;
+          }
+          .signature-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #000;
           }
           .certificate-footer {
             margin-top: 20px;
             font-size: 12px;
-            opacity: 0.7;
+            color: #777;
           }
         </style>
       </head>
       <body>
         <div class="certificate">
           <div class="header">
+            <img src="/images/fp-logo.jpg" alt="Framework Pro Logo" class="logo">
             <div class="title">Certificate of Completion</div>
-            <div class="subtitle">Framework Pro - Professional Learning Platform</div>
+            <div class="subtitle">Professional Business Framework Mastery</div>
           </div>
           
           <div class="content">
@@ -2823,8 +2847,9 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
             VERIFIED
           </div>
           
-          <div class="signature">
-            Framework Pro
+          <div class="signature-container">
+            <img src="/images/signature.jpg" alt="Signature" class="signature-image">
+            <div class="signature-name">Manas Kumar</div>
           </div>
           
           <div class="certificate-footer">
