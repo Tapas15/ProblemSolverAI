@@ -142,12 +142,6 @@ export function CertificateFrame({
             </div>
           </div>
           
-          {/* Holographic Element */}
-          <div className="absolute right-0 top-0 p-2 rounded-full bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 opacity-80 flex items-center justify-center"
-               style={{animation: "holographic 3s infinite linear", width: "40px", height: "40px"}}>
-            <div className="text-white font-bold text-xs">FP</div>
-          </div>
-          
           <h2 className="text-2xl font-bold text-black leading-tight mb-1 font-serif" style={{letterSpacing: "0.05em"}}>{title}</h2>
           <p className="text-sm text-gray-500">Certificate #{certificateNumber}</p>
           <div className="flex items-center mt-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-100 to-yellow-100 text-xs font-medium shadow-sm"
