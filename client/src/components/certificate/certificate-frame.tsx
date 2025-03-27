@@ -107,10 +107,10 @@ export function CertificateFrame({
     <div 
       className="relative rounded-xl overflow-hidden shadow-xl transition-all hover:shadow-2xl"
       style={{ 
-        border: `4px solid ${accentColor}`,
-        background: "white",
+        border: `4px solid #14B8A6`,
+        background: "#10513a", // Deep emerald green
         backgroundImage: `
-          linear-gradient(to bottom, rgba(248, 245, 230, 0.97), rgba(255, 253, 244, 0.97)), 
+          linear-gradient(to bottom, rgba(16, 81, 58, 0.97), rgba(20, 100, 70, 0.97)), 
           url('/api/static/images/fp-logo-new.jpg')
         `,
         backgroundRepeat: 'no-repeat',
@@ -119,10 +119,16 @@ export function CertificateFrame({
       }}
     >
       {/* Decorative Corner Elements */}
-      <div className="absolute top-0 left-0 w-16 h-16 border-t-4 border-l-4 rounded-tl-lg" style={{ borderColor: accentColor }}></div>
-      <div className="absolute top-0 right-0 w-16 h-16 border-t-4 border-r-4 rounded-tr-lg" style={{ borderColor: accentColor }}></div>
-      <div className="absolute bottom-0 left-0 w-16 h-16 border-b-4 border-l-4 rounded-bl-lg" style={{ borderColor: accentColor }}></div>
-      <div className="absolute bottom-0 right-0 w-16 h-16 border-b-4 border-r-4 rounded-br-lg" style={{ borderColor: accentColor }}></div>
+      <div className="absolute top-0 left-0 w-16 h-16 border-t-4 border-l-4 rounded-tl-lg" style={{ borderColor: '#14B8A6' }}></div>
+      <div className="absolute top-0 right-0 w-16 h-16 border-t-4 border-r-4 rounded-tr-lg" style={{ borderColor: '#14B8A6' }}></div>
+      <div className="absolute bottom-0 left-0 w-16 h-16 border-b-4 border-l-4 rounded-bl-lg" style={{ borderColor: '#14B8A6' }}></div>
+      <div className="absolute bottom-0 right-0 w-16 h-16 border-b-4 border-r-4 rounded-br-lg" style={{ borderColor: '#14B8A6' }}></div>
+      
+      {/* Light Pattern Elements */}
+      <div className="absolute inset-0 opacity-10" style={{ 
+        background: 'radial-gradient(circle, transparent 20%, #10513a 20%, #10513a 80%, transparent 80%, transparent), radial-gradient(circle, transparent 20%, #10513a 20%, #10513a 80%, transparent 80%, transparent) 25px 25px',
+        backgroundSize: '50px 50px' 
+      }}></div>
       
       {/* Certificate Background */}
       <div 
@@ -133,7 +139,9 @@ export function CertificateFrame({
                           frameworkName === 'SWOT' ? '50px 50px' : 
                           '20px 20px',
           backgroundPosition: frameworkName === 'SWOT' ? '0 0, 25px 0, 25px -25px, 0px 25px' : '0 0',
-          backgroundColor: 'rgba(248, 245, 230, 0.6)'
+          backgroundColor: 'rgba(225, 245, 235, 0.95)',
+          backdropFilter: 'blur(4px)',
+          boxShadow: 'inset 0 0 30px rgba(16, 81, 58, 0.1)'
         }}
       >
         {/* Certificate Header with Logo (no embellishments) */}
@@ -157,7 +165,7 @@ export function CertificateFrame({
         <div className="my-8 text-center">
           <p className="text-sm text-gray-500 mb-2 uppercase tracking-wider">This certificate is awarded to</p>
           <h1 className="text-3xl font-bold mb-4 font-serif">{userName || 'User'}</h1>
-          <div className="max-w-lg mx-auto p-4 border rounded-lg bg-white bg-opacity-80" style={{borderColor: `${accentColor}40`}}>
+          <div className="max-w-lg mx-auto p-4 border rounded-lg bg-white bg-opacity-80" style={{borderColor: `#14B8A640`, borderWidth: '1px'}}>
             <p className="text-sm text-gray-700 leading-relaxed">{description}</p>
           </div>
         </div>
@@ -194,7 +202,7 @@ export function CertificateFrame({
           </div>
         </div>
         <div className="mt-2 text-center">
-          <p className="text-xs leading-relaxed" style={{color: accentColor}}>
+          <p className="text-xs leading-relaxed" style={{color: '#14B8A6'}}>
             This certificate verifies mastery of the <span className="inline-block italic mx-1">{frameworkName}</span> framework and its professional business applications.
           </p>
         </div>
@@ -208,8 +216,9 @@ export function CertificateFrame({
           className="w-full hover:text-white transition-colors"
           style={{
             backgroundColor: "white", 
-            borderColor: accentColor, 
-            color: accentColor
+            borderColor: '#14B8A6', 
+            color: '#14B8A6',
+            boxShadow: '0 2px 4px rgba(20, 184, 166, 0.2)'
           }}
         >
           <Download className="h-4 w-4 mr-2" />
