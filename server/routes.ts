@@ -2602,29 +2602,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Custom AI Model routes
-app.post("/api/custom-ai/train", async (req, res, next) => {
-  if (!req.isAuthenticated()) return res.sendStatus(401);
-  
-  try {
-    const { trainingData } = req.body;
-    await customAIService.trainModel(trainingData);
-    res.json({ message: "Model trained successfully" });
-  } catch (error) {
-    next(error);
-  }
-});
-
-app.post("/api/custom-ai/predict", async (req, res, next) => {
-  if (!req.isAuthenticated()) return res.sendStatus(401);
-  
-  try {
-    const { features } = req.body;
-    const prediction = await customAIService.predict(features);
-    res.json({ prediction });
-  } catch (error) {
-    next(error);
-  }
-});
+// Removed custom AI endpoints as part of the AI feature removal
 
 app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
     try {
@@ -2688,9 +2666,9 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
         return res.status(404).send("Framework not found");
       }
       
-      // Read image files from the file system and convert to base64
-      const logoPath = path.join(__dirname, 'public/images/fp-logo.jpg');
-      const signaturePath = path.join(__dirname, 'public/images/signature.jpg');
+      // Use proper path for images in public directory
+      const logoPath = 'public/images/fp-logo-new.jpg';
+      const signaturePath = 'public/images/signature-new.jpg';
       
       let logoBase64 = '';
       let signatureBase64 = '';
@@ -2703,6 +2681,9 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
         signatureBase64 = `data:image/jpeg;base64,${signatureData.toString('base64')}`;
       } catch (err) {
         console.error('Error reading image files:', err);
+        // Fall back to using URLs if files can't be read
+        logoBase64 = '/api/static/images/fp-logo-new.jpg';
+        signatureBase64 = '/api/static/images/signature-new.jpg';
       }
       
       // Generate HTML for certificate

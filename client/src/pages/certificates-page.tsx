@@ -43,8 +43,37 @@ export default function CertificatesPage() {
       title: "Download Started",
       description: "Your certificate will be downloaded shortly.",
     });
-    // In a real implementation, this would trigger a download
-    window.open(`/api/certificates/${id}/download`, '_blank');
+    
+    // Create a hidden iframe to handle the download
+    try {
+      const downloadUrl = `/api/certificates/${id}/download`;
+      
+      // First option: use window.open (default)
+      const newWindow = window.open(downloadUrl, '_blank');
+      
+      // Fallback option if window.open doesn't work
+      if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+        // Create hidden iframe for download as fallback
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.src = downloadUrl;
+        document.body.appendChild(iframe);
+        
+        // Remove iframe after download is initiated
+        setTimeout(() => {
+          if (iframe.parentNode) {
+            iframe.parentNode.removeChild(iframe);
+          }
+        }, 5000);
+      }
+    } catch (error) {
+      console.error('Error downloading certificate:', error);
+      toast({
+        title: "Download Failed",
+        description: "There was an error downloading your certificate. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
   
   const { user } = useAuth();

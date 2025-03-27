@@ -71,8 +71,10 @@ export function CertificateFrame({
   React.useEffect(() => {
     const generateQR = async () => {
       try {
-        // Create a validation URL with the certificate number
-        const validationUrl = `https://framework.pro/validate?cert=${certificateNumber}`;
+        // Create a validation URL with the certificate number - this will be the destination for QR verification
+        // Use an actual verification URL that includes the certificate number and framework name
+        const validationUrl = `https://frameworkpro.vercel.app/certificate/verify/${certificateNumber}?framework=${encodeURIComponent(frameworkName)}&name=${encodeURIComponent(userName)}`;
+        
         const options = {
           errorCorrectionLevel: 'H' as const,
           margin: 1,
@@ -90,7 +92,7 @@ export function CertificateFrame({
     };
     
     generateQR();
-  }, [certificateNumber, accentColor]);
+  }, [certificateNumber, accentColor, frameworkName, userName]);
 
   // Format date nicely
   const formattedDate = issueDate 
