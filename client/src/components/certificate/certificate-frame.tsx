@@ -149,7 +149,7 @@ export function CertificateFrame({
         {/* Certificate Header with Logo (no embellishments) */}
         <div className="flex flex-col items-center mb-4 relative">
           <div className="relative">
-            <img src="/api/static/images/fp-logo-new.png" alt="Framework Pro Logo" className="h-20 mb-3" />
+            <img src="/api/images/fp-logo-new.png" alt="Framework Pro Logo" className="h-20 mb-3" />
           </div>
           
           <h2 className="text-2xl font-bold text-black leading-tight mb-1 font-serif tracking-wider text-center mx-auto" style={{letterSpacing: "0.08em", wordSpacing: "0.1em"}}>{title}</h2>
@@ -173,7 +173,7 @@ export function CertificateFrame({
             <h1 className="text-3xl font-bold font-serif">{userName || 'User'}</h1>
             <div className="relative w-10 h-10 transform translate-y-[-2px]">
               <img 
-                src="/api/static/images/certified-badge.png" 
+                src="/api/images/certified-badge.png" 
                 alt="Certified Professional" 
                 className="w-full h-full object-contain"
                 style={{ filter: 'drop-shadow(0px 2px 2px rgba(0,0,0,0.2))' }}
