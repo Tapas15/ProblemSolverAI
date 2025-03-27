@@ -2689,9 +2689,6 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
       }
       
       // Read image files from the file system and convert to base64
-      const fs = require('fs');
-      const path = require('path');
-      
       const logoPath = path.join(__dirname, 'public/images/fp-logo.jpg');
       const signaturePath = path.join(__dirname, 'public/images/signature.jpg');
       
@@ -2810,21 +2807,7 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
           .issue-date {
             font-style: italic;
           }
-          .badge {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            padding: 8px 12px;
-            background-color: rgba(255, 215, 0, 0.1);
-            border-radius: 6px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 14px;
-            font-weight: bold;
-            border: 2px solid rgba(255, 215, 0, 0.5);
-            color: #996515;
-          }
+
           .signature-container {
             margin-top: 35px;
             display: flex;
@@ -2871,9 +2854,7 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
             <div class="issue-date">Issued: ${certificate.issueDate ? new Date(certificate.issueDate).toLocaleDateString() : new Date().toLocaleDateString()}</div>
           </div>
           
-          <div class="badge">
-            VERIFIED
-          </div>
+
           
           <div class="signature-container">
             <img src="${signatureBase64}" alt="Signature" class="signature-image">
@@ -2882,7 +2863,7 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
           
           <div class="certificate-footer">
             This certificate verifies mastery of the
-            <span style="display: inline-block; font-style: italic;">${framework.name}</span>
+            <span style="display: inline-block; font-style: italic; margin: 0 5px; line-height: 1.5;">${framework.name}</span>
             framework and its professional business applications.
           </div>
         </div>

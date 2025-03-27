@@ -151,14 +151,14 @@ export function CertificateFrame({
           </div>
         </div>
         
-        {/* Framework Badge */}
+        {/* Framework Badge - Rectangular design */}
         <div className="absolute top-24 right-6 flex flex-col items-center">
-          <div className="w-16 h-16 rounded-full flex items-center justify-center" 
+          <div className="flex items-center justify-center px-4 py-2 rounded-lg" 
                style={{backgroundColor: `${accentColor}20`, border: `2px solid ${accentColor}`}}>
-            {getFrameworkIcon(frameworkName, { className: "h-8 w-8", color: accentColor })}
-          </div>
-          <div className="text-xs mt-1 font-medium text-center" style={{color: accentColor}}>
-            {frameworkName}
+            {getFrameworkIcon(frameworkName, { className: "h-6 w-6 mr-2", color: accentColor })}
+            <span className="text-sm font-semibold" style={{color: accentColor}}>
+              {frameworkName}
+            </span>
           </div>
         </div>
         
@@ -201,8 +201,8 @@ export function CertificateFrame({
           </div>
         </div>
         <div className="mt-2 text-center">
-          <p className="text-xs" style={{color: accentColor}}>
-            This certificate verifies mastery of the {frameworkName} framework and its professional business applications.
+          <p className="text-xs leading-relaxed" style={{color: accentColor}}>
+            This certificate verifies mastery of the <span className="inline-block italic mx-1">{frameworkName}</span> framework and its professional business applications.
           </p>
         </div>
       </div>
@@ -224,16 +224,7 @@ export function CertificateFrame({
         </Button>
       </div>
       
-      {/* CSS for holographic animation */}
-      <style dangerouslySetInnerHTML={{
-        __html: `
-          @keyframes holographic {
-            0% { transform: rotate(0deg) scale(1); filter: hue-rotate(0deg); }
-            50% { transform: rotate(180deg) scale(1.05); filter: hue-rotate(180deg); }
-            100% { transform: rotate(360deg) scale(1); filter: hue-rotate(360deg); }
-          }
-        `
-      }} />
+
     </div>
   );
 }
