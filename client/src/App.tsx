@@ -6,6 +6,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { Loader2 } from "lucide-react";
 import { AuthProvider } from "@/hooks/use-auth";
+import { LocalAIProvider } from "@/hooks/use-local-ai";
 import { ProtectedRoute } from "@/lib/protected-route";
 import { MobileAppLayout } from "@/components/layout/mobile-app-layout";
 import { isNativePlatform, initializeApp } from "@/lib/capacitor";
@@ -111,10 +112,12 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <MobileAppLayout>
-          <Router />
-          <Toaster />
-        </MobileAppLayout>
+        <LocalAIProvider>
+          <MobileAppLayout>
+            <Router />
+            <Toaster />
+          </MobileAppLayout>
+        </LocalAIProvider>
       </AuthProvider>
     </QueryClientProvider>
   );

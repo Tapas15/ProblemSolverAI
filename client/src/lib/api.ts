@@ -83,17 +83,54 @@ export async function askAi(
   frameworkId?: number
 ): Promise<AiConversation> {
   console.log('askAi called with:', { question, frameworkId });
+  
+  // Add a timeout to the fetch request
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    setTimeout(() => reject(new Error('Request timed out after 30 seconds')), 30000);
+  });
+
   try {
-    const res = await apiRequest("POST", "/api/ai/ask", {
-      question,
-      frameworkId,
-    });
+    // Race between the API request and the timeout
+    const res = await Promise.race([
+      apiRequest("POST", "/api/ai/ask", {
+        question,
+        frameworkId,
+      }),
+      timeoutPromise
+    ]) as Response;
+
     console.log('askAi response status:', res.status);
+    
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({ message: 'Unknown error' }));
+      console.error('Error from AI service:', errorData);
+      throw new Error(errorData.message || `Server responded with status ${res.status}`);
+    }
+    
     const data = await res.json();
     console.log('askAi response data:', data);
+    
+    // Invalidate conversations cache to ensure fresh data
+    queryClient.invalidateQueries({ queryKey: ['/api/ai/conversations'] });
+    
     return data;
   } catch (error) {
     console.error('Error in askAi API call:', error);
+    
+    // Parse and enhance error message
+    const errorMessage = error instanceof Error 
+      ? error.message 
+      : 'An unknown error occurred';
+    
+    // Check for common issues
+    if (errorMessage.includes('timed out')) {
+      throw new Error('The AI service took too long to respond. Please try again or check your API key.');
+    } else if (errorMessage.includes('Failed to fetch')) {
+      throw new Error('Network error. Please check your internet connection and try again.');
+    } else if (errorMessage.toLowerCase().includes('api key')) {
+      throw new Error('Invalid API key. Please check your settings and ensure you have entered a valid key.');
+    }
+    
     throw error;
   }
 }
@@ -103,8 +140,24 @@ export async function getAiConversations(): Promise<AiConversation[]> {
   return res.json();
 }
 
-export async function clearAiConversations(): Promise<void> {
-  await apiRequest("DELETE", "/api/ai/conversations");
+export async function clearAiConversations(): Promise<{ success: boolean; message: string }> {
+  try {
+    const res = await apiRequest("DELETE", "/api/ai/conversations");
+    
+    // Make sure we get a clean empty array, not just a success status
+    const data = await res.json();
+    
+    // Force clear the cache for this endpoint
+    queryClient.setQueryData(['/api/ai/conversations'], []);
+    
+    // Let's log success for debugging
+    console.log("Conversation history cleared successfully", { data });
+    
+    return { success: true, message: "Conversation history cleared successfully" };
+  } catch (error) {
+    console.error("Error clearing AI conversations:", error);
+    throw new Error(error instanceof Error ? error.message : "Failed to clear conversation history");
+  }
 }
 
 // Quiz APIs
@@ -648,4 +701,23 @@ export async function getUserAchievements(): Promise<Achievement[]> {
     console.error("Error generating achievements:", error);
     return [];
   }
+}
+
+// Local AI Model functions
+export async function getModelInfo(): Promise<{
+  modelName: string;
+  isLoaded: boolean;
+  isLoading: boolean;
+}> {
+  const res = await apiRequest("GET", "/api/ai/model-info");
+  return res.json();
+}
+
+export async function switchModel(modelName: string): Promise<{
+  success: boolean;
+  message: string;
+  modelName: string;
+}> {
+  const res = await apiRequest("POST", "/api/ai/switch-model", { modelName });
+  return res.json();
 }

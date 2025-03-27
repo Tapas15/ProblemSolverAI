@@ -17,6 +17,8 @@ import OpenAI from "openai";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { xapiService } from "./services/xapi-service";
 import { scormService } from "./services/scorm-service";
+import { localAIService } from "./services/local-ai-service";
+import { customAIService } from "./services/custom-ai-service";
 import path from "path";
 import fs from "fs";
 import multer from "multer";
@@ -1301,52 +1303,94 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // AI Assistant routes
-  app.post("/api/ai/ask", async (req, res, next) => {
-    if (!req.isAuthenticated()) return res.sendStatus(401);
-    
-    try {
-      console.log("AI ask request received:", req.body);
-      const { question, frameworkId } = req.body;
-      const userId = req.user!.id;
+  // AI routes removed
       
-      if (!question) {
-        console.warn("AI request missing question field");
-        return res.status(400).json({ message: "Question is required" });
-      }
-      
-      const user = await storage.getUser(userId);
-      console.log(`User ${userId} AI settings:`, { 
-        hasApiKey: !!user?.apiKey, 
-        aiProvider: user?.aiProvider || "openai (default)" 
-      });
-      
-      if (!user || !user.apiKey) {
-        return res.status(400).json({ message: "API key not configured. Please set up your AI integration in settings." });
-      }
-      
-      let answer = "";
-      const aiProvider = user.aiProvider || "openai";
-      
-      // System prompt for both AI providers
-      const systemPrompt = `You are an AI assistant for the QuestionPro AI platform, specializing in business problem-solving frameworks. ${
+      // System prompt for all AI providers
+      const systemPrompt = `You are an AI assistant for the QuestionPro AI mobile app, specializing in business problem-solving frameworks. ${
         frameworkId ? `The user is currently working with a specific framework (ID: ${frameworkId}).` : 
         "Provide helpful, clear, and concise guidance on applying business frameworks to solve real-world problems."
       } 
       
-      Important instructions for formatting your responses:
-      1. Keep your answers brief and to the point - maximum 3-4 short paragraphs
-      2. Use bullet points and numbered lists instead of long paragraphs
-      3. Focus on the most essential information only
-      4. Avoid lengthy explanations and examples
-      5. Structure your response with clear headings
-      6. Always prioritize brevity and clarity over comprehensive coverage
-      7. Limit any examples to 1-2 brief sentences`;
+      THE FRAMEWORKS YOU KNOW INCLUDE:
+      1. MECE (Mutually Exclusive, Collectively Exhaustive)
+      2. SWOT Analysis (Strengths, Weaknesses, Opportunities, Threats)
+      3. Porter's Five Forces
+      4. First Principles Thinking
+      5. Blue Ocean Strategy
+      6. SCAMPER (Substitute, Combine, Adapt, Modify, Put to another use, Eliminate, Reverse)
+      7. Design Thinking
+      8. Problem-Tree Analysis
+      9. Pareto Principle (80/20 Rule)
+      10. Jobs-To-Be-Done Framework
+      
+      CRITICAL FORMATTING INSTRUCTIONS:
+      1. Always answer directly and completely based on the user's question
+      2. Be extremely concise - limit to 2-3 short paragraphs maximum
+      3. Use bullet points for lists instead of paragraphs
+      4. Focus ONLY on essential information
+      5. Never use asterisks (*) in your response
+      6. Use ## for main headings and ### for subheadings only when necessary
+      7. Give direct, actionable advice without lengthy explanations
+      8. Maximum 1 brief example if absolutely necessary
+      9. Avoid any introductory or concluding statements
+      10. Write as if responding on a small mobile screen
+      11. Never apologize or use disclaimers in your response
+      12. Answer as if you are an expert business consultant
+      13. Be clear, specific, and practical
+      
+      REMEMBER: I expect you to respond to my prompt completely and give a comprehensive answer to what I asked, not a partial or incomplete response.`;
       
       console.log(`Using AI provider: ${aiProvider}`);
       
-      if (aiProvider === "openai") {
-        // Use OpenAI API
+      if (aiProvider === "local") {
+        // Use local AI model
+        try {
+          console.log("Using local AI model for inference");
+          
+          // Get the framework context if a frameworkId is provided
+          let frameworkContext = "";
+          if (frameworkId) {
+            const framework = await storage.getFramework(frameworkId);
+            if (framework) {
+              frameworkContext = `You're helping with the ${framework.name} framework. This framework ${framework.description}`;
+              
+              // Get modules for this framework to provide more context
+              const modules = await storage.getModulesByFrameworkId(frameworkId);
+              if (modules && modules.length > 0) {
+                frameworkContext += ". Key modules include: ";
+                modules.forEach((module, index) => {
+                  if (index > 0) frameworkContext += ", ";
+                  frameworkContext += module.name;
+                });
+              }
+            }
+          }
+          
+          // Craft a more specific prompt for the local model
+          const enhancedPrompt = `${systemPrompt}\n\nAs a business framework expert, answer this question completely: ${question}\n\nContext: ${frameworkContext}`;
+          
+          // Generate response using local AI model with more tokens
+          const response = await localAIService.generateResponse(enhancedPrompt, {
+            maxTokens: 500  // Increased token limit for more complete answers
+          });
+          
+          console.log("Generated local AI response:", {
+            status: "success",
+            processingTime: response.processingTime,
+            textLength: response.text.length
+          });
+          
+          answer = response.text || "I'm sorry, I couldn't generate a response. Please try again.";
+        } catch (error: any) {
+          console.error("Local AI model error:", error);
+          return res.status(500).json({ message: `Local AI error: ${error.message}` });
+        }
+      } else if (aiProvider === "openai") {
+        // Use OpenAI API (requires API key)
+        if (!user || !user.apiKey) {
+          return res.status(400).json({ message: "OpenAI API key not configured. Please set up your AI integration in settings." });
+        }
+        
         try {
           console.log("Initializing OpenAI client");
           const openai = new OpenAI({ apiKey: user.apiKey });
@@ -1396,7 +1440,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         }
       } else if (aiProvider === "gemini") {
-        // Use Google's Gemini API
+        // Use Google's Gemini API (requires API key)
+        if (!user || !user.apiKey) {
+          return res.status(400).json({ message: "Gemini API key not configured. Please set up your AI integration in settings." });
+        }
+        
         try {
           console.log("Initializing Google Generative AI client");
           const genAI = new GoogleGenerativeAI(user.apiKey);
@@ -1412,27 +1460,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const result = await model.generateContent(prompt);
           console.log("Received Gemini response");
           
-          // Extract text from the Gemini response
+          // Extract text from the Gemini response - simplified unified approach
           let responseText = "";
+          
           try {
-            console.log("Extracting text from Gemini response using text() method");
-            responseText = result.response.text();
-            console.log("Successfully extracted text from Gemini response");
-          } catch (error) {
-            console.error("Error extracting text from Gemini response using text() method:", error);
-            console.log("Attempting alternative method to extract text from Gemini response");
-            
-            // Try alternate method of accessing the text
-            const candidates = result.response.candidates || [];
-            console.log(`Gemini response has ${candidates.length} candidates`);
-            
-            if (candidates.length > 0 && candidates[0].content && candidates[0].content.parts) {
-              console.log(`Candidate has ${candidates[0].content.parts.length} parts`);
-              responseText = candidates[0].content.parts[0]?.text || "";
-              console.log("Extracted text from candidates array:", !!responseText);
+            // First try the standard text() method
+            if (result.response && typeof result.response.text === 'function') {
+              responseText = result.response.text();
+              console.log("Successfully extracted text from Gemini response using text() method");
+            } 
+            // If text() method failed or doesn't exist, try the candidates approach
+            else if (result.response?.candidates && result.response.candidates.length > 0) {
+              // Get the first candidate's content
+              const firstCandidate = result.response.candidates[0];
+              
+              // Extract text from parts if available
+              if (firstCandidate.content?.parts?.length > 0) {
+                const textPart = firstCandidate.content.parts[0];
+                if (textPart && typeof textPart === 'object' && 'text' in textPart) {
+                  responseText = textPart.text || "";
+                  console.log("Successfully extracted text from Gemini response using candidates.content.parts");
+                }
+              }
             }
+          } catch (error) {
+            console.error("Error extracting text from Gemini response:", error);
           }
           
+          // Provide a fallback response if we couldn't extract text
           answer = responseText || "I'm sorry, I couldn't generate a response. Please try again.";
         } catch (error: any) {
           console.error("Gemini API error:", error);
@@ -1453,7 +1508,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       } else {
         console.warn(`Unsupported AI provider requested: ${aiProvider}`);
-        return res.status(400).json({ message: "Unsupported AI provider. Please select either 'openai' or 'gemini' in your settings." });
+        return res.status(400).json({ message: "Unsupported AI provider. Please select 'local', 'openai', or 'gemini' in your settings." });
       }
       
       console.log("AI response generated successfully, storing conversation");
@@ -1504,6 +1559,65 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Get local AI model information
+  app.get("/api/ai/model-info", async (req, res, next) => {
+    try {
+      // Get information about the current local AI model
+      const modelInfo = localAIService.getModelInfo();
+      
+      // Get available recommended models
+      const recommendedModels = {
+        small: "Xenova/distilgpt2",
+        medium: "Xenova/gpt2",
+        large: "Xenova/opt-1.3b"
+      };
+      
+      res.json({
+        currentModel: modelInfo,
+        recommendedModels
+      });
+    } catch (error) {
+      console.error("Error getting AI model info:", error);
+      next(error);
+    }
+  });
+  
+  // Switch local AI model
+  app.post("/api/ai/switch-model", async (req, res, next) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    
+    try {
+      const { modelName } = req.body;
+      
+      if (!modelName) {
+        return res.status(400).json({ message: "Model name is required" });
+      }
+      
+      console.log(`Request to switch local AI model to: ${modelName}`);
+      
+      // Switch to the specified model
+      const success = await localAIService.switchModel(modelName);
+      
+      if (!success) {
+        return res.status(500).json({ message: `Failed to switch to model ${modelName}` });
+      }
+      
+      // Get updated model info
+      const modelInfo = localAIService.getModelInfo();
+      
+      console.log(`Successfully switched to model: ${modelInfo.modelName}`);
+      
+      res.json({
+        success: true,
+        message: `Successfully switched to model: ${modelInfo.modelName}`,
+        modelInfo
+      });
+    } catch (error) {
+      console.error("Error switching AI model:", error);
+      next(error);
+    }
+  });
+  
   // Clear all AI conversations for the current user
   app.delete("/api/ai/conversations", async (req, res, next) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
@@ -1524,16 +1638,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await storage.deleteAiConversation(conversation.id);
       }
       
-      // Force the cache to be completely invalidated for this user's conversations
+      // Force the cache to be completely invalidated using multiple strategies
+      
+      // 1. Clear the specific cache key
       const cacheKey = CACHE_KEYS.AI_CONVERSATIONS(userId);
       console.log(`Invalidating cache for key: ${cacheKey}`);
       invalidateCache(cacheKey);
       
+      // 2. Also clear by pattern to catch any related keys
+      console.log(`Invalidating all cache keys that contain user:${userId}:ai`);
+      invalidateCachesByPattern(`user:${userId}:ai`);
+      
       // Double-check that conversations were cleared by getting them again
+      // But bypass the cache to get the true database state
       const remainingConversations = await storage.getAiConversations(userId);
       console.log(`After deletion, user has ${remainingConversations.length} conversations remaining`);
       
-      // Respond with empty array instead of 204 for better client handling
+      // Set fresh empty data in cache to ensure clients see empty state
+      cacheData(cacheKey, [], 300); // Cache empty array for 5 minutes
+      
+      // Respond with empty array for client handling
       res.status(200).json([]);
     } catch (error) {
       console.error("Error clearing AI conversations:", error);
@@ -3134,85 +3258,107 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
             exerciseId = data.exerciseId;
             username = data.username;
             
+            // Make sure we have valid values
+            if (exerciseId === null || userId === null || !username) {
+              console.warn('Invalid join data:', { userId, exerciseId, username });
+              ws.send(JSON.stringify({
+                type: 'error',
+                message: 'Invalid join data. Missing userId, exerciseId, or username.'
+              }));
+              return;
+            }
+            
+            // Convert exerciseId to string for use as an object key
+            const roomId = exerciseId.toString();
+            
             // Create room if it doesn't exist
-            if (!exerciseRooms[exerciseId]) {
-              exerciseRooms[exerciseId] = new Map();
+            if (!exerciseRooms[roomId]) {
+              exerciseRooms[roomId] = new Map();
             }
             
             // Add user to room
             const clientId = `${userId}-${Date.now()}`;
-            exerciseRooms[exerciseId].set(clientId, ws);
+            exerciseRooms[roomId].set(clientId, ws);
             
             // Notify other users in the room
-            broadcastToRoom(exerciseId, {
+            broadcastToRoom(roomId, {
               type: 'user-joined',
               userId,
               username,
               timestamp: new Date().toISOString(),
-              users: getActiveUsers(exerciseId)
+              users: getActiveUsers(roomId)
             }, ws);
             
             // Send join confirmation to the user
             ws.send(JSON.stringify({
               type: 'joined',
               exerciseId,
-              users: getActiveUsers(exerciseId)
+              users: getActiveUsers(roomId)
             }));
             
             break;
             
           case 'leave':
             // User leaves the exercise room
-            if (exerciseId && exerciseRooms[exerciseId]) {
-              // Find and remove the user from the room
-              for (const [clientId, client] of exerciseRooms[exerciseId].entries()) {
-                if (client === ws) {
-                  exerciseRooms[exerciseId].delete(clientId);
-                  break;
+            if (exerciseId !== null) {
+              const roomId = exerciseId.toString();
+              if (exerciseRooms[roomId]) {
+                // Find and remove the user from the room
+                for (const [clientId, client] of [...exerciseRooms[roomId].entries()]) { // Use array spread to avoid iterator issues
+                  if (client === ws) {
+                    exerciseRooms[roomId].delete(clientId);
+                    break;
+                  }
                 }
-              }
-              
-              // Notify others that user left
-              broadcastToRoom(exerciseId, {
-                type: 'user-left',
-                userId,
-                username,
-                timestamp: new Date().toISOString(),
-                users: getActiveUsers(exerciseId)
-              });
-              
-              // Clean up empty rooms
-              if (exerciseRooms[exerciseId].size === 0) {
-                delete exerciseRooms[exerciseId];
+                
+                // Notify others that user left
+                broadcastToRoom(roomId, {
+                  type: 'user-left',
+                  userId,
+                  username,
+                  timestamp: new Date().toISOString(),
+                  users: getActiveUsers(roomId)
+                });
+                
+                // Clean up empty rooms
+                if (exerciseRooms[roomId].size === 0) {
+                  delete exerciseRooms[roomId];
+                }
               }
             }
             break;
             
           case 'update-solution':
             // User updates their solution
-            if (exerciseId && exerciseRooms[exerciseId]) {
-              // Broadcast the solution update to all users in the room
-              broadcastToRoom(exerciseId, {
-                type: 'solution-updated',
-                userId,
-                username,
-                solution: data.solution,
-                timestamp: new Date().toISOString()
-              });
+            if (exerciseId !== null) {
+              const roomId = exerciseId.toString();
+              if (exerciseRooms[roomId]) {
+                // Broadcast the solution update to all users in the room
+                broadcastToRoom(roomId, {
+                  type: 'solution-updated',
+                  userId,
+                  username,
+                  solution: data.solution,
+                  timestamp: new Date().toISOString()
+                });
+              }
             }
             break;
             
           case 'comment':
             // User adds a comment
-            if (exerciseId && exerciseRooms[exerciseId]) {
-              // Broadcast the comment to all users in the room
-              broadcastToRoom(exerciseId, {
-                type: 'new-comment',
-                userId,
-                username,
-                comment: data.comment,
-                timestamp: new Date().toISOString()
-              });
+            if (exerciseId !== null) {
+              const roomId = exerciseId.toString();
+              if (exerciseRooms[roomId]) {
+                // Broadcast the comment to all users in the room
+                broadcastToRoom(roomId, {
+                  type: 'new-comment',
+                  userId,
+                  username,
+                  comment: data.comment,
+                  timestamp: new Date().toISOString()
+                });
+              }
             }
             break;
             
@@ -3229,39 +3375,43 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
     ws.on('close', () => {
       console.log('WebSocket client disconnected');
       // Handle user disconnection
-      if (exerciseId && exerciseRooms[exerciseId]) {
-        // Find and remove the user from the room
-        for (const [clientId, client] of exerciseRooms[exerciseId].entries()) {
-          if (client === ws) {
-            exerciseRooms[exerciseId].delete(clientId);
-            break;
+      if (exerciseId !== null) {
+        const roomId = exerciseId.toString();
+        if (exerciseRooms[roomId]) {
+          // Find and remove the user from the room
+          for (const [clientId, client] of [...exerciseRooms[roomId].entries()]) { // Array spread to fix iterator issues
+            if (client === ws) {
+              exerciseRooms[roomId].delete(clientId);
+              break;
+            }
           }
-        }
-        
-        // Notify others that user left
-        broadcastToRoom(exerciseId, {
-          type: 'user-left',
-          userId,
-          username,
-          timestamp: new Date().toISOString(),
-          users: getActiveUsers(exerciseId)
-        });
-        
-        // Clean up empty rooms
-        if (exerciseRooms[exerciseId].size === 0) {
-          delete exerciseRooms[exerciseId];
+          
+          // Notify others that user left
+          broadcastToRoom(roomId, {
+            type: 'user-left',
+            userId,
+            username,
+            timestamp: new Date().toISOString(),
+            users: getActiveUsers(roomId)
+          });
+          
+          // Clean up empty rooms
+          if (exerciseRooms[roomId].size === 0) {
+            delete exerciseRooms[roomId];
+          }
         }
       }
     });
   });
   
   // Helper function to broadcast a message to all clients in an exercise room
-  function broadcastToRoom(exerciseId: number, message: any, excludeClient?: WebSocket) {
-    if (!exerciseRooms[exerciseId]) return;
+  function broadcastToRoom(roomId: string, message: any, excludeClient?: WebSocket) {
+    if (!exerciseRooms[roomId]) return;
     
     const messageStr = JSON.stringify(message);
     
-    exerciseRooms[exerciseId].forEach((client) => {
+    // Use Array.from to avoid iterator issues
+    Array.from(exerciseRooms[roomId].entries()).forEach(([_, client]) => {
       if (client !== excludeClient && client.readyState === WebSocket.OPEN) {
         client.send(messageStr);
       }
@@ -3269,12 +3419,13 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
   }
   
   // Helper function to get list of active users in a room
-  function getActiveUsers(exerciseId: number): Array<{userId: number, username: string}> {
-    if (!exerciseRooms[exerciseId]) return [];
+  function getActiveUsers(roomId: string): Array<{userId: number, username: string}> {
+    if (!exerciseRooms[roomId]) return [];
     
     const users = new Map<number, string>();
     
-    exerciseRooms[exerciseId].forEach((_, clientId) => {
+    // Use Array.from to avoid iterator issues
+    Array.from(exerciseRooms[roomId].entries()).forEach(([clientId]) => {
       const userId = parseInt(clientId.split('-')[0], 10);
       const username = clientId.split('-')[1] || 'Anonymous';
       users.set(userId, username);
