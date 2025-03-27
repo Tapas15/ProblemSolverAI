@@ -149,14 +149,7 @@ const HomePage: React.FC = () => {
             </div>
           </Link>
           
-          <Link to="/ai-assistant">
-            <div className="native-card touch-feedback min-w-[110px] p-3 flex flex-col items-center justify-center text-center">
-              <div className="w-9 h-9 rounded-full bg-purple-50 flex items-center justify-center mb-2">
-                <Lightbulb className="h-5 w-5 text-purple-500" />
-              </div>
-              <span className="text-xs font-medium text-[#0f172a]">AI Assistant</span>
-            </div>
-          </Link>
+          {/* AI Assistant removed */}
           
           <Link to="/exercises">
             <div className="native-card touch-feedback min-w-[110px] p-3 flex flex-col items-center justify-center text-center">

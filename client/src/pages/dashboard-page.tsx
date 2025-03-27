@@ -607,26 +607,7 @@ const DashboardPage = () => {
                   </CardContent>
                 </Card>
 
-                <Card className="native-card touch-feedback overflow-hidden">
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-3">
-                      <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-[#3b82f6] to-[#60a5fa] flex items-center justify-center text-white flex-shrink-0">
-                        <Brain className="h-6 w-6" />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="text-[#0f172a] font-medium text-base">Try AI Assistant</h3>
-                        <p className="text-xs text-[#64748b] mt-0.5 mb-2">Get personalized guidance on applying frameworks</p>
-
-                        <Button 
-                          className="native-button text-xs h-8 py-2 w-full flex items-center justify-center"
-                          onClick={() => setLocation('/ai-assistant')}
-                        >
-                          Start Chat <ArrowRightCircle className="ml-1.5 h-3.5 w-3.5" />
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                {/* AI Assistant card removed */}
               </div>
             </TabsContent>
           </Tabs>

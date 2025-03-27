@@ -1,4 +1,4 @@
-import { Framework, Module, UserProgress, AiConversation, Quiz, QuizAttempt, Exercise, ExerciseSubmission, Certificate } from "@shared/schema";
+import { Framework, Module, UserProgress, Quiz, QuizAttempt, Exercise, ExerciseSubmission, Certificate } from "@shared/schema";
 import { apiRequest, queryClient } from "./queryClient";
 import learningTracking from "./learning-tracking";
 
@@ -78,34 +78,7 @@ export async function updateModuleCompletionWithTracking(
   return learningTracking.completeModuleWithTracking(moduleId, completed);
 }
 
-export async function askAi(
-  question: string,
-  frameworkId?: number
-): Promise<AiConversation> {
-  console.log('askAi called with:', { question, frameworkId });
-  try {
-    const res = await apiRequest("POST", "/api/ai/ask", {
-      question,
-      frameworkId,
-    });
-    console.log('askAi response status:', res.status);
-    const data = await res.json();
-    console.log('askAi response data:', data);
-    return data;
-  } catch (error) {
-    console.error('Error in askAi API call:', error);
-    throw error;
-  }
-}
-
-export async function getAiConversations(): Promise<AiConversation[]> {
-  const res = await apiRequest("GET", "/api/ai/conversations");
-  return res.json();
-}
-
-export async function clearAiConversations(): Promise<void> {
-  await apiRequest("DELETE", "/api/ai/conversations");
-}
+// AI assistant functions removed
 
 // Quiz APIs
 export async function getQuizzesByFramework(frameworkId: number, level?: string): Promise<Quiz[]> {

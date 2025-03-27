@@ -14,7 +14,6 @@ import { Check, ChevronDown, ChevronUp, Clock, GraduationCap, X, ClipboardCheck,
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { askAi } from '@/lib/api';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import ScormViewer from '@/components/scorm/scorm-viewer';
@@ -36,9 +35,6 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
   isLoading = false,
 }) => {
   const [expandedModule, setExpandedModule] = useState<number | null>(0); // First module expanded by default
-  const [aiQuestion, setAiQuestion] = useState('');
-  const [aiResponse, setAiResponse] = useState('');
-  const [isAiLoading, setIsAiLoading] = useState(false);
   // Use local state for modules to ensure UI updates immediately
   const [localModules, setLocalModules] = useState<Module[]>(modules);
   const [activeTab, setActiveTab] = useState<string>('overview');
@@ -236,32 +232,7 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
     });
   };
 
-  const handleAiQuestion = async () => {
-    if (!aiQuestion.trim()) return;
-
-    if (!user?.apiKey) {
-      toast({
-        title: "AI Integration Not Set Up",
-        description: "Please set up your AI integration in your account settings first.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsAiLoading(true);
-    try {
-      const response = await askAi(aiQuestion, framework?.id);
-      setAiResponse(response.answer);
-    } catch (error) {
-      toast({
-        title: "AI Assistant Error",
-        description: error instanceof Error ? error.message : "Failed to get response from AI",
-        variant: "destructive",
-      });
-    } finally {
-      setIsAiLoading(false);
-    }
-  };
+  // AI functionality removed
 
   if (!isOpen) return null;
 
@@ -571,43 +542,7 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
             )}
 
 
-            {/* AI Assistant section */}
-            <div className="bg-[#9545ff]/5 border border-[#9545ff]/10 rounded-lg p-5">
-              <h3 className="text-lg font-semibold font-header text-primary mb-3">
-                Get AI Assistance with This Framework
-              </h3>
-              <p className="text-gray-600 mb-4">
-                Ask specific questions about applying the {framework?.name || ''} framework to your unique business challenges.
-              </p>
-
-              <Textarea 
-                rows={3} 
-                placeholder={`Example: How can I use ${framework?.name || 'this framework'} to analyze our declining customer retention?`}
-                className="w-full rounded-md border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-[#9545ff] focus:border-[#9545ff]"
-                value={aiQuestion}
-                onChange={(e) => setAiQuestion(e.target.value)}
-              />
-
-              {aiResponse && (
-                <div className="mt-4 bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-                  <p className="text-sm font-medium text-gray-500 mb-2">AI response:</p>
-                  <div className="text-sm text-gray-700 whitespace-pre-line">
-                    {aiResponse}
-                  </div>
-                </div>
-              )}
-
-              <div className="mt-3 flex justify-end">
-                <Button 
-                  className="bg-gradient-to-r from-[#9545ff] to-[#ff59b2] hover:from-[#9545ff]/90 hover:to-[#ff59b2]/90 text-white font-medium"
-                  size="sm"
-                  onClick={handleAiQuestion}
-                  disabled={isAiLoading || !aiQuestion.trim()}
-                >
-                  {isAiLoading ? "Processing..." : "Get AI Guidance"}
-                </Button>
-              </div>
-            </div>
+            {/* AI Assistant section removed */}
           </div>
         </div>
       </div>
