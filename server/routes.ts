@@ -2750,7 +2750,50 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
         signatureBase64 = '/api/static/images/manas-signature.png';
       }
       
-      // Generate HTML for certificate
+      // Get framework-specific styling
+      const getAccentColor = (name: string) => {
+        const colors = {
+          'MECE': '#3B82F6', // Blue
+          'Design Thinking': '#8B5CF6', // Purple
+          'SWOT': '#10B981', // Green
+          'First Principles': '#F59E0B', // Amber (Gold)
+          "Porter's Five Forces": '#EF4444', // Red
+          'Jobs-To-Be-Done': '#6366F1', // Indigo
+          'Blue Ocean': '#0EA5E9', // Sky Blue
+          'SCAMPER': '#EC4899', // Pink
+          'Problem-Tree': '#14B8A6', // Teal
+          'Pareto': '#F97316'  // Orange
+        };
+        
+        return colors[name as keyof typeof colors] || '#D4AF37'; // Default to gold if not found
+      };
+      
+      const getBackgroundInfo = (name: string) => {
+        if (name === 'MECE') {
+          return {
+            background: "#0F172A", // Dark blue
+            gradient: "linear-gradient(to bottom, rgba(15, 23, 42, 0.97), rgba(30, 41, 59, 0.97))",
+            pattern: "linear-gradient(45deg, rgba(59, 130, 246, 0.07) 25%, transparent 25%, transparent 75%, rgba(59, 130, 246, 0.07) 75%), linear-gradient(45deg, rgba(59, 130, 246, 0.05) 25%, transparent 25%, transparent 75%, rgba(59, 130, 246, 0.05) 75%)",
+            patternSize: "20px 20px",
+            innerBg: "rgba(241, 245, 249, 0.97)", // Very light blue-gray
+            accentTextColor: "#1e40af"
+          };
+        } else {
+          return {
+            background: "#F8F5E6", // Cream background
+            gradient: "linear-gradient(to bottom, rgba(248, 245, 230, 0.97), rgba(255, 253, 244, 0.97))",
+            pattern: "repeating-linear-gradient(0deg, rgba(0,0,0,0.05), rgba(0,0,0,0.05) 1px, transparent 1px, transparent 50px), repeating-linear-gradient(90deg, rgba(0,0,0,0.05), rgba(0,0,0,0.05) 1px, transparent 1px, transparent 50px)",
+            patternSize: "50px 50px",
+            innerBg: "rgba(248, 245, 230, 0.95)",
+            accentTextColor: "#996515"
+          };
+        }
+      };
+      
+      const accentColor = getAccentColor(framework.name);
+      const bgInfo = getBackgroundInfo(framework.name);
+      
+      // Generate HTML for certificate with framework-specific styling
       const certificateHtml = `
       <!DOCTYPE html>
       <html>
@@ -2773,15 +2816,16 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
           .certificate {
             width: 800px;
             height: 600px;
-            background: white;
+            background: ${bgInfo.background};
+            background-image: ${bgInfo.gradient};
             color: #333;
             padding: 40px;
-            border-radius: 0px;
+            border-radius: 12px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             text-align: center;
             position: relative;
             overflow: hidden;
-            border: 10px solid #000;
+            border: 10px solid ${accentColor};
           }
           .certificate::before {
             content: '';
@@ -2790,9 +2834,62 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
             left: 0;
             width: 100%;
             height: 100%;
-            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSgwKSI+PHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiBmaWxsPSJyZ2JhKDAsMCwwLDAuMDIpIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI3BhdHRlcm4pIi8+PC9zdmc+');
-            opacity: 0.05;
+            background-image: ${bgInfo.pattern};
+            background-size: ${bgInfo.patternSize};
+            opacity: 0.1;
           }
+          
+          /* Decorative Corner Elements */
+          .corner-top-left, .corner-top-right, .corner-bottom-left, .corner-bottom-right {
+            position: absolute;
+            width: 64px;
+            height: 64px;
+            border-width: 4px;
+            border-color: ${accentColor};
+          }
+          .corner-top-left {
+            top: 0;
+            left: 0;
+            border-top-style: solid;
+            border-left-style: solid;
+            border-top-left-radius: 16px;
+          }
+          .corner-top-right {
+            top: 0;
+            right: 0;
+            border-top-style: solid;
+            border-right-style: solid;
+            border-top-right-radius: 16px;
+          }
+          .corner-bottom-left {
+            bottom: 0;
+            left: 0;
+            border-bottom-style: solid;
+            border-left-style: solid;
+            border-bottom-left-radius: 16px;
+          }
+          .corner-bottom-right {
+            bottom: 0;
+            right: 0;
+            border-bottom-style: solid;
+            border-right-style: solid;
+            border-bottom-right-radius: 16px;
+          }
+          
+          .inner-content {
+            padding: 24px;
+            background: linear-gradient(rgba(255, 255, 255, 0.8), ${bgInfo.innerBg});
+            background-position: 0 0;
+            background-size: cover;
+            background-color: ${bgInfo.innerBg};
+            backdrop-filter: blur(4px);
+            height: calc(100% - 48px);
+            position: relative;
+            z-index: 1;
+            border-radius: 8px;
+            box-shadow: ${framework.name === 'MECE' ? 'inset 0 0 30px rgba(59, 130, 246, 0.1)' : 'inset 0 0 30px rgba(212, 175, 55, 0.1)'};
+          }
+          
           .header {
             margin-bottom: 20px;
             display: flex;
@@ -2800,116 +2897,183 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
             align-items: center;
           }
           .logo {
-            width: 150px;
-            margin-bottom: 20px;
+            width: 80px;
+            margin-bottom: 16px;
           }
           .title {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 36px;
+            font-size: 28px;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             text-transform: uppercase;
             letter-spacing: 2px;
             color: #000;
           }
           .subtitle {
-            font-size: 18px;
-            margin-bottom: 30px;
-            color: #777;
+            font-size: 16px;
+            margin-bottom: 24px;
+            color: #555;
           }
+          
+          .verified-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 8px auto;
+            padding: 6px 16px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            background: linear-gradient(to right, ${accentColor}10, ${accentColor}20);
+            border: 1px solid ${accentColor};
+            color: ${bgInfo.accentTextColor};
+            max-width: fit-content;
+          }
+          
           .content {
-            margin: 30px 0;
-            padding: 20px;
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            border-radius: 0px;
-            background-color: rgba(0, 0, 0, 0.02);
+            margin: 24px 0;
           }
           .name {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 28px;
+            font-size: 24px;
             font-weight: bold;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             color: #000;
           }
+          .description-container {
+            max-width: 90%;
+            margin: 0 auto;
+            padding: 16px;
+            border: 1px solid ${accentColor}40;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 2px 10px ${accentColor}15;
+          }
           .description {
-            font-size: 16px;
-            margin-bottom: 20px;
+            font-size: 14px;
             line-height: 1.5;
-            padding: 0 40px;
             color: #555;
           }
-          .certificate-info {
-            margin-top: 30px;
-            font-size: 14px;
+          
+          .footer-info {
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid ${accentColor}30;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            font-size: 12px;
+            color: #555;
+          }
+          .footer-info .label {
+            font-weight: 600;
+            color: ${bgInfo.accentTextColor};
+          }
+          
+          .signature-container {
+            margin-top: 24px;
             display: flex;
             justify-content: space-between;
-            padding: 0 20px;
-            color: #555;
+            align-items: flex-end;
           }
-          .certificate-number {
-            font-style: italic;
-          }
-          .issue-date {
-            font-style: italic;
-          }
-
-          .signature-container {
-            margin-top: 35px;
+          .signature {
             display: flex;
             flex-direction: column;
             align-items: center;
           }
           .signature-image {
-            width: 150px;
-            margin-bottom: 10px;
+            width: 120px;
+            margin-bottom: 8px;
           }
           .signature-name {
-            font-size: 18px;
+            font-size: 14px;
             font-weight: bold;
-            color: #000;
+            color: #333;
           }
-          .certificate-footer {
-            margin-top: 20px;
+          .signature-title {
             font-size: 12px;
-            color: #777;
-            padding: 0 40px;
-            line-height: 1.6;
-            word-spacing: 0.1em;
-            letter-spacing: 0.02em;
+            color: #555;
+          }
+          
+          .qr-code {
+            border: 2px solid ${accentColor}30;
+            padding: 4px;
+            border-radius: 6px;
+            background: white;
+            box-shadow: 0 2px 8px ${accentColor}20;
+          }
+          .qr-code-text {
+            font-size: 10px;
+            color: ${bgInfo.accentTextColor};
+            font-weight: 500;
+            margin-top: 4px;
+          }
+          
+          .certificate-footer {
+            margin-top: 16px;
+            font-size: 12px;
+            color: ${bgInfo.accentTextColor};
+            text-align: center;
+          }
+          .certificate-footer .framework-name {
+            display: inline-block;
+            font-style: italic;
+            font-weight: 500;
+            margin: 0 4px;
           }
         </style>
       </head>
       <body>
         <div class="certificate">
-          <div class="header">
-            <img src="${logoBase64}" alt="Framework Pro Logo" class="logo">
-            <div class="title">Certificate of Completion</div>
-            <div class="subtitle">Professional Business Framework Mastery</div>
-          </div>
+          <div class="corner-top-left"></div>
+          <div class="corner-top-right"></div>
+          <div class="corner-bottom-left"></div>
+          <div class="corner-bottom-right"></div>
           
-          <div class="content">
-            <div class="name">${user.name || user.username}</div>
-            <div class="description">
-              ${certificate.description}
+          <div class="inner-content">
+            <div class="header">
+              <img src="${logoBase64}" alt="Framework Pro Logo" class="logo">
+              <h1 class="title">Certificate of Completion</h1>
+              <p class="subtitle">Professional Business Framework Mastery</p>
+              <div class="verified-badge">✓ Verified Certificate</div>
             </div>
-          </div>
-          
-          <div class="certificate-info">
-            <div class="certificate-number">Certificate #${certificate.certificateNumber}</div>
-            <div class="issue-date">Issued: ${certificate.issueDate ? new Date(certificate.issueDate).toLocaleDateString() : new Date().toLocaleDateString()}</div>
-          </div>
-          
-
-          
-          <div class="signature-container">
-            <img src="${signatureBase64}" alt="Signature" class="signature-image">
-            <div class="signature-name">Manas Kumar</div>
-          </div>
-          
-          <div class="certificate-footer">
-            This certificate verifies mastery of the
-            <span style="display: inline-block; font-style: italic; margin: 0 5px; line-height: 1.5;">${framework.name}</span>
-            framework and its professional business applications.
+            
+            <div class="content">
+              <p class="name">${user.name || user.username}</p>
+              <div class="description-container">
+                <p class="description">${certificate.description}</p>
+              </div>
+            </div>
+            
+            <div class="signature-container">
+              <div class="signature">
+                <img src="${signatureBase64}" alt="Signature" class="signature-image">
+                <p class="signature-name">Manas Kumar</p>
+                <p class="signature-title">CEO & Platform Director</p>
+              </div>
+              
+              <div class="qr-code">
+                <img src="/api/static/images/qr-placeholder.png" width="80" height="80" alt="QR Code for Verification">
+                <p class="qr-code-text">Scan to verify</p>
+              </div>
+            </div>
+            
+            <div class="footer-info">
+              <div>
+                <p class="label">Issue Date</p>
+                <p>${certificate.issueDate ? new Date(certificate.issueDate).toLocaleDateString() : new Date().toLocaleDateString()}</p>
+              </div>
+              <div style="text-align: right;">
+                <p class="label">Certificate #</p>
+                <p>${certificate.certificateNumber}</p>
+              </div>
+            </div>
+            
+            <div class="certificate-footer">
+              This certificate verifies mastery of the 
+              <span class="framework-name">${framework.name}</span> 
+              framework and its professional business applications.
+            </div>
           </div>
         </div>
       </body>
