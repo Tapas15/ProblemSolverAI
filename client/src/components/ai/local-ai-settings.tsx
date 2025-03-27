@@ -114,7 +114,10 @@ export const LocalAISettings: React.FC = () => {
           
           {currentModel ? (
             <div className="text-sm text-muted-foreground">
-              {currentModel.modelName.split('/')[1]}
+              {currentModel.modelName && currentModel.modelName.includes('/') ? 
+                currentModel.modelName.split('/')[1] : 
+                currentModel.modelName || 'Unknown model'
+              }
               <p className="text-xs mt-1 text-muted-foreground/80">
                 {currentModel.isLoaded ? 
                   "Model loaded and ready to use" : 

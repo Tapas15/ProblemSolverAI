@@ -134,6 +134,17 @@ const NewAiAssistant: React.FC = () => {
       frameworkId = parseInt(selectedFramework);
     }
     
+    // Log what we're sending to help with debugging
+    console.log("askAi called with:", { question, frameworkId });
+    
+    // Show immediate feedback to user
+    toast({
+      title: "Processing question",
+      description: "Your question is being processed...",
+      duration: 3000,
+    });
+    
+    // Make the API call
     askAiMutation.mutate({ question, frameworkId });
   };
 
@@ -177,7 +188,9 @@ const NewAiAssistant: React.FC = () => {
             <>
               Using local AI model: {currentModel?.modelName ? (
                 <Badge variant="outline" className="text-xs font-normal">
-                  {currentModel.modelName.split('/')[1]}
+                  {currentModel.modelName && currentModel.modelName.includes('/') ? 
+                    currentModel.modelName.split('/')[1] : 
+                    currentModel.modelName || 'Default model'}
                 </Badge>
               ) : 'Loading...'}
             </>
@@ -302,7 +315,21 @@ const NewAiAssistant: React.FC = () => {
           <Button 
             variant="outline" 
             size="sm" 
-            onClick={() => clearConversationsMutation.mutate()}
+            onClick={() => {
+              console.log("Clear history button clicked");
+              // Show immediate feedback toast
+              toast({
+                title: "Clearing history...",
+                description: "Removing all conversation history",
+                duration: 2000,
+              });
+              
+              // Set conversations to empty array immediately for UI responsiveness
+              queryClient.setQueryData(['/api/ai/conversations'], []);
+              
+              // Then make the actual API call
+              clearConversationsMutation.mutate();
+            }}
             disabled={clearConversationsMutation.isPending || conversationsLoading || !conversations?.length}
             className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700"
           >
