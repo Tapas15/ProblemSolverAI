@@ -2631,6 +2631,70 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
     }
   });
 
+  // Verify certificate (public access)
+  app.get("/api/certificates/verify/:certificateNumber", async (req, res, next) => {
+    try {
+      const certificateNumber = req.params.certificateNumber;
+      if (!certificateNumber) {
+        return res.status(400).json({ 
+          verified: false, 
+          message: "Invalid certificate number" 
+        });
+      }
+      
+      // Find certificate by number using storage
+      const allCertificates = await storage.getUserCertificates(0); // Get all certificates (we'll filter)
+      const certificates = allCertificates.filter(cert => cert.certificateNumber === certificateNumber);
+      
+      if (!certificates || certificates.length === 0) {
+        return res.status(404).json({ 
+          verified: false, 
+          message: "Certificate not found" 
+        });
+      }
+      
+      const certificate = certificates[0];
+      
+      // Get framework information
+      const framework = await storage.getFramework(certificate.frameworkId);
+      if (!framework) {
+        return res.status(404).json({ 
+          verified: false, 
+          message: "Framework information not found" 
+        });
+      }
+      
+      // Get user information
+      const user = await storage.getUser(certificate.userId);
+      if (!user) {
+        return res.status(404).json({ 
+          verified: false, 
+          message: "User information not found" 
+        });
+      }
+      
+      // Return the verification result
+      res.json({
+        verified: certificate.status === "active",
+        certificate: {
+          certificateNumber: certificate.certificateNumber,
+          title: certificate.title,
+          status: certificate.status,
+          issueDate: certificate.issueDate,
+          framework: framework.name,
+          userName: user.name || user.username,
+          description: certificate.description
+        }
+      });
+    } catch (error) {
+      console.error("Certificate verification error:", error);
+      res.status(500).json({ 
+        verified: false, 
+        message: "An error occurred during verification" 
+      });
+    }
+  });
+
   // Download certificate
   app.get("/api/certificates/:id/download", async (req, res, next) => {
     try {
