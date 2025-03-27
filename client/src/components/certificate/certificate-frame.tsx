@@ -1,10 +1,10 @@
-import React from 'react';
-import { Download, CheckCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import * as React from 'react';
 import QRCode from 'qrcode';
-import { getFrameworkIcon } from '@/components/icons/framework-icons';
+import { Button } from "@/components/ui/button";
+import { Download, CheckCircle } from "lucide-react";
+import { getFrameworkIcon } from "@/components/icons/framework-icons";
 
-interface CertificateFrameProps {
+export interface CertificateFrameProps {
   title: string;
   userName: string;
   description: string;
@@ -43,7 +43,29 @@ export function CertificateFrame({
     return colors[name as keyof typeof colors] || '#000000';
   };
   
+  // Generate a background pattern based on the framework name (for visual variety)
+  const getPatternStyle = (name: string) => {
+    const patterns = {
+      'MECE': 'repeating-linear-gradient(45deg, #f9fafb, #f9fafb 10px, #f3f4f6 10px, #f3f4f6 20px)',
+      'Design Thinking': 'radial-gradient(circle at 25px 25px, #f3f4f6 2%, transparent 0%), radial-gradient(circle at 75px 75px, #f3f4f6 2%, transparent 0%)',
+      'SWOT': 'linear-gradient(45deg, #f3f4f6 25%, transparent 25%), linear-gradient(-45deg, #f3f4f6 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f3f4f6 75%), linear-gradient(-45deg, transparent 75%, #f3f4f6 75%)',
+      'First Principles': 'repeating-linear-gradient(to right, #f9fafb, #f9fafb 20px, #f3f4f6 20px, #f3f4f6 40px)',
+      "Porter's Five Forces": 'radial-gradient(circle, #f3f4f6 10%, transparent 10%), radial-gradient(circle, #f3f4f6 10%, transparent 10%)',
+      'Jobs-To-Be-Done': 'linear-gradient(0deg, #f9fafb 2px, transparent 2px), linear-gradient(90deg, #f9fafb 2px, transparent 2px)',
+      'Blue Ocean': 'linear-gradient(135deg, #f3f4f6 25%, transparent 25%), linear-gradient(225deg, #f3f4f6 25%, transparent 25%), linear-gradient(315deg, #f3f4f6 25%, transparent 25%), linear-gradient(45deg, #f3f4f6 25%, transparent 25%)',
+      'SCAMPER': 'linear-gradient(to bottom, #f9fafb, #f9fafb 50%, #f3f4f6 50%, #f3f4f6)',
+      'Problem-Tree': 'repeating-linear-gradient(to bottom, #f9fafb, #f9fafb 15px, #f3f4f6 15px, #f3f4f6 30px)',
+      'Pareto': 'linear-gradient(to right, #f9fafb, #f9fafb 4px, transparent 4px, transparent 20px)'
+    };
+    
+    // Default pattern if framework name isn't in our list
+    const defaultPattern = 'linear-gradient(to right, rgba(243, 244, 246, 0.2) 1px, transparent 1px), linear-gradient(to bottom, rgba(243, 244, 246, 0.2) 1px, transparent 1px)';
+    
+    return patterns[name as keyof typeof patterns] || defaultPattern;
+  };
+
   const accentColor = getAccentColor(frameworkName);
+  const patternStyle = getPatternStyle(frameworkName);
 
   // Generate QR code on component mount
   React.useEffect(() => {
@@ -78,48 +100,6 @@ export function CertificateFrame({
         day: 'numeric'
       })
     : 'N/A';
-  
-  // Generate a background pattern based on the framework name (for visual variety)
-  const getPatternStyle = (name: string) => {
-    const patterns = {
-      'MECE': 'repeating-linear-gradient(45deg, #f9fafb, #f9fafb 10px, #f3f4f6 10px, #f3f4f6 20px)',
-      'Design Thinking': 'radial-gradient(circle at 25px 25px, #f3f4f6 2%, transparent 0%), radial-gradient(circle at 75px 75px, #f3f4f6 2%, transparent 0%)',
-      'SWOT': 'linear-gradient(45deg, #f3f4f6 25%, transparent 25%), linear-gradient(-45deg, #f3f4f6 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f3f4f6 75%), linear-gradient(-45deg, transparent 75%, #f3f4f6 75%)',
-      'First Principles': 'repeating-linear-gradient(to right, #f9fafb, #f9fafb 20px, #f3f4f6 20px, #f3f4f6 40px)',
-      "Porter's Five Forces": 'radial-gradient(circle, #f3f4f6 10%, transparent 10%), radial-gradient(circle, #f3f4f6 10%, transparent 10%)',
-      'Jobs-To-Be-Done': 'linear-gradient(0deg, #f9fafb 2px, transparent 2px), linear-gradient(90deg, #f9fafb 2px, transparent 2px)',
-      'Blue Ocean': 'linear-gradient(135deg, #f3f4f6 25%, transparent 25%), linear-gradient(225deg, #f3f4f6 25%, transparent 25%), linear-gradient(315deg, #f3f4f6 25%, transparent 25%), linear-gradient(45deg, #f3f4f6 25%, transparent 25%)',
-      'SCAMPER': 'linear-gradient(to bottom, #f9fafb, #f9fafb 50%, #f3f4f6 50%, #f3f4f6)',
-      'Problem-Tree': 'repeating-linear-gradient(to bottom, #f9fafb, #f9fafb 15px, #f3f4f6 15px, #f3f4f6 30px)',
-      'Pareto': 'linear-gradient(to right, #f9fafb, #f9fafb 4px, transparent 4px, transparent 20px)'
-    };
-    
-    // Default pattern if framework name isn't in our list
-    const defaultPattern = 'linear-gradient(to right, rgba(243, 244, 246, 0.2) 1px, transparent 1px), linear-gradient(to bottom, rgba(243, 244, 246, 0.2) 1px, transparent 1px)';
-    
-    return patterns[name as keyof typeof patterns] || defaultPattern;
-  };
-  
-  // Get framework-specific accent colors
-  const getAccentColor = (name: string) => {
-    const colors = {
-      'MECE': '#3B82F6', // Blue
-      'Design Thinking': '#8B5CF6', // Purple
-      'SWOT': '#10B981', // Green
-      'First Principles': '#F59E0B', // Amber
-      "Porter's Five Forces": '#EF4444', // Red
-      'Jobs-To-Be-Done': '#6366F1', // Indigo
-      'Blue Ocean': '#0EA5E9', // Sky
-      'SCAMPER': '#EC4899', // Pink
-      'Problem-Tree': '#14B8A6', // Teal
-      'Pareto': '#F97316'  // Orange
-    };
-    
-    return colors[name as keyof typeof colors] || '#000000';
-  };
-  
-  const accentColor = getAccentColor(frameworkName);
-  const patternStyle = getPatternStyle(frameworkName);
   
   return (
     <div 
@@ -163,17 +143,17 @@ export function CertificateFrame({
           </div>
           
           {/* Holographic Element */}
-          <div className="absolute right-0 top-0 p-2 rounded-full bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 opacity-70 flex items-center justify-center"
+          <div className="absolute right-0 top-0 p-2 rounded-full bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 opacity-80 flex items-center justify-center"
                style={{animation: "holographic 3s infinite linear", width: "40px", height: "40px"}}>
             <div className="text-white font-bold text-xs">FP</div>
           </div>
           
           <h2 className="text-2xl font-bold text-black leading-tight mb-1 font-serif" style={{letterSpacing: "0.05em"}}>{title}</h2>
           <p className="text-sm text-gray-500">Certificate #{certificateNumber}</p>
-          <div className="flex items-center mt-2 px-4 py-1.5 rounded-full bg-black/5 text-black text-xs font-medium"
-               style={{border: `1px solid ${accentColor}`}}>
-            <CheckCircle className="h-3.5 w-3.5 mr-1.5" style={{color: accentColor}}/>
-            Verified Certificate
+          <div className="flex items-center mt-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-100 to-yellow-100 text-xs font-medium shadow-sm"
+               style={{border: `1px solid #D4AF37`}}>
+            <CheckCircle className="h-3.5 w-3.5 mr-1.5" style={{color: '#D4AF37'}}/>
+            <span style={{color: '#996515', fontWeight: 600}}>Verified Certificate</span>
           </div>
         </div>
         
@@ -208,9 +188,9 @@ export function CertificateFrame({
           
           {/* QR Code */}
           {qrCodeUrl && (
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center border-2 border-amber-200 p-1 rounded-md bg-white">
               <img src={qrCodeUrl} alt="Certificate Validation QR Code" className="h-20 w-20" />
-              <p className="text-xs text-gray-500 mt-1">Scan to verify</p>
+              <p className="text-xs text-amber-800 mt-1 font-medium">Scan to verify</p>
             </div>
           )}
         </div>
