@@ -151,16 +151,7 @@ export function CertificateFrame({
           </div>
         </div>
         
-        {/* Framework Badge - Rectangular design */}
-        <div className="absolute top-24 right-6 flex flex-col items-center">
-          <div className="flex items-center justify-center px-4 py-2 rounded-lg" 
-               style={{backgroundColor: `${accentColor}20`, border: `2px solid ${accentColor}`}}>
-            {getFrameworkIcon(frameworkName, { className: "h-6 w-6 mr-2", color: accentColor })}
-            <span className="text-sm font-semibold" style={{color: accentColor}}>
-              {frameworkName}
-            </span>
-          </div>
-        </div>
+        {/* Framework Badge removed to avoid overlap */}
         
         {/* Certificate Content */}
         <div className="my-8 text-center">

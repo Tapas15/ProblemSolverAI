@@ -127,11 +127,12 @@ export const FrameworkIcons: Record<string, React.FC<{className?: string; color?
     </svg>
   ),
   
-  // Default icon for any missing frameworks
+  // Default icon for any missing frameworks - square design (non-circular)
   'Default': ({ className = "", color = "currentColor" }) => (
     <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="12" cy="12" r="9" stroke={color} strokeWidth="2" />
-      <path d="M12 8V12L15 15" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <rect x="3" y="3" width="18" height="18" rx="2" stroke={color} strokeWidth="2" />
+      <path d="M8 12H16" stroke={color} strokeWidth="2" strokeLinecap="round" />
+      <path d="M12 8V16" stroke={color} strokeWidth="2" strokeLinecap="round" />
     </svg>
   ),
 };
