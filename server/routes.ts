@@ -1536,16 +1536,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await storage.deleteAiConversation(conversation.id);
       }
       
-      // Force the cache to be completely invalidated for this user's conversations
+      // Force the cache to be completely invalidated using multiple strategies
+      
+      // 1. Clear the specific cache key
       const cacheKey = CACHE_KEYS.AI_CONVERSATIONS(userId);
       console.log(`Invalidating cache for key: ${cacheKey}`);
       invalidateCache(cacheKey);
       
+      // 2. Also clear by pattern to catch any related keys
+      console.log(`Invalidating all cache keys that contain user:${userId}:ai`);
+      invalidateCachesByPattern(`user:${userId}:ai`);
+      
       // Double-check that conversations were cleared by getting them again
+      // But bypass the cache to get the true database state
       const remainingConversations = await storage.getAiConversations(userId);
       console.log(`After deletion, user has ${remainingConversations.length} conversations remaining`);
       
-      // Respond with empty array instead of 204 for better client handling
+      // Set fresh empty data in cache to ensure clients see empty state
+      cacheData(cacheKey, [], 300); // Cache empty array for 5 minutes
+      
+      // Respond with empty array for client handling
       res.status(200).json([]);
     } catch (error) {
       console.error("Error clearing AI conversations:", error);

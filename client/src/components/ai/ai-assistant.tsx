@@ -43,8 +43,10 @@ const AiAssistant: React.FC = () => {
     queryFn: () => getAiConversations(),
     staleTime: 0, // Always fetch fresh data
     gcTime: 0, // Don't keep data in cache
-    refetchOnMount: true, // Always refetch when component mounts
+    refetchOnMount: 'always', // Always refetch when component mounts
     refetchOnWindowFocus: true, // Refetch when window gets focus
+    retryOnMount: true, // Retry if fetch fails on mount
+    networkMode: 'always' // Always try to fetch from network
   });
 
   type AskQuestion = {
@@ -73,14 +75,11 @@ const AiAssistant: React.FC = () => {
       console.log('AI query successful, clearing question and refreshing conversations');
       setQuestion('');
       
-      // First remove existing queries to ensure clean state
-      queryClient.removeQueries({ queryKey: ['/api/ai/conversations'] });
-      
-      // Then invalidate to trigger a fresh fetch
+      // Invalidate the cache first
       queryClient.invalidateQueries({ queryKey: ['/api/ai/conversations'] });
       
-      // Force a refetch to ensure state is updated
-      void queryClient.refetchQueries({ queryKey: ['/api/ai/conversations'] });
+      // Explicitly refetch to get the latest data
+      refetchConversations();
       
       // Show a success toast
       toast({
@@ -104,17 +103,17 @@ const AiAssistant: React.FC = () => {
     onSuccess: () => {
       console.log("Successfully cleared conversations");
       
-      // First remove the queries completely to force a clean state
-      queryClient.removeQueries({ queryKey: ['/api/ai/conversations'] });
+      // Reset local state first
+      setQuestion('');
       
-      // Then invalidate to trigger a fresh fetch
+      // Clear cache and fetch fresh data
+      queryClient.setQueryData(['/api/ai/conversations'], []);
+      
+      // Then invalidate to trigger a fresh fetch if needed
       queryClient.invalidateQueries({ queryKey: ['/api/ai/conversations'] });
       
-      // Force a refetch to ensure state is updated
-      void queryClient.refetchQueries({ queryKey: ['/api/ai/conversations'] });
-      
-      // Reset local state
-      setQuestion('');
+      // Explicitly trigger a refetch with fresh data from server
+      refetchConversations();
       
       // Show success toast
       toast({
