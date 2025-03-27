@@ -1303,28 +1303,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // AI Assistant routes
-  app.post("/api/ai/ask", async (req, res, next) => {
-    if (!req.isAuthenticated()) return res.sendStatus(401);
-    
-    try {
-      console.log("AI ask request received:", req.body);
-      const { question, frameworkId } = req.body;
-      const userId = req.user!.id;
-      
-      if (!question) {
-        console.warn("AI request missing question field");
-        return res.status(400).json({ message: "Question is required" });
-      }
-      
-      const user = await storage.getUser(userId);
-      console.log(`User ${userId} AI settings:`, { 
-        hasApiKey: !!user?.apiKey, 
-        aiProvider: user?.aiProvider || "local (default)" 
-      });
-      
-      let answer = "";
-      const aiProvider = user?.aiProvider || "local";
+  // AI routes removed
       
       // System prompt for all AI providers
       const systemPrompt = `You are an AI assistant for the QuestionPro AI mobile app, specializing in business problem-solving frameworks. ${
