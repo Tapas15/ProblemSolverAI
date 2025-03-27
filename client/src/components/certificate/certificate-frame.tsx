@@ -113,8 +113,7 @@ export function CertificateFrame({
         border: `4px solid ${accentColor}`,
         background: backgroundStyle.background,
         backgroundImage: `
-          ${backgroundStyle.gradient}, 
-          url('/api/static/images/fp-logo-new.jpg')
+          ${backgroundStyle.gradient}
         `,
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'center center',
@@ -150,7 +149,7 @@ export function CertificateFrame({
         {/* Certificate Header with Logo (no embellishments) */}
         <div className="flex flex-col items-center mb-4 relative">
           <div className="relative">
-            <img src="/api/static/images/fp-logo-new.jpg" alt="Framework Pro Logo" className="h-20 mb-3" />
+            <img src="/api/static/images/fp-logo-new.png" alt="Framework Pro Logo" className="h-20 mb-3" />
           </div>
           
           <h2 className="text-2xl font-bold text-black leading-tight mb-1 font-serif tracking-wider text-center mx-auto" style={{letterSpacing: "0.08em", wordSpacing: "0.1em"}}>{title}</h2>
@@ -170,7 +169,17 @@ export function CertificateFrame({
         {/* Certificate Content */}
         <div className="my-8 text-center">
           <p className="text-sm text-gray-500 mb-2 uppercase tracking-wider">This certificate is awarded to</p>
-          <h1 className="text-3xl font-bold mb-4 font-serif">{userName || 'User'}</h1>
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <h1 className="text-3xl font-bold font-serif">{userName || 'User'}</h1>
+            <div className="relative w-10 h-10 transform translate-y-[-2px]">
+              <img 
+                src="/api/static/images/certified-badge.png" 
+                alt="Certified Professional" 
+                className="w-full h-full object-contain"
+                style={{ filter: 'drop-shadow(0px 2px 2px rgba(0,0,0,0.2))' }}
+              />
+            </div>
+          </div>
           <div className="max-w-lg mx-auto p-4 border rounded-lg bg-white bg-opacity-80" 
             style={{
               borderColor: `${accentColor}40`, 
