@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { getUserCertificates, getUserAchievements } from '@/lib/api';
+import { getUserCertificates, getUserAchievements, issueFrameworkCertificate, apiRequest } from '@/lib/api';
+import { queryClient } from '@/lib/queryClient';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Award, FileText, Medal, Trophy, Download } from 'lucide-react';
+import { Award, FileText, Medal, Trophy, Download, Loader2 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -169,6 +170,116 @@ export default function CertificatesPage() {
     );
   };
   
+  // Get user progress and frameworks for issuing certificates
+  const { data: userProgress, isLoading: progressLoading } = useQuery({
+    queryKey: ['/api/user/progress'],
+    queryFn: () => apiRequest('GET', '/api/user/progress').then(res => res.json())
+  });
+
+  const { data: frameworks, isLoading: frameworksLoading } = useQuery({
+    queryKey: ['/api/frameworks'],
+    queryFn: () => apiRequest('GET', '/api/frameworks').then(res => res.json())
+  });
+
+  // Track loading state for certificate issuance
+  const [issuingCertificate, setIssuingCertificate] = useState<number | null>(null);
+
+  // Function to handle certificate issuance
+  const handleIssueCertificate = async (frameworkId: number) => {
+    try {
+      setIssuingCertificate(frameworkId);
+      const certificate = await issueFrameworkCertificate(frameworkId);
+      
+      // Update certificates list
+      queryClient.invalidateQueries({queryKey: ['/api/certificates']});
+      
+      toast({
+        title: "Certificate Issued",
+        description: "Your new certificate has been created successfully.",
+        variant: "success"
+      });
+    } catch (error) {
+      console.error('Error issuing certificate:', error);
+      toast({
+        title: "Certificate Error",
+        description: error.message || "Failed to issue certificate. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIssuingCertificate(null);
+    }
+  };
+
+  // Function to render eligible frameworks for certification
+  const renderEligibleFrameworks = () => {
+    if (progressLoading || frameworksLoading) {
+      return <Skeleton className="h-20 w-full" />;
+    }
+
+    // Find completed frameworks that don't have certificates yet
+    const completedFrameworks = [];
+    
+    if (userProgress && frameworks) {
+      // Get frameworks with completed status
+      const completedProgress = userProgress.filter(p => p.status === 'completed');
+      
+      // For each completed framework, check if a certificate already exists
+      for (const progress of completedProgress) {
+        const framework = frameworks.find(f => f.id === progress.frameworkId);
+        
+        // Check if user already has a certificate for this framework
+        const hasCertificate = certificates?.some(c => 
+          c.frameworkId === progress.frameworkId && c.status === 'active'
+        );
+        
+        if (framework && !hasCertificate) {
+          completedFrameworks.push({
+            id: framework.id,
+            name: framework.name
+          });
+        }
+      }
+    }
+
+    if (completedFrameworks.length === 0) {
+      return (
+        <div className="text-center py-4 border rounded-lg bg-gray-50">
+          <p className="text-sm text-gray-500">
+            Complete more frameworks to be eligible for certificates
+          </p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-2">
+        <h3 className="text-sm font-medium mt-4 mb-2">Eligible for Certification:</h3>
+        {completedFrameworks.map(framework => (
+          <div key={framework.id} className="flex items-center justify-between p-3 border rounded-lg">
+            <div className="flex items-center">
+              <Award className="h-5 w-5 mr-2 text-primary" />
+              <span>{framework.name}</span>
+            </div>
+            <Button 
+              size="sm" 
+              onClick={() => handleIssueCertificate(framework.id)}
+              disabled={issuingCertificate === framework.id}
+            >
+              {issuingCertificate === framework.id ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Issuing...
+                </>
+              ) : (
+                <>Issue Certificate</>
+              )}
+            </Button>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="container max-w-3xl mx-auto px-4 py-6">
       <div className="mb-6">
@@ -190,6 +301,7 @@ export default function CertificatesPage() {
         
         <TabsContent value="certificates" className="mt-4">
           {renderCertificates()}
+          {renderEligibleFrameworks()}
         </TabsContent>
         
         <TabsContent value="achievements" className="mt-4">

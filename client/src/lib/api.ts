@@ -446,6 +446,10 @@ export async function getCertificate(id: number): Promise<Certificate> {
 
 export async function issueFrameworkCertificate(frameworkId: number): Promise<Certificate> {
   const res = await apiRequest("POST", `/api/certificates/issue/${frameworkId}`);
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(errorData.message || "Failed to issue certificate");
+  }
   return res.json();
 }
 
