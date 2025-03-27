@@ -45,7 +45,7 @@ const FounderPage: React.FC = () => {
         
         <div className="pt-14 px-4 pb-4">
           <h2 className="text-xl font-semibold text-[#0f172a]">Dr. Manas Kumar</h2>
-          <p className="text-[#64748b] text-sm">Founder of QuestionPro AI</p>
+          <p className="text-[#64748b] text-sm">Founder of Framework Pro</p>
           
           <div className="flex flex-wrap gap-2 mt-3">
             <Badge variant="outline" className="badge-blue">Business Strategy</Badge>
@@ -115,7 +115,7 @@ const FounderPage: React.FC = () => {
                 <span className="text-[#3b82f6] text-xs">✓</span>
               </div>
               <div className="text-sm text-[#334155]">
-                <span className="font-medium text-[#0f172a]">Founder</span> - QuestionPro AI
+                <span className="font-medium text-[#0f172a]">Founder</span> - Framework Pro
               </div>
             </li>
             <li className="flex items-start">
@@ -158,7 +158,7 @@ const FounderPage: React.FC = () => {
           
           <p className="text-sm text-[#334155] mb-3">
             I've dedicated my career to developing and refining strategic frameworks that make complex business
-            challenges manageable. The frameworks featured in QuestionPro AI represent the culmination of this work.
+            challenges manageable. The frameworks featured in Framework Pro represent the culmination of this work.
           </p>
           
           <p className="text-sm text-[#334155]">

@@ -8,16 +8,16 @@ const AboutPage: React.FC = () => {
     <MainLayout>
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl md:text-4xl font-bold mb-6 text-primary">About QuestionPro AI</h1>
+          <h1 className="text-3xl md:text-4xl font-bold mb-6 text-primary">About Framework Pro</h1>
           
           <div className="space-y-8">
             <Card className="border-0 shadow-md bg-white">
               <CardContent className="pt-6">
                 <h2 className="text-2xl font-semibold mb-4 text-primary">Our Mission</h2>
                 <p className="text-gray-700 mb-4">
-                  At QuestionPro AI, our mission is to empower business professionals and problem-solvers with 
-                  cutting-edge AI-integrated frameworks that transform the way strategic decisions are made. 
-                  We believe that by combining proven business frameworks with the power of artificial intelligence, 
+                  At Framework Pro, our mission is to empower business professionals and problem-solvers with 
+                  proven frameworks that transform the way strategic decisions are made. 
+                  We believe that by providing structured approaches to business challenges, 
                   we can help professionals generate deeper insights and better solutions in less time.
                 </p>
                 <p className="text-gray-700">
@@ -31,20 +31,20 @@ const AboutPage: React.FC = () => {
               <CardContent className="pt-6">
                 <h2 className="text-2xl font-semibold mb-4 text-primary">Our Story</h2>
                 <p className="text-gray-700 mb-4">
-                  QuestionPro AI was founded by Manas Kumar, a visionary entrepreneur passionate about 
-                  business innovation and AI technology. After years of working with businesses and observing 
+                  Framework Pro was founded by Manas Kumar, a visionary entrepreneur passionate about 
+                  business innovation and strategic thinking. After years of working with businesses and observing 
                   the challenges they faced in applying strategic frameworks effectively, he envisioned a 
                   solution that would bridge the gap between theoretical business knowledge and practical application.
                 </p>
                 <p className="text-gray-700 mb-4">
-                  In 2023, QuestionPro AI was born with a simple yet powerful idea: create an intelligent platform 
-                  that guides users through the most effective business frameworks, enhanced by AI capabilities to 
-                  provide personalized insights and recommendations.
+                  In 2023, Framework Pro was born with a simple yet powerful idea: create a structured platform 
+                  that guides users through the most effective business frameworks to provide practical problem-solving
+                  capabilities.
                 </p>
                 <p className="text-gray-700">
                   Today, we're proud to offer a comprehensive mobile platform featuring ten essential business 
-                  frameworks, each meticulously integrated with AI assistance to provide a transformative 
-                  problem-solving experience.
+                  frameworks, each meticulously designed to provide a transformative problem-solving experience
+                  for professionals in any field.
                 </p>
               </CardContent>
             </Card>
@@ -56,8 +56,8 @@ const AboutPage: React.FC = () => {
                   <div>
                     <h3 className="text-xl font-medium mb-2 text-secondary">Innovation</h3>
                     <p className="text-gray-700">
-                      We continuously evolve our platform, integrating the latest AI advancements to deliver 
-                      cutting-edge problem-solving tools.
+                      We continuously evolve our platform to deliver cutting-edge problem-solving tools
+                      that incorporate the latest business strategy approaches.
                     </p>
                   </div>
                   <div>
@@ -89,8 +89,8 @@ const AboutPage: React.FC = () => {
               <CardContent className="pt-6">
                 <h2 className="text-2xl font-semibold mb-4 text-primary">Our Team</h2>
                 <p className="text-gray-700 mb-6">
-                  QuestionPro AI is powered by a diverse team of experts in business strategy, artificial intelligence, 
-                  education, and product development. United by our passion for innovation and commitment to excellence, 
+                  Framework Pro is powered by a diverse team of experts in business strategy, education, 
+                  and product development. United by our passion for innovation and commitment to excellence, 
                   we work tirelessly to create tools that transform how professionals approach problem-solving.
                 </p>
                 
