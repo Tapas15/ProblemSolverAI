@@ -340,7 +340,7 @@ export function MobileAppLayout({ children }: MobileAppLayoutProps) {
 
                 {/* Version information */}
                 <div className="mt-auto px-4 pt-4 border-t border-[#3b82f6]/10 text-center text-xs text-white/40">
-                  <p>QuestionPro AI Mobile {isNative ? platform : 'Web'} v1.0</p>
+                  <p>Framework Pro Mobile {isNative ? platform : 'Web'} v1.0</p>
                 </div>
               </div>
             </div>

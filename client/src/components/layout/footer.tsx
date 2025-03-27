@@ -100,7 +100,7 @@ const Footer: React.FC = () => {
         </div>
         
         <div className="mt-8 pt-8 border-t border-gray-700 flex flex-col md:flex-row md:justify-between md:items-center">
-          <p className="text-gray-400 text-sm">© {new Date().getFullYear()} QuestionPro AI. All rights reserved.</p>
+          <p className="text-gray-400 text-sm">© {new Date().getFullYear()} Framework Pro. All rights reserved.</p>
           
           <div className="mt-4 md:mt-0 flex space-x-4">
             <a href="#" className="text-gray-400 hover:text-white">

@@ -198,7 +198,7 @@ export function TwoFactorAuth() {
   const downloadBackupCodes = () => {
     if (backupCodes.length === 0) return;
     
-    const content = `QuestionPro AI - Two-Factor Authentication Backup Codes\nGenerated: ${new Date().toISOString()}\n\n${backupCodes.join('\n')}\n\nKeep these codes in a safe place!`;
+    const content = `Framework Pro - Two-Factor Authentication Backup Codes\nGenerated: ${new Date().toISOString()}\n\n${backupCodes.join('\n')}\n\nKeep these codes in a safe place!`;
     const blob = new Blob([content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');

@@ -13,8 +13,8 @@ export class TwoFactorAuthService {
     otpauth_url: string;
   } {
     const secretObj = speakeasy.generateSecret({
-      name: `QuestionPro AI (${username})`,
-      issuer: 'QuestionPro AI'
+      name: `Framework Pro (${username})`,
+      issuer: 'Framework Pro'
     });
 
     return {

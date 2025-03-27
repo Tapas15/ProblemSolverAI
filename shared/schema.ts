@@ -17,6 +17,10 @@ export const users = pgTable("users", {
   twoFactorEnabled: boolean("two_factor_enabled").default(false),
   twoFactorSecret: text("two_factor_secret"),
   twoFactorBackupCodes: text("two_factor_backup_codes"),
+  resetPasswordToken: text("reset_password_token"),
+  resetPasswordExpires: timestamp("reset_password_expires"),
+  usernameRecoveryToken: text("username_recovery_token"),
+  usernameRecoveryExpires: timestamp("username_recovery_expires"),
 });
 
 export const insertUserSchema = createInsertSchema(users).pick({
@@ -31,6 +35,10 @@ export const insertUserSchema = createInsertSchema(users).pick({
   twoFactorEnabled: true,
   twoFactorSecret: true,
   twoFactorBackupCodes: true,
+  resetPasswordToken: true,
+  resetPasswordExpires: true,
+  usernameRecoveryToken: true,
+  usernameRecoveryExpires: true,
 });
 
 // Framework schema
