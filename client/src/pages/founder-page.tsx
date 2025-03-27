@@ -1,27 +1,18 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { SiLinkedin, SiInstagram } from 'react-icons/si';
-import { ArrowLeft, Award, Briefcase, BookOpen, ExternalLink, Camera, Upload } from 'lucide-react';
+import { Award, Briefcase, BookOpen, ExternalLink } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { useToast } from '@/hooks/use-toast';
 import MainLayout from '@/components/layout/main-layout';
 import { MobileAppLayout } from '@/components/layout/mobile-app-layout';
 import { isNativePlatform } from '@/lib/capacitor';
-import { useAuth } from '@/hooks/use-auth';
 
 const FounderPage: React.FC = () => {
   const [_, navigate] = useLocation();
   const [isNative, setIsNative] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [profileImage, setProfileImage] = useState('/images/founder.jpg');
-  const [refreshKey, setRefreshKey] = useState(Date.now());
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const { toast } = useToast();
-  const { user } = useAuth();
   
   // Check if running on native platform
   useEffect(() => {
@@ -30,120 +21,30 @@ const FounderPage: React.FC = () => {
   
   const Layout = isNative ? MobileAppLayout : MainLayout;
   
-  // Function to trigger file input click
-  const triggerFileInput = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
-  
-  // Function to handle file change
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    
-    // Check file type
-    if (!file.type.startsWith('image/')) {
-      toast({
-        title: "Invalid file type",
-        description: "Please upload an image file (JPEG, PNG)",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    // Check file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      toast({
-        title: "File too large",
-        description: "Maximum file size is 5MB",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    try {
-      setUploading(true);
-      
-      const formData = new FormData();
-      formData.append('founderImage', file);
-      
-      // Upload the image to server
-      const response = await fetch('/api/founder/image', {
-        method: 'POST',
-        body: formData,
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to upload image');
-      }
-      
-      const data = await response.json();
-      
-      // Update profile image with a cache-busting timestamp
-      setProfileImage(`${data.imageUrl}?t=${Date.now()}`);
-      setRefreshKey(Date.now());
-      
-      toast({
-        title: "Profile picture updated",
-        description: "Your profile picture has been updated successfully",
-      });
-      
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      toast({
-        title: "Upload failed",
-        description: "Failed to upload profile picture. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setUploading(false);
-    }
-  };
-  
   return (
     <Layout>
       <div className={`native-scroll pb-8 ${isNative ? "px-4" : ""}`}>
         {!isNative && (
           /* Page Header for non-native */
           <div className="flex items-center mb-4 py-2">
-            {/* Back button removed as requested */}
             <h1 className="mobile-h1 text-[#0f172a]">Founder</h1>
           </div>
         )}
-
-      {/* Hidden file input */}
-      <input 
-        type="file" 
-        ref={fileInputRef} 
-        onChange={handleFileChange} 
-        accept="image/*" 
-        className="hidden" 
-      />
       
       {/* Profile Header */}
       <div className="native-card p-0 overflow-hidden mb-5">
         <div className="bg-gradient-to-r from-[#0f2544] to-[#19355f] h-24 relative">
           <div className="absolute -bottom-12 left-4 ring-4 ring-white rounded-full">
-            <div className="relative cursor-pointer group" onClick={triggerFileInput}>
-              <Avatar className="h-24 w-24">
-                <AvatarImage 
-                  src={`${profileImage}?t=${refreshKey}`} 
-                  alt="Dr. Manas Kumar" 
-                  className="object-cover"
-                />
-                <AvatarFallback className="bg-gradient-to-r from-[#3b82f6] to-[#60a5fa] text-white text-xl">
-                  MK
-                </AvatarFallback>
-              </Avatar>
-              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                {uploading ? (
-                  <span className="h-8 w-8 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                ) : (
-                  <Camera className="h-6 w-6 text-white" />
-                )}
-              </div>
-            </div>
+            <Avatar className="h-24 w-24">
+              <AvatarImage 
+                src={`/images/founder.jpg?t=${Date.now()}`} 
+                alt="Dr. Manas Kumar" 
+                className="object-cover"
+              />
+              <AvatarFallback className="bg-gradient-to-r from-[#3b82f6] to-[#60a5fa] text-white text-xl">
+                MK
+              </AvatarFallback>
+            </Avatar>
           </div>
         </div>
         
