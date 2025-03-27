@@ -1,9 +1,8 @@
-import { users, frameworks, modules, userProgress, aiConversations, quizzes, quizAttempts, exercises, exerciseSubmissions, certificates } from "@shared/schema";
+import { users, frameworks, modules, userProgress, quizzes, quizAttempts, exercises, exerciseSubmissions, certificates } from "@shared/schema";
 import { eq, and, desc } from "drizzle-orm";
 import type { 
   User, InsertUser, Framework, InsertFramework, Module, InsertModule, 
-  UserProgress, InsertUserProgress, AiConversation, InsertAiConversation,
-  Quiz, InsertQuiz, QuizAttempt, InsertQuizAttempt,
+  UserProgress, InsertUserProgress, Quiz, InsertQuiz, QuizAttempt, InsertQuizAttempt,
   Exercise, InsertExercise, ExerciseSubmission, InsertExerciseSubmission,
   Certificate, InsertCertificate
 } from "@shared/schema";
@@ -178,34 +177,7 @@ export class PostgresStorage implements IStorage {
     return results[0];
   }
 
-  // AI Conversation methods
-  async getAiConversations(userId: number): Promise<AiConversation[]> {
-    return await db
-      .select()
-      .from(aiConversations)
-      .where(eq(aiConversations.userId, userId))
-      .orderBy(desc(aiConversations.createdAt))
-      .execute();
-  }
-
-  async createAiConversation(conversation: InsertAiConversation): Promise<AiConversation> {
-    const results = await db
-      .insert(aiConversations)
-      .values({
-        ...conversation,
-        createdAt: new Date()
-      })
-      .returning()
-      .execute();
-    return results[0];
-  }
-
-  async deleteAiConversation(id: number): Promise<void> {
-    await db
-      .delete(aiConversations)
-      .where(eq(aiConversations.id, id))
-      .execute();
-  }
+  // AI Conversation methods removed
 
   // Quiz methods
   async getQuiz(id: number): Promise<Quiz | undefined> {

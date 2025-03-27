@@ -115,57 +115,66 @@ const Sidebar: React.FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
             isCollapsed ? "justify-center" : "justify-between"
           )}>
             {!isCollapsed ? (
-              <Link href="/profile" className="w-full">
-                <Button variant="ghost" className="relative w-full px-2 py-1.5 h-auto flex items-center justify-between bg-transparent hover:bg-white/5">
-                  <div className="flex items-center gap-2">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src={user.avatarUrl || ''} alt={user.name} />
-                      <AvatarFallback className="bg-gradient-to-br from-[#3b82f6] to-[#60a5fa] text-white">
-                        {user.name.substring(0, 2).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span className="text-sm font-medium text-white truncate">{user.name}</span>
-                  </div>
-                </Button>
-              </Link>
-                <DropdownMenuContent align="start" className="w-[220px] mt-1 py-2 rounded-xl border border-[#3b82f6]/20 shadow-xl bg-[#0f172a] backdrop-blur-sm">
-                  <div className="p-2">
-                    <Link to="/profile">
-                      <DropdownMenuItem className="py-2 px-3 rounded-lg cursor-pointer hover:bg-[#1a4482]/50 flex items-center space-x-2 text-sm text-white">
-                        <User className="h-4 w-4 text-[#3b82f6]" />
-                        <span>Profile</span>
-                      </DropdownMenuItem>
-                    </Link>
-                    <Link to="/settings">
-                      <DropdownMenuItem className="py-2 px-3 rounded-lg cursor-pointer hover:bg-[#1a4482]/50 flex items-center space-x-2 text-sm text-white">
-                        <Settings className="h-4 w-4 text-[#3b82f6]" />
-                        <span>Settings</span>
-                      </DropdownMenuItem>
-                    </Link>
-                    {isAdmin && (
-                      <Link to="/scorm-admin">
+              <div className="flex items-center justify-between w-full">
+                <Link to="/profile" className="flex-1">
+                  <Button variant="ghost" className="relative w-full px-2 py-1.5 h-auto flex items-center justify-between bg-transparent hover:bg-white/5">
+                    <div className="flex items-center gap-2">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={user.avatarUrl || ''} alt={user.name} />
+                        <AvatarFallback className="bg-gradient-to-br from-[#3b82f6] to-[#60a5fa] text-white">
+                          {user.name.substring(0, 2).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="text-sm font-medium text-white truncate">{user.name}</span>
+                    </div>
+                  </Button>
+                </Link>
+                
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-[#1a4482]/50">
+                      <ChevronDown className="h-4 w-4 text-[#3b82f6]" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-[220px] mt-1 py-2 rounded-xl border border-[#3b82f6]/20 shadow-xl bg-[#0f172a] backdrop-blur-sm">
+                    <div className="p-2">
+                      <Link to="/profile">
                         <DropdownMenuItem className="py-2 px-3 rounded-lg cursor-pointer hover:bg-[#1a4482]/50 flex items-center space-x-2 text-sm text-white">
-                          <FileCode className="h-4 w-4 text-[#3b82f6]" />
-                          <span>Admin Panel</span>
-                          <Badge className="ml-2 bg-[#60a5fa]/10 text-[#60a5fa] hover:bg-[#60a5fa]/20 px-1.5 py-0 text-[10px]">
-                            Admin
-                          </Badge>
+                          <User className="h-4 w-4 text-[#3b82f6]" />
+                          <span>Profile</span>
                         </DropdownMenuItem>
                       </Link>
-                    )}
-                  </div>
-                  <DropdownMenuSeparator className="my-1 bg-[#3b82f6]/10" />
-                  <div className="p-2">
-                    <DropdownMenuItem 
-                      className="py-2 px-3 rounded-lg cursor-pointer hover:bg-[#1a4482]/50 flex items-center space-x-2 text-sm text-red-400 hover:text-red-300" 
-                      onClick={handleLogout}
-                    >
-                      <LogOut className="h-4 w-4" />
-                      <span>Sign out</span>
-                    </DropdownMenuItem>
-                  </div>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                      <Link to="/settings">
+                        <DropdownMenuItem className="py-2 px-3 rounded-lg cursor-pointer hover:bg-[#1a4482]/50 flex items-center space-x-2 text-sm text-white">
+                          <Settings className="h-4 w-4 text-[#3b82f6]" />
+                          <span>Settings</span>
+                        </DropdownMenuItem>
+                      </Link>
+                      {isAdmin && (
+                        <Link to="/scorm-admin">
+                          <DropdownMenuItem className="py-2 px-3 rounded-lg cursor-pointer hover:bg-[#1a4482]/50 flex items-center space-x-2 text-sm text-white">
+                            <FileCode className="h-4 w-4 text-[#3b82f6]" />
+                            <span>Admin Panel</span>
+                            <Badge className="ml-2 bg-[#60a5fa]/10 text-[#60a5fa] hover:bg-[#60a5fa]/20 px-1.5 py-0 text-[10px]">
+                              Admin
+                            </Badge>
+                          </DropdownMenuItem>
+                        </Link>
+                      )}
+                    </div>
+                    <DropdownMenuSeparator className="my-1 bg-[#3b82f6]/10" />
+                    <div className="p-2">
+                      <DropdownMenuItem 
+                        className="py-2 px-3 rounded-lg cursor-pointer hover:bg-[#1a4482]/50 flex items-center space-x-2 text-sm text-red-400 hover:text-red-300" 
+                        onClick={handleLogout}
+                      >
+                        <LogOut className="h-4 w-4" />
+                        <span>Sign out</span>
+                      </DropdownMenuItem>
+                    </div>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             ) : (
               <Avatar className="h-9 w-9 ring-2 ring-[#60a5fa]/30 shadow-inner">
                 <AvatarImage src="" alt={user?.name} />
@@ -219,12 +228,7 @@ const Sidebar: React.FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
             label="Learning Path" 
             isActive={location.startsWith('/learning-path')} 
           />
-          <NavLink 
-            to="/ai-assistant" 
-            icon={<Lightbulb className="h-5 w-5" />} 
-            label="AI Assistant" 
-            isActive={location === '/ai-assistant'} 
-          />
+          {/* AI Assistant removed */}
           <NavLink 
             to="/dashboard" 
             icon={<LayoutDashboard className="h-5 w-5" />} 

@@ -133,12 +133,7 @@ const MobileNav: React.FC = () => {
                 label="Learning Path" 
                 isActive={location.startsWith('/learning-path')} 
               />
-              <NavItem 
-                to="/ai-assistant" 
-                icon={<Lightbulb className="h-5 w-5" />} 
-                label="AI Assistant" 
-                isActive={location === '/ai-assistant'} 
-              />
+              {/* AI Assistant removed */}
               <NavItem 
                 to="/dashboard" 
                 icon={<LayoutDashboard className="h-5 w-5" />} 

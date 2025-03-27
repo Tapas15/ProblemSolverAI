@@ -68,11 +68,7 @@ export function MobileAppLayout({ children }: MobileAppLayoutProps) {
       path: '/exercises', 
       icon: <Award className="h-5 w-5" /> 
     },
-    { 
-      name: 'AI Assistant', 
-      path: '/ai-assistant', 
-      icon: <Lightbulb className="h-5 w-5" /> 
-    }
+    // AI Assistant removed
   ];
 
   const secondaryMenuItems = [

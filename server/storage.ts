@@ -1,10 +1,11 @@
-import { users, frameworks, modules, userProgress, quizzes, quizAttempts, exercises, exerciseSubmissions, certificates } from "@shared/schema";
+import { users, frameworks, modules, userProgress, quizzes, quizAttempts, exercises, exerciseSubmissions, certificates, rewards, userRewards, userStreaks } from "@shared/schema";
 import type { 
   User, InsertUser, Framework, InsertFramework, 
   Module, InsertModule, UserProgress, InsertUserProgress, 
   Quiz, InsertQuiz, QuizAttempt, InsertQuizAttempt,
   Exercise, InsertExercise, ExerciseSubmission, InsertExerciseSubmission,
-  Certificate, InsertCertificate
+  Certificate, InsertCertificate, Reward, InsertReward,
+  UserReward, InsertUserReward, UserStreak, InsertUserStreak
 } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
@@ -145,6 +146,9 @@ export class MemStorage implements IStorage {
     this.exercises = new Map();
     this.exerciseSubmissions = new Map();
     this.certificates = new Map();
+    this.rewards = new Map();
+    this.userRewards = new Map();
+    this.userStreaks = new Map();
     
     this.userIdCounter = 1;
     this.frameworkIdCounter = 1;
@@ -156,6 +160,8 @@ export class MemStorage implements IStorage {
     this.exerciseIdCounter = 1;
     this.exerciseSubmissionIdCounter = 1;
     this.certificateIdCounter = 1;
+    this.rewardIdCounter = 1;
+    this.userRewardIdCounter = 1;
     
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000,
@@ -587,6 +593,173 @@ export class MemStorage implements IStorage {
     return existingCertificate;
   }
   
+  // Reward methods
+  async getReward(id: number): Promise<Reward | undefined> {
+    return this.rewards.get(id);
+  }
+  
+  async getAllRewards(): Promise<Reward[]> {
+    return Array.from(this.rewards.values());
+  }
+  
+  async getRewardsByType(type: string): Promise<Reward[]> {
+    const result: Reward[] = [];
+    for (const reward of this.rewards.values()) {
+      if (reward.type === type) {
+        result.push(reward);
+      }
+    }
+    return result;
+  }
+  
+  async createReward(reward: InsertReward): Promise<Reward> {
+    const id = this.rewardIdCounter++;
+    const now = new Date();
+    const newReward: Reward = {
+      ...reward,
+      id,
+      createdAt: now,
+    };
+    this.rewards.set(id, newReward);
+    return newReward;
+  }
+  
+  async updateReward(id: number, rewardData: Partial<Reward>): Promise<Reward | undefined> {
+    const existingReward = this.rewards.get(id);
+    if (!existingReward) return undefined;
+    
+    const updatedReward = { ...existingReward, ...rewardData };
+    this.rewards.set(id, updatedReward);
+    return updatedReward;
+  }
+  
+  async deleteReward(id: number): Promise<void> {
+    this.rewards.delete(id);
+  }
+  
+  // User Rewards methods
+  async getUserReward(id: number): Promise<UserReward | undefined> {
+    return this.userRewards.get(id);
+  }
+  
+  async getUserRewards(userId: number): Promise<UserReward[]> {
+    const result: UserReward[] = [];
+    for (const userReward of this.userRewards.values()) {
+      if (userReward.userId === userId) {
+        result.push(userReward);
+      }
+    }
+    return result;
+  }
+  
+  async getUserRewardsByType(userId: number, type: string): Promise<UserReward[]> {
+    const result: UserReward[] = [];
+    for (const userReward of this.userRewards.values()) {
+      if (userReward.userId === userId) {
+        const reward = this.rewards.get(userReward.rewardId);
+        if (reward && reward.type === type) {
+          result.push(userReward);
+        }
+      }
+    }
+    return result;
+  }
+  
+  async createUserReward(userReward: InsertUserReward): Promise<UserReward> {
+    const id = this.userRewardIdCounter++;
+    const now = new Date();
+    const newUserReward: UserReward = {
+      ...userReward,
+      id,
+      earnedAt: now,
+      data: userReward.data || null
+    };
+    this.userRewards.set(id, newUserReward);
+    return newUserReward;
+  }
+  
+  async checkUserRewardExists(userId: number, rewardId: number): Promise<boolean> {
+    for (const userReward of this.userRewards.values()) {
+      if (userReward.userId === userId && userReward.rewardId === rewardId) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  // User Streaks methods
+  async getUserStreak(userId: number): Promise<UserStreak | undefined> {
+    for (const streak of this.userStreaks.values()) {
+      if (streak.userId === userId) {
+        return streak;
+      }
+    }
+    return undefined;
+  }
+  
+  async createUserStreak(userStreak: InsertUserStreak): Promise<UserStreak> {
+    const now = new Date();
+    const newUserStreak: UserStreak = {
+      ...userStreak,
+      lastActivityDate: now,
+    };
+    this.userStreaks.set(userStreak.userId, newUserStreak);
+    return newUserStreak;
+  }
+  
+  async updateUserStreak(userId: number, streakData: Partial<UserStreak>): Promise<UserStreak | undefined> {
+    const existingStreak = this.userStreaks.get(userId);
+    if (!existingStreak) return undefined;
+    
+    const updatedStreak = { ...existingStreak, ...streakData };
+    this.userStreaks.set(userId, updatedStreak);
+    return updatedStreak;
+  }
+  
+  async checkAndUpdateStreak(userId: number): Promise<UserStreak> {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    
+    let streak = await this.getUserStreak(userId);
+    
+    if (!streak) {
+      // Create new streak for user
+      streak = await this.createUserStreak({
+        userId,
+        currentStreak: 1,
+        longestStreak: 1,
+        lastActivityDate: now,
+      });
+      return streak;
+    }
+    
+    const lastActivity = new Date(streak.lastActivityDate);
+    const lastActivityDay = new Date(lastActivity.getFullYear(), lastActivity.getMonth(), lastActivity.getDate());
+    
+    const daysDifference = Math.floor((today.getTime() - lastActivityDay.getTime()) / (1000 * 60 * 60 * 24));
+    
+    if (daysDifference === 0) {
+      // Already logged activity today, no change to streak
+      return streak;
+    } else if (daysDifference === 1) {
+      // Consecutive day, increment streak
+      const currentStreak = streak.currentStreak + 1;
+      const longestStreak = Math.max(currentStreak, streak.longestStreak);
+      
+      return this.updateUserStreak(userId, {
+        currentStreak,
+        longestStreak,
+        lastActivityDate: now,
+      });
+    } else {
+      // Streak broken, reset to 1
+      return this.updateUserStreak(userId, {
+        currentStreak: 1,
+        lastActivityDate: now,
+      });
+    }
+  }
+  
   // Seed initial framework and module data
   private seedFrameworks() {
     if (this.frameworks.size > 0) return; // already seeded
@@ -601,7 +774,7 @@ export class MemStorage implements IStorage {
       duration: 45,
       status: "not_started",
       case_studies: null,
-      imageUrl: null
+      image_url: null
     };
     this.frameworks.set(meceId, mece);
     
@@ -615,7 +788,7 @@ export class MemStorage implements IStorage {
       duration: 90,
       status: "not_started",
       case_studies: null,
-      imageUrl: null
+      image_url: null
     };
     this.frameworks.set(designThinkingId, designThinking);
     
@@ -629,7 +802,7 @@ export class MemStorage implements IStorage {
       duration: 30,
       status: "not_started",
       case_studies: null,
-      imageUrl: null
+      image_url: null
     };
     this.frameworks.set(swotId, swot);
     
@@ -643,7 +816,7 @@ export class MemStorage implements IStorage {
       duration: 75,
       status: "not_started",
       case_studies: null,
-      imageUrl: null
+      image_url: null
     };
     this.frameworks.set(firstPrinciplesId, firstPrinciples);
     
@@ -657,7 +830,7 @@ export class MemStorage implements IStorage {
       duration: 50,
       status: "not_started",
       case_studies: null,
-      imageUrl: null
+      image_url: null
     };
     this.frameworks.set(portersFiveForcesId, portersFiveForces);
     
@@ -671,7 +844,7 @@ export class MemStorage implements IStorage {
       duration: 40,
       status: "not_started",
       case_studies: null,
-      imageUrl: null
+      image_url: null
     };
     this.frameworks.set(jobsToBeDoneId, jobsToBeDone);
     
@@ -685,7 +858,7 @@ export class MemStorage implements IStorage {
       duration: 60,
       status: "not_started",
       case_studies: null,
-      imageUrl: null
+      image_url: null
     };
     this.frameworks.set(blueOceanId, blueOcean);
     
@@ -699,7 +872,7 @@ export class MemStorage implements IStorage {
       duration: 35,
       status: "not_started",
       case_studies: null,
-      imageUrl: null
+      image_url: null
     };
     this.frameworks.set(scamperId, scamper);
     
@@ -713,7 +886,7 @@ export class MemStorage implements IStorage {
       duration: 45,
       status: "not_started",
       case_studies: null,
-      imageUrl: null
+      image_url: null
     };
     this.frameworks.set(problemTreeId, problemTree);
     
@@ -727,7 +900,7 @@ export class MemStorage implements IStorage {
       duration: 25,
       status: "not_started",
       case_studies: null,
-      imageUrl: null
+      image_url: null
     };
     this.frameworks.set(paretoId, pareto);
     

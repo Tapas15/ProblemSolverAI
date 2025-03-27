@@ -16,7 +16,7 @@ const HomePage = lazy(() => import("@/pages/home-page"));
 const AuthPage = lazy(() => import("@/pages/auth-page"));
 const FrameworkPage = lazy(() => import("@/pages/framework-page"));
 const FrameworksPage = lazy(() => import("@/pages/frameworks-page"));
-const AiAssistantPage = lazy(() => import("@/pages/ai-assistant-page"));
+// AI Assistant removed
 const QuizPage = lazy(() => import("@/pages/quiz-page"));
 const TakeQuizPage = lazy(() => import("@/pages/take-quiz-page"));
 const DashboardPage = lazy(() => import("@/pages/dashboard-page"));
@@ -67,7 +67,7 @@ function Router() {
         <ProtectedRoute path="/" component={HomePage} />
         <ProtectedRoute path="/frameworks" component={FrameworksPage} />
         <ProtectedRoute path="/frameworks/:id" component={FrameworkPage} />
-        <ProtectedRoute path="/ai-assistant" component={AiAssistantPage} />
+        {/* AI Assistant route removed */}
         <ProtectedRoute path="/quizzes/:frameworkId" component={QuizPage} />
         <ProtectedRoute path="/quiz/:frameworkId/:quizId" component={TakeQuizPage} />
         <ProtectedRoute path="/exercises" component={ExerciseFrameworksPage} />
