@@ -5,7 +5,7 @@ import { queryClient, apiRequest } from '@/lib/queryClient';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Award, FileText, Medal, Trophy, Download, Loader2 } from 'lucide-react';
+import { Award, FileText, Medal, Trophy, Download, Loader2, InfoIcon } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
 import { CertificateFrame } from '@/components/certificate/certificate-frame';
 import { AchievementCard } from '@/components/certificate/achievement-card';
+import { SwotCertificateExample } from '@/components/certificate/swot-certificate-example';
 
 export default function CertificatesPage() {
   const [activeTab, setActiveTab] = useState('certificates');
@@ -329,6 +330,18 @@ export default function CertificatesPage() {
         </TabsList>
         
         <TabsContent value="certificates" className="mt-4">
+          {/* Example SWOT Certificate - Only show this in demo/development mode */}
+          <div className="mb-8 p-4 border rounded-lg bg-gray-50 relative">
+            <div className="absolute top-3 right-3">
+              <Badge variant="outline">Example</Badge>
+            </div>
+            <h3 className="text-lg font-semibold mb-2">SWOT Certificate Example</h3>
+            <p className="text-sm text-gray-500 mb-4">
+              This is an example of how a SWOT framework certificate looks with the certified professional badge.
+            </p>
+            <SwotCertificateExample />
+          </div>
+
           {renderCertificates()}
           {renderEligibleFrameworks()}
         </TabsContent>
