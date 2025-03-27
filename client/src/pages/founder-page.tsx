@@ -37,7 +37,7 @@ const FounderPage: React.FC = () => {
           <div className="absolute -bottom-12 left-4 ring-4 ring-white rounded-full">
             <Avatar className="h-24 w-24">
               <AvatarImage 
-                src={`/images/founder.jpg?t=${Date.now()}`} 
+                src={`/api/static/images/founder.jpg?t=${Date.now()}`} 
                 alt="Dr. Manas Kumar" 
                 className="object-cover"
               />
