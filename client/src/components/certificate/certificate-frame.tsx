@@ -133,13 +133,10 @@ export function CertificateFrame({
           backgroundPosition: frameworkName === 'SWOT' ? '0 0, 25px 0, 25px -25px, 0px 25px' : '0 0'
         }}
       >
-        {/* Certificate Header with Combined Logo */}
+        {/* Certificate Header with Logo (no embellishments) */}
         <div className="flex flex-col items-center mb-4 relative">
           <div className="relative">
             <img src="/api/static/images/fp-logo-new.jpg" alt="Framework Pro Logo" className="h-20 mb-3" />
-            <div className="absolute -bottom-2 -right-2 bg-white rounded-lg p-1 shadow-md">
-              {getFrameworkIcon(frameworkName, { className: "h-8 w-8", color: accentColor })}
-            </div>
           </div>
           
           <h2 className="text-2xl font-bold text-black leading-tight mb-1 font-serif" style={{letterSpacing: "0.05em"}}>{title}</h2>
