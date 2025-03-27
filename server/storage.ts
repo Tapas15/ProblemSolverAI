@@ -698,10 +698,15 @@ export class MemStorage implements IStorage {
   }
   
   async createUserStreak(userStreak: InsertUserStreak): Promise<UserStreak> {
+    const id = ++this.userIdCounter; // Generate a unique ID
     const now = new Date();
     const newUserStreak: UserStreak = {
       ...userStreak,
+      id,
+      currentStreak: userStreak.currentStreak || 1,
+      longestStreak: userStreak.longestStreak || 1,
       lastActivityDate: now,
+      streakStartDate: userStreak.streakStartDate || now
     };
     this.userStreaks.set(userStreak.userId, newUserStreak);
     return newUserStreak;
