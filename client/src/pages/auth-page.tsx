@@ -113,12 +113,11 @@ const AuthPage: React.FC = () => {
         <div className="max-w-md mx-auto w-full z-10 bg-white rounded-2xl shadow-xl p-8 md:p-10">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold font-header mb-3">
-              <span className="text-[#3b82f6]">Question</span>
-              <span className="text-gray-800">Pro</span>{' '}
-              <span className="text-[#60a5fa]">AI</span>
+              <span className="text-[#3b82f6]">Framework</span>
+              <span className="text-gray-800">Pro</span>
             </h1>
             <p className="text-gray-600">
-              Enhance your business problem-solving skills with AI-powered frameworks
+              Enhance your business problem-solving skills with structured frameworks
             </p>
           </div>
           
@@ -388,7 +387,7 @@ const AuthPage: React.FC = () => {
           </h2>
           
           <p className="mb-10 text-gray-100 text-lg">
-            QuestionPro AI provides business professionals with structured frameworks and AI assistance
+            Framework Pro provides business professionals with structured frameworks
             to solve complex business problems effectively.
           </p>
           
@@ -408,8 +407,8 @@ const AuthPage: React.FC = () => {
                 <Lightbulb className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="font-medium text-white text-lg mb-1">AI-Powered Assistance</h3>
-                <p className="text-gray-200">Connect with AI for personalized problem-solving support and advanced insights</p>
+                <h3 className="font-medium text-white text-lg mb-1">Interactive Learning</h3>
+                <p className="text-gray-200">Engage with interactive content designed to improve problem-solving skills</p>
               </div>
             </div>
             

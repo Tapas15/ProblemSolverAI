@@ -79,8 +79,8 @@ const ContactPage: React.FC = () => {
                       <Mail className="h-5 w-5 text-primary mr-3 mt-1" />
                       <div>
                         <h3 className="font-medium text-gray-900">Email</h3>
-                        <p className="text-gray-600">support@questionpro.ai</p>
-                        <p className="text-gray-600">info@questionpro.ai</p>
+                        <p className="text-gray-600">support@frameworkpro.app</p>
+                        <p className="text-gray-600">info@frameworkpro.app</p>
                       </div>
                     </div>
                     
@@ -253,7 +253,7 @@ const ContactPage: React.FC = () => {
                     allowFullScreen 
                     loading="lazy" 
                     referrerPolicy="no-referrer-when-downgrade"
-                    title="QuestionPro AI Office Location"
+                    title="Framework Pro Office Location"
                   ></iframe>
                 </div>
               </CardContent>

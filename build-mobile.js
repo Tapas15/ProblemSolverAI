@@ -8,7 +8,7 @@ const rl = readline.createInterface({
   output: process.stdout
 });
 
-console.log('\n🔵 QuestionPro AI Mobile Builder 🔵');
+console.log('\n🔵 Framework Pro Mobile Builder 🔵');
 console.log('===============================\n');
 
 // Check if a platform argument was provided

@@ -15,8 +15,8 @@ const TermsPage: React.FC = () => {
               <p className="text-gray-600 mb-4">Last Updated: March 24, 2025</p>
               
               <p className="text-gray-700 mb-6">
-                These Terms of Service ("Terms") govern your access to and use of the QuestionPro AI mobile application 
-                and related services (collectively, the "Services") provided by QuestionPro AI ("Company," "we," "us," or "our"). 
+                These Terms of Service ("Terms") govern your access to and use of the Framework Pro mobile application 
+                and related services (collectively, the "Services") provided by Framework Pro ("Company," "we," "us," or "our"). 
                 By accessing or using our Services, you agree to be bound by these Terms. If you disagree with any part of the Terms, 
                 you may not access the Services.
               </p>
@@ -50,21 +50,20 @@ const TermsPage: React.FC = () => {
               
               <h2 className="text-2xl font-semibold mb-4 text-primary">3. Intellectual Property</h2>
               <p className="text-gray-700 mb-6">
-                The Services and their original content, features, and functionality are owned by QuestionPro AI and are protected 
+                The Services and their original content, features, and functionality are owned by Framework Pro and are protected 
                 by international copyright, trademark, patent, trade secret, and other intellectual property laws. You may not copy, 
                 modify, create derivative works, publicly display, republish, or distribute any portion of the Services without 
                 prior written consent from us.
               </p>
               
-              <h2 className="text-2xl font-semibold mb-4 text-primary">4. Use of AI Features</h2>
+              <h2 className="text-2xl font-semibold mb-4 text-primary">4. Use of Third-Party Integrations</h2>
               <p className="text-gray-700 mb-4">
-                The Services include AI-powered features that may require the use of third-party AI services. When using these features:
+                The Services may include features that integrate with third-party services. When using these features:
               </p>
               <ul className="list-disc pl-6 mb-6 text-gray-700 space-y-2">
                 <li>If you choose to use your own API keys, you are responsible for compliance with the terms and conditions of those third-party services</li>
-                <li>You acknowledge that AI-generated content may not always be accurate or appropriate</li>
-                <li>You agree not to use the AI features for illegal, harmful, or unethical purposes</li>
-                <li>You understand that conversations with the AI assistant may be stored and used to improve our Services</li>
+                <li>You agree not to use any integrated features for illegal, harmful, or unethical purposes</li>
+                <li>You understand that data from integrated services may be stored to provide the Services</li>
               </ul>
               
               <h2 className="text-2xl font-semibold mb-4 text-primary">5. Payment Terms</h2>
@@ -103,7 +102,7 @@ const TermsPage: React.FC = () => {
               
               <h2 className="text-2xl font-semibold mb-4 text-primary">8. Limitation of Liability</h2>
               <p className="text-gray-700 mb-6">
-                To the maximum extent permitted by law, in no event shall QuestionPro AI, its directors, employees, partners, 
+                To the maximum extent permitted by law, in no event shall Framework Pro, its directors, employees, partners, 
                 agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential, or punitive damages, 
                 including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your 
                 access to or use of or inability to access or use the Services.
@@ -142,7 +141,7 @@ const TermsPage: React.FC = () => {
               
               <h2 className="text-2xl font-semibold mb-4 text-primary">13. Contact Us</h2>
               <p className="text-gray-700 mb-6">
-                If you have any questions about these Terms, please contact us at terms@questionpro.ai.
+                If you have any questions about these Terms, please contact us at terms@frameworkpro.app.
               </p>
               
               <hr className="my-8 border-gray-200" />

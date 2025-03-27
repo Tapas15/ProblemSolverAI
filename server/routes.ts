@@ -1507,7 +1507,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               attemptData.timeTaken || 0,
               {
                 name: req.user.name || req.user.username,
-                email: req.user.email || `${req.user.username}@questionpro.ai`
+                email: req.user.email || `${req.user.username}@frameworkpro.app`
               }
             );
           }
@@ -1638,7 +1638,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         statementData,
         {
           name: user.name || user.username,
-          email: user.email || `${user.username}@questionpro.ai`
+          email: user.email || `${user.username}@frameworkpro.app`
         },
         objectInfo
       );
@@ -1837,7 +1837,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               framework.name,
               {
                 name: user.name || user.username,
-                email: user.email || `${user.username}@questionpro.ai`
+                email: user.email || `${user.username}@frameworkpro.app`
               }
             );
             
@@ -1851,7 +1851,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 totalModules,
                 {
                   name: user.name || user.username,
-                  email: user.email || `${user.username}@questionpro.ai`
+                  email: user.email || `${user.username}@frameworkpro.app`
                 }
               );
             }

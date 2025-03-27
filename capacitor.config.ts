@@ -1,8 +1,8 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.questionpro.ai',
-  appName: 'QuestionPro AI',
+  appId: 'io.frameworkpro.app',
+  appName: 'Framework Pro',
   webDir: 'dist/public',
   plugins: {
     SplashScreen: {

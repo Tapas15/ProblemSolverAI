@@ -14,7 +14,7 @@ const PrivacyPage: React.FC = () => {
               <p className="text-gray-600 mb-4">Last Updated: March 24, 2025</p>
               
               <p className="text-gray-700 mb-6">
-                This Privacy Policy describes how QuestionPro AI ("we", "us", or "our") collects, uses, and discloses your 
+                This Privacy Policy describes how Framework Pro ("we", "us", or "our") collects, uses, and discloses your 
                 information when you use our mobile application and related services (collectively, the "Services").
               </p>
               
@@ -33,7 +33,7 @@ const PrivacyPage: React.FC = () => {
               <ul className="list-disc pl-6 mb-6 text-gray-700 space-y-2">
                 <li>Create an account (name, email address, password)</li>
                 <li>Complete your profile (professional information, education, etc.)</li>
-                <li>Use our AI assistant (questions, prompts, and conversations)</li>
+                <li>Use our interactive features and learning tools</li>
                 <li>Submit exercise solutions and quiz responses</li>
                 <li>Contact us or participate in surveys</li>
               </ul>
@@ -49,10 +49,10 @@ const PrivacyPage: React.FC = () => {
                 <li>Usage patterns and preferences</li>
               </ul>
               
-              <h3 className="text-xl font-medium mb-2 text-secondary">3. API Keys</h3>
+              <h3 className="text-xl font-medium mb-2 text-secondary">3. Integration Keys</h3>
               <p className="text-gray-700 mb-6">
-                If you choose to use your own API keys for third-party AI services (such as OpenAI), we collect and store 
-                these keys securely. These keys are used solely for the purpose of enabling the AI features within our application 
+                If you choose to use your own API keys for third-party integration services, we collect and store 
+                these keys securely. These keys are used solely for the purpose of enabling integrated features within our application 
                 on your behalf.
               </p>
               
@@ -78,7 +78,7 @@ const PrivacyPage: React.FC = () => {
               </p>
               <ul className="list-disc pl-6 mb-6 text-gray-700 space-y-2">
                 <li>With third-party service providers who perform services on our behalf</li>
-                <li>With third-party AI providers when you use our AI features (using your own API keys)</li>
+                <li>With third-party integration partners when you use connected features (using your own API keys)</li>
                 <li>In response to legal process or government requests</li>
                 <li>To protect our rights, privacy, safety, or property</li>
                 <li>In connection with a merger, acquisition, or sale of assets</li>
@@ -122,7 +122,7 @@ const PrivacyPage: React.FC = () => {
               <h2 className="text-2xl font-semibold mb-4 text-primary">Contact Us</h2>
               <p className="text-gray-700 mb-6">
                 If you have any questions or concerns about this Privacy Policy or our data practices, please contact us at 
-                privacy@questionpro.ai.
+                privacy@frameworkpro.app.
               </p>
             </CardContent>
           </Card>
