@@ -1,7 +1,7 @@
 import * as React from 'react';
 import QRCode from 'qrcode';
 import { Button } from "@/components/ui/button";
-import { Download, CheckCircle } from "lucide-react";
+import { Download, ShieldCheck } from "lucide-react";
 import { getFrameworkIcon } from "@/components/icons/framework-icons";
 
 export interface CertificateFrameProps {
@@ -137,16 +137,16 @@ export function CertificateFrame({
         <div className="flex flex-col items-center mb-4 relative">
           <div className="relative">
             <img src="/api/static/images/fp-logo-new.jpg" alt="Framework Pro Logo" className="h-20 mb-3" />
-            <div className="absolute -bottom-2 -right-2 bg-white rounded-full p-1 shadow-md">
-              {getFrameworkIcon(frameworkName, { className: "h-10 w-10", color: accentColor })}
+            <div className="absolute -bottom-2 -right-2 bg-white rounded-lg p-1 shadow-md">
+              {getFrameworkIcon(frameworkName, { className: "h-8 w-8", color: accentColor })}
             </div>
           </div>
           
           <h2 className="text-2xl font-bold text-black leading-tight mb-1 font-serif" style={{letterSpacing: "0.05em"}}>{title}</h2>
           <p className="text-sm text-gray-500">Certificate #{certificateNumber}</p>
-          <div className="flex items-center mt-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-100 to-yellow-100 text-xs font-medium shadow-sm"
+          <div className="flex items-center mt-2 px-4 py-1.5 rounded-md bg-gradient-to-r from-amber-100 to-yellow-100 text-xs font-medium shadow-sm"
                style={{border: `1px solid #D4AF37`}}>
-            <CheckCircle className="h-3.5 w-3.5 mr-1.5" style={{color: '#D4AF37'}}/>
+            <ShieldCheck className="h-3.5 w-3.5 mr-1.5" style={{color: '#D4AF37'}}/>
             <span style={{color: '#996515', fontWeight: 600}}>Verified Certificate</span>
           </div>
         </div>
@@ -183,7 +183,9 @@ export function CertificateFrame({
           {/* QR Code */}
           {qrCodeUrl && (
             <div className="flex flex-col items-center border-2 border-amber-200 p-1 rounded-md bg-white">
-              <img src={qrCodeUrl} alt="Certificate Validation QR Code" className="h-20 w-20" />
+              <div className="rounded-sm overflow-hidden">
+                <img src={qrCodeUrl} alt="Certificate Validation QR Code" className="h-20 w-20" />
+              </div>
               <p className="text-xs text-amber-800 mt-1 font-medium">Scan to verify</p>
             </div>
           )}
