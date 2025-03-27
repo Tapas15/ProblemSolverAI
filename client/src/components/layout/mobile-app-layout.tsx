@@ -143,9 +143,8 @@ export function MobileAppLayout({ children }: MobileAppLayoutProps) {
           onClick={() => handleNavigation("/")}
         >
           <span className="font-bold text-xl text-white font-header tracking-tight">
-            <span className="text-[#3b82f6]">Question</span>
-            <span className="text-white">Pro </span>
-            <span className="text-[#60a5fa]">AI</span>
+            <span className="text-[#3b82f6]">Framework</span>
+            <span className="text-white">Pro</span>
           </span>
         </div>
         
@@ -202,9 +201,8 @@ export function MobileAppLayout({ children }: MobileAppLayoutProps) {
                       }, 300);
                     }}
                   >
-                    <span className="text-[#3b82f6]">Question</span>
-                    <span className="text-white">Pro </span>
-                    <span className="text-[#60a5fa]">AI</span>
+                    <span className="text-[#3b82f6]">Framework</span>
+                    <span className="text-white">Pro</span>
                   </div>
                   <Button 
                     variant="ghost" 
