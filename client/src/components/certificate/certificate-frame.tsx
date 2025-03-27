@@ -24,6 +24,26 @@ export function CertificateFrame({
   onDownload
 }: CertificateFrameProps) {
   const [qrCodeUrl, setQrCodeUrl] = React.useState<string>('');
+  
+  // Get framework-specific accent colors
+  const getAccentColor = (name: string) => {
+    const colors = {
+      'MECE': '#3B82F6', // Blue
+      'Design Thinking': '#8B5CF6', // Purple
+      'SWOT': '#10B981', // Green
+      'First Principles': '#F59E0B', // Amber
+      "Porter's Five Forces": '#EF4444', // Red
+      'Jobs-To-Be-Done': '#6366F1', // Indigo
+      'Blue Ocean': '#0EA5E9', // Sky
+      'SCAMPER': '#EC4899', // Pink
+      'Problem-Tree': '#14B8A6', // Teal
+      'Pareto': '#F97316'  // Orange
+    };
+    
+    return colors[name as keyof typeof colors] || '#000000';
+  };
+  
+  const accentColor = getAccentColor(frameworkName);
 
   // Generate QR code on component mount
   React.useEffect(() => {
@@ -31,7 +51,16 @@ export function CertificateFrame({
       try {
         // Create a validation URL with the certificate number
         const validationUrl = `https://framework.pro/validate?cert=${certificateNumber}`;
-        const url = await QRCode.toDataURL(validationUrl);
+        const options = {
+          errorCorrectionLevel: 'H' as const,
+          margin: 1,
+          color: {
+            dark: accentColor,
+            light: '#FFFFFF'
+          }
+        };
+        
+        const url = await QRCode.toDataURL(validationUrl, options);
         setQrCodeUrl(url);
       } catch (err) {
         console.error("Error generating QR code:", err);
@@ -39,7 +68,7 @@ export function CertificateFrame({
     };
     
     generateQR();
-  }, [certificateNumber]);
+  }, [certificateNumber, accentColor]);
 
   // Format date nicely
   const formattedDate = issueDate 
@@ -98,12 +127,13 @@ export function CertificateFrame({
       style={{ 
         border: `4px solid ${accentColor}`,
         background: "white",
-        backgroundImage: `url('/images/fp-logo-new.jpg')`,
+        backgroundImage: `
+          linear-gradient(to bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)), 
+          url('/api/static/images/fp-logo-new.jpg')
+        `,
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'center center',
-        backgroundSize: '400px 400px',
-        backgroundBlendMode: 'soft-light',
-        opacity: 0.95
+        backgroundSize: '400px 400px'
       }}
     >
       {/* Decorative Corner Elements */}
@@ -126,7 +156,7 @@ export function CertificateFrame({
         {/* Certificate Header with Combined Logo */}
         <div className="flex flex-col items-center mb-4 relative">
           <div className="relative">
-            <img src="/images/fp-logo-new.jpg" alt="Framework Pro Logo" className="h-20 mb-3" />
+            <img src="/api/static/images/fp-logo-new.jpg" alt="Framework Pro Logo" className="h-20 mb-3" />
             <div className="absolute -bottom-2 -right-2 bg-white rounded-full p-1 shadow-md">
               {getFrameworkIcon(frameworkName, { className: "h-10 w-10", color: accentColor })}
             </div>
@@ -171,7 +201,7 @@ export function CertificateFrame({
         <div className="mt-8 flex justify-between items-end">
           {/* Signature */}
           <div className="flex flex-col items-center">
-            <img src="/images/signature-new.jpg" alt="Signature" className="h-14 mb-1" />
+            <img src="/api/static/images/signature-new.jpg" alt="Signature" className="h-14 mb-1" />
             <p className="text-sm font-medium text-gray-700">Manas Kumar</p>
             <p className="text-xs text-gray-500">CEO & Platform Director</p>
           </div>
