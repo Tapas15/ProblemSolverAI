@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { getUserCertificates, getUserAchievements, issueFrameworkCertificate, apiRequest } from '@/lib/api';
-import { queryClient } from '@/lib/queryClient';
+import { getUserCertificates, getUserAchievements, issueFrameworkCertificate } from '@/lib/api';
+import { queryClient, apiRequest } from '@/lib/queryClient';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -109,7 +109,7 @@ export default function CertificatesPage() {
                   userName={user?.name || ""}
                   description={certificate.description}
                   certificateNumber={certificate.certificateNumber}
-                  issueDate={certificate.issueDate}
+                  issueDate={certificate.issueDate ? certificate.issueDate.toString() : null}
                   frameworkName={frameworkName}
                   onDownload={() => handleDownloadCertificate(certificate.id)}
                 />
@@ -195,10 +195,9 @@ export default function CertificatesPage() {
       
       toast({
         title: "Certificate Issued",
-        description: "Your new certificate has been created successfully.",
-        variant: "success"
+        description: "Your new certificate has been created successfully."
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error issuing certificate:', error);
       toast({
         title: "Certificate Error",
