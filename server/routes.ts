@@ -2557,7 +2557,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         userId: req.user.id,
         frameworkId: frameworkId,
         title: `${framework.name} Certificate`,
-        description: `This certifies that ${req.user.name} has successfully completed the ${framework.name} in the Framework Pro mobile app.`,
+        description: `This certifies that ${req.user.name} has successfully mastered the ${framework.name} framework and demonstrated comprehensive understanding of its concepts, methodologies, and practical applications in business problem-solving and strategic analysis.`,
         certificateNumber: certNumber,
         status: "active",
         achievements: JSON.stringify({
@@ -2853,7 +2853,7 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
           </div>
           
           <div class="certificate-footer">
-            This certificate verifies the completion of the ${framework.name} framework in the Framework Pro mobile application.
+            This certificate verifies mastery of the ${framework.name} framework and its professional business applications.
           </div>
         </div>
       </body>
