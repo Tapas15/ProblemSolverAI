@@ -2814,16 +2814,14 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
             position: absolute;
             top: 20px;
             right: 20px;
-            width: 100px;
-            height: 100px;
+            padding: 8px 12px;
             background-color: rgba(255, 215, 0, 0.1);
-            border-radius: 50%;
+            border-radius: 6px;
             display: flex;
             justify-content: center;
             align-items: center;
             font-size: 14px;
             font-weight: bold;
-            transform: rotate(15deg);
             border: 2px solid rgba(255, 215, 0, 0.5);
             color: #996515;
           }
@@ -2847,7 +2845,9 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
             font-size: 12px;
             color: #777;
             padding: 0 40px;
-            line-height: 1.5;
+            line-height: 1.6;
+            word-spacing: 0.1em;
+            letter-spacing: 0.02em;
           }
         </style>
       </head>
@@ -2881,7 +2881,9 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
           </div>
           
           <div class="certificate-footer">
-            This certificate verifies mastery of the ${framework.name} framework and its professional business applications.
+            This certificate verifies mastery of the
+            <span style="display: inline-block; font-style: italic;">${framework.name}</span>
+            framework and its professional business applications.
           </div>
         </div>
       </body>
