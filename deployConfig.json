@@ -1,0 +1,11 @@
+{
+  "deploymentType": "web_service",
+  "buildCommand": "npm run build",
+  "startCommand": "node dist/index.js",
+  "healthCheckPath": "/",
+  "envVars": {
+    "NODE_ENV": "production",
+    "PORT": "5000"
+  },
+  "suggestedPort": 5000
+}

@@ -18,6 +18,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import ScormViewer from '@/components/scorm/scorm-viewer';
 import ScormUploader from '@/components/scorm/scorm-uploader';
+import GradientImage from '@/components/ui/gradient-image';
 
 interface FrameworkDetailProps {
   isOpen: boolean;
@@ -261,22 +262,15 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
               ) : (
                 <>
                   <div className="mb-6 rounded-lg overflow-hidden bg-gray-100">
-                    {framework?.image_url ? (
-                      <img 
-                        src={framework.image_url} 
-                        alt={framework.name} 
-                        className="w-full h-64 object-cover"
-                        onError={(e) => {
-                          // Use a backup image if the main one fails to load
-                          e.currentTarget.src = "https://images.unsplash.com/photo-1542744094-3a31f272c490?q=80&w=500&auto=format&fit=crop";
-                          e.currentTarget.onerror = null; // Prevent infinite loop
-                        }}
-                      />
-                    ) : (
-                      <div className="w-full h-64 flex items-center justify-center bg-gray-200 text-gray-500">
-                        <span className="text-xl font-medium">{framework?.name || 'Framework'}</span>
-                      </div>
-                    )}
+                    <GradientImage
+                      imageUrl={framework?.image_url || undefined}
+                      frameworkId={framework?.id || 1}
+                      name={framework?.name || 'Framework'}
+                      width="100%"
+                      height="256px"
+                      className="w-full h-64"
+                      alt={framework?.name || 'Framework'}
+                    />
                   </div>
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
@@ -362,22 +356,17 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
                       {expandedModule === module.id && (
                         <div className="p-4">
                           <div className="mb-4 rounded-lg overflow-hidden bg-gray-100">
-                            {module.image_url ? (
-                              <img 
-                                src={module.image_url} 
-                                alt={module.name} 
-                                className="w-full h-48 object-cover"
-                                onError={(e) => {
-                                  // Use a backup image if the main one fails to load
-                                  e.currentTarget.src = "https://images.unsplash.com/photo-1542744094-3a31f272c490?q=80&w=500&auto=format&fit=crop";
-                                  e.currentTarget.onerror = null; // Prevent infinite loop
-                                }}
-                              />
-                            ) : (
-                              <div className="w-full h-48 flex items-center justify-center bg-gray-200 text-gray-500">
-                                <span className="text-lg font-medium">{module.name}</span>
-                              </div>
-                            )}
+                            <GradientImage
+                              imageUrl={module.image_url || undefined}
+                              frameworkId={framework?.id || 1}
+                              name={module.name}
+                              subtitle={framework?.name}
+                              width="100%"
+                              height="192px"
+                              className="w-full h-48"
+                              alt={module.name}
+                              isModule={true}
+                            />
                           </div>
                           <p className="text-sm text-gray-600 mb-3">{module.description}</p>
 
@@ -533,7 +522,12 @@ const FrameworkDetail: React.FC<FrameworkDetailProps> = ({
                   {caseStudiesOpen && (
                     <div className="p-4">
                       <div className="prose prose-sm max-w-none">
-                        <div dangerouslySetInnerHTML={{ __html: framework.case_studies }} />
+                        {framework.case_studies && (
+                          <div dangerouslySetInnerHTML={{ __html: framework.case_studies }} />
+                        )}
+                        {!framework.case_studies && (
+                          <p>No case studies available for this framework.</p>
+                        )}
                       </div>
                     </div>
                   )}
