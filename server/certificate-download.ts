@@ -5,73 +5,6 @@ import { storage } from './storage';
 import QRCode from 'qrcode';
 import { getCertificateDescription } from '../shared/certificate-descriptions';
 
-// Read base64 encoded images with fallbacks for missing files
-function loadImageAsBase64(filePath: string, fallbackPath?: string): string {
-  try {
-    return fs.readFileSync(path.join(process.cwd(), filePath)).toString('base64');
-  } catch (error) {
-    console.error(`Error loading image from ${filePath}:`, error);
-    if (fallbackPath) {
-      try {
-        console.log(`Attempting to load fallback image from ${fallbackPath}`);
-        return fs.readFileSync(path.join(process.cwd(), fallbackPath)).toString('base64');
-      } catch (fallbackError) {
-        console.error(`Error loading fallback image from ${fallbackPath}:`, fallbackError);
-      }
-    }
-    // Return an empty transparent image as a last resort
-    return 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
-  }
-}
-
-// Define image paths with primary and fallback locations
-const LOGO_BASE64 = loadImageAsBase64(
-  'public/images/fp-logo-certificates-optimized.jpg', 
-  'public/images/fp-logo-certificates.jpg'
-);
-const BADGE_BASE64 = loadImageAsBase64(
-  'public/static/images/certified-badge.png',
-  'public/images/certified-badge.png'
-);
-const SIGNATURE_BASE64 = loadImageAsBase64(
-  'public/static/images/manas-signature.png',
-  'public/images/manas-signature.png'
-);
-
-/**
- * Generate QR code as data URL
- * @param data The URL or text to encode in the QR code
- * @param color Optional accent color to use for the QR code
- */
-async function generateQrCode(data: string, color?: string): Promise<string> {
-  try {
-    const qrOptions = {
-      errorCorrectionLevel: 'H' as const,
-      margin: 1,
-      width: 150,
-      color: {
-        dark: color || '#000000', // Use provided color or default to black
-        light: '#ffffff'
-      }
-    };
-    
-    // Generate QR code directly in the function
-    const qrDataUrl = await QRCode.toDataURL(data, qrOptions);
-    // Return only the base64 part (remove the data:image/png;base64, prefix)
-    return qrDataUrl.replace('data:image/png;base64,', '');
-  } catch (error) {
-    console.error('Error generating QR code:', error);
-    // Use fallback if QR generation fails
-    try {
-      return fs.readFileSync(path.join(process.cwd(), 'public/static/images/qr-placeholder.png')).toString('base64');
-    } catch (e) {
-      console.error('Error reading fallback QR image:', e);
-      // Return a minimal empty transparent image as fallback
-      return 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
-    }
-  }
-}
-
 /**
  * Download a certificate by ID with a layout matching the screenshot exactly
  */
@@ -128,8 +61,7 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
     // Generate QR code for certificate verification
     const baseUrl = process.env.BASE_URL || 'https://frameworkpro.ai';
     const verificationUrl = `${baseUrl}/api/certificates/verify/${certificate.certificateNumber}?framework=${encodeURIComponent(frameworkName)}`;
-    const qrCode = await generateQrCode(verificationUrl, accentColor);
-
+    
     // Create a certificate HTML that exactly matches the screenshot
     const certificateHtml = `
     <!DOCTYPE html>
@@ -167,12 +99,13 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
         .certificate {
           width: 100%;
           max-width: 950px;
+          margin: 0 auto;
           position: relative;
           background-color: white;
           box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
         
-        /* Gold border with corners */
+        /* Border with corners */
         .certificate::before {
           content: '';
           position: absolute;
@@ -237,9 +170,10 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
         }
         
         .logo {
-          width: 80px;
-          height: 80px;
+          width: 70px;
+          height: 70px;
           margin-bottom: 20px;
+          background-color: black;
         }
         
         .title {
@@ -306,9 +240,10 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
         }
         
         .badge-icon {
-          width: 50px;
-          height: 50px;
+          width: 45px;
+          height: 45px;
           margin-left: 10px;
+          object-fit: contain;
         }
         
         /* Description box */
@@ -342,7 +277,6 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
           display: flex;
           flex-direction: column;
           align-items: flex-start;
-          width: 250px;
           margin-left: 20px;
         }
         
@@ -352,7 +286,7 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
         
         .signature-image {
           height: 60px;
-          max-width: 200px;
+          max-width: 180px;
         }
         
         .signatory-name {
@@ -378,6 +312,7 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
           width: 70px;
           height: 70px;
           margin-right: 10px;
+          border: 1px solid #ddd;
         }
         
         .qr-details {
@@ -420,10 +355,16 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
           margin-top: 20px;
         }
         
-        .footer-left,
+        .footer-left {
+          display: flex;
+          flex-direction: column;
+          text-align: left;
+        }
+        
         .footer-right {
           display: flex;
           flex-direction: column;
+          text-align: right;
         }
         
         .footer-label {
@@ -437,10 +378,6 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
           font-size: 14px;
           color: #333;
           margin: 0;
-        }
-        
-        .framework-value {
-          text-align: right;
         }
         
         @media print {
@@ -493,7 +430,7 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
           <div class="certificate-content">
             <!-- Certificate Header -->
             <div class="header">
-              <img src="data:image/jpeg;base64,${LOGO_BASE64}" alt="Framework Pro Logo" class="logo">
+              <img src="/api/images/fp-logo-certificates-optimized.jpg" alt="Framework Pro Logo" class="logo" onerror="this.src='/api/images/fp-logo-new.png'; this.onerror=null;">
               <h2 class="title">${certificate.title}</h2>
               <p class="certificate-number">Certificate #${certificate.certificateNumber}</p>
               <div class="verified-badge">✓ Verified Certificate</div>
@@ -504,7 +441,7 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
             
             <div class="recipient">
               <h1 class="recipient-name">${user.name}</h1>
-              <img src="data:image/png;base64,${BADGE_BASE64}" alt="Certified Professional" class="badge-icon">
+              <img src="/api/images/certified-badge.png" alt="Certified Professional" class="badge-icon" onerror="this.style.display='none';">
             </div>
             
             <div class="description-box">
@@ -521,7 +458,7 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
               <!-- Signature Section -->
               <div class="signature-section">
                 <div class="signature">
-                  <img src="data:image/png;base64,${SIGNATURE_BASE64}" alt="Signature" class="signature-image">
+                  <img src="/api/images/manas-signature.png" alt="Signature" class="signature-image" onerror="this.src='/api/images/signature-new.jpg'; this.onerror=null;">
                 </div>
                 <p class="signatory-name">Manas Kumar</p>
                 <p class="signatory-title">CEO & Platform Director</p>
@@ -529,7 +466,7 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
               
               <!-- QR Code Section -->
               <div class="qr-section">
-                <img src="data:image/png;base64,${qrCode}" alt="QR Code" class="qr-code">
+                <img src="/api/certificates/${certificate.id}/qr" alt="QR Code" class="qr-code">
                 <div class="qr-details">
                   <p class="qr-text">Scan to verify</p>
                   <p class="qr-info">Verify this certificate online</p>
@@ -556,7 +493,7 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
               <!-- Framework -->
               <div class="footer-right">
                 <p class="footer-label">Framework</p>
-                <p class="footer-value framework-value">${frameworkName}</p>
+                <p class="footer-value">${frameworkName}</p>
               </div>
             </div>
           </div>
