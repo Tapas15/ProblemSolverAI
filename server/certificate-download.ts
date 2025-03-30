@@ -73,7 +73,7 @@ async function generateQrCode(data: string, color?: string): Promise<string> {
 }
 
 /**
- * Download a certificate by ID with a layout matching the frontend certificate exactly
+ * Download a certificate by ID with a layout matching the screenshot exactly
  */
 export async function downloadCertificate(req: Request, res: Response, next: NextFunction) {
   try {
@@ -114,6 +114,7 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
       "Porter's Five Forces": '#EF4444', // Red
       'Jobs-To-Be-Done': '#6366F1', // Indigo
       'Blue Ocean': '#0EA5E9', // Sky Blue
+      'Blue Ocean Strategy': '#0EA5E9', // Sky Blue
       'SCAMPER': '#EC4899', // Pink
       'Problem-Tree': '#14B8A6', // Teal
       'Pareto': '#F97316'  // Orange
@@ -129,51 +130,7 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
     const verificationUrl = `${baseUrl}/api/certificates/verify/${certificate.certificateNumber}?framework=${encodeURIComponent(frameworkName)}`;
     const qrCode = await generateQrCode(verificationUrl, accentColor);
 
-    // Get framework-specific background styles - match with frontend certificate-frame.tsx exactly
-    const getBackgroundStyle = (name: string) => {
-      const backgrounds: Record<string, any> = {
-        'MECE': {
-          background: "#0F172A", // Dark blue
-          gradient: "linear-gradient(to bottom, rgba(15, 23, 42, 0.97), rgba(30, 41, 59, 0.97))",
-          pattern: "linear-gradient(45deg, rgba(59, 130, 246, 0.07) 25%, transparent 25%, transparent 75%, rgba(59, 130, 246, 0.07) 75%), linear-gradient(45deg, rgba(59, 130, 246, 0.05) 25%, transparent 25%, transparent 75%, rgba(59, 130, 246, 0.05) 75%)",
-          patternSize: "20px 20px",
-          innerBg: "rgba(241, 245, 249, 0.97)", // Very light blue-gray
-          boxShadow: "inset 0 0 30px rgba(59, 130, 246, 0.1)" // Light blue shadow
-        },
-        'Default': {
-          background: "#F8F5E6", // Cream background
-          gradient: "linear-gradient(to bottom, rgba(248, 245, 230, 0.97), rgba(255, 253, 244, 0.97))",
-          pattern: "repeating-linear-gradient(0deg, rgba(0,0,0,0.05), rgba(0,0,0,0.05) 1px, transparent 1px, transparent 50px), repeating-linear-gradient(90deg, rgba(0,0,0,0.05), rgba(0,0,0,0.05) 1px, transparent 1px, transparent 50px)",
-          patternSize: "50px 50px",
-          innerBg: "rgba(248, 245, 230, 0.95)",
-          boxShadow: "inset 0 0 30px rgba(212, 175, 55, 0.1)" // Gold shadow
-        }
-      };
-      
-      // Add all frameworks with their backgrounds
-      const allBackgrounds: Record<string, any> = {};
-      
-      // Add entries for each framework using either MECE or Default style based on name
-      Object.keys(frameworkColors).forEach(name => {
-        if (name === 'MECE') {
-          allBackgrounds[name] = backgrounds['MECE'];
-        } else {
-          // Create a custom background for each framework based on Default
-          const customBg = { ...backgrounds['Default'] };
-          // Adjust pattern color to use framework color
-          customBg.pattern = `repeating-linear-gradient(0deg, ${frameworkColors[name]}05, ${frameworkColors[name]}05 1px, transparent 1px, transparent 50px), repeating-linear-gradient(90deg, ${frameworkColors[name]}05, ${frameworkColors[name]}05 1px, transparent 1px, transparent 50px)`;
-          customBg.boxShadow = `inset 0 0 30px ${frameworkColors[name]}10`;
-          allBackgrounds[name] = customBg;
-        }
-      });
-      
-      return allBackgrounds[name] || backgrounds['Default'];
-    };
-    
-    // Get background style for the current framework
-    const backgroundStyle = getBackgroundStyle(frameworkName);
-    
-    // Create a compact certificate HTML that fits on one page
+    // Create a certificate HTML that exactly matches the screenshot
     const certificateHtml = `
     <!DOCTYPE html>
     <html>
@@ -185,284 +142,254 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
       <style>
-        
         @page {
           size: 11in 8.5in;
-          margin: 0.25in;
+          margin: 0;
         }
         
         body {
-          font-family: 'Outfit', 'Inter', 'Arial', sans-serif;
+          font-family: 'Inter', Arial, sans-serif;
           margin: 0;
           padding: 0;
-          background-color: #f5f5f5;
+          background-color: white;
+        }
+        
+        .certificate-container {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          padding: 20px;
+          box-sizing: border-box;
         }
         
         .certificate {
-          width: 950px;
-          height: 650px;
-          margin: 0 auto;
+          width: 100%;
+          max-width: 950px;
           position: relative;
-          border: 4px solid ${accentColor};
-          border-radius: 15px;
-          background: ${backgroundStyle.background};
-          background-image: ${backgroundStyle.gradient};
-          background-repeat: no-repeat;
-          background-position: center center;
-          background-size: 400px 400px;
-          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-          overflow: hidden;
+          background-color: white;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
         
-        /* Decorative Corner Elements */
+        /* Gold border with corners */
+        .certificate::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          border: 3px solid ${accentColor};
+          pointer-events: none;
+        }
+        
+        /* Corner accents */
         .corner {
           position: absolute;
-          width: 60px;
-          height: 60px;
-          border-width: 4px;
+          width: 30px;
+          height: 30px;
           border-color: ${accentColor};
-          z-index: 1;
+          border-width: 3px;
+          z-index: 5;
         }
         
         .corner-tl {
-          top: 0;
-          left: 0;
-          border-top-style: solid;
-          border-left-style: solid;
-          border-top-left-radius: 10px;
+          top: -3px;
+          left: -3px;
+          border-top: 3px solid ${accentColor};
+          border-left: 3px solid ${accentColor};
         }
         
         .corner-tr {
-          top: 0;
-          right: 0;
-          border-top-style: solid;
-          border-right-style: solid;
-          border-top-right-radius: 10px;
+          top: -3px;
+          right: -3px;
+          border-top: 3px solid ${accentColor};
+          border-right: 3px solid ${accentColor};
         }
         
         .corner-bl {
-          bottom: 0;
-          left: 0;
-          border-bottom-style: solid;
-          border-left-style: solid;
-          border-bottom-left-radius: 10px;
+          bottom: -3px;
+          left: -3px;
+          border-bottom: 3px solid ${accentColor};
+          border-left: 3px solid ${accentColor};
         }
         
         .corner-br {
-          bottom: 0;
-          right: 0;
-          border-bottom-style: solid;
-          border-right-style: solid;
-          border-bottom-right-radius: 10px;
+          bottom: -3px;
+          right: -3px;
+          border-bottom: 3px solid ${accentColor};
+          border-right: 3px solid ${accentColor};
         }
         
-        /* Light Pattern Elements */
-        .pattern-overlay {
-          position: absolute;
-          inset: 0;
-          opacity: 0.1;
-          background-image: ${backgroundStyle.pattern};
-          background-size: ${backgroundStyle.patternSize};
-          z-index: 1;
-        }
-        
-        .inner-content {
+        .certificate-content {
+          padding: 40px;
           position: relative;
-          margin: 10px;
-          padding: 24px;
-          height: calc(100% - 20px);
           z-index: 2;
-          background-image: linear-gradient(rgba(255, 255, 255, 0.8), ${backgroundStyle.innerBg});
-          background-position: 0 0;
-          background-size: cover;
-          background-color: ${backgroundStyle.innerBg};
-          backdrop-filter: blur(4px);
-          box-shadow: ${backgroundStyle.boxShadow};
         }
         
+        /* Header section */
         .header {
           display: flex;
           flex-direction: column;
           align-items: center;
-          margin-bottom: 16px;
-          position: relative;
+          margin-bottom: 20px;
         }
         
         .logo {
+          width: 80px;
           height: 80px;
-          margin-bottom: 12px;
+          margin-bottom: 20px;
         }
         
         .title {
           font-family: 'Space Grotesk', serif;
           font-size: 28px;
           font-weight: bold;
-          color: #000;
-          margin-bottom: 5px;
-          letter-spacing: 0.08em;
-          word-spacing: 0.1em;
+          color: ${accentColor};
+          margin: 10px 0 5px;
           text-align: center;
         }
         
         .certificate-number {
           font-size: 14px;
           color: #666;
-          margin-bottom: 8px;
+          margin: 5px 0 10px;
+          text-align: center;
         }
         
         .verified-badge {
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          background: linear-gradient(to right, ${accentColor}10, ${accentColor}20);
+          background: transparent;
           border: 1px solid ${accentColor};
-          color: ${frameworkName === 'MECE' ? '#1e40af' : '#996515'};
-          padding: 6px 12px;
-          border-radius: 5px;
+          color: #333;
+          padding: 5px 15px;
+          border-radius: 3px;
           font-size: 14px;
-          font-weight: 600;
-          margin: 0 auto;
+          font-weight: 500;
+          margin: 10px auto;
         }
         
         .verified-badge::before {
           content: "✓";
-          margin-right: 6px;
+          color: ${accentColor};
+          margin-right: 5px;
         }
         
-        .content {
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-          margin: 32px 0;
-        }
-        
+        /* Award text */
         .award-text {
+          text-align: center;
           font-size: 14px;
           color: #666;
           text-transform: uppercase;
-          letter-spacing: 0.1em;
-          margin-bottom: 10px;
+          letter-spacing: 0.5px;
+          margin: 20px 0 5px;
         }
         
+        /* Recipient name */
         .recipient {
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 12px;
-          margin-bottom: 16px;
+          margin: 10px 0 25px;
         }
         
         .recipient-name {
           font-family: 'Space Grotesk', serif;
-          font-size: 32px;
+          font-size: 36px;
           font-weight: bold;
           color: #000;
           margin: 0;
+          text-align: center;
         }
         
         .badge-icon {
-          width: 60px;
-          height: 60px;
-          object-fit: contain;
-          filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.2));
-          transform: translateY(-2px);
+          width: 50px;
+          height: 50px;
+          margin-left: 10px;
         }
         
+        /* Description box */
         .description-box {
-          max-width: 80%;
+          width: 85%;
+          margin: 0 auto 30px;
           padding: 20px;
-          border: 1px solid ${accentColor}40;
-          border-radius: 8px;
-          background-color: rgba(255, 255, 255, 0.8);
-          box-shadow: 0 2px 10px ${accentColor}15;
-          margin: 0 auto;
+          border: 1px solid ${accentColor};
+          border-radius: 5px;
+          background-color: white;
         }
         
         .description {
           font-size: 16px;
-          color: #333;
           line-height: 1.5;
+          color: #333;
           text-align: center;
           margin: 0;
+          font-style: italic;
         }
         
+        /* Signature and QR section */
         .bottom-section {
           display: flex;
           justify-content: space-between;
           align-items: flex-end;
-          margin-top: 15px;
-          padding: 0 10px;
+          margin-top: 20px;
         }
         
         .signature-section {
           display: flex;
           flex-direction: column;
-          align-items: center;
-          text-align: center;
-          width: 200px;
+          align-items: flex-start;
+          width: 250px;
+          margin-left: 20px;
         }
         
         .signature {
-          padding-bottom: 5px;
-          border-bottom: 1px solid #ddd;
-          width: 100%;
-          margin-bottom: 8px;
-          text-align: center;
+          margin-bottom: 5px;
         }
         
         .signature-image {
-          height: 50px;
-          max-width: 150px;
-          margin: 0 auto;
-          filter: contrast(1.3);
-        }
-        
-        .signatory-details {
-          text-align: center;
-          width: 100%;
+          height: 60px;
+          max-width: 200px;
         }
         
         .signatory-name {
           font-weight: bold;
-          font-size: 15px;
-          margin: 0;
+          font-size: 16px;
+          margin: 5px 0 0;
           color: #333;
         }
         
         .signatory-title {
           font-size: 13px;
           color: #666;
-          margin-top: 2px;
+          margin: 2px 0 0;
         }
         
         .qr-section {
           display: flex;
           align-items: center;
-          padding-right: 10px;
+          margin-right: 20px;
         }
         
         .qr-code {
-          width: 75px;
-          height: 75px;
-          border: 1px solid #ddd;
-          padding: 3px;
-          background-color: white;
-          border-radius: 4px;
-          box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-          margin-right: 12px;
+          width: 70px;
+          height: 70px;
+          margin-right: 10px;
         }
         
         .qr-details {
-          margin-left: 4px;
-          text-align: left;
+          display: flex;
+          flex-direction: column;
         }
         
         .qr-text {
           font-size: 14px;
           color: ${accentColor};
           font-weight: bold;
-          margin: 0 0 5px 0;
+          margin: 0 0 3px;
         }
         
         .qr-info {
@@ -471,99 +398,115 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
           margin: 0;
         }
         
-        .verification-section {
-          margin-top: 25px;
-          position: relative;
-        }
-        
-        .verification-divider {
+        /* Verification section */
+        .divider {
+          width: 100%;
           height: 1px;
-          background: linear-gradient(to right, transparent, ${accentColor}30, ${accentColor}30, transparent);
-          margin: 5px 0 15px 0;
+          background-color: #ddd;
+          margin: 30px 0 15px;
         }
         
         .verification-text {
           text-align: center;
-          font-size: 13px;
+          font-size: 14px;
           color: ${accentColor};
-          margin: 10px 0 25px 0;
-          font-weight: 500;
-          padding: 0 20px;
+          margin: 0 0 20px;
         }
         
+        /* Footer */
         .certificate-footer {
           display: flex;
           justify-content: space-between;
-          align-items: flex-start;
-          width: 100%;
-          margin-top: 5px;
-          padding: 0 15px;
+          margin-top: 20px;
         }
         
-        .footer-item {
+        .footer-left,
+        .footer-right {
           display: flex;
           flex-direction: column;
-          align-items: center;
-          text-align: center;
-          width: 150px;
-        }
-        
-        .footer-left {
-          margin-right: auto;
-        }
-        
-        .footer-right {
-          margin-left: auto;
         }
         
         .footer-label {
+          font-size: 14px;
           font-weight: bold;
-          font-size: 12px;
           color: ${accentColor};
-          margin: 0 0 5px 0;
-          letter-spacing: 0.05em;
+          margin: 0 0 5px;
         }
         
         .footer-value {
-          font-size: 12px;
-          color: #666;
-          font-weight: 600;
+          font-size: 14px;
+          color: #333;
           margin: 0;
-          max-width: 150px;
-          white-space: normal;
-          overflow-wrap: break-word;
         }
         
-        /* Certificate dimensions and other styles remain unchanged */
+        .framework-value {
+          text-align: right;
+        }
+        
+        @media print {
+          body {
+            margin: 0;
+            padding: 0;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
+          }
+          
+          .certificate {
+            box-shadow: none;
+            margin: 0;
+            page-break-inside: avoid;
+          }
+          
+          #printInstructions {
+            display: none !important;
+          }
+          
+          .certificate-container {
+            padding: 0;
+          }
+        }
       </style>
     </head>
     <body>
-      <div class="certificate">
-        <!-- Decorative Corner Elements -->
-        <div class="corner corner-tl"></div>
-        <div class="corner corner-tr"></div>
-        <div class="corner corner-bl"></div>
-        <div class="corner corner-br"></div>
-        
-        <!-- Light Pattern Elements -->
-        <div class="pattern-overlay"></div>
-        
-        <div class="inner-content">
-          <!-- Certificate Header -->
-          <div class="header">
-            <img src="data:image/jpeg;base64,${LOGO_BASE64}" alt="Framework Pro Logo" class="logo">
-            <h2 class="title">${certificate.title}</h2>
-            <p class="certificate-number">Certificate #${certificate.certificateNumber}</p>
-            <div class="verified-badge">✓ Verified Certificate</div>
-          </div>
+      <div id="printInstructions" style="background: #f8f9fa; padding: 15px; margin: 15px auto; border: 1px solid #ddd; border-radius: 5px; font-family: Arial, sans-serif; max-width: 800px;">
+        <h3 style="margin-top: 0; color: #333;">Certificate Download Instructions</h3>
+        <p style="margin-bottom: 5px;">To save as PDF or print this certificate:</p>
+        <ol style="margin-top: 5px;">
+          <li>Right-click and select "Print" (or use Ctrl+P / Cmd+P)</li>
+          <li>In the print dialog, select "Save as PDF" as the destination</li>
+          <li>Set paper orientation to "Landscape"</li>
+          <li>Ensure "Background Graphics" is checked in the print options</li>
+          <li>Click "Save" to create your PDF certificate</li>
+        </ol>
+        <p style="font-size: 13px; color: #666; margin-top: 10px;">These instructions won't appear in your printed certificate.</p>
+      </div>
+      
+      <div class="certificate-container">
+        <div class="certificate">
+          <!-- Corner Elements -->
+          <div class="corner corner-tl"></div>
+          <div class="corner corner-tr"></div>
+          <div class="corner corner-bl"></div>
+          <div class="corner corner-br"></div>
           
-          <!-- Certificate Content -->
-          <div class="content">
-            <p class="award-text">This certificate is awarded to</p>
+          <div class="certificate-content">
+            <!-- Certificate Header -->
+            <div class="header">
+              <img src="data:image/jpeg;base64,${LOGO_BASE64}" alt="Framework Pro Logo" class="logo">
+              <h2 class="title">${certificate.title}</h2>
+              <p class="certificate-number">Certificate #${certificate.certificateNumber}</p>
+              <div class="verified-badge">✓ Verified Certificate</div>
+            </div>
+            
+            <!-- Certificate Content -->
+            <p class="award-text">THIS CERTIFICATE IS AWARDED TO</p>
+            
             <div class="recipient">
               <h1 class="recipient-name">${user.name}</h1>
               <img src="data:image/png;base64,${BADGE_BASE64}" alt="Certified Professional" class="badge-icon">
             </div>
+            
             <div class="description-box">
               <p class="description">${
                   // Use the new professional description if available, otherwise fall back to the certificate description
@@ -572,34 +515,32 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
                   : (getCertificateDescription(frameworkName) || certificate.description)
                 }</p>
             </div>
-          </div>
-          
-          <!-- Bottom Section with Signature and QR -->
-          <div class="bottom-section">
-            <!-- Signature Section -->
-            <div class="signature-section">
-              <div class="signature">
-                <img src="data:image/png;base64,${SIGNATURE_BASE64}" alt="Signature" class="signature-image">
-              </div>
-              <div class="signatory-details">
+            
+            <!-- Bottom Section with Signature and QR -->
+            <div class="bottom-section">
+              <!-- Signature Section -->
+              <div class="signature-section">
+                <div class="signature">
+                  <img src="data:image/png;base64,${SIGNATURE_BASE64}" alt="Signature" class="signature-image">
+                </div>
                 <p class="signatory-name">Manas Kumar</p>
                 <p class="signatory-title">CEO & Platform Director</p>
               </div>
-            </div>
-            
-            <!-- QR Code Section -->
-            <div class="qr-section">
-              <img src="data:image/png;base64,${qrCode}" alt="QR Code" class="qr-code">
-              <div class="qr-details">
-                <p class="qr-text">Scan to verify</p>
-                <p class="qr-info">Verify this certificate online</p>
+              
+              <!-- QR Code Section -->
+              <div class="qr-section">
+                <img src="data:image/png;base64,${qrCode}" alt="QR Code" class="qr-code">
+                <div class="qr-details">
+                  <p class="qr-text">Scan to verify</p>
+                  <p class="qr-info">Verify this certificate online</p>
+                </div>
               </div>
             </div>
-          </div>
-          
-          <!-- Certificate verification text and footer -->
-          <div class="verification-section">
-            <div class="verification-divider"></div>
+            
+            <!-- Divider -->
+            <div class="divider"></div>
+            
+            <!-- Verification Text -->
             <p class="verification-text">
               This certificate verifies mastery of the ${frameworkName} framework and its professional business applications.
             </p>
@@ -607,15 +548,15 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
             <!-- Footer with Issue Date and Framework Name -->
             <div class="certificate-footer">
               <!-- Issue Date -->
-              <div class="footer-item footer-left">
+              <div class="footer-left">
                 <p class="footer-label">Issue Date</p>
                 <p class="footer-value">${certificate.issueDate ? new Date(certificate.issueDate).toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric'}) : new Date().toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric'})}</p>
               </div>
               
               <!-- Framework -->
-              <div class="footer-item footer-right">
+              <div class="footer-right">
                 <p class="footer-label">Framework</p>
-                <p class="footer-value">${frameworkName}</p>
+                <p class="footer-value framework-value">${frameworkName}</p>
               </div>
             </div>
           </div>
@@ -626,82 +567,25 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
         window.onload = function() {
           setTimeout(function() {
             window.print();
-          }, 500);
+          }, 1000);
         };
       </script>
     </body>
     </html>
     `;
     
-    // Set response headers
-    res.setHeader('Content-Type', 'text/html');
-    
-    // Create a safe filename for the certificate
-    const sanitizedFrameworkName = frameworkName.replace(/[^a-z0-9]/gi, '-').toLowerCase();
-    const sanitizedUserName = user.name.replace(/[^a-z0-9]/gi, '-').toLowerCase();
-    const timestamp = new Date().toISOString().split('T')[0];
-    const filename = `FP-Certificate-${sanitizedFrameworkName}-${timestamp}.html`;
-    
     // Set proper headers for download
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    const sanitizedFrameworkName = frameworkName.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+    const timestamp = new Date().toISOString().split('T')[0];
+    const filename = `FP-Certificate-${sanitizedFrameworkName}-${timestamp}.html`;
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
     res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
     
-    // Add print-friendly instructions at the top of the HTML
-    const printInstructions = `
-    <!-- Print Instructions -->
-    <div style="background: #f8f9fa; padding: 15px; margin: 15px 0; border: 1px solid #ddd; border-radius: 5px; font-family: Arial, sans-serif; max-width: 800px; margin: 20px auto;">
-      <h3 style="margin-top: 0; color: #333;">Certificate Download Instructions</h3>
-      <p style="margin-bottom: 5px;">To save as PDF or print this certificate:</p>
-      <ol style="margin-top: 5px;">
-        <li>Right-click and select "Print" (or use Ctrl+P / Cmd+P)</li>
-        <li>In the print dialog, select "Save as PDF" as the destination</li>
-        <li>Set paper orientation to "Landscape"</li>
-        <li>Ensure "Background Graphics" is checked in the print options</li>
-        <li>Click "Save" to create your PDF certificate</li>
-      </ol>
-      <p style="font-size: 13px; color: #666; margin-top: 10px;">These instructions won't appear in your printed certificate.</p>
-    </div>
-    `;
-    
-    // Insert print instructions after the opening body tag
-    const enhancedCertificateHtml = certificateHtml.replace(
-      '<body',
-      `<body onload="document.getElementById('printInstructions').style.display='block'"
-      `
-    ).replace(
-      '<body>',
-      `<body>
-      <div id="printInstructions" style="display:none; print-display:none;">
-        ${printInstructions}
-      </div>
-      <style>
-        @media print {
-          #printInstructions { display: none !important; }
-          @page { 
-            size: 11in 8.5in landscape; 
-            margin: 0.2in; 
-          }
-          body { 
-            margin: 0; 
-            padding: 0; 
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-            color-adjust: exact !important;
-          }
-          .certificate {
-            page-break-inside: avoid;
-            box-shadow: none !important;
-          }
-        }
-      </style>
-      `
-    );
-    
-    // Send enhanced certificate HTML
-    res.send(enhancedCertificateHtml);
+    // Send the certificate HTML to the response
+    res.send(certificateHtml);
   } catch (error) {
     console.error("Error generating certificate:", error);
     next(error);
