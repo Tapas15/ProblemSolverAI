@@ -18,6 +18,7 @@ import { generateQRCode, parseCertificateNumber } from "./services/generate-qr";
 import path from "path";
 import fs from "fs";
 import multer from "multer";
+import { downloadCertificate } from "./certificate-download";
 
 // Custom AI service for ML model training and prediction
 const customAIService = {
