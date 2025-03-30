@@ -36,9 +36,33 @@ function setupDeployConfig() {
   }
 }
 
+// Remove problematic directory that causes permission issues during deployment
+function removeProblematicDirectory() {
+  const problematicPath = path.join(process.cwd(), 'server', 'public', 'images', 'frameworks', 'stock');
+  
+  try {
+    if (fs.existsSync(problematicPath)) {
+      log(`Removing problematic directory: ${problematicPath}`);
+      // Use recursive option to remove directory and contents
+      fs.rmSync(problematicPath, { recursive: true, force: true });
+      log('✅ Problematic directory removed successfully');
+    } else {
+      log('Problematic directory not found, no action needed');
+    }
+    return true;
+  } catch (error) {
+    log(`Failed to remove problematic directory: ${error.message}`, true);
+    // Continue deployment even if this fails
+    return false;
+  }
+}
+
 // Build the application
 function buildApp() {
   try {
+    // First remove the problematic directory
+    removeProblematicDirectory();
+    
     log('Building application...');
     execSync('npm run build', { stdio: 'inherit' });
     log('✅ Build completed successfully');
