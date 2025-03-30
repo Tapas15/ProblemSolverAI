@@ -73,7 +73,7 @@ async function generateQrCode(data: string, color?: string): Promise<string> {
 }
 
 /**
- * Download a certificate by ID with a simplified layout
+ * Download a certificate by ID with a layout matching the frontend certificate exactly
  */
 export async function downloadCertificate(req: Request, res: Response, next: NextFunction) {
   try {
@@ -100,7 +100,7 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
     
     const frameworkName = framework.name;
     
-    // Determine accent color based on framework - match frontend certificate-frame.tsx colors
+    // Determine accent color based on framework - match frontend certificate-frame.tsx colors exactly
     let accentColor = '#D4AF37'; // Default gold color (same as frontend)
     
     // Using the exact same color values from the frontend certificate-frame.tsx
@@ -150,7 +150,24 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
         }
       };
       
-      return backgrounds[name] || backgrounds['Default'];
+      // Add all frameworks with their backgrounds
+      const allBackgrounds: Record<string, any> = {};
+      
+      // Add entries for each framework using either MECE or Default style based on name
+      Object.keys(frameworkColors).forEach(name => {
+        if (name === 'MECE') {
+          allBackgrounds[name] = backgrounds['MECE'];
+        } else {
+          // Create a custom background for each framework based on Default
+          const customBg = { ...backgrounds['Default'] };
+          // Adjust pattern color to use framework color
+          customBg.pattern = `repeating-linear-gradient(0deg, ${frameworkColors[name]}05, ${frameworkColors[name]}05 1px, transparent 1px, transparent 50px), repeating-linear-gradient(90deg, ${frameworkColors[name]}05, ${frameworkColors[name]}05 1px, transparent 1px, transparent 50px)`;
+          customBg.boxShadow = `inset 0 0 30px ${frameworkColors[name]}10`;
+          allBackgrounds[name] = customBg;
+        }
+      });
+      
+      return allBackgrounds[name] || backgrounds['Default'];
     };
     
     // Get background style for the current framework
@@ -171,7 +188,7 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
         
         @page {
           size: 11in 8.5in;
-          margin: 0.2in;
+          margin: 0.25in;
         }
         
         body {
@@ -182,9 +199,9 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
         }
         
         .certificate {
-          width: 850px;
-          height: 600px;
-          margin: 20px auto;
+          width: 950px;
+          height: 650px;
+          margin: 0 auto;
           position: relative;
           border: 4px solid ${accentColor};
           border-radius: 15px;
