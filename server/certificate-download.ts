@@ -129,29 +129,32 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
     const verificationUrl = `${baseUrl}/api/certificates/verify/${certificate.certificateNumber}?framework=${encodeURIComponent(frameworkName)}`;
     const qrCode = await generateQrCode(verificationUrl, accentColor);
 
-    // Get framework-specific background style - match with frontend backgrounds
-    let backgroundColor = '#F8F5E6'; // Default cream background
-    
-    // Use a mapping object to match frontend backgrounds (from certificate-frame.tsx)
-    const frameworkBackgrounds: Record<string, string> = {
-      'MECE': '#f0f8ff', // Light blue background
-      'First Principles': '#edf5f7', // Light teal
-      'First Principles Thinking': '#edf5f7', // Light teal (same as First Principles)
-      'SWOT': '#f0f7f0', // Light green
-      'SWOT Analysis': '#f0f7f0', // Light green (same as SWOT)
-      'Design Thinking': '#f8f0ff', // Light purple
-      'Jobs-To-Be-Done': '#f0f1ff', // Light indigo
-      'Porter\'s Five Forces': '#fff0f0', // Light red
-      'Blue Ocean': '#f0f7ff', // Light sky blue
-      'SCAMPER': '#fdf0f7', // Light pink
-      'Problem-Tree': '#f0faf8', // Light teal
-      'Pareto': '#fff5f0'  // Light orange
+    // Get framework-specific background styles - match with frontend certificate-frame.tsx exactly
+    const getBackgroundStyle = (name: string) => {
+      const backgrounds: Record<string, any> = {
+        'MECE': {
+          background: "#0F172A", // Dark blue
+          gradient: "linear-gradient(to bottom, rgba(15, 23, 42, 0.97), rgba(30, 41, 59, 0.97))",
+          pattern: "linear-gradient(45deg, rgba(59, 130, 246, 0.07) 25%, transparent 25%, transparent 75%, rgba(59, 130, 246, 0.07) 75%), linear-gradient(45deg, rgba(59, 130, 246, 0.05) 25%, transparent 25%, transparent 75%, rgba(59, 130, 246, 0.05) 75%)",
+          patternSize: "20px 20px",
+          innerBg: "rgba(241, 245, 249, 0.97)", // Very light blue-gray
+          boxShadow: "inset 0 0 30px rgba(59, 130, 246, 0.1)" // Light blue shadow
+        },
+        'Default': {
+          background: "#F8F5E6", // Cream background
+          gradient: "linear-gradient(to bottom, rgba(248, 245, 230, 0.97), rgba(255, 253, 244, 0.97))",
+          pattern: "repeating-linear-gradient(0deg, rgba(0,0,0,0.05), rgba(0,0,0,0.05) 1px, transparent 1px, transparent 50px), repeating-linear-gradient(90deg, rgba(0,0,0,0.05), rgba(0,0,0,0.05) 1px, transparent 1px, transparent 50px)",
+          patternSize: "50px 50px",
+          innerBg: "rgba(248, 245, 230, 0.95)",
+          boxShadow: "inset 0 0 30px rgba(212, 175, 55, 0.1)" // Gold shadow
+        }
+      };
+      
+      return backgrounds[name] || backgrounds['Default'];
     };
     
-    // Get the background color from the mapping or use the default cream background
-    if (frameworkBackgrounds[frameworkName]) {
-      backgroundColor = frameworkBackgrounds[frameworkName];
-    }
+    // Get background style for the current framework
+    const backgroundStyle = getBackgroundStyle(frameworkName);
     
     // Create a compact certificate HTML that fits on one page
     const certificateHtml = `
@@ -159,170 +162,220 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
     <html>
     <head>
       <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>${certificate.title} - Framework Pro</title>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
       <style>
+        
         @page {
           size: 11in 8.5in;
           margin: 0.2in;
         }
         
         body {
-          font-family: Arial, sans-serif;
+          font-family: 'Outfit', 'Inter', 'Arial', sans-serif;
           margin: 0;
           padding: 0;
-          background-color: ${backgroundColor};
+          background-color: #f5f5f5;
         }
         
         .certificate {
-          width: 800px;
-          height: 650px; /* Increased height to accommodate all content */
-          margin: 0 auto;
+          width: 850px;
+          height: 600px;
+          margin: 20px auto;
           position: relative;
-          border: 3px solid ${accentColor};
-          background-color: #fff;
-          box-sizing: border-box;
-          overflow: hidden; /* Ensure content doesn't overflow */
+          border: 4px solid ${accentColor};
+          border-radius: 15px;
+          background: ${backgroundStyle.background};
+          background-image: ${backgroundStyle.gradient};
+          background-repeat: no-repeat;
+          background-position: center center;
+          background-size: 400px 400px;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+          overflow: hidden;
         }
         
+        /* Decorative Corner Elements */
         .corner {
           position: absolute;
-          width: 30px;
-          height: 30px;
-          border-width: 3px;
+          width: 60px;
+          height: 60px;
+          border-width: 4px;
           border-color: ${accentColor};
+          z-index: 1;
         }
         
         .corner-tl {
-          top: 5px;
-          left: 5px;
+          top: 0;
+          left: 0;
           border-top-style: solid;
           border-left-style: solid;
+          border-top-left-radius: 10px;
         }
         
         .corner-tr {
-          top: 5px;
-          right: 5px;
+          top: 0;
+          right: 0;
           border-top-style: solid;
           border-right-style: solid;
+          border-top-right-radius: 10px;
         }
         
         .corner-bl {
-          bottom: 5px;
-          left: 5px;
+          bottom: 0;
+          left: 0;
           border-bottom-style: solid;
           border-left-style: solid;
+          border-bottom-left-radius: 10px;
         }
         
         .corner-br {
-          bottom: 5px;
-          right: 5px;
+          bottom: 0;
+          right: 0;
           border-bottom-style: solid;
           border-right-style: solid;
+          border-bottom-right-radius: 10px;
+        }
+        
+        /* Light Pattern Elements */
+        .pattern-overlay {
+          position: absolute;
+          inset: 0;
+          opacity: 0.1;
+          background-image: ${backgroundStyle.pattern};
+          background-size: ${backgroundStyle.patternSize};
+          z-index: 1;
         }
         
         .inner-content {
-          padding: 20px;
-          margin: 10px;
-          height: calc(100% - 20px);
-          border: 1px solid #ddd;
-          background-color: #fff;
           position: relative;
+          margin: 10px;
+          padding: 24px;
+          height: calc(100% - 20px);
+          z-index: 2;
+          background-image: linear-gradient(rgba(255, 255, 255, 0.8), ${backgroundStyle.innerBg});
+          background-position: 0 0;
+          background-size: cover;
+          background-color: ${backgroundStyle.innerBg};
+          backdrop-filter: blur(4px);
+          box-shadow: ${backgroundStyle.boxShadow};
         }
         
         .header {
-          text-align: center;
-          margin-bottom: 10px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          margin-bottom: 16px;
+          position: relative;
         }
         
         .logo {
-          height: 50px;
-          margin-bottom: 5px;
+          height: 80px;
+          margin-bottom: 12px;
         }
         
         .title {
-          font-size: 24px;
+          font-family: 'Space Grotesk', serif;
+          font-size: 28px;
           font-weight: bold;
-          color: ${accentColor};
-          margin: 5px 0;
+          color: #000;
+          margin-bottom: 5px;
+          letter-spacing: 0.08em;
+          word-spacing: 0.1em;
+          text-align: center;
         }
         
         .certificate-number {
-          font-size: 12px;
+          font-size: 14px;
           color: #666;
-          margin: 3px 0;
+          margin-bottom: 8px;
         }
         
         .verified-badge {
-          display: inline-block;
-          background-color: ${accentColor}20;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          background: linear-gradient(to right, ${accentColor}10, ${accentColor}20);
           border: 1px solid ${accentColor};
-          color: ${accentColor};
-          padding: 3px 8px;
-          border-radius: 3px;
-          font-size: 12px;
-          font-weight: bold;
-          margin: 5px auto;
+          color: ${frameworkName === 'MECE' ? '#1e40af' : '#996515'};
+          padding: 6px 12px;
+          border-radius: 5px;
+          font-size: 14px;
+          font-weight: 600;
+          margin: 0 auto;
+        }
+        
+        .verified-badge::before {
+          content: "✓";
+          margin-right: 6px;
         }
         
         .content {
-          text-align: center;
-          margin: 10px 0;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          margin: 32px 0;
         }
         
         .award-text {
           font-size: 14px;
           color: #666;
           text-transform: uppercase;
-          margin: 0 0 5px 0;
+          letter-spacing: 0.1em;
+          margin-bottom: 10px;
         }
         
         .recipient {
           display: flex;
           align-items: center;
           justify-content: center;
-          margin: 5px 0 10px 0;
+          gap: 12px;
+          margin-bottom: 16px;
         }
         
         .recipient-name {
-          font-size: 28px;
+          font-family: 'Space Grotesk', serif;
+          font-size: 32px;
           font-weight: bold;
+          color: #000;
           margin: 0;
         }
         
         .badge-icon {
-          height: 40px;
-          margin-left: 10px;
+          width: 60px;
+          height: 60px;
+          object-fit: contain;
+          filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.2));
+          transform: translateY(-2px);
         }
         
         .description-box {
-          margin: 0 auto 15px auto;
-          padding: 20px 25px;
           max-width: 80%;
+          padding: 20px;
           border: 1px solid ${accentColor}40;
-          background-color: ${accentColor}05;
-          box-shadow: 0 1px 3px ${accentColor}10;
-          text-align: center;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          border-radius: 4px;
+          border-radius: 8px;
+          background-color: rgba(255, 255, 255, 0.8);
+          box-shadow: 0 2px 10px ${accentColor}15;
+          margin: 0 auto;
         }
         
         .description {
-          font-size: 14px;
-          line-height: 1.6;
-          margin: 0 auto;
-          text-align: center;
+          font-size: 16px;
           color: #333;
-          font-family: 'Georgia', serif;
-          font-style: italic;
-          max-width: 90%;
+          line-height: 1.5;
+          text-align: center;
+          margin: 0;
         }
         
         .bottom-section {
           display: flex;
           justify-content: space-between;
+          align-items: flex-end;
           margin-top: 15px;
+          padding: 0 10px;
         }
         
         .signature-section {
@@ -330,20 +383,22 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
           flex-direction: column;
           align-items: center;
           text-align: center;
-          width: 170px;
+          width: 200px;
         }
         
         .signature {
-          display: flex;
-          justify-content: center;
+          padding-bottom: 5px;
+          border-bottom: 1px solid #ddd;
           width: 100%;
           margin-bottom: 8px;
+          text-align: center;
         }
         
         .signature-image {
-          height: 40px;
-          max-width: 120px;
+          height: 50px;
+          max-width: 150px;
           margin: 0 auto;
+          filter: contrast(1.3);
         }
         
         .signatory-details {
@@ -353,88 +408,113 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
         
         .signatory-name {
           font-weight: bold;
-          font-size: 14px;
+          font-size: 15px;
           margin: 0;
+          color: #333;
         }
         
         .signatory-title {
-          font-size: 12px;
+          font-size: 13px;
           color: #666;
-          margin: 0;
+          margin-top: 2px;
         }
         
         .qr-section {
           display: flex;
           align-items: center;
-          margin-right: 5px;
+          padding-right: 10px;
         }
         
         .qr-code {
-          width: 70px;
-          height: 70px;
+          width: 75px;
+          height: 75px;
           border: 1px solid #ddd;
-          padding: 2px;
-          margin-right: 10px;
+          padding: 3px;
+          background-color: white;
+          border-radius: 4px;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+          margin-right: 12px;
         }
         
         .qr-details {
-          margin-left: 5px;
+          margin-left: 4px;
           text-align: left;
         }
         
         .qr-text {
-          font-size: 12px;
+          font-size: 14px;
           color: ${accentColor};
           font-weight: bold;
-          margin: 0 0 3px 0;
+          margin: 0 0 5px 0;
         }
         
         .qr-info {
-          font-size: 10px;
+          font-size: 12px;
           color: #666;
           margin: 0;
+        }
+        
+        .verification-section {
+          margin-top: 25px;
+          position: relative;
+        }
+        
+        .verification-divider {
+          height: 1px;
+          background: linear-gradient(to right, transparent, ${accentColor}30, ${accentColor}30, transparent);
+          margin: 5px 0 15px 0;
+        }
+        
+        .verification-text {
+          text-align: center;
+          font-size: 13px;
+          color: ${accentColor};
+          margin: 10px 0 25px 0;
+          font-weight: 500;
+          padding: 0 20px;
         }
         
         .certificate-footer {
           display: flex;
           justify-content: space-between;
-          padding-top: 10px;
-          border-top: 1px solid #ddd;
-          margin-top: 15px;
-          font-size: 12px;
-          color: #666;
+          align-items: flex-start;
           width: 100%;
-          box-sizing: border-box;
+          margin-top: 5px;
+          padding: 0 15px;
         }
         
         .footer-item {
-          text-align: left;
-          flex: 1;
-          padding: 0 10px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          width: 150px;
         }
         
-        /* Align left item (Issue Date) */
-        .footer-item:first-child {
-          max-width: 35%;
+        .footer-left {
+          margin-right: auto;
         }
         
-        /* Align right item (Framework) to align with QR code */
-        .footer-item:last-child {
-          max-width: 35%;
-          margin-right: 5px;
+        .footer-right {
+          margin-left: auto;
         }
         
         .footer-label {
           font-weight: bold;
+          font-size: 12px;
           color: ${accentColor};
-          margin: 0 0 3px 0;
+          margin: 0 0 5px 0;
+          letter-spacing: 0.05em;
         }
         
         .footer-value {
+          font-size: 12px;
+          color: #666;
+          font-weight: 600;
           margin: 0;
+          max-width: 150px;
+          white-space: normal;
           overflow-wrap: break-word;
-          word-wrap: break-word;
-          word-break: break-word;
         }
         
         /* Certificate dimensions and other styles remain unchanged */
@@ -442,11 +522,14 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
     </head>
     <body>
       <div class="certificate">
-        <!-- Corner elements -->
+        <!-- Decorative Corner Elements -->
         <div class="corner corner-tl"></div>
         <div class="corner corner-tr"></div>
         <div class="corner corner-bl"></div>
         <div class="corner corner-br"></div>
+        
+        <!-- Light Pattern Elements -->
+        <div class="pattern-overlay"></div>
         
         <div class="inner-content">
           <!-- Certificate Header -->
@@ -497,23 +580,27 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
             </div>
           </div>
           
-          <!-- Certificate verification text - now positioned ABOVE the framework and issue date -->
-          <div style="border-top: 1px solid #ddd; margin-top: 15px; padding-top: 15px; text-align: center;">
-            <p style="font-size: 12px; color: ${accentColor}; margin: 0 0 20px 0; font-weight: 500;">
+          <!-- Certificate verification text and footer -->
+          <div class="verification-section">
+            <div class="verification-divider"></div>
+            <p class="verification-text">
               This certificate verifies mastery of the ${frameworkName} framework and its professional business applications.
             </p>
-          </div>
-          
-          <!-- Issue Date section - positioned absolutely on left side -->
-          <div style="position: absolute; bottom: 35px; left: 75px; text-align: center; width: 180px;">
-            <p style="font-weight: bold; color: ${accentColor}; margin: 0 0 3px 0; font-size: 12px;">Issue Date</p>
-            <p style="font-weight: 600; margin: 0; font-size: 12px; color: #666;">${certificate.issueDate ? new Date(certificate.issueDate).toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric'}) : new Date().toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric'})}</p>
-          </div>
-          
-          <!-- Framework section - positioned absolutely on right side for perfect alignment with QR code -->
-          <div style="position: absolute; bottom: 35px; right: 78px; text-align: center; width: 100px;">
-            <p style="font-weight: bold; color: ${accentColor}; margin: 0 0 3px 0; font-size: 12px;">Framework</p>
-            <p style="font-weight: 600; margin: 0; font-size: 12px; color: #666; white-space: normal; overflow-wrap: break-word;">${frameworkName}</p>
+            
+            <!-- Footer with Issue Date and Framework Name -->
+            <div class="certificate-footer">
+              <!-- Issue Date -->
+              <div class="footer-item footer-left">
+                <p class="footer-label">Issue Date</p>
+                <p class="footer-value">${certificate.issueDate ? new Date(certificate.issueDate).toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric'}) : new Date().toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric'})}</p>
+              </div>
+              
+              <!-- Framework -->
+              <div class="footer-item footer-right">
+                <p class="footer-label">Framework</p>
+                <p class="footer-value">${frameworkName}</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
