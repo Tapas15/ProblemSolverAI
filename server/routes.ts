@@ -2710,9 +2710,8 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
   // Certificate QR code generation endpoint
   app.get("/api/certificates/:id/qr", async (req, res, next) => {
     try {
-      if (!req.isAuthenticated() || !req.user) {
-        return res.status(401).send("Unauthorized");
-      }
+      // QR codes should be publicly accessible like certificate downloads
+      // This allows certificates to be properly displayed without requiring login
       
       const certificateId = parseInt(req.params.id);
       if (isNaN(certificateId)) {
@@ -2725,10 +2724,7 @@ app.delete("/api/certificates/:id/revoke", async (req, res, next) => {
         return res.status(404).send("Certificate not found");
       }
       
-      // Only allow users to access their own certificates unless they're admins
-      if (certificate.userId !== req.user.id && (!req.user.role || req.user.role !== "admin")) {
-        return res.status(403).send("Forbidden");
-      }
+      // QR codes are public just like certificate downloads
 
       // Get framework information for customizing the QR code
       const framework = await storage.getFramework(certificate.frameworkId);
