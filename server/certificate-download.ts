@@ -30,10 +30,10 @@ function getImageAsBase64(imagePath: string, fallbackPath?: string): string {
   }
 }
 
-// Load images
-const LOGO_IMAGE = getImageAsBase64('public/images/fp-logo-certificates-optimized.jpg');
-const BADGE_IMAGE = getImageAsBase64('public/images/certified-badge.png');
-const SIGNATURE_IMAGE = getImageAsBase64('public/images/manas-signature.png');
+// Load images - ensure we're loading from the right locations in all environments
+const LOGO_IMAGE = getImageAsBase64('public/images/fp-logo-certificates-optimized.jpg', 'public/static/images/fp-logo-certificates-optimized.jpg');
+const BADGE_IMAGE = getImageAsBase64('public/static/images/certified-badge.png', 'public/images/certified-badge.png');
+const SIGNATURE_IMAGE = getImageAsBase64('public/static/images/manas-signature.png', 'public/images/manas-signature.png');
 
 /**
  * Download a certificate by ID with a layout matching the screenshot exactly
